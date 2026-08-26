@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Student ‹ Headmaster ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="tenant_admin" active-path="/headmaster/people/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Headmaster Mlimani"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <app-breadcrumb path="Headmaster, People, Register Student"></app-breadcrumb>
+                    
+                    <app-page-header 
+                        title="Register New Student" 
+                        subtitle="Add a new student to the school and assign them to a class."
+                        primary-action="Save & Register"
+                        primary-url="student_workspace.html">
+                    </app-page-header>
+                    
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--sp-6); margin-top: var(--sp-6);">
+                        
+                        <!-- Left Column: Form -->
+                        <div style="display: flex; flex-direction: column; gap: var(--sp-6);">
+                            
+                            <!-- Personal Details -->
+                            <div class="card" style="padding: var(--sp-6);">
+                                <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">Personal Details</h3>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--sp-4); margin-bottom: var(--sp-4);">
+                                    <div class="form-group">
+                                        <label class="form-label">First Name <span style="color:var(--c-danger);">*</span></label>
+                                        <input type="text" class="form-control" placeholder="e.g. Asha">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Middle Name</label>
+                                        <input type="text" class="form-control" placeholder="e.g. John">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Last Name <span style="color:var(--c-danger);">*</span></label>
+                                        <input type="text" class="form-control" placeholder="e.g. Mussa">
+                                    </div>
+                                </div>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); margin-bottom: var(--sp-4);">
+                                    <div class="form-group">
+                                        <label class="form-label">Gender <span style="color:var(--c-danger);">*</span></label>
+                                        <select class="form-select">
+                                            <option value="">Select Gender</option>
+                                            <option value="F">Female</option>
+                                            <option value="M">Male</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Date of Birth</label>
+                                        <input type="date" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Academic Details -->
+                            <div class="card" style="padding: var(--sp-6);">
+                                <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">Academic Assignment</h3>
+                                
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); margin-bottom: var(--sp-4);">
+                                    <div class="form-group">
+                                        <label class="form-label">Class <span style="color:var(--c-danger);">*</span></label>
+                                        <select class="form-select">
+                                            <option value="">Select Class</option>
+                                            <option value="std1">Standard 1</option>
+                                            <option value="std7">Standard 7</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Stream</label>
+                                        <select class="form-select">
+                                            <option value="">Select Stream</option>
+                                            <option value="A">A</option>
+                                            <option value="B">B</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Registration Number</label>
+                                    <input type="text" class="form-control" placeholder="Leave blank to auto-generate">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Column: System Info -->
+                        <div style="display: flex; flex-direction: column; gap: var(--sp-6);">
+                            
+                            <div class="card" style="padding: var(--sp-6); background: var(--c-bg-page);">
+                                <h4 style="margin-top: 0; font-size: var(--text-sm); display: flex; align-items: center; gap: 8px; color: var(--c-text-secondary);">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                                    Account Generation
+                                </h4>
+                                <p style="font-size: var(--text-sm); color: var(--c-text-muted); margin: 0 0 var(--sp-4) 0; line-height: 1.5;">
+                                    Upon saving, a student account will be automatically generated.
+                                </p>
+                                <ul style="list-style: none; padding: 0; margin: 0; font-size: var(--text-sm); color: var(--c-text-secondary);">
+                                    <li style="margin-bottom: 4px;">• Username: [Surname] (default)</li>
+                                    <li style="margin-bottom: 4px;">• Password: [Reg No.]</li>
+                                    <li style="margin-bottom: 4px;">• School ID: Auto-assigned</li>
+                                    <li>• Academic Year: Current</li>
+                                </ul>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.querySelector('form');
+            if (!form) {
+                return;
+            }
+
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const firstName = document.querySelector('input[placeholder="e.g. Asha"]')?.value?.trim() || '';
+                const middleName = document.querySelectorAll('input.form-control')[1]?.value?.trim() || '';
+                const lastName = document.querySelectorAll('input.form-control')[2]?.value?.trim() || '';
+                const gender = document.querySelector('select.form-select')?.value || '';
+                const classValue = document.querySelectorAll('select.form-select')[1]?.value || '';
+                const registrationNumber = document.querySelector('input[placeholder="Leave blank to auto-generate"]')?.value?.trim() || '';
+                const fullName = [firstName, middleName, lastName].filter(Boolean).join(' ');
+
+                const payload = {
+                    full_name: fullName,
+                    phone: registrationNumber || `+2557${Math.floor(100000000 + Math.random() * 900000000)}`,
+                    password: registrationNumber || 'Shule@123',
+                    role: 'student',
+                    gender: gender,
+                    class_id: classValue,
+                    user_code: registrationNumber || null
+                };
+
+                try {
+                    const response = await fetch('/shule-cafe/api/users/create.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(payload)
+                    });
+
+                    const data = await response.json();
+                    if (response.ok && data.success) {
+                        window.location.href = 'students.html';
+                    } else {
+                        alert(data.message || 'Unable to save student.');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    alert('Unable to save student.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

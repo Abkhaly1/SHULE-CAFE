@@ -1,0 +1,63 @@
+/* SHULE CAFE - Regional Officer Distinct Purple/Indigo Theme */
+
+:root {
+    --c-primary: #4f46e5;
+    --c-primary-hover: #4338ca;
+    --c-primary-light: #e0e7ff;
+    --c-primary-border: #c7d2fe;
+    
+    --sidebar-bg: #312e81;
+    --sidebar-text: #e0e7ff;
+    --sidebar-hover-bg: #4338ca;
+    --sidebar-active-bg: #4f46e5;
+    --sidebar-active-border: #818cf8;
+}
+
+/* Sidebar Branding Override */
+.app-sidebar {
+    background: var(--sidebar-bg) !important;
+    border-right: 1px solid #1e1b4b !important;
+}
+
+.sidebar-brand {
+    background: #1e1b4b !important;
+    border-bottom: 1px solid #312e81 !important;
+}
+
+.sidebar-brand span {
+    color: #818cf8 !important;
+}
+
+.sidebar-nav a:hover {
+    background: var(--sidebar-hover-bg) !important;
+    color: #ffffff !important;
+}
+
+.sidebar-nav a.active {
+    background: var(--sidebar-active-bg) !important;
+    color: #ffffff !important;
+    border-left: 4px solid var(--sidebar-active-border) !important;
+}
+
+/* Primary Button Styling */
+.btn-primary {
+    background: var(--c-primary) !important;
+    border-color: var(--c-primary) !important;
+    color: #ffffff !important;
+}
+
+.btn-primary:hover {
+    background: var(--c-primary-hover) !important;
+    border-color: var(--c-primary-hover) !important;
+}
+
+/* Card & Frames Distinct Styling */
+.card {
+    border: 1px solid var(--c-primary-border) !important;
+    box-shadow: 0 1px 3px rgba(79, 70, 229, 0.08) !important;
+}
+
+/* Topbar Accent Line */
+.app-topbar {
+    border-bottom: 2px solid var(--c-primary) !important;
+}

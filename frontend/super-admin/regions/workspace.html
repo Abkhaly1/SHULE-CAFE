@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regional Workspace ‹ Super Admin ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="super_admin" active-path="/super-admin/regions/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="System Administrator"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content" style="padding: 0;">
+                    
+                    <app-workspace-layout back-url="index.html">
+                        
+                        <app-workspace-header 
+                            title="Dar es Salaam Region" 
+                            subtitle="Eastern Zone" 
+                            status="Active"
+                            initials="DSM">
+                        </app-workspace-header>
+                        
+                        <app-workspace-summary>
+                            <app-workspace-summary-card label="Total Schools" value="342"></app-workspace-summary-card>
+                            <app-workspace-summary-card label="Districts" value="5"></app-workspace-summary-card>
+                            <app-workspace-summary-card label="Total Students" value="124,500"></app-workspace-summary-card>
+                            <app-workspace-summary-card label="Regional Officer" value="Juma Ali"></app-workspace-summary-card>
+                        </app-workspace-summary>
+                        
+                        <app-workspace-tabs active-tab="overview">
+                            <button class="workspace-tab" data-target="overview">Overview</button>
+                            <button class="workspace-tab" data-target="schools">Schools</button>
+                            <button class="workspace-tab" data-target="officer">Officer Profile</button>
+                            <button class="workspace-tab" data-target="analytics">Analytics</button>
+                            <button class="workspace-tab" data-target="settings">Settings</button>
+                        </app-workspace-tabs>
+                        
+                        <app-workspace-content tab-id="overview" active="true">
+                            <div class="card" style="padding: var(--sp-6);">
+                                <h3>Region Overview</h3>
+                                <p style="color: var(--c-text-secondary); margin-bottom: var(--sp-4);">General platform statistics for this region.</p>
+                                <app-table-empty title="No Data Available" message="Regional data is being compiled."></app-table-empty>
+                            </div>
+                        </app-workspace-content>
+                        
+                        <app-workspace-content tab-id="schools">
+                            <app-workspace-toolbar search-placeholder="Search schools in this region..."></app-workspace-toolbar>
+                            <app-table-empty title="No Schools" message="Schools will be listed here."></app-table-empty>
+                        </app-workspace-content>
+
+                        <app-workspace-content tab-id="officer">
+                            <div class="card" style="padding: var(--sp-6);">
+                                <h3>Regional Officer Details</h3>
+                                <app-workspace-loading></app-workspace-loading>
+                            </div>
+                        </app-workspace-content>
+                        
+                        <app-workspace-content tab-id="analytics">
+                            <div class="card" style="padding: var(--sp-6);">
+                                <h3>Regional Analytics</h3>
+                                <app-table-empty title="No Analytics Available" message="Analytics data is being compiled."></app-table-empty>
+                            </div>
+                        </app-workspace-content>
+
+                        <app-workspace-content tab-id="settings">
+                            <div class="card" style="padding: var(--sp-6);">
+                                <h3>Settings</h3>
+                                <p style="color: var(--c-text-secondary); margin-bottom: var(--sp-4);">Manage settings for this region.</p>
+                            </div>
+                        </app-workspace-content>
+                        
+                    </app-workspace-layout>
+                    
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

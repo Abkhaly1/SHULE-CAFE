@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade Curriculum Workspace ‹ Headmaster ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+
+    <style>
+        .workspace-header {
+            background: linear-gradient(135deg, #064e3b 0%, #047857 100%);
+            color: white;
+            padding: 24px 30px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 25px -5px rgba(4, 120, 87, 0.3);
+        }
+        .summary-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .summary-card {
+            background: #ffffff;
+            border: 1px solid var(--c-border-light);
+            border-radius: 10px;
+            padding: 16px 20px;
+            text-align: center;
+        }
+        .summary-card .val { font-size: 26px; font-weight: 800; color: var(--c-text-primary); }
+        .summary-card .lbl { font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--c-text-muted); margin-top: 2px; }
+
+        .btn-add-subject {
+            background: #059669; color: white !important; font-weight: 700;
+            padding: 9px 18px; border-radius: 8px; border: none; cursor: pointer;
+            box-shadow: 0 2px 5px rgba(5,150,105,0.25); transition: all 0.2s; font-size: 13px;
+        }
+        .btn-add-subject:hover { background: #047857; }
+
+        /* Modal Styles */
+        .modal-backdrop {
+            display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.5);
+            align-items: center; justify-content: center; z-index: 99999; backdrop-filter: blur(3px);
+        }
+        .modal-box {
+            background: white; width: 90%; max-width: 640px; border-radius: 12px;
+            padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); max-height: 85vh;
+            display: flex; flex-direction: column;
+        }
+        .modal-body-scroll {
+            overflow-y: auto; max-height: 50vh; margin-top: 14px; margin-bottom: 20px; border: 1px solid #e2e8f0; border-radius: 8px;
+        }
+        .modal-subject-item {
+            display: flex; align-items: center; justify-content: space-between; padding: 10px 14px;
+            border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.15s;
+        }
+        .modal-subject-item:hover { background: #f8fafc; }
+        .modal-subject-item.selected { background: #ecfdf5; }
+
+        /* Toast notification */
+        .toast-notify {
+            position: fixed; bottom: 20px; right: 20px; z-index: 99999;
+            padding: 12px 20px; border-radius: 8px; background: #047857; color: white;
+            font-weight: 600; font-size: 13px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            display: none; align-items: center; gap: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="tenant_admin" active-path="/headmaster/academics/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Headmaster Portal"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <app-breadcrumb path="Headmaster, Academics Management, Grade Workspace"></app-breadcrumb>
+
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;margin-bottom:16px;">
+                        <button class="btn btn-outline btn-sm" id="btnBackToAcademics" onclick="goBackToAcademics()">⬅ Back to Academics Management</button>
+                    </div>
+
+                    <!-- ── HEADER ANCHORED BANNER ────────────────────────── -->
+                    <div class="workspace-header">
+                        <div style="display:flex;align-items:center;gap:18px;">
+                            <div style="width:64px;height:64px;border-radius:50%;background:#10b981;color:white;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;" id="gradeAvatar">
+                                GRD
+                            </div>
+                            <div>
+                                <h2 style="margin:0 0 4px;font-size:22px;font-weight:800;color:white;" id="gradeTitle">
+                                    Grade Curriculum Workspace
+                                </h2>
+                                <div style="font-size:13px;color:#a7f3d0;" id="gradeSubtitle">
+                                    Loading master grade curriculum structure...
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align:right;">
+                            <span class="badge" style="background:#10b981;color:white;font-weight:700;padding:6px 14px;font-size:12px;" id="gradeLevelBadge">O-LEVEL</span>
+                        </div>
+                    </div>
+
+                    <!-- ── SUMMARY STATS CARDS ──────────────────────────── -->
+                    <div class="summary-card-grid">
+                        <div class="summary-card">
+                            <div class="val" id="statTotalSubjects">0</div>
+                            <div class="lbl">Assigned Grade Subjects</div>
+                        </div>
+                        <div class="summary-card" style="border-color:#059669;background:#f0fdf4;">
+                            <div class="val" id="statCoreSubjects" style="color:#059669;">0</div>
+                            <div class="lbl" style="color:#047857;">Core Mandatory</div>
+                        </div>
+                        <div class="summary-card" style="border-color:#0284c7;background:#f0f9ff;">
+                            <div class="val" id="statElectiveSubjects" style="color:#0284c7;">0</div>
+                            <div class="lbl" style="color:#0369a1;">Optional Electives</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="val" style="color:#059669;">Active</div>
+                            <div class="lbl">Curriculum Status</div>
+                        </div>
+                    </div>
+
+                    <!-- ── MASTER GRADE SUBJECT CURRICULUM EDITOR ────────────────── -->
+                    <div class="card" style="padding: 24px; background: white; border: 1px solid var(--c-border-light); border-radius: 10px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--c-border-light);flex-wrap:wrap;gap:12px;">
+                            <div>
+                                <h3 style="margin:0 0 4px;font-size:17px;font-weight:800;color:var(--c-text-primary);">
+                                    Grade Curriculum Subjects Roster
+                                </h3>
+                                <p style="margin:0;font-size:13px;color:var(--c-text-muted);">
+                                    Active subjects assigned to this Grade for Academic Current Year. Set Core Mandatory vs Optional Elective status.
+                                </p>
+                            </div>
+                            <div style="display:flex; gap:10px;">
+                                <button type="button" class="btn-add-subject" onclick="openAddSubjectsModal()">
+                                    ➕ Add Subjects to Grade Curriculum
+                                </button>
+                                <button type="button" class="btn btn-primary" style="font-weight:700;padding:9px 22px;" onclick="saveGradeCurriculum()">
+                                    💾 Save Grade Curriculum
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive" style="margin-bottom:20px;">
+                            <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                                <thead>
+                                    <tr style="background:var(--c-bg-subtle);border-bottom:2px solid var(--c-border-light);text-align:left;">
+                                        <th style="padding:12px;">Subject Code</th>
+                                        <th style="padding:12px;">Subject Name</th>
+                                        <th style="padding:12px;text-align:center;width:220px;">Curriculum Type</th>
+                                        <th style="padding:12px;text-align:right;width:100px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="gradeSubjectsBody">
+                                    <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--c-text-muted);">Loading active grade subjects…</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:1px solid var(--c-border-light);">
+                            <span style="font-size:13px;color:var(--c-text-muted);" id="checklistSummaryText">0 subject(s) assigned.</span>
+                            <div style="display:flex;gap:12px;">
+                                <button type="button" class="btn btn-outline" onclick="goBackToAcademics()">Cancel</button>
+                                <button type="button" class="btn btn-primary" style="font-weight:700;padding:9px 22px;" onclick="saveGradeCurriculum()">💾 Save Grade Curriculum</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- ── POPUP MODAL: SELECT SUBJECTS TO ADD ────────────────────────── -->
+    <div id="modalAddGradeSubjects" class="modal-backdrop">
+        <div class="modal-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div style="width:36px; height:36px; border-radius:50%; background:#ecfdf5; color:#059669; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:800;">
+                        📚
+                    </div>
+                    <div>
+                        <h3 style="margin:0; font-size:16px; font-weight:800; color:#0f172a;">Select Subjects for Grade Curriculum</h3>
+                        <div style="font-size:12px; color:#64748b;">Select from approved Super Admin subject master templates</div>
+                    </div>
+                </div>
+                <button type="button" onclick="closeAddSubjectsModal()" class="btn btn-outline btn-sm" style="border:none; font-size:18px;">✕</button>
+            </div>
+
+            <div style="position:relative; margin-bottom:8px;">
+                <input type="text" id="txtSearchModalSubjects" placeholder="Search subject by name or code..." class="form-control" style="font-size:13px; padding-left:32px;" oninput="filterModalSubjects()">
+                <span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:14px;">🔍</span>
+            </div>
+
+            <div class="modal-body-scroll" id="modalSubjectsListBody">
+                <!-- Loaded dynamically -->
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:12px; color:#64748b;" id="lblModalSelectedCount">0 selected</span>
+                <div style="display:flex; gap:8px;">
+                    <button type="button" onclick="closeAddSubjectsModal()" class="btn btn-outline btn-sm">Cancel</button>
+                    <button type="button" onclick="confirmAddSelectedSubjects()" class="btn-add-subject" style="font-size:12px; padding:7px 18px;">
+                        Confirm & Add Selected Subjects
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toastNotify" class="toast-notify"></div>
+
+    <script>
+        let currentGradeId = '';
+        let currentLevelCode = 'O-LEVEL';
+        let fullSubjectChecklist = []; // Master list from API
+        let activeAssignedSubjects = []; // Currently assigned in main table: [{ subject_code, subject_name, is_core }]
+        let tempModalSelection = []; // Temporary subject_codes checked in modal
+
+        function showToast(message, isError = false) {
+            const t = $('#toastNotify');
+            t.css('background', isError ? '#991b1b' : '#047857');
+            t.html(`${isError ? '❌' : '✅'} ${message}`).css('display', 'flex').fadeIn(200);
+            setTimeout(() => { t.fadeOut(300); }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            currentGradeId   = params.get('grade_id') || '1';
+            currentLevelCode = params.get('code') || 'O-LEVEL';
+
+            loadGradeWorkspace(currentGradeId);
+        });
+
+        function goBackToAcademics() {
+            window.location.href = 'index.html';
+        }
+
+        async function loadGradeWorkspace(gradeId) {
+            try {
+                const res = await fetch(`/shule-cafe/api/headmaster/academics/grade_subjects_api.php?grade_id=${encodeURIComponent(gradeId)}`, { credentials: 'include' });
+                const data = await res.json();
+
+                if (!res.ok || !data.success) {
+                    alert(data.message || 'Failed to load grade workspace.');
+                    return;
+                }
+
+                const gradeInfo = data.grade;
+
+                // Render Header Banner
+                $('#gradeTitle').text(`${gradeInfo.grade_name} Curriculum Workspace`);
+                $('#gradeSubtitle').text(`Master subject curriculum template for ${gradeInfo.grade_name} (${gradeInfo.level_name}) - Academic Current Year.`);
+                $('#gradeAvatar').text(gradeInfo.grade_name || 'GRD');
+                $('#gradeLevelBadge').text(gradeInfo.level_code);
+
+                fullSubjectChecklist = data.subject_checklist || [];
+
+                // Filter initial assigned subjects
+                activeAssignedSubjects = fullSubjectChecklist
+                    .filter(s => s.is_assigned)
+                    .map(s => ({
+                        subject_code: s.subject_code,
+                        subject_name: s.subject_name,
+                        is_core: s.is_core ? 1 : 0
+                    }));
+
+                renderMainTable();
+
+            } catch (err) {
+                console.error("Error loading grade workspace:", err);
+            }
+        }
+
+        function renderMainTable() {
+            const tbody = $('#gradeSubjectsBody');
+            const assignedCount = activeAssignedSubjects.length;
+            const coreCount     = activeAssignedSubjects.filter(c => c.is_core === 1).length;
+            const electiveCount = assignedCount - coreCount;
+
+            $('#statTotalSubjects').text(assignedCount);
+            $('#statCoreSubjects').text(coreCount);
+            $('#statElectiveSubjects').text(electiveCount);
+            $('#checklistSummaryText').text(`${assignedCount} subject(s) assigned to Grade Curriculum.`);
+
+            if (activeAssignedSubjects.length === 0) {
+                tbody.html(`
+                    <tr>
+                        <td colspan="4" style="text-align:center; padding:36px; color:#64748b;">
+                            <div style="font-size:24px; margin-bottom:6px;">📚</div>
+                            <div style="font-weight:700; color:#334155;">No subjects added to this grade curriculum yet.</div>
+                            <div style="font-size:12px; margin-top:2px;">Click <strong>"➕ Add Subjects to Grade Curriculum"</strong> to select subjects from the Super Admin template.</div>
+                        </td>
+                    </tr>
+                `);
+                return;
+            }
+
+            let html = '';
+            activeAssignedSubjects.forEach(sbj => {
+                const isCore = sbj.is_core === 1;
+
+                html += `
+                    <tr style="border-bottom:1px solid var(--c-border-light);">
+                        <td style="padding:12px;font-weight:800;font-size:14px;color:var(--c-text-primary);">
+                            ${sbj.subject_code}
+                        </td>
+                        <td style="padding:12px;font-weight:700;font-size:14px;">
+                            ${sbj.subject_name}
+                        </td>
+                        <td style="padding:12px;text-align:center;">
+                            <label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;">
+                                <input type="checkbox" class="chk-gw-core" onchange="toggleSubjectCore('${sbj.subject_code}', this.checked)" ${isCore ? 'checked' : ''} style="width:16px;height:16px;">
+                                <span>${isCore ? '🟢 Core Mandatory' : '🔵 Optional Elective'}</span>
+                            </label>
+                        </td>
+                        <td style="padding:12px;text-align:right;">
+                            <button type="button" class="btn btn-outline btn-sm" style="color:#dc2626; border-color:#fca5a5; font-weight:700; padding:4px 10px; font-size:12px;" onclick="removeSubjectFromGrade('${sbj.subject_code}')">
+                                🗑️ Remove
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.html(html);
+        }
+
+        function toggleSubjectCore(code, isChecked) {
+            const item = activeAssignedSubjects.find(s => s.subject_code === code);
+            if (item) {
+                item.is_core = isChecked ? 1 : 0;
+                renderMainTable();
+            }
+        }
+
+        function removeSubjectFromGrade(code) {
+            activeAssignedSubjects = activeAssignedSubjects.filter(s => s.subject_code !== code);
+            renderMainTable();
+        }
+
+        // ==========================================
+        // POPUP MODAL FUNCTIONALITY
+        // ==========================================
+        function getUnassignedModalSubjects() {
+            const assignedCodes = activeAssignedSubjects.map(s => s.subject_code);
+            return fullSubjectChecklist.filter(s => !assignedCodes.includes(s.subject_code));
+        }
+
+        function openAddSubjectsModal() {
+            tempModalSelection = [];
+            $('#txtSearchModalSubjects').val('');
+            renderModalSubjectsList();
+            $('#modalAddGradeSubjects').css('display', 'flex');
+        }
+
+        function closeAddSubjectsModal() {
+            $('#modalAddGradeSubjects').hide();
+        }
+
+        function renderModalSubjectsList() {
+            const query = $('#txtSearchModalSubjects').val().toLowerCase().trim();
+            let list = getUnassignedModalSubjects();
+
+            if (query) {
+                list = list.filter(s => 
+                    (s.subject_name || '').toLowerCase().includes(query) ||
+                    (s.subject_code || '').toLowerCase().includes(query)
+                );
+            }
+
+            const container = $('#modalSubjectsListBody');
+            if (!list || list.length === 0) {
+                container.html('<div style="text-align:center; padding:24px; color:#64748b;">All available subjects are already added to this grade curriculum, or no subjects match your search.</div>');
+                return;
+            }
+
+            const html = list.map(sbj => {
+                const isSelected = tempModalSelection.includes(sbj.subject_code);
+                return `
+                    <div class="modal-subject-item ${isSelected ? 'selected' : ''}" onclick="toggleModalSubjectSelection('${sbj.subject_code}', this)">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <input type="checkbox" value="${sbj.subject_code}" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleModalSubjectCheckbox('${sbj.subject_code}', this);">
+                            <div>
+                                <div style="font-weight:800; font-size:13px; color:#0f172a;">${sbj.subject_name}</div>
+                                <div style="font-size:11px; color:#64748b;">Code: <strong>${sbj.subject_code}</strong></div>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="badge" style="background:#f1f5f9; color:#475569; font-weight:700; font-size:11px;">
+                                ${sbj.is_core ? 'Core Template' : 'Elective Template'}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.html(html);
+            $('#lblModalSelectedCount').text(`${tempModalSelection.length} newly selected`);
+        }
+
+        function toggleModalSubjectSelection(code, itemEl) {
+            const chk = $(itemEl).find('input[type="checkbox"]');
+            chk.prop('checked', !chk.prop('checked'));
+            toggleModalSubjectCheckbox(code, chk[0]);
+        }
+
+        function toggleModalSubjectCheckbox(code, chkEl) {
+            const isChecked = $(chkEl).prop('checked');
+            $(chkEl).closest('.modal-subject-item').toggleClass('selected', isChecked);
+
+            if (isChecked) {
+                if (!tempModalSelection.includes(code)) tempModalSelection.push(code);
+            } else {
+                tempModalSelection = tempModalSelection.filter(c => c !== code);
+            }
+
+            $('#lblModalSelectedCount').text(`${tempModalSelection.length} newly selected`);
+        }
+
+        function filterModalSubjects() {
+            renderModalSubjectsList();
+        }
+
+        function confirmAddSelectedSubjects() {
+            if (tempModalSelection.length === 0) {
+                closeAddSubjectsModal();
+                return;
+            }
+
+            tempModalSelection.forEach(code => {
+                const tpl = fullSubjectChecklist.find(s => s.subject_code === code);
+                if (tpl && !activeAssignedSubjects.some(s => s.subject_code === code)) {
+                    activeAssignedSubjects.push({
+                        subject_code: code,
+                        subject_name: tpl.subject_name,
+                        is_core: tpl.is_core ? 1 : 0
+                    });
+                }
+            });
+
+            renderMainTable();
+            closeAddSubjectsModal();
+            showToast(`${tempModalSelection.length} new subject(s) added to grade curriculum. Click "Save Grade Curriculum" to save changes.`);
+        }
+
+        async function saveGradeCurriculum() {
+            const payloadSubjects = activeAssignedSubjects.map(s => ({
+                subject_code: s.subject_code,
+                is_core: s.is_core
+            }));
+
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/academics/grade_subjects_api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        action: 'save_grade_subjects',
+                        grade_id: currentGradeId,
+                        academic_year: new Date().getFullYear().toString(),
+                        assigned_subjects: payloadSubjects
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    showToast('Grade curriculum updated and saved successfully!');
+                    loadGradeWorkspace(currentGradeId);
+                } else {
+                    showToast(data.message || 'Failed to save curriculum.', true);
+                }
+            } catch (err) {
+                console.error("Save grade curriculum error:", err);
+                showToast("Error connecting to server.", true);
+            }
+        }
+    </script>
+</body>
+</html>

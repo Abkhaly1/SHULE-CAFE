@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark Entry Workspace ‹ Teacher ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/teacher-theme.css">
+    
+    <script type="module" src="../layouts/global-layout.js"></script>
+    <script type="module" src="../js/auth/auth-guard.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="teacher" active-path="/teacher/marks.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Teacher Portal"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <app-breadcrumb path="Teacher, Mark Entry Workspace"></app-breadcrumb>
+
+                    <div class="card" style="margin-top: 14px; padding: 24px;">
+                        <h2 style="margin: 0 0 6px; font-size: 20px; font-weight: 800; color: var(--c-text-primary);">📝 Mark Entry Workspace</h2>
+                        <p style="margin: 0 0 20px; font-size: 13px; color: var(--c-text-muted);">Dedicated spreadsheet workspace for continuous assessment (CA) and terminal exam scores.</p>
+
+                        <div style="display: flex; gap: 14px; flex-wrap: wrap; background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid var(--c-border-light); margin-bottom: 20px; align-items: center;">
+                            <div>
+                                <label class="form-label" style="font-size: 12px; font-weight: 700;">Class Stream</label>
+                                <select id="mStream" class="form-control" style="width: 190px; font-weight: 700;"><option value="">Select Stream...</option></select>
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-size: 12px; font-weight: 700;">Subject Course</label>
+                                <select id="mSubj" class="form-control" style="width: 210px; font-weight: 700;"><option value="">Select Subject...</option></select>
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-size: 12px; font-weight: 700;">Academic Term</label>
+                                <select id="mTerm" class="form-control" style="width: 160px; font-weight: 700;">
+                                    <option value="Term 1" selected>Term 1</option>
+                                    <option value="Term 2">Term 2</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label" style="font-size: 12px; font-weight: 700;">Active Assessment Track</label>
+                                <select id="mTrack" class="form-control" style="width: 240px; font-weight: 700;">
+                                    <option value="terminal">Terminal Exam (Max: 60)</option>
+                                    <option value="ca">Continuous Assessment CA (Max: 40)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="marksBoard">
+                            <div style="padding: 40px; text-align: center; color: var(--c-text-muted); background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 10px;">
+                                💡 Select a class stream and subject course above to auto-load the dynamic student score sheet.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        let allocs = [];
+        let assessmentTypes = [];
+        document.addEventListener('DOMContentLoaded', async () => {
+            const mStream = document.getElementById('mStream');
+            const mSubj   = document.getElementById('mSubj');
+            const mTerm   = document.getElementById('mTerm');
+            const mTrack  = document.getElementById('mTrack');
+
+            try {
+                const res = await fetch('/shule-cafe/api/teacher/teacher_portal_api.php?action=dashboard', { credentials: 'include' });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    allocs = data.allocations || [];
+                    assessmentTypes = data.assessment_types || [];
+                    const streams = [...new Set(allocs.map(a => a.classroom_name))];
+
+                    mStream.innerHTML = '<option value="">Select Stream...</option>' + streams.map(s => `<option value="${s}">${s}</option>`).join('');
+
+                    // Populate track dynamically
+                    mTrack.innerHTML = assessmentTypes.map(t => `<option value="${t.id}">${t.name} (Max: ${t.weight_percent})</option>`).join('');
+
+                    mStream.addEventListener('change', (e) => {
+                        const sel = e.target.value;
+                        const subjs = allocs.filter(a => a.classroom_name === sel);
+                        mSubj.innerHTML = '<option value="">Select Subject...</option>' + subjs.map(a => `<option value="${a.subject_code}">${a.subject_name} (${a.subject_code})</option>`).join('');
+                        autoLoadMarksIfReady();
+                    });
+
+                    mSubj.addEventListener('change', autoLoadMarksIfReady);
+                    mTerm.addEventListener('change', autoLoadMarksIfReady);
+                    mTrack.addEventListener('change', autoLoadMarksIfReady);
+
+                    const params = new URLSearchParams(window.location.search);
+                    const initialStream = params.get('stream');
+                    const initialSubject = params.get('subject');
+                    const initialTrack = params.get('track');
+                    const initialTerm = params.get('term');
+
+                    if (initialStream && streams.includes(initialStream)) {
+                        mStream.value = initialStream;
+                        mStream.dispatchEvent(new Event('change'));
+                        if (initialSubject && Array.from(mSubj.options).some(opt => opt.value === initialSubject)) {
+                            mSubj.value = initialSubject;
+                        }
+                    }
+
+                    if (initialStream && initialSubject && Array.from(mSubj.options).some(opt => opt.value === initialSubject)) {
+                        if (initialTrack && assessmentTypes.some(t => String(t.id) === String(initialTrack))) {
+                            mTrack.value = initialTrack;
+                        }
+                        if (initialTerm && ['Term 1', 'Term 2'].includes(initialTerm)) {
+                            mTerm.value = initialTerm;
+                        }
+                        autoLoadMarksIfReady();
+                    }
+                }
+            } catch(e) {}
+        });
+
+        function autoLoadMarksIfReady() {
+            const stream = document.getElementById('mStream').value;
+            const subject = document.getElementById('mSubj').value;
+            if (stream && subject) {
+                loadMarks();
+            } else {
+                document.getElementById('marksBoard').innerHTML = `
+                    <div style="padding: 40px; text-align: center; color: var(--c-text-muted); background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 10px;">
+                        💡 Select a class stream and subject course above to auto-load the dynamic student score sheet.
+                    </div>
+                `;
+            }
+        }
+
+        async function loadMarks() {
+            const stream = document.getElementById('mStream').value;
+            const subject = document.getElementById('mSubj').value;
+            const term = document.getElementById('mTerm').value;
+            const track = document.getElementById('mTrack').value;
+            if (!stream || !subject) return;
+
+            const board = document.getElementById('marksBoard');
+            board.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--c-text-muted); font-weight: 700;">🔄 Loading score sheet & subject rank positions...</div>';
+
+            try {
+                const res = await fetch(`/shule-cafe/api/teacher/teacher_portal_api.php?action=get_scoresheet&stream=${encodeURIComponent(stream)}&subject=${encodeURIComponent(subject)}&term=${encodeURIComponent(term)}`, { credentials: 'include' });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    const roster = data.roster || [];
+                    const isLocked = data.is_locked || false;
+                    const aTypes = data.assessment_types || [];
+                    
+                    const activeTrackObj = aTypes.find(t => String(t.id) === String(track)) || aTypes[0];
+                    const maxScore = activeTrackObj ? activeTrackObj.weight_percent : 100;
+                    
+                    if (roster.length === 0) {
+                        board.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--c-text-muted); font-weight: 700;">⚠️ No active students registered for this subject in this classroom stream.</div>';
+                        return;
+                    }
+
+                    let gradedCount = 0;
+                    roster.forEach(s => {
+                        const val = s.marks && s.marks[track];
+                        if (val !== null && val !== undefined && val !== '' && parseFloat(val) > 0) gradedCount++;
+                    });
+
+                    let lockBanner = '';
+                    if (isLocked) {
+                        lockBanner = `
+                            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 13px; color: #991b1b; font-weight: 700; display: flex; align-items: center; justify-content: space-between;">
+                                <span>🔒 READ-ONLY FINALIZATION LOCK: This score sheet has been locked. Grade adjustments require supervisor override from Headmaster Portal.</span>
+                                <span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;">Finalized</span>
+                            </div>
+                        `;
+                    }
+                    
+                    let thHtml = '';
+                    aTypes.forEach(t => {
+                        const isActive = String(t.id) === String(track);
+                        thHtml += `<th style="padding: 10px 12px; text-align: center; background:${isActive ? '#047857' : '#1e293b'};">${t.name} (${t.weight_percent})</th>`;
+                    });
+
+                    let html = `
+                        ${lockBanner}
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 13px; color: #065f46; flex-wrap: wrap; gap: 8px;">
+                            <div>
+                                📌 Context: <strong>${stream}</strong> • Subject: <strong>${subject}</strong> • Term: <strong>${term}</strong> • Active Track: <strong>${activeTrackObj ? activeTrackObj.name : track} (Max: ${maxScore})</strong>
+                            </div>
+                            <div style="font-weight: 700;">
+                                👥 Enrolled: <strong>${roster.length}</strong> | Graded: <span class="badge badge-success" style="font-size: 11px;">${gradedCount} / ${roster.length}</span>
+                            </div>
+                        </div>
+                        <div style="border: 1px solid var(--c-border-light); border-radius: 8px; overflow-x: auto;">
+                            <table class="table" style="width: 100%; font-size: 13px; margin: 0; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: #0f172a; color: white;">
+                                        <th style="padding: 10px 12px; width: 45px;">#</th>
+                                        <th style="padding: 10px 12px;">Student Name & ID</th>
+                                        ${thHtml}
+                                        <th style="padding: 10px 12px; text-align: center;">Total (100)</th>
+                                        <th style="padding: 10px 12px; text-align: center;">Grade & Remark</th>
+                                        <th style="padding: 10px 12px; text-align: center;">Cohort Rankings (Stream / Grade / School)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+
+                    roster.forEach((s, idx) => {
+                        const total = s.total_score || 0;
+
+                        const streamRank = s.stream_rank || (idx + 1);
+                        const gradeRank  = s.grade_rank  || '-';
+                        const subjRank   = s.subject_wide_rank || '-';
+
+                        let rankBadge = '';
+                        if (streamRank === 1) rankBadge = `<span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; font-weight:800; font-size:11px; padding:3px 6px;">🥇 1st (Room)</span>`;
+                        else if (streamRank === 2) rankBadge = `<span class="badge" style="background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; font-weight:800; font-size:11px; padding:3px 6px;">🥈 2nd (Room)</span>`;
+                        else if (streamRank === 3) rankBadge = `<span class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-weight:800; font-size:11px; padding:3px 6px;">🥉 3rd (Room)</span>`;
+                        else rankBadge = `<span class="badge" style="background:#f8fafc; color:#64748b; font-weight:700; font-size:11px; padding:3px 6px;">${streamRank}th (Room)</span>`;
+
+                        let gradeRankBadge = `<span class="badge" style="background:#e0f2fe; color:#0369a1; font-size:11px; font-weight:700;">Grade: #${gradeRank}</span>`;
+                        let subjRankBadge  = `<span class="badge" style="background:#f3e8ff; color:#6b21a8; font-size:11px; font-weight:700;">School: #${subjRank}</span>`;
+
+                        let gradeBadge = s.grade_letter && s.grade_letter !== '-'
+                            ? `<span class="badge badge-success" style="font-weight:800; font-size:11px;">${s.grade_letter} - ${s.grade_remark}</span>`
+                            : `<span class="badge" style="background:#f1f5f9; color:#64748b; font-weight:700; font-size:11px;">-</span>`;
+
+                        let tdHtml = '';
+                        aTypes.forEach(t => {
+                            const val = s.marks && s.marks[t.id] !== undefined ? s.marks[t.id] : '';
+                            const isActive = String(t.id) === String(track);
+                            
+                            let inputHtml = '';
+                            if (isLocked) {
+                                inputHtml = `<strong style="color: #0f172a;">${val || '0'}</strong>`;
+                            } else {
+                                inputHtml = isActive
+                                    ? `<input type="number" class="form-control mark-input" data-sid="${s.student_id}" value="${val}" min="0" max="${t.weight_percent}" placeholder="0" style="width: 75px; font-weight: 800; text-align: center; height: 34px; border-color: #047857;">`
+                                    : `<span style="font-weight: 700; color: #475569;">${val || '0'}</span>`;
+                            }
+                            tdHtml += `<td style="padding: 10px 12px; text-align: center; background:${isActive ? '#f0fdf4' : 'transparent'};">${inputHtml}</td>`;
+                        });
+
+                        html += `
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 10px 12px; font-weight: 700; color: #64748b;">${idx + 1}</td>
+                                <td style="padding: 10px 12px;">
+                                    <strong style="color: #0f172a; font-size: 14px;">${s.full_name}</strong> 
+                                    <span class="badge" style="background:#f1f5f9; color:#475569; font-weight:700; font-size:11px; margin-left: 6px;">${s.user_code || 'STD'}</span>
+                                </td>
+                                ${tdHtml}
+                                <td style="padding: 10px 12px; text-align: center; font-weight: 800; color: #0f172a; font-size: 14px;">${total} / 100</td>
+                                <td style="padding: 10px 12px; text-align: center;">${gradeBadge}</td>
+                                <td style="padding: 10px 12px; text-align: center;">
+                                    <div style="display:inline-flex; gap:4px; flex-wrap:wrap; justify-content:center;">
+                                        ${rankBadge} ${gradeRankBadge} ${subjRankBadge}
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    let actionButtons = '';
+                    if (isLocked) {
+                        actionButtons = `<button class="btn btn-secondary" disabled style="font-weight: 800; padding: 10px 24px; border-radius: 6px; cursor: not-allowed;">🔒 Score Sheet Finalized & Locked</button>`;
+                    } else {
+                        actionButtons = `
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn btn-primary" id="btnSaveMarksBatch" style="font-weight: 800; background: #047857; border-color: #047857; padding: 10px 20px; border-radius: 6px;" onclick="saveMarks('${stream}', '${subject}', '${track}', '${term}')">💾 Save Marks Batch</button>
+                                <button class="btn btn-secondary" style="font-weight: 800; color: #991b1b; border-color: #fca5a5; background: #fff1f2; padding: 10px 20px; border-radius: 6px;" onclick="lockMarksSheet('${stream}', '${subject}', '${term}')">🔒 Save and Lock Marks</button>
+                            </div>
+                        `;
+                    }
+
+                    html += `
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                            <span style="font-size: 12px; color: var(--c-text-muted); font-weight: 600;">⚠️ Scores are validated against track limits (${maxScore}) and live multi-layered positions update automatically.</span>
+                            ${actionButtons}
+                        </div>
+                    `;
+                    board.innerHTML = html;
+                } else {
+                    board.innerHTML = `<div style="color:var(--c-text-danger); padding:20px; text-align:center;">${data.message || 'Error loading score sheet.'}</div>`;
+                }
+            } catch(e) {
+                board.innerHTML = '<div style="color:var(--c-text-danger); padding:20px; text-align:center;">Network connection error.</div>';
+            }
+        }
+
+        window.saveMarks = async function(streamName, subjectCode, trackType, termName) {
+            const btn = document.getElementById('btnSaveMarksBatch');
+            const inputs = document.querySelectorAll('.mark-input');
+            const activeTrackObj = assessmentTypes.find(t => String(t.id) === String(trackType));
+            const maxScore = activeTrackObj ? parseFloat(activeTrackObj.weight_percent) : 100;
+            const marksData = [];
+            let hasError = false;
+
+            inputs.forEach(inp => {
+                const valStr = inp.value.trim();
+                if (valStr !== '') {
+                    const score = parseFloat(valStr);
+                    if (isNaN(score) || score < 0 || score > maxScore) {
+                        inp.style.borderColor = 'crimson';
+                        inp.style.background = '#fef2f2';
+                        hasError = true;
+                    } else {
+                        inp.style.borderColor = '';
+                        inp.style.background = '';
+                        marksData.push({ student_id: inp.getAttribute('data-sid'), score: score });
+                    }
+                }
+            });
+
+            if (hasError) {
+                alert(`Validation Error: Please enter valid scores between 0 and ${maxScore}.`);
+                return;
+            }
+
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = '💾 Saving Batch...';
+            }
+
+            try {
+                const res = await fetch('/shule-cafe/api/teacher/teacher_portal_api.php?action=save_marks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ stream: streamName, subject_code: subjectCode, track_type: trackType, term: termName, marks: marksData })
+                });
+                const result = await res.json();
+                if (res.ok && result.success) {
+                    alert(result.message || `Marks saved successfully for ${termName}!`);
+                    loadMarks();
+                } else {
+                    alert(result.message || 'Error saving marks.');
+                }
+            } catch(e) {
+                alert('Network error while saving marks.');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = `💾 Save Marks Batch`;
+                }
+            }
+        };
+
+        window.lockMarksSheet = async function(streamName, subjectCode, termName) {
+            if (!confirm(`Are you sure you want to finalize and lock marks for ${subjectCode} in ${streamName} (${termName})?\n\nOnce locked, grade adjustments can only be unlocked through supervisor override in Headmaster Portal.`)) return;
+
+            try {
+                const res = await fetch('/shule-cafe/api/teacher/teacher_portal_api.php?action=lock_marks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ stream: streamName, subject_code: subjectCode, term: termName })
+                });
+                const result = await res.json();
+                if (res.ok && result.success) {
+                    alert(result.message);
+                    loadMarks();
+                } else {
+                    alert(result.message || 'Failed to lock score sheet.');
+                }
+            } catch(e) {
+                alert('Network error while locking score sheet.');
+            }
+        };
+    </script>
+</body>
+</html>

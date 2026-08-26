@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academics Management ‹ Headmaster ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+
+    <style>
+        .workspace-header-card {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 20px; background: linear-gradient(135deg, #064e3b 0%, #047857 100%);
+            border-radius: 10px; margin-bottom: 12px; color: white;
+            box-shadow: 0 4px 12px -2px rgba(4, 120, 87, 0.25);
+        }
+        .level-card {
+            background: #ffffff; border: 2px solid var(--c-border-light);
+            border-radius: 12px; padding: 22px; transition: all 0.2s ease-in-out;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .level-card.active { border-color: #059669; background: #ffffff; }
+        .level-card:hover { border-color: #059669; box-shadow: 0 8px 20px rgba(5,150,105,0.12); }
+        
+        .grade-card {
+            background: #ffffff; border: 2px solid var(--c-border-light);
+            border-radius: 12px; padding: 20px; transition: all 0.2s ease;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .grade-card:hover { border-color: #059669; box-shadow: 0 6px 16px rgba(5,150,105,0.1); }
+
+        /* Compact UI Overrides */
+        app-workspace-summary { margin-bottom: 0px !important; }
+        .workspace-summary { margin-bottom: 0px !important; gap: 8px !important; }
+        app-workspace-summary-card { padding: 8px 14px !important; min-height: unset !important; }
+        app-workspace-summary-card .card { padding: 8px 14px !important; }
+        .workspace-tab { padding: 8px 16px !important; font-size: 13px !important; }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="tenant_admin" active-path="/headmaster/academics/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Headmaster Portal"></app-topbar>
+            
+            <main class="app-content-wrapper" style="padding-top: 10px;">
+                <div class="app-content" style="padding: 0;">
+                    
+                    <app-workspace-layout hide-back style="gap: 10px;">
+                        
+                        <!-- ── HEADER BANNER ────────────────────────── -->
+                        <div class="workspace-header-card" style="margin-bottom: 8px; padding: 8px 14px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <a href="#" onclick="window.history.back(); return false;" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none; font-weight: 700; white-space: nowrap; height: 30px; border-radius: 6px; background: rgba(255,255,255,0.15); color: white; border-color: rgba(255,255,255,0.3);">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                                    Back
+                                </a>
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: #10b981; color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800;">
+                                    🎓
+                                </div>
+                                <div>
+                                    <h2 style="margin: 0; font-size: 15px; font-weight: 800; color: white; line-height: 1.2;">
+                                        Academic Curriculum
+                                    </h2>
+                                    <div style="color: #a7f3d0; font-size: 11px;">
+                                        Manage school levels, grades, and subjects.
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <span class="badge" style="background: #10b981; color: white; font-weight: 700; padding: 3px 8px; font-size: 11px;">Current Year</span>
+                            </div>
+                        </div>
+
+                        <!-- ── WORKSPACE SUMMARY CARDS ──────────────────────── -->
+                        <app-workspace-summary style="margin-bottom: 8px; gap: 8px;">
+                            <app-workspace-summary-card id="cardLevelsCount" label="Levels" value="-"></app-workspace-summary-card>
+                            <app-workspace-summary-card id="cardGradesCount" label="Grades" value="-"></app-workspace-summary-card>
+                            <app-workspace-summary-card id="cardSubjectsCount" label="Subjects" value="-"></app-workspace-summary-card>
+                            <app-workspace-summary-card id="cardAcademicYear" label="Status" value="Active Year"></app-workspace-summary-card>
+                        </app-workspace-summary>
+
+                        <!-- ── WORKSPACE TABS ────────────────────────── -->
+                        <app-workspace-tabs active-tab="grades" style="margin-bottom: 6px;">
+                            <button class="workspace-tab" data-target="grades">📚 Grade Tiers</button>
+                            <button class="workspace-tab" data-target="levels">🏫 Education Levels</button>
+                            <button class="workspace-tab" data-target="subjects">📖 Master Subjects</button>
+                        </app-workspace-tabs>
+
+                        <!-- ── TAB 1: SYSTEM GRADE TIERS & CURRICULUM ── -->
+                        <app-workspace-content tab-id="grades" active="true">
+                            <div class="card" style="padding: 16px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: var(--c-text-primary);">
+                                            Grade Tiers
+                                        </h3>
+                                        <p style="color: var(--c-text-secondary); margin: 2px 0 0 0; font-size: 12px;">
+                                            Select a grade to open its curriculum workspace.
+                                        </p>
+                                    </div>
+                                    <div id="gradeLevelFilterContainer" style="display:flex;gap:6px;">
+                                        <!-- Dynamically generated level filter pills -->
+                                    </div>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px;" id="academicsGradesGrid">
+                                    <app-table-skeleton rows="4" cols="2"></app-table-skeleton>
+                                </div>
+                            </div>
+                        </app-workspace-content>
+
+                        <!-- ── TAB 2: REGISTERED EDUCATION LEVELS ── -->
+                        <app-workspace-content tab-id="levels">
+                            <div class="card" style="padding: 16px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: var(--c-text-primary);">
+                                            Education Levels
+                                        </h3>
+                                        <p style="color: var(--c-text-secondary); margin: 2px 0 0 0; font-size: 12px;">
+                                            Active education levels configured for your school.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px;" id="academicsLevelsGrid">
+                                    <app-table-skeleton rows="3" cols="2"></app-table-skeleton>
+                                </div>
+                            </div>
+                        </app-workspace-content>
+
+                        <!-- ── TAB 3: APPROVED MASTER SUBJECTS ── -->
+                        <app-workspace-content tab-id="subjects">
+                            <div class="card" style="padding: 16px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: var(--c-text-primary);">
+                                            Master Subjects
+                                        </h3>
+                                        <p style="color: var(--c-text-secondary); margin: 2px 0 0 0; font-size: 12px;">
+                                            Approved master subjects for your school.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div id="academicsSubjectsContainer">
+                                    <app-table-skeleton rows="6" cols="3"></app-table-skeleton>
+                                </div>
+                            </div>
+                        </app-workspace-content>
+
+                    </app-workspace-layout>
+
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        let portalData = null;
+        let selectedFilterLevel = 'ALL';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            loadHeadmasterPortalData();
+        });
+
+        async function loadHeadmasterPortalData() {
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/academics/get_overview.php', { credentials: 'include' });
+                const result = await res.json();
+
+                if (res.ok && result.success) {
+                    portalData = result;
+
+                    // Update Summary Cards
+                    const levels = result.education_levels || [];
+                    const grades = result.grades || [];
+                    const approvedSbjs = result.approved_subjects || [];
+
+                    document.getElementById('cardLevelsCount').setAttribute('value', levels.length.toString());
+                    document.getElementById('cardGradesCount').setAttribute('value', grades.length.toString());
+                    document.getElementById('cardSubjectsCount').setAttribute('value', approvedSbjs.length.toString());
+
+                    renderLevelFilterPills(levels);
+                    renderGradesGrid();
+                    renderLevelsGrid();
+                    renderSubjectsTable();
+                } else {
+                    console.error("API Error:", result);
+                }
+            } catch (err) {
+                console.error("Network Error:", err);
+            }
+        }
+
+        function renderLevelFilterPills(levels) {
+            const container = document.getElementById('gradeLevelFilterContainer');
+            if (!container) return;
+
+            let html = `<button class="btn btn-sm ${selectedFilterLevel === 'ALL' ? 'btn-primary' : 'btn-outline'}" onclick="filterGradesByLevel('ALL')" style="font-weight:700;">All Levels</button>`;
+            levels.forEach(lvl => {
+                const isSel = selectedFilterLevel === lvl.level_code;
+                html += `<button class="btn btn-sm ${isSel ? 'btn-primary' : 'btn-outline'}" onclick="filterGradesByLevel('${lvl.level_code}')" style="font-weight:700;">${lvl.level_code}</button>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        window.filterGradesByLevel = function(levelCode) {
+            selectedFilterLevel = levelCode;
+            renderLevelFilterPills(portalData.education_levels || []);
+            renderGradesGrid();
+        };
+
+        function renderGradesGrid() {
+            const container = document.getElementById('academicsGradesGrid');
+            if (!container || !portalData) return;
+
+            let allGrades = portalData.grades || [];
+            if (selectedFilterLevel !== 'ALL') {
+                allGrades = allGrades.filter(g => g.level_code === selectedFilterLevel);
+            }
+
+            if (allGrades.length === 0) {
+                container.innerHTML = '<div style="padding: 20px; color: var(--c-text-muted);">No system grades found for this filter.</div>';
+                return;
+            }
+
+            const gradeSubjectsMap = portalData.grade_subjects || {};
+
+            let html = '';
+            allGrades.forEach(g => {
+                const assignedCount = (gradeSubjectsMap[g.id] || []).length;
+
+                const badgeHtml = assignedCount > 0
+                    ? `<span style="background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;">📘 ${assignedCount} Subjects</span>`
+                    : `<span style="background:#fee2e2;color:#dc2626;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;">⚠️ 0 Subjects</span>`;
+
+                html += `
+                    <div class="grade-card" style="padding: 14px; border-radius: 8px;">
+                        <div>
+                            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                                <h4 style="margin:0;font-size:15px;font-weight:800;color:var(--c-text-primary);">${g.grade_name}</h4>
+                                <span class="badge badge-info" style="font-size:10px;padding:2px 6px;">${g.level_code}</span>
+                            </div>
+                            <div style="margin-bottom:6px;">${badgeHtml}</div>
+                            <div style="font-size:11px;color:var(--c-text-muted);">${g.level_name}</div>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <button class="btn btn-primary btn-sm" style="font-weight:700;font-size:12px;padding:4px 10px;width:100%;" onclick="window.location.href='grade-workspace.html?grade_id=${g.id}&code=${encodeURIComponent(g.level_code)}'">Open Grade ➔</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function renderLevelsGrid() {
+            const container = document.getElementById('academicsLevelsGrid');
+            if (!container || !portalData) return;
+
+            const levels = portalData.education_levels || [];
+            if (levels.length === 0) {
+                container.innerHTML = '<div style="padding: 20px; color: var(--c-text-muted);">No registered education levels.</div>';
+                return;
+            }
+
+            let html = '';
+            levels.forEach(lvl => {
+                const isActive = lvl.status === 'active';
+                const statusBadge = isActive
+                    ? '<span class="badge badge-success" style="font-weight:700;font-size:10px;padding:2px 6px;">Active</span>'
+                    : '<span class="badge badge-secondary" style="font-weight:700;font-size:10px;padding:2px 6px;">Inactive</span>';
+
+                html += `
+                    <div class="level-card ${isActive ? 'active' : ''}" style="padding: 14px; border-radius: 8px;">
+                        <div>
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                                <div style="width:36px;height:36px;border-radius:50%;background:#059669;color:white;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:bold;">
+                                    🏫
+                                </div>
+                                ${statusBadge}
+                            </div>
+                            <h4 style="margin:0 0 4px 0;font-size:15px;font-weight:800;color:var(--c-text-primary);">${lvl.level_name}</h4>
+                            <div style="font-size:11px;color:var(--c-text-muted);margin-bottom:10px;">Code: <strong>${lvl.level_code}</strong> • Range: ${lvl.range_text || 'Universal'}</div>
+                        </div>
+                        <button class="btn btn-outline btn-sm btn-block" style="font-weight:700;font-size:12px;" onclick="filterGradesByLevel('${lvl.level_code}')">View Grades ➔</button>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function renderSubjectsTable() {
+            const container = document.getElementById('academicsSubjectsContainer');
+            if (!container || !portalData) return;
+
+            const subjects = portalData.approved_subjects || [];
+            if (subjects.length === 0) {
+                container.innerHTML = '<div style="padding: 20px; color: var(--c-text-muted);">No approved master subjects found.</div>';
+                return;
+            }
+
+            const cols = [
+                { key: 'subject_name', label: 'Subject Name', type: 'text' },
+                { key: 'subject_code', label: 'Code', type: 'badge' },
+                { key: 'level_code', label: 'Education Level', type: 'text' },
+                { key: 'status', label: 'Status', type: 'status' }
+            ];
+
+            const data = subjects.map(s => ({
+                id: s.id || s.subject_code,
+                subject_name: s.subject_name,
+                subject_code: s.subject_code,
+                level_code: s.level_code || 'Universal',
+                status: s.status === 'active' ? 'Active' : 'Active'
+            }));
+
+            const table = document.createElement('app-table');
+            table.setAttribute('columns', JSON.stringify(cols));
+            table.setAttribute('data', JSON.stringify(data));
+            table.setAttribute('actions', 'none');
+            container.innerHTML = '';
+            container.appendChild(table);
+        }
+
+        // ──────────────────────────────────────────────────────────
+        // TEACHER ALLOCATIONS MODULE (CASCADE SELECTORS & BINDING)
+        // ──────────────────────────────────────────────────────────
+        let allocLevels = [], allocGrades = [], allocStreams = [], allocTeachers = [];
+
+        async function initAllocationsModule() {
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/academics/get_class_structure.php', { credentials: 'include' });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    allocLevels = data.levels || [];
+                    allocTeachers = data.teachers || [];
+
+                    const lvlSel = $('#allocLevelSelect').empty().append('<option value="">-- Select Level --</option>');
+                    allocLevels.forEach(l => lvlSel.append(`<option value="${l.id}">${l.name}</option>`));
+
+                    const cmSel = $('#allocClassTeacherSelect').empty().append('<option value="">-- Select Form Master --</option>');
+                    allocTeachers.forEach(t => cmSel.append(`<option value="${t.id}">${t.full_name} (${t.user_code || 'TCH'})</option>`));
+                }
+            } catch(e) { console.error("Allocations init error:", e); }
+        }
+
+        $('#allocLevelSelect').on('change', async function() {
+            const lvlId = $(this).val();
+            const grSel = $('#allocGradeSelect').empty().append('<option value="">-- Select Grade --</option>');
+            $('#allocStreamSelect').empty().append('<option value="">-- Select Stream --</option>');
+            $('#allocationsTableBody').html('<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--c-text-muted);">Select a Class Stream above to view allocations.</td></tr>');
+            if (!lvlId) return;
+
+            const res = await fetch(`/shule-cafe/api/headmaster/academics/get_class_structure.php?level_id=${lvlId}`, { credentials: 'include' });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                (data.grades || []).forEach(g => grSel.append(`<option value="${g.id}">${g.name}</option>`));
+            }
+        });
+
+        $('#allocGradeSelect').on('change', async function() {
+            const grId = $(this).val();
+            const stSel = $('#allocStreamSelect').empty().append('<option value="">-- Select Stream --</option>');
+            $('#allocationsTableBody').html('<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--c-text-muted);">Select a Class Stream above to view allocations.</td></tr>');
+            if (!grId) return;
+
+            const res = await fetch(`/shule-cafe/api/headmaster/academics/get_class_structure.php?grade_id=${grId}`, { credentials: 'include' });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                (data.streams || []).forEach(s => stSel.append(`<option value="${s.id}">${s.name}</option>`));
+            }
+        });
+
+        $('#allocStreamSelect').on('change', async function() {
+            const stId = $(this).val();
+            if (!stId) return;
+            loadStreamTeacherAllocations(stId);
+        });
+
+        async function loadStreamTeacherAllocations(streamId) {
+            const tbody = $('#allocationsTableBody').html('<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--c-text-muted);">Loading stream teacher allocations...</td></tr>');
+            try {
+                const res = await fetch(`/shule-cafe/api/headmaster/academics/get_class_structure.php?stream_id=${streamId}`, { credentials: 'include' });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    const subjects = data.stream_subjects || [];
+                    const assignments = data.assignments || {};
+
+                    if (subjects.length === 0) {
+                        tbody.html('<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--c-text-muted);">No subjects assigned to this grade yet. Use Grade Workspace to assign curriculum subjects first.</td></tr>');
+                        return;
+                    }
+
+                    tbody.empty();
+                    subjects.forEach(sbj => {
+                        const currentAssigned = assignments[sbj.subject_code] || {};
+                        const currentTeacherId = currentAssigned.teacher_ids || '';
+
+                        let optionsHtml = '<option value="">-- Unassigned --</option>';
+                        allocTeachers.forEach(t => {
+                            const selected = currentTeacherId.split(',').includes(t.id) ? 'selected' : '';
+                            optionsHtml += `<option value="${t.id}" ${selected}>${t.full_name}</option>`;
+                        });
+
+                        tbody.append(`
+                            <tr style="border-bottom:1px solid var(--c-border-light);">
+                                <td style="padding:12px;"><code>${sbj.subject_code}</code></td>
+                                <td style="padding:12px;font-weight:700;">${sbj.subject_name}</td>
+                                <td style="padding:12px;">${sbj.is_core == 1 ? '<span class="badge badge-success">Core</span>' : '<span class="badge badge-info">Elective</span>'}</td>
+                                <td style="padding:12px;">
+                                    <select class="form-control sel-assign-teacher" data-code="${sbj.subject_code}" style="width:100%;max-width:260px;font-weight:600;">
+                                        ${optionsHtml}
+                                    </select>
+                                </td>
+                                <td style="padding:12px;text-align:right;">
+                                    <button type="button" class="btn btn-outline btn-sm btn-save-subject-teacher" data-code="${sbj.subject_code}">Save</button>
+                                </td>
+                            </tr>
+                        `);
+                    });
+                }
+            } catch (e) { console.error("Error loading stream allocations:", e); }
+        }
+
+        $(document).on('click', '.btn-save-subject-teacher', async function() {
+            const streamId = $('#allocStreamSelect').val();
+            const subjectCode = $(this).attr('data-code');
+            const teacherId = $(this).closest('tr').find('.sel-assign-teacher').val();
+
+            if (!streamId || !subjectCode) return;
+
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/academics/assign_teacher.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ class_stream_id: streamId, subject_code: subjectCode, teacher_id: teacherId })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    alert('Subject Teacher updated successfully!');
+                } else { alert(data.message || 'Failed to save subject teacher.'); }
+            } catch(e) { alert('Network error saving subject teacher.'); }
+        });
+
+        $('#btnSaveClassTeacher').on('click', async function() {
+            const streamId = $('#allocStreamSelect').val();
+            const teacherId = $('#allocClassTeacherSelect').val();
+
+            if (!streamId) {
+                alert('Please select a Class Stream first.');
+                return;
+            }
+
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/academics/assign_class_teacher.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ class_stream_id: streamId, teacher_id: teacherId })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    alert(data.message);
+                } else { alert(data.message || 'Failed to assign Form Master.'); }
+            } catch(e) { alert('Network error assigning Form Master.'); }
+        });
+
+        $(document).ready(() => {
+            initAllocationsModule();
+        });
+    </script>
+</body>
+</html>

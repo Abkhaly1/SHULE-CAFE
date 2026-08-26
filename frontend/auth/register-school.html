@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register School ‹ SHULE CAFE Enterprise</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+
+    <style>
+        :root {
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-heading: 'Outfit', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: #0f172a;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.18) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(14, 165, 233, 0.18) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(5, 150, 105, 0.1) 0px, transparent 50%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            margin: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .ambient-glow-1 {
+            position: absolute;
+            top: -120px;
+            left: -120px;
+            width: 450px;
+            height: 450px;
+            background: rgba(16, 185, 129, 0.2);
+            filter: blur(100px);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .ambient-glow-2 {
+            position: absolute;
+            bottom: -120px;
+            right: -120px;
+            width: 450px;
+            height: 450px;
+            background: rgba(13, 148, 136, 0.2);
+            filter: blur(100px);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .wizard-card {
+            width: 100%;
+            max-width: 640px;
+            padding: 40px 36px;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 
+                0 25px 60px -15px rgba(15, 23, 42, 0.35),
+                0 0 0 1px rgba(16, 185, 129, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        .brand-logo-icon {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, #059669, #0d9488);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 10px 20px -5px rgba(5, 150, 105, 0.4);
+            margin: 0 auto 16px;
+        }
+
+        .brand-title {
+            font-family: var(--font-heading);
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0f172a 30%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0 0 6px;
+            letter-spacing: -0.5px;
+        }
+
+        /* Stepper Progress Bar */
+        .stepper-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            position: relative;
+        }
+
+        .stepper-step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 2;
+            background: white;
+            padding: 4px 8px;
+            border-radius: 20px;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            color: #64748b;
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .stepper-step.active .step-number {
+            background: #059669;
+            color: white;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        }
+
+        .stepper-step.completed .step-number {
+            background: #10b981;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #64748b;
+            transition: color 0.3s ease;
+        }
+
+        .stepper-step.active .step-label {
+            color: #0f172a;
+        }
+
+        .stepper-line {
+            position: absolute;
+            top: 50%;
+            left: 40px;
+            right: 40px;
+            height: 3px;
+            background: #e2e8f0;
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .stepper-line-progress {
+            height: 100%;
+            background: #059669;
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .form-label-custom {
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            height: 48px;
+            padding: 0 16px !important;
+            font-size: 14px;
+            font-family: var(--font-main);
+            color: #0f172a;
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .form-control-custom:focus {
+            background: #ffffff;
+            border-color: #059669;
+            box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.15);
+        }
+
+        .btn-next {
+            width: 100%;
+            height: 48px;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            font-weight: 700;
+            font-size: 15px;
+            font-family: var(--font-main);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px -5px rgba(5, 150, 105, 0.4);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-next:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 24px -5px rgba(5, 150, 105, 0.5);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .btn-next:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-back {
+            height: 48px;
+            padding: 0 20px;
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 700;
+            font-size: 14px;
+            font-family: var(--font-main);
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-back:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .footer-text {
+            margin-top: 24px;
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 16px;
+        }
+
+        .step-view {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-glow-1"></div>
+    <div class="ambient-glow-2"></div>
+
+    <div class="wizard-card">
+        
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 24px;">
+            <div class="brand-logo-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            </div>
+            <h1 class="brand-title">SHULE CAFE</h1>
+            <p style="font-size: 14px; color: #64748b; margin: 0; font-weight: 500;">Register your school in 2 simple steps</p>
+        </div>
+
+        <!-- Stepper Progress Bar -->
+        <div class="stepper-wrapper">
+            <div class="stepper-line">
+                <div id="stepperProgress" class="stepper-line-progress"></div>
+            </div>
+
+            <div id="step1Indicator" class="stepper-step active">
+                <div class="step-number">1</div>
+                <span class="step-label">School Details</span>
+            </div>
+
+            <div id="step2Indicator" class="stepper-step">
+                <div class="step-number">2</div>
+                <span class="step-label">Admin &amp; Password</span>
+            </div>
+        </div>
+
+        <!-- Alert Notice -->
+        <div id="alertBox" class="alert alert-danger" style="display: none; margin-bottom: 20px; border-radius: 12px;">
+            <span id="alertMessage">Error occurred.</span>
+        </div>
+
+        <form id="registerForm">
+            <!-- 🤖 Anti-Bot Honeypot Trap Field -->
+            <input type="text" name="website_hp_check" id="website_hp_check" tabindex="-1" style="display:none !important;" autocomplete="off">
+
+            <!-- PAGE 1 / STEP 1: School Information -->
+            <div id="step1View" class="step-view">
+                <h3 style="margin: 0 0 16px; font-size: 16px; font-weight: 700; color: #059669; display: flex; align-items: center; gap: 8px;">
+                    <span>🏫</span> Step 1: School Basic Information
+                </h3>
+
+                <div style="margin-bottom: 18px; text-align: left;">
+                    <label class="form-label-custom" for="school_name">School Name <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="school_name" class="form-control-custom" placeholder="e.g. Kibo Secondary School" required>
+                    <div id="nameCheckBadge" style="margin-top: 8px; font-size: 12px; font-weight: 600; display: none;"></div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px;">
+                    <div style="text-align: left;">
+                        <label class="form-label-custom" for="school_type">School Category <span style="color:#ef4444;">*</span></label>
+                        <select id="school_type" class="form-control-custom" required>
+                            <option value="Secondary" selected>Secondary School</option>
+                            <option value="Primary">Primary School</option>
+                            <option value="High School">High School</option>
+                            <option value="College">College / Technical</option>
+                        </select>
+                    </div>
+
+                    <div style="text-align: left;">
+                        <label class="form-label-custom" for="region">Region / Location <span style="color:#ef4444;">*</span></label>
+                        <input type="text" id="region" class="form-control-custom" placeholder="e.g. Dar es Salaam" required>
+                    </div>
+                </div>
+
+                <button type="button" id="btnNextStep" class="btn-next" disabled>
+                    Next: Admin Credentials &rarr;
+                </button>
+            </div>
+
+            <!-- PAGE 2 / STEP 2: Administrator & Credentials -->
+            <div id="step2View" class="step-view" style="display: none;">
+                <h3 style="margin: 0 0 16px; font-size: 16px; font-weight: 700; color: #059669; display: flex; align-items: center; gap: 8px;">
+                    <span>👤</span> Step 2: Administrator Account &amp; Credentials
+                </h3>
+
+                <div style="margin-bottom: 16px; text-align: left;">
+                    <label class="form-label-custom" for="admin_name">Full Name of Person Registering School <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="admin_name" class="form-control-custom" placeholder="Enter full name" required>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+                    <div style="text-align: left;">
+                        <label class="form-label-custom" for="admin_phone">Phone Number (Login Identifier) <span style="color:#ef4444;">*</span></label>
+                        <input type="text" id="admin_phone" class="form-control-custom" placeholder="e.g. +255700000000" required>
+                    </div>
+
+                    <div style="text-align: left;">
+                        <label class="form-label-custom" for="admin_email">Email Address (Optional)</label>
+                        <input type="email" id="admin_email" class="form-control-custom" placeholder="e.g. admin@school.com">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px;">
+                    <div style="text-align: left;">
+                        <label class="form-label-custom" for="password">Password <span style="color:#ef4444;">*</span></label>
+                        <input type="password" id="password" class="form-control-custom" placeholder="At least 6 characters" required>
+                    </div>
+
+                    <div style="text-align: left;">
+                        <label class="form-label-custom" for="confirm_password">Confirm Password <span style="color:#ef4444;">*</span></label>
+                        <input type="password" id="confirm_password" class="form-control-custom" placeholder="Re-enter password" required>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px;">
+                    <button type="button" id="btnPrevStep" class="btn-back">
+                        &larr; Back
+                    </button>
+                    <button type="submit" id="submitBtn" class="btn-next" style="flex: 1;">
+                        Complete Registration &amp; Get ShuleCafe ID &rarr;
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <div style="margin-top: 20px; text-align: center; font-size: 13px;">
+            <span style="color: #64748b;">Already registered your school?</span>
+            <a href="login.html" style="color: #059669; font-weight: 700; text-decoration: none; margin-left: 4px;">Sign In Here</a>
+        </div>
+
+        <div class="footer-text">
+            SHULE CAFE Enterprise &copy; 2026 • All Rights Reserved
+        </div>
+    </div>
+
+    <!-- Step 3 / Success Modal -->
+    <div id="successModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); align-items: center; justify-content: center; z-index: 9999; padding: 16px;">
+        <div style="background: white; border-radius: 24px; max-width: 480px; width: 100%; padding: 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4); text-align: center;">
+            <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #dcfce7, #a7f3d0); color: #166534; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 16px; box-shadow: 0 8px 16px -4px rgba(22, 101, 52, 0.2);">
+                🎉
+            </div>
+            <h2 style="margin: 0 0 8px; font-size: 22px; font-weight: 800; color: #0f172a;">School Registered Successfully!</h2>
+            <p style="margin: 0 0 20px; font-size: 14px; color: #64748b;">Your school and School Admin account have been created.</p>
+            
+            <div style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 16px; padding: 20px; margin-bottom: 24px; text-align: left;">
+                <div style="margin-bottom: 12px;">
+                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px;">Assigned ShuleCafe School ID</span>
+                    <div id="resSchoolId" style="font-size: 22px; font-weight: 800; color: #0284c7; letter-spacing: 1px; margin-top: 2px;">S/CAFE-2026-0001</div>
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px;">School Name</span>
+                    <div id="resSchoolName" style="font-size: 15px; font-weight: 700; color: #1e293b;">-</div>
+                </div>
+                <div>
+                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px;">School Admin Account</span>
+                    <div id="resAdminName" style="font-size: 15px; font-weight: 700; color: #1e293b;">-</div>
+                </div>
+            </div>
+
+            <button type="button" id="btnGoToLogin" class="btn-next">
+                Proceed to Sign In &rarr;
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const registerForm = document.getElementById('registerForm');
+            const schoolNameInput = document.getElementById('school_name');
+            const regionInput = document.getElementById('region');
+            const nameCheckBadge = document.getElementById('nameCheckBadge');
+            const btnNextStep = document.getElementById('btnNextStep');
+            const btnPrevStep = document.getElementById('btnPrevStep');
+            const submitBtn = document.getElementById('submitBtn');
+            const alertBox = document.getElementById('alertBox');
+            const alertMessage = document.getElementById('alertMessage');
+
+            const step1View = document.getElementById('step1View');
+            const step2View = document.getElementById('step2View');
+            const step1Indicator = document.getElementById('step1Indicator');
+            const step2Indicator = document.getElementById('step2Indicator');
+            const stepperProgress = document.getElementById('stepperProgress');
+
+            let isNameAvailable = false;
+            let checkTimeout = null;
+
+            function validateStep1() {
+                const name = schoolNameInput.value.trim();
+                const region = regionInput.value.trim();
+                if (name.length >= 2 && isNameAvailable && region.length >= 2) {
+                    btnNextStep.disabled = false;
+                } else {
+                    btnNextStep.disabled = true;
+                }
+            }
+
+            // Real-time School Name Availability Check
+            schoolNameInput.addEventListener('input', () => {
+                const name = schoolNameInput.value.trim();
+                nameCheckBadge.style.display = 'none';
+                isNameAvailable = false;
+                validateStep1();
+
+                if (checkTimeout) clearTimeout(checkTimeout);
+
+                if (name.length < 2) {
+                    return;
+                }
+
+                nameCheckBadge.style.display = 'block';
+                nameCheckBadge.style.color = '#64748b';
+                nameCheckBadge.innerHTML = '🔍 Checking availability...';
+
+                checkTimeout = setTimeout(async () => {
+                    try {
+                        const res = await fetch(`/shule-cafe/api/schools/check_name.php?name=${encodeURIComponent(name)}`);
+                        const data = await res.json();
+
+                        if (data.available) {
+                            nameCheckBadge.style.color = '#15803d';
+                            nameCheckBadge.innerHTML = '🟢 Available - You can register this school name';
+                            isNameAvailable = true;
+                        } else {
+                            nameCheckBadge.style.color = '#b91c1c';
+                            nameCheckBadge.innerHTML = '🔴 Already Taken - Please enter a unique school name';
+                            isNameAvailable = false;
+                        }
+                    } catch (e) {
+                        nameCheckBadge.style.display = 'none';
+                    } finally {
+                        validateStep1();
+                    }
+                }, 300);
+            });
+
+            regionInput.addEventListener('input', validateStep1);
+
+            // Step Navigation: Step 1 -> Step 2
+            btnNextStep.addEventListener('click', () => {
+                if (btnNextStep.disabled) return;
+                alertBox.style.display = 'none';
+
+                step1View.style.display = 'none';
+                step2View.style.display = 'block';
+
+                step1Indicator.classList.remove('active');
+                step1Indicator.classList.add('completed');
+                step2Indicator.classList.add('active');
+                stepperProgress.style.width = '100%';
+            });
+
+            // Step Navigation: Step 2 -> Step 1
+            btnPrevStep.addEventListener('click', () => {
+                alertBox.style.display = 'none';
+
+                step2View.style.display = 'none';
+                step1View.style.display = 'block';
+
+                step2Indicator.classList.remove('active');
+                step1Indicator.classList.remove('completed');
+                step1Indicator.classList.add('active');
+                stepperProgress.style.width = '0%';
+            });
+
+            // Final Submission
+            registerForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const schoolName = schoolNameInput.value.trim();
+                const schoolType = document.getElementById('school_type').value;
+                const region = regionInput.value.trim();
+                const adminName = document.getElementById('admin_name').value.trim();
+                const adminPhone = document.getElementById('admin_phone').value.trim();
+                const adminEmail = document.getElementById('admin_email').value.trim();
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirm_password').value;
+
+                alertBox.style.display = 'none';
+
+                if (password !== confirmPassword) {
+                    alertMessage.textContent = 'Passwords do not match.';
+                    alertBox.style.display = 'block';
+                    return;
+                }
+
+                if (password.length < 6) {
+                    alertMessage.textContent = 'Password must be at least 6 characters.';
+                    alertBox.style.display = 'block';
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Registering School...';
+
+                try {
+                    const res = await fetch('/shule-cafe/api/schools/register.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            school_name: schoolName,
+                            school_type: schoolType,
+                            region: region,
+                            admin_name: adminName,
+                            admin_phone: adminPhone,
+                            admin_email: adminEmail,
+                            password: password,
+                            confirm_password: confirmPassword,
+                            website_hp_check: document.getElementById('website_hp_check')?.value || ''
+                        })
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok && data.success) {
+                        document.getElementById('resSchoolId').textContent = data.shule_cafe_id;
+                        document.getElementById('resSchoolName').textContent = data.school_name;
+                        document.getElementById('resAdminName').textContent = `${data.admin_name} (${data.admin_phone})`;
+
+                        const modal = document.getElementById('successModal');
+                        modal.style.display = 'flex';
+
+                        document.getElementById('btnGoToLogin').addEventListener('click', () => {
+                            window.location.href = data.login_url || 'login.html';
+                        });
+                    } else {
+                        alertMessage.textContent = data.message || 'Registration failed.';
+                        alertBox.style.display = 'block';
+                    }
+                } catch (err) {
+                    console.error('Registration fetch error:', err);
+                    alertMessage.textContent = 'Network or server error during registration.';
+                    alertBox.style.display = 'block';
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Complete Registration &amp; Get ShuleCafe ID &rarr;';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

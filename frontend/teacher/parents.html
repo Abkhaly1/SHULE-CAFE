@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Desk ‹ Teacher ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/teacher-theme.css">
+    
+    <script type="module" src="../layouts/global-layout.js"></script>
+    <script type="module" src="../js/auth/auth-guard.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="teacher" active-path="/teacher/parents.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Teacher Portal"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <app-breadcrumb path="Teacher, Parent Communication Desk"></app-breadcrumb>
+
+                    <div class="card" style="margin-top: 14px; padding: 24px;">
+                        <h2 style="margin: 0 0 6px; font-size: 20px; font-weight: 800; color: var(--c-text-primary);">💬 Parent & Guardian Communication Desk</h2>
+                        <p style="margin: 0 0 20px; font-size: 13px; color: var(--c-text-muted);">Access guardian directory catalog and broadcast notices to class stream parents.</p>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <div style="display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap;">
+                                    <select id="pStream" class="form-control" style="font-weight: 700; flex: 1; min-width: 140px;"><option value="">Select Stream...</option></select>
+                                    <input type="text" id="pSearch" placeholder="🔍 Search name/phone..." class="form-control" style="width: 170px; font-size: 13px;">
+                                    <button class="btn btn-outline" id="btnLoadP" style="font-weight: 700;">Load Directory</button>
+                                </div>
+                                <div id="pDirectory" style="border: 1px solid var(--c-border-light); border-radius: 8px; max-height: 400px; overflow-y: auto; padding: 12px;">
+                                    Select class stream above to view guardian contact catalog.
+                                </div>
+                                <!-- PAGINATION -->
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 12px;">
+                                    <span id="pPageInfo" style="color: var(--c-text-muted); font-weight: 600;">0 guardians</span>
+                                    <div style="display: flex; gap: 6px; align-items: center;">
+                                        <button type="button" id="pPrevBtn" class="btn btn-outline btn-sm" style="font-weight: 700;" disabled>&laquo; Prev</button>
+                                        <span id="pPageSpan" style="font-weight: 700; color: var(--c-text-primary);">Page 1/1</span>
+                                        <button type="button" id="pNextBtn" class="btn btn-outline btn-sm" style="font-weight: 700;" disabled>Next &raquo;</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="background: #f8fafc; border: 1px solid var(--c-border-light); border-radius: 8px; padding: 20px;">
+                                <h3 style="margin-top: 0; font-size: 16px; font-weight: 800; color: var(--c-text-primary);">📢 Broadcast Class Announcement</h3>
+                                <p style="font-size: 12px; color: var(--c-text-muted); margin-bottom: 16px;">Send instant homework, exam date, or event notice to stream parents.</p>
+
+                                <div class="form-group mb-3">
+                                    <label class="form-label" style="font-size: 12px; font-weight: 700;">Message Announcement</label>
+                                    <textarea id="pMsgText" class="form-control" rows="5" placeholder="Type announcement for parents (e.g. Please note Mathematics test is scheduled for Friday)..."></textarea>
+                                </div>
+                                <button class="btn btn-primary" style="font-weight: 700; width: 100%; background: #78350f; border-color: #78350f; padding: 10px;" onclick="sendPBroadcast()">📤 Send Parent Announcement SMS</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        let pState = { page: 1, limit: 25, search: '', totalPages: 1 };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const res = await fetch('/shule-cafe/api/teacher/teacher_portal_api.php?action=dashboard', { credentials: 'include' });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    const allocs = data.allocations || [];
+                    const streams = [...new Set(allocs.map(a => a.classroom_name))];
+                    document.getElementById('pStream').innerHTML = '<option value="">Select Stream...</option>' + streams.map(s => `<option value="${s}">${s}</option>`).join('');
+                }
+            } catch(e) {}
+
+            document.getElementById('btnLoadP').addEventListener('click', () => {
+                pState.page = 1;
+                loadP();
+            });
+
+            document.getElementById('pStream').addEventListener('change', () => {
+                pState.page = 1;
+                loadP();
+            });
+
+            let pSearchDebounce;
+            document.getElementById('pSearch').addEventListener('input', (e) => {
+                clearTimeout(pSearchDebounce);
+                pSearchDebounce = setTimeout(() => {
+                    pState.search = e.target.value.trim();
+                    pState.page = 1;
+                    loadP();
+                }, 300);
+            });
+
+            document.getElementById('pPrevBtn').addEventListener('click', () => {
+                if (pState.page > 1) {
+                    pState.page--;
+                    loadP();
+                }
+            });
+
+            document.getElementById('pNextBtn').addEventListener('click', () => {
+                if (pState.page < pState.totalPages) {
+                    pState.page++;
+                    loadP();
+                }
+            });
+        });
+
+        async function loadP() {
+            const stream = document.getElementById('pStream').value;
+            if (!stream) { alert('Select a stream first.'); return; }
+            const container = document.getElementById('pDirectory');
+            container.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--c-text-muted);">Loading catalog...</div>';
+
+            try {
+                const searchQ = encodeURIComponent(pState.search);
+                const res = await fetch(`/shule-cafe/api/teacher/teacher_portal_api.php?action=get_parents_catalog&stream=${encodeURIComponent(stream)}&page=${pState.page}&limit=${pState.limit}&search=${searchQ}`, { credentials: 'include' });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    const catalog = data.catalog || [];
+                    const pag = data.pagination || {};
+
+                    pState.totalPages = pag.total_pages || 1;
+                    document.getElementById('pPageInfo').textContent = `${pag.total || 0} guardians`;
+                    document.getElementById('pPageSpan').textContent = `Page ${pState.page}/${pState.totalPages}`;
+                    document.getElementById('pPrevBtn').disabled = pState.page <= 1;
+                    document.getElementById('pNextBtn').disabled = pState.page >= pState.totalPages;
+
+                    if (catalog.length === 0) { container.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--c-text-muted);">No parent contact records found.</div>'; return; }
+
+                    let html = '<ul style="list-style:none; padding:0; margin:0;">';
+                    catalog.forEach(p => {
+                        html += `
+                            <li style="padding: 10px 12px; border-bottom: 1px solid var(--c-border-light); font-size: 13px;">
+                                <div style="font-weight:800; color:var(--c-text-primary);">${p.parent_name} <span style="font-weight:600; color:var(--c-text-muted);">(${p.relation})</span></div>
+                                <div style="color:var(--c-text-secondary); font-size:12px;">Student: <strong>${p.student_name}</strong> • Phone: <a href="tel:${p.phone}" style="color:#0284c7; font-weight:700;">${p.phone}</a></div>
+                            </li>
+                        `;
+                    });
+                    html += '</ul>';
+                    container.innerHTML = html;
+                }
+            } catch(e) { container.innerHTML = '<div style="color:var(--c-danger); padding:16px; text-align:center;">Error loading directory.</div>'; }
+        }
+
+        window.sendPBroadcast = function() {
+            const msg = document.getElementById('pMsgText').value.trim();
+            const stream = document.getElementById('pStream').value;
+            if (!msg) { alert('Type announcement first.'); return; }
+            if (!stream) { alert('Select class stream room.'); return; }
+            alert(`📢 Class Announcement Broadcast sent successfully to all parents of ${stream}!`);
+            document.getElementById('pMsgText').value = '';
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+/* SHULE CAFE - Headmaster Distinct Emerald Green Theme */
+
+:root {
+    --c-primary: #059669;
+    --c-primary-hover: #047857;
+    --c-primary-light: #ecfdf5;
+    --c-primary-border: #a7f3d0;
+    
+    --c-accent: #10b981;
+    --c-accent-subtle: #dcfce7;
+    
+    --sidebar-bg: #064e3b;
+    --sidebar-text: #ffffff;
+    --sidebar-hover-bg: #047857;
+    --sidebar-active-bg: #059669;
+    --sidebar-active-border: #34d399;
+}
+
+/* Sidebar Branding Override */
+.app-sidebar {
+    background: var(--sidebar-bg) !important;
+    border-right: 1px solid #022c22 !important;
+}
+
+.sidebar-brand {
+    background: #022c22 !important;
+    border-bottom: 1px solid #064e3b !important;
+}
+
+.sidebar-brand span {
+    color: #34d399 !important;
+    font-weight: 800 !important;
+}
+
+.sidebar-nav a {
+    font-weight: 600 !important;
+    color: #ecfdf5 !important;
+    font-size: 14px !important;
+}
+
+.sidebar-nav a:hover {
+    background: var(--sidebar-hover-bg) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+.sidebar-nav a.active {
+    background: var(--sidebar-active-bg) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    border-left: 4px solid var(--sidebar-active-border) !important;
+}
+
+/* Primary Button Styling */
+.btn-primary {
+    background: var(--c-primary) !important;
+    border-color: var(--c-primary) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+.btn-primary:hover {
+    background: var(--c-primary-hover) !important;
+    border-color: var(--c-primary-hover) !important;
+}
+
+.btn-outline {
+    border-color: var(--c-primary) !important;
+    color: var(--c-primary) !important;
+    font-weight: 600 !important;
+}
+
+.btn-outline:hover {
+    background: var(--c-primary-light) !important;
+}
+
+/* Card & Frames Distinct Styling */
+.card {
+    border: 1px solid var(--c-primary-border) !important;
+    box-shadow: 0 1px 3px rgba(5, 150, 105, 0.08) !important;
+}
+
+.card-header, app-workspace-header {
+    border-bottom: 1px solid var(--c-primary-border) !important;
+}
+
+/* Workspace Tabs */
+.workspace-tab.active {
+    border-bottom-color: var(--c-primary) !important;
+    color: var(--c-primary) !important;
+    font-weight: 700 !important;
+}
+
+/* Badges */
+.badge-primary, .badge-success {
+    background: var(--c-accent-subtle) !important;
+    color: #065f46 !important;
+    border: 1px solid #86efac !important;
+    font-weight: 600 !important;
+}
+
+/* Topbar Accent Line */
+.app-topbar {
+    border-bottom: 2px solid var(--c-primary) !important;
+}

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>360° Student Progress Report Card ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    
+    <script type="module" src="../layouts/global-layout.js"></script>
+    <script type="module" src="../js/auth/auth-guard.js"></script>
+    <style>
+        @media print {
+            .app-sidebar, .app-topbar, .btn-print-hide { display: none !important; }
+            .app-main { margin: 0 !important; padding: 0 !important; }
+            .card { border: none !important; box-shadow: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="headmaster" active-path="/reports/student-report-card.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="SHULE CAFE Portal"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <div class="btn-print-hide" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <app-breadcrumb path="Reports, Student 360° Progress Report Card"></app-breadcrumb>
+                        <button class="btn btn-primary" onclick="window.print()" style="font-weight: 800;">🖨️ Print Report Card</button>
+                    </div>
+
+                    <div class="card" style="padding: 30px; background: white;" id="reportCardContent">
+                        <div style="text-align: center; border-bottom: 2px solid var(--c-border-light); padding-bottom: 20px; margin-bottom: 20px;">
+                            <h1 style="margin: 0 0 4px; font-size: 24px; font-weight: 800; color: #0f172a;">SHULE CAFE ACADEMIC REPORT CARD</h1>
+                            <p style="margin: 0; font-size: 13px; color: var(--c-text-muted);">Official Terminal Performance Summary & Conduct Profile</p>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; background: #f8fafc; padding: 18px; border-radius: 8px; border: 1px solid var(--c-border-light); margin-bottom: 24px;">
+                            <div>
+                                <label style="font-size: 11px; font-weight: 700; color: var(--c-text-muted); text-transform: uppercase;">Student Full Name</label>
+                                <div id="lblStudentName" style="font-size: 16px; font-weight: 800; color: #0f172a;">-</div>
+                            </div>
+                            <div>
+                                <label style="font-size: 11px; font-weight: 700; color: var(--c-text-muted); text-transform: uppercase;">Registration / User Code</label>
+                                <div id="lblUserCode" style="font-size: 15px; font-weight: 800; color: #475569;">-</div>
+                            </div>
+                            <div>
+                                <label style="font-size: 11px; font-weight: 700; color: var(--c-text-muted); text-transform: uppercase;">Classroom Stream</label>
+                                <div id="lblClassroom" style="font-size: 15px; font-weight: 800; color: #0f172a;">-</div>
+                            </div>
+                            <div>
+                                <label style="font-size: 11px; font-weight: 700; color: var(--c-text-muted); text-transform: uppercase;">Academic Term & Year</label>
+                                <div id="lblTermYear" style="font-size: 15px; font-weight: 800; color: #047857;">-</div>
+                            </div>
+                        </div>
+
+                        <div style="border: 1px solid var(--c-border-light); border-radius: 8px; overflow: hidden; margin-bottom: 24px;">
+                            <table class="table" style="width: 100%; margin: 0; font-size: 13px; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: #0f172a; color: white;">
+                                        <th style="padding: 10px 14px; text-align: left;">Subject Course</th>
+                                        <th style="padding: 10px 14px; text-align: center;">CA Mark (40)</th>
+                                        <th style="padding: 10px 14px; text-align: center;">Terminal Exam (60)</th>
+                                        <th style="padding: 10px 14px; text-align: center;">Total Score (100)</th>
+                                        <th style="padding: 10px 14px; text-align: center;">Grade & Remark</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reportSubjectRows">
+                                    <!-- Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Summary Cards -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 24px;">
+                            <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 14px; text-align: center;">
+                                <div style="font-size: 11px; font-weight: 700; color: #065f46;">TOTAL DIVISION POINTS</div>
+                                <div id="lblTotalPoints" style="font-size: 22px; font-weight: 900; color: #047857; margin-top: 4px;">-</div>
+                            </div>
+                            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; text-align: center;">
+                                <div style="font-size: 11px; font-weight: 700; color: #1e40af;">DIVISION RESULT</div>
+                                <div id="lblDivision" style="font-size: 20px; font-weight: 900; color: #1d4ed8; margin-top: 4px;">-</div>
+                            </div>
+                            <div style="background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; padding: 14px; text-align: center;">
+                                <div style="font-size: 11px; font-weight: 700; color: #92400e;">OVERALL GPA AVERAGE</div>
+                                <div id="lblGPA" style="font-size: 22px; font-weight: 900; color: #b45309; margin-top: 4px;">-</div>
+                            </div>
+                        </div>
+
+                        <!-- Form Master Conduct Comment Textarea Block (Task 4.1) -->
+                        <div style="background: #fafafa; border: 1px solid var(--c-border-light); border-radius: 8px; padding: 18px; margin-bottom: 24px;">
+                            <label style="font-size: 13px; font-weight: 800; color: #0f172a; display: block; margin-bottom: 8px;">💬 Form Master General Conduct & Recommendation Comment:</label>
+                            <textarea id="txtConductComment" class="form-control" rows="3" style="font-weight: 600; font-size: 13px;" placeholder="Enter Form Master conduct and academic recommendation remark..."></textarea>
+                            <div class="btn-print-hide" style="text-align: right; margin-top: 10px;">
+                                <button class="btn btn-secondary" onclick="saveConductComment()" style="font-weight: 700; font-size: 12px;">💾 Save Conduct Remark</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        let currentStudentId = '';
+        let currentYear = new Date().getFullYear().toString();
+        let currentTerm = 'Term 1';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            currentStudentId = params.get('student_id') || '';
+            currentYear = params.get('year') || new Date().getFullYear().toString();
+            currentTerm = params.get('term') || 'Term 1';
+
+            if (currentStudentId) {
+                loadReportCard();
+            } else {
+                document.getElementById('reportCardContent').innerHTML = '<div style="padding:40px; text-align:center; color:var(--c-text-muted);">Please provide a student_id parameter in the URL.</div>';
+            }
+        });
+
+        async function loadReportCard() {
+            try {
+                const res = await fetch(`/shule-cafe/api/headmaster/analytics/analytics_api.php?action=student_report_card&student_id=${currentStudentId}&year=${currentYear}&term=${encodeURIComponent(currentTerm)}`, { credentials: 'include' });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    const s = data.student;
+                    document.getElementById('lblStudentName').textContent = s.full_name;
+                    document.getElementById('lblUserCode').textContent = s.user_code || 'STD';
+                    document.getElementById('lblClassroom').textContent = s.classroom_name || 'Unassigned';
+                    document.getElementById('lblTermYear').textContent = `${data.term} (${data.year})`;
+
+                    const tbody = document.getElementById('reportSubjectRows');
+                    tbody.innerHTML = '';
+
+                    // Build table headers dynamically
+                    const headTr = document.querySelector('#reportSubjectHead tr');
+                    headTr.innerHTML = `<th style="padding: 10px 14px; font-weight:700;">Subject</th>` +
+                        data.assessment_types.map(t => `<th style="padding: 10px 14px; text-align:center; font-weight:700;">${t.name} (${t.weight_percent}%)</th>`).join('') +
+                        `<th style="padding: 10px 14px; text-align:center; font-weight:700;">Total (100%)</th>
+                         <th style="padding: 10px 14px; text-align:center; font-weight:700;">Grade & Remarks</th>`;
+
+                    data.subject_marks.forEach(m => {
+                        const tr = document.createElement('tr');
+                        tr.style.borderBottom = '1px solid #f1f5f9';
+                        
+                        let dynamicCells = data.assessment_types.map(t => {
+                            let score = m.scores && m.scores[t.id] !== undefined ? m.scores[t.id] : 0;
+                            return `<td style="padding: 10px 14px; text-align:center; font-weight:700;">${score}%</td>`;
+                        }).join('');
+
+                        tr.innerHTML = `
+                            <td style="padding: 10px 14px; font-weight:700;">${m.subject_name || m.subject_code} (${m.subject_code})</td>
+                            ${dynamicCells}
+                            <td style="padding: 10px 14px; text-align:center; font-weight:800; color:#0f172a;">${m.total_score}</td>
+                            <td style="padding: 10px 14px; text-align:center;">
+                                <span class="badge badge-success" style="font-weight:800; font-size:11px;">${m.grade} - ${m.remark}</span>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+
+                    document.getElementById('lblTotalPoints').textContent = data.summary.total_points;
+                    document.getElementById('lblDivision').textContent = data.summary.division;
+                    document.getElementById('lblGPA').textContent = `${data.summary.gpa_average}%`;
+                    document.getElementById('txtConductComment').value = data.conduct_comment || '';
+                } else {
+                    alert(data.message || 'Error loading report card.');
+                }
+            } catch(e) {
+                alert('Network connection error.');
+            }
+        }
+
+        async function saveConductComment() {
+            const comment = document.getElementById('txtConductComment').value.trim();
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/analytics/analytics_api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ action: 'save_conduct_comment', student_id: currentStudentId, year: currentYear, term: currentTerm, conduct_comment: comment })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    alert(data.message);
+                } else {
+                    alert(data.message || 'Failed to save comment.');
+                }
+            } catch(e) {
+                alert('Network connection error.');
+            }
+        }
+    </script>
+</body>
+</html>

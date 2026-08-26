@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Command Center Portal ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/teacher-theme.css">
+    
+    <script type="module" src="../layouts/global-layout.js"></script>
+    <script type="module" src="../js/auth/auth-guard.js"></script>
+
+    <style>
+        /* Modern Glassmorphic Header & Banner */
+        .teacher-portal-header {
+            background: linear-gradient(135deg, #78350f 0%, #451a03 100%);
+            color: white;
+            padding: 24px 28px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 25px -5px rgba(120, 53, 15, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .avatar-lg {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: #fbbf24; color: #451a03;
+            font-size: 26px; font-weight: 800;
+            display: flex; align-items: center; justify-content: center;
+            border: 3px solid rgba(255,255,255,0.4);
+        }
+
+        /* 4 Top Quick Metrics Grid */
+        .quick-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: white;
+            border: 1px solid var(--c-border-light);
+            border-radius: 10px;
+            padding: 18px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; bottom: 0; width: 4px;
+            background: #f59e0b;
+        }
+
+        .metric-val {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--c-text-primary);
+            margin: 4px 0 2px 0;
+        }
+
+        .metric-lbl {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--c-text-muted);
+            text-transform: uppercase;
+        }
+
+        /* Nav-Tabs Bar */
+        .teacher-nav-tabs {
+            display: flex;
+            gap: 6px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            padding: 6px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .teacher-tab {
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--c-text-muted);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .teacher-tab.active {
+            background: white;
+            color: #78350f;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .tab-panel-content { display: none; }
+        .tab-panel-content.active { display: block; }
+
+        /* Data sheet table */
+        .sheet-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 14px;
+        }
+
+        .sheet-table th {
+            background: #1e293b;
+            color: white;
+            padding: 10px 14px;
+            text-align: left;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .sheet-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--c-border-light);
+        }
+
+        .score-input {
+            width: 90px;
+            padding: 6px 10px;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+            border: 2px solid var(--c-border-light);
+            border-radius: 6px;
+        }
+        .score-input:focus {
+            border-color: #f59e0b;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="teacher" active-path="/teacher/dashboard.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Teacher Command Center"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    
+                    <!-- 🏫 TOP COMMAND CENTER HEADER -->
+                    <div class="teacher-portal-header">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div class="avatar-lg" id="tchAvatar">T</div>
+                            <div>
+                                <h2 style="margin: 0; font-size: 22px; font-weight: 800; color: white;" id="tchWelcomeName">Welcome, Mwalimu</h2>
+                                <div style="font-size: 13px; color: #fef3c7; margin-top: 4px; display: flex; gap: 14px; flex-wrap: wrap;">
+                                    <span>Staff ID: <strong id="tchCode">TCH/2026</strong></span>
+                                    <span>•</span>
+                                    <span>Academic Year: <strong id="tchYr">2026</strong></span>
+                                    <span>•</span>
+                                    <span>Status: <strong style="color: #4ade80;">Active Staff</strong></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="formMasterBannerContainer"></div>
+                    </div>
+
+                    <!-- 📊 4 QUICK METRICS AT A GLANCE -->
+                    <div class="quick-metrics-grid">
+                        <div class="metric-card" style="border-left-color: #f59e0b;">
+                            <div class="metric-lbl">📚 My Subjects</div>
+                            <div class="metric-val" id="metricSubjects">0 Active</div>
+                            <div style="font-size: 11px; color: var(--c-text-muted);">Assigned Course Streams</div>
+                        </div>
+
+                        <div class="metric-card" style="border-left-color: #10b981;">
+                            <div class="metric-lbl">👥 Total Students</div>
+                            <div class="metric-val" id="metricStudents">0 Enrolled</div>
+                            <div style="font-size: 11px; color: var(--c-text-muted);">Enrolled Across Classes</div>
+                        </div>
+
+                        <div class="metric-card" style="border-left-color: #3b82f6;">
+                            <div class="metric-lbl">🏠 Form Master of</div>
+                            <div class="metric-val" id="metricFormMaster" style="font-size: 18px; color: #1d4ed8;">Not Assigned</div>
+                            <div style="font-size: 11px; color: var(--c-text-muted);">Homeroom Stream Roster</div>
+                        </div>
+
+                        <div class="metric-card" style="border-left-color: #8b5cf6;">
+                            <div class="metric-lbl">📅 Today Periods</div>
+                            <div class="metric-val" id="metricPeriods">0 Remaining</div>
+                            <div style="font-size: 11px; color: var(--c-text-muted);">Timetable Periods Scheduled</div>
+                        </div>
+                    </div>
+
+                    <!-- 📍 MAIN DASHBOARD WORKSPACE -->
+                    <div id="panel-schedule" class="tab-panel-content active">
+                        <div class="card" style="padding: 22px; margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                                <div>
+                                    <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: var(--c-text-primary);">📅 MY DAILY TEACHING SCHEDULE (TODAY'S PERIODS)</h3>
+                                    <p style="color: var(--c-text-secondary); font-size: 13px; margin: 3px 0 0 0;">Live daily period timetable pulled directly from the school ledger.</p>
+                                </div>
+                                <a href="schedule.html" class="btn btn-outline btn-sm" style="font-weight: 700;">Full Schedule View ➔</a>
+                            </div>
+
+                            <div style="overflow-x: auto;">
+                                <table class="sheet-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Time Slot</th>
+                                            <th>Period Name</th>
+                                            <th>Classroom Stream</th>
+                                            <th>Subject Course</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="scheduleTableBody">
+                                        <tr><td colspan="5" style="text-align:center; padding: 20px;">Loading schedule...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadTeacherPortalData();
+        });
+
+        async function loadTeacherPortalData() {
+            try {
+                const res = await fetch('/shule-cafe/api/teacher/teacher_portal_api.php?action=dashboard', { credentials: 'include' });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    const teacher = data.teacher || {};
+                    const metrics = data.metrics || {};
+                    const schedule = data.schedule || [];
+
+                    document.getElementById('tchAvatar').textContent = teacher.full_name ? teacher.full_name.charAt(0).toUpperCase() : 'T';
+                    document.getElementById('tchWelcomeName').textContent = `Welcome Back, ${teacher.full_name || 'Teacher'}`;
+                    document.getElementById('tchCode').textContent = teacher.user_code || 'TCH/2026';
+                    document.getElementById('tchYr').textContent = data.academic_year || '2026';
+
+                    document.getElementById('metricSubjects').textContent = `${metrics.my_subjects_count || 0} Active`;
+                    document.getElementById('metricStudents').textContent = `${metrics.total_students || 0} Enrolled`;
+                    document.getElementById('metricPeriods').textContent = `${metrics.today_periods_count || 0} Remaining`;
+
+                    if (metrics.form_master_class) {
+                        document.getElementById('metricFormMaster').textContent = metrics.form_master_class;
+                        document.getElementById('formMasterBannerContainer').innerHTML = `
+                            <div style="background: #fbbf24; color: #451a03; padding: 8px 16px; border-radius: 8px; font-weight: 800; font-size: 13px;">
+                                🏠 Form Master: ${metrics.form_master_class}
+                            </div>
+                        `;
+                    } else {
+                        document.getElementById('metricFormMaster').textContent = 'Not Assigned';
+                        document.getElementById('formMasterBannerContainer').innerHTML = '';
+                    }
+
+                    const schedBody = document.getElementById('scheduleTableBody');
+                    if (schedule.length === 0) {
+                        schedBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--c-text-muted);">No timetable period slots scheduled for today.</td></tr>';
+                    } else {
+                        schedBody.innerHTML = schedule.map(s => `
+                            <tr>
+                                <td style="font-weight:700; color:#0284c7;">${s.start_time || '08:00 AM'} - ${s.end_time || '08:40 AM'}</td>
+                                <td style="font-weight:700;">${s.period_name || 'Period'}</td>
+                                <td style="font-weight:700; color:#78350f;">${s.classroom_name}</td>
+                                <td style="font-weight:700;">${s.subject_name}</td>
+                                <td><span class="badge badge-success" style="font-weight:700;">Scheduled</span></td>
+                            </tr>
+                        `).join('');
+                    }
+                } else {
+                    console.error('Unable to load dashboard data:', data.message || 'Unknown error');
+                }
+            } catch (e) {
+                console.error('Error loading teacher portal data:', e);
+            }
+        }
+    </script>
+</body>
+</html>

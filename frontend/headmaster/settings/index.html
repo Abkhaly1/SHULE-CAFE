@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Settings ‹ Headmaster ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+    
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="tenant_admin" active-path="/headmaster/settings/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Headmaster Portal"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <app-breadcrumb path="Headmaster, Settings"></app-breadcrumb>
+                    
+                    <app-page-header 
+                        title="School Profile Settings" 
+                        subtitle="View and update school profile information.">
+                    </app-page-header>
+                    
+                    <div style="max-width: 600px; margin-top: var(--sp-6);">
+                        <div class="card" style="padding: var(--sp-6);">
+                            <div id="settingsAlert" class="alert alert-success" style="display: none; margin-bottom: var(--sp-4);"></div>
+
+                            <form id="schoolSettingsForm">
+                                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                                    <label class="form-label">School Name</label>
+                                    <input type="text" id="sch_name" class="form-control" required>
+                                </div>
+                                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                                    <label class="form-label">School Type</label>
+                                    <input type="text" id="sch_type" class="form-control" readonly style="background: #f8fafc;">
+                                </div>
+                                <div class="form-group" style="margin-bottom: var(--sp-6);">
+                                    <label class="form-label">Region</label>
+                                    <input type="text" id="sch_region" class="form-control">
+                                </div>
+                                <button type="submit" id="saveSettingsBtn" class="btn btn-primary">Save Settings</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const form = document.getElementById('schoolSettingsForm');
+            const alertBox = document.getElementById('settingsAlert');
+
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/stats.php', { credentials: 'include' });
+                const result = await res.json();
+                if (res.ok && result.success && result.school) {
+                    document.getElementById('sch_name').value = result.school.name || '';
+                    document.getElementById('sch_type').value = result.school.type || 'Secondary';
+                    document.getElementById('sch_region').value = result.school.region || '';
+                }
+            } catch (e) {}
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                alertBox.style.display = 'none';
+
+                const data = {
+                    name: document.getElementById('sch_name').value,
+                    region: document.getElementById('sch_region').value
+                };
+
+                try {
+                    const res = await fetch('/shule-cafe/api/schools/update.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(data)
+                    });
+                    const result = await res.json();
+                    if (res.ok && result.success) {
+                        alertBox.className = 'alert alert-success';
+                        alertBox.textContent = 'School settings updated successfully!';
+                        alertBox.style.display = 'block';
+                    } else {
+                        alertBox.className = 'alert alert-danger';
+                        alertBox.textContent = result.message || 'Error updating settings.';
+                        alertBox.style.display = 'block';
+                    }
+                } catch (err) {
+                    alertBox.className = 'alert alert-danger';
+                    alertBox.textContent = 'Network error updating settings.';
+                    alertBox.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

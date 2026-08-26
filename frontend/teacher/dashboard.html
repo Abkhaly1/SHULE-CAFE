@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard ‹ SHULE CAFE</title>
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/teacher-theme.css?v=20260809">
+    <script type="module" src="../layouts/global-layout.js?v=20260809"></script>
+    <script type="module" src="../js/auth/auth-guard.js"></script>
+    <style>
+        .dashboard-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-top: 24px; }
+        .action-card { background: white; border: 1px solid var(--c-border-light); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 10px; min-height: 140px; }
+        .action-card strong { display: block; font-size: 16px; }
+        .action-card a { margin-top: auto; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; font-weight: 700; color: #78350f; }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="teacher" active-path="/teacher/dashboard.html"></app-sidebar>
+        <div class="app-main">
+            <app-topbar username="Teacher Portal"></app-topbar>
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <div class="card" style="padding: 24px; margin-bottom: 22px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;">
+                            <div>
+                                <h1 style="margin: 0 0 10px; font-size: 26px; font-weight: 800; color: var(--c-text-primary);">Welcome back, Teacher</h1>
+                                <p style="margin: 0; color: var(--c-text-muted); font-size: 14px; max-width: 780px;">Your teacher dashboard provides scheduled lessons, class metrics, and quick access to grading, attendance, and parent communication.</p>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+                                <div style="background: #78350f; color: white; border-radius: 16px; padding: 14px 18px; font-weight: 800;">Teacher ID: <span id="tchCode">TCH/202X</span></div>
+                                <div style="background: #f8fafc; color: #1f2937; border-radius: 16px; padding: 14px 18px;">Year: <strong id="tchYr">202X</strong></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="quick-metrics-grid">
+                        <div class="metric-card" style="border-left-color: #f59e0b;">
+                            <div class="metric-lbl">📚 My Subjects</div>
+                            <div class="metric-val" id="metricSubjects">0 Active</div>
+                            <div style="font-size: 11px; color: var(--c-text-muted);">Assigned teaching streams</div>
+                        </div>
+                        <div class="metric-card" style="border-left-color: #10b981;">
+                            <div class="metric-lbl">👥 Total Students</div>
+                            <div class="metric-val" id="metricStudents">0 Enrolled</div>
+                            <div style="font-size: 11px; color: var(--c-text-muted);">Active class roster size</div>
+                        </div>
+                        <div class="metric-card" style="border-left-color: #3b82f6;">
+                            <div class="metric-lbl">🏠 Form Master</div>
+                            <div class="metric-val" id="metricFormMaster" style="font-size: 18px; color: #1d4ed8;">Not Assigned</div>
+                            <div style="font-size: 11px; color: var(--c-text-muted);">Homeroom classroom</div>
+                        </div>
+                        <div class="metric-card" style="border-left-color: #8b5cf6;">
+                            <div class="metric-lbl">📅 Today Periods</div>
+                            <div class="metric-val" id="metricPeriods">0 Remaining</div>
+                            <div style="font-size: 11px; color: var(--c-text-muted);">Lessons scheduled today</div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="padding: 24px; margin-top: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px;">
+                            <div>
+                                <h2 style="margin: 0; font-size: 18px; font-weight: 800; color: var(--c-text-primary);">Quick Actions</h2>
+                                <p style="margin: 4px 0 0 0; color: var(--c-text-muted); font-size: 13px;">Jump directly to your grading, attendance, parent desk, assigned classes, and student roster pages.</p>
+                            </div>
+                        </div>
+                        <div class="dashboard-actions">
+                            <div class="action-card">
+                                <strong>Grade Entry Workspace</strong>
+                                <span>Load score sheets and save CA / terminal marks.</span>
+                                <a href="marks.html">Open Marks <span>→</span></a>
+                            </div>
+                            <div class="action-card">
+                                <strong>Daily Attendance</strong>
+                                <span>Record or update today's form master class roll call.</span>
+                                <a href="attendance.html">Open Attendance <span>→</span></a>
+                            </div>
+                            <div class="action-card">
+                                <strong>Parent Communication</strong>
+                                <span>View parent contacts and broadcast class announcements.</span>
+                                <a href="parents.html">Open Parent Desk <span>→</span></a>
+                            </div>
+                            <div class="action-card">
+                                <strong>Assigned Classes</strong>
+                                <span>Inspect your subject assignments and student progress.</span>
+                                <a href="classes.html">Open Classes <span>→</span></a>
+                            </div>
+                            <div class="action-card">
+                                <strong>Student Roster</strong>
+                                <span>Review active students and open student details.</span>
+                                <a href="students.html">Open Students <span>→</span></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="padding: 24px; margin-top: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px;">
+                            <div>
+                                <h2 style="margin: 0; font-size: 18px; font-weight: 800; color: var(--c-text-primary);">Today's Teaching Schedule</h2>
+                                <p style="margin: 4px 0 0 0; color: var(--c-text-muted); font-size: 13px;">Real-time class periods drawn from the timetable for the current weekday.</p>
+                            </div>
+                            <span style="font-size: 12px; color: var(--c-text-muted);">Updated automatically on page load.</span>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table class="sheet-table" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Time Slot</th>
+                                        <th>Period</th>
+                                        <th>Classroom Stream</th>
+                                        <th>Subject</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="scheduleTableBody">
+                                    <tr><td colspan="5" style="text-align:center; padding: 20px;">Loading schedule...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', loadTeacherPortalData);
+
+        async function loadTeacherPortalData() {
+            try {
+                const res = await fetch('/shule-cafe/api/teacher/teacher_portal_api.php?action=dashboard', { credentials: 'include' });
+                const data = await res.json();
+
+                if (!res.ok || !data.success) {
+                    console.error('Unable to load dashboard data:', data.message || 'Unknown error');
+                    document.getElementById('scheduleTableBody').innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--c-text-danger);">Unable to load schedule data.</td></tr>';
+                    return;
+                }
+
+                const teacher = data.teacher || {};
+                const metrics = data.metrics || {};
+                const schedule = data.schedule || [];
+
+                document.getElementById('tchCode').textContent = teacher.user_code || `TCH/${new Date().getFullYear()}`;
+                document.getElementById('tchYr').textContent = data.academic_year || new Date().getFullYear().toString();
+                document.getElementById('metricSubjects').textContent = `${metrics.my_subjects_count || 0} Active`;
+                document.getElementById('metricStudents').textContent = `${metrics.total_students || 0} Enrolled`;
+                document.getElementById('metricPeriods').textContent = `${metrics.today_periods_count || 0} Remaining`;
+                document.getElementById('metricFormMaster').textContent = metrics.form_master_class || 'Not Assigned';
+
+                const schedBody = document.getElementById('scheduleTableBody');
+                if (schedule.length === 0) {
+                    schedBody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--c-text-muted);">No timetable period slots scheduled for today.</td></tr>';
+                } else {
+                    schedBody.innerHTML = schedule.map(s => `
+                        <tr>
+                            <td style="font-weight:700; color:#0284c7;">${s.start_time || '08:00 AM'} - ${s.end_time || '08:40 AM'}</td>
+                            <td style="font-weight:700;">${s.period_name || 'Period'}</td>
+                            <td style="font-weight:700; color:#78350f;">${s.classroom_name}</td>
+                            <td style="font-weight:700;">${s.subject_name}</td>
+                            <td><span class="badge badge-success" style="font-weight:700;">Scheduled</span></td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (e) {
+                console.error('Error loading teacher portal data:', e);
+                document.getElementById('scheduleTableBody').innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--c-text-danger);">Unable to load schedule due to network error.</td></tr>';
+            }
+        }
+    </script>
+</body>
+</html>

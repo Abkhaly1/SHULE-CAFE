@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuweka Nenosiri & Taarifa za Akaunti ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    
+    <style>
+        body {
+            background: #f1f5f9;
+            font-family: var(--font-main, 'Inter', system-ui, -apple-system, sans-serif);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .setup-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 540px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .setup-header {
+            background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+            color: #ffffff;
+            padding: 28px 32px;
+            text-align: center;
+        }
+
+        .setup-header h2 {
+            margin: 0 0 6px 0;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .setup-header p {
+            margin: 0;
+            font-size: 13px;
+            color: #a7f3d0;
+            line-height: 1.4;
+        }
+
+        .setup-body {
+            padding: 28px 32px;
+        }
+
+        .form-section-title {
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #047857;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .rule-list {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 12px;
+            color: #475569;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .rule-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .rule-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .rule-item.valid {
+            color: #059669;
+            font-weight: 600;
+        }
+
+        .rule-item.invalid {
+            color: #dc2626;
+        }
+
+        .gender-pills {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .gender-pill {
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            color: #334155;
+            transition: all 0.2s ease;
+        }
+
+        .gender-pill input {
+            display: none;
+        }
+
+        .gender-pill:has(input:checked) {
+            background: #ecfdf5;
+            border-color: #047857;
+            color: #047857;
+            box-shadow: 0 0 0 2px rgba(4, 120, 87, 0.15);
+        }
+
+        .btn-setup {
+            width: 100%;
+            height: 44px;
+            background: #047857;
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .btn-setup:hover {
+            background: #065f46;
+        }
+
+        .btn-setup:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .alert-setup {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-danger {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .alert-success {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="setup-card">
+        <div class="setup-header">
+            <h2>🔒 Initialize Your Account</h2>
+            <p>Set a new strong password and provide your contact information to start using SHULE CAFE</p>
+        </div>
+
+        <div class="setup-body">
+            <div id="setupAlert" class="alert-setup alert-danger"></div>
+
+            <form id="firstTimeSetupForm">
+                
+                <!-- SECTION 1: PASSWORD SETUP -->
+                <div class="form-section-title">
+                    🔑 1. Set New Password
+                </div>
+
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label class="form-label">New Password <span style="color:#dc2626;">*</span></label>
+                    <div style="position: relative;">
+                        <input type="password" id="new_password" class="form-control" placeholder="Enter new password..." required style="padding-right: 40px;">
+                        <button type="button" class="btn-toggle-pwd" data-target="new_password" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; font-size: 16px;">👁️</button>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label class="form-label">Confirm New Password <span style="color:#dc2626;">*</span></label>
+                    <div style="position: relative;">
+                        <input type="password" id="confirm_password" class="form-control" placeholder="Re-enter new password..." required style="padding-right: 40px;">
+                        <button type="button" class="btn-toggle-pwd" data-target="confirm_password" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; font-size: 16px;">👁️</button>
+                    </div>
+                </div>
+
+                <!-- Password Rules Dynamic Indicators -->
+                <div class="rule-list">
+                    <div class="rule-item" id="ruleLen">❌ At least 8 characters long</div>
+                    <div class="rule-item" id="ruleComplexity">❌ Must include Uppercase, Lowercase, Number & Symbol (@, #, $, !)</div>
+                    <div class="rule-item" id="ruleNotInitial">❌ Cannot be your initial Registration Code / Staff ID</div>
+                    <div class="rule-item" id="ruleNotName">❌ Cannot contain your name or parts of your name</div>
+                </div>
+
+                <hr style="border: none; border-top: 1px dashed #cbd5e1; margin: 24px 0;">
+
+                <!-- SECTION 2: PROFILE DETAILS -->
+                <div class="form-section-title">
+                    📱 2. Contact Details & Gender
+                </div>
+
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label class="form-label">Mobile Phone Number <span style="color:#dc2626;">*</span></label>
+                    <input type="tel" id="phone" class="form-control" placeholder="e.g. +255788112233" required>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 14px;">
+                    <label class="form-label">Email Address <span style="color:#dc2626;">*</span></label>
+                    <input type="email" id="email" class="form-control" placeholder="e.g. user@school.ac.tz" required>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 24px;">
+                    <label class="form-label">Gender <span style="color:#dc2626;">*</span></label>
+                    <div class="gender-pills">
+                        <label class="gender-pill">
+                            <input type="radio" name="gender" value="Male" required>
+                            👨 Male
+                        </label>
+                        <label class="gender-pill">
+                            <input type="radio" name="gender" value="Female" required>
+                            👩 Female
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" id="btnSubmitSetup" class="btn-setup">
+                    Complete Setup & Sign In ➔
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('firstTimeSetupForm');
+            const alertBox = document.getElementById('setupAlert');
+            const submitBtn = document.getElementById('btnSubmitSetup');
+
+            const pwdInput = document.getElementById('new_password');
+
+            document.querySelectorAll('.btn-toggle-pwd').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetId = btn.getAttribute('data-target');
+                    const targetInput = document.getElementById(targetId);
+                    if (targetInput) {
+                        if (targetInput.type === 'password') {
+                            targetInput.type = 'text';
+                            btn.textContent = '🙈';
+                        } else {
+                            targetInput.type = 'password';
+                            btn.textContent = '👁️';
+                        }
+                    }
+                });
+            });
+            const confirmInput = document.getElementById('confirm_password');
+            const phoneInput = document.getElementById('phone');
+            const emailInput = document.getElementById('email');
+
+            // Retrieve stored session user info if available
+            const storedUserRaw = sessionStorage.getItem('shule_user');
+            const storedUser = storedUserRaw ? JSON.parse(storedUserRaw) : {};
+            const userCode = (storedUser.user_code || '').toLowerCase();
+            const fullName = (storedUser.full_name || '').toLowerCase();
+
+            // Real-time password validation UI updates
+            function validateRules() {
+                const val = pwdInput.value;
+                
+                // Rule 1: Length >= 8
+                const ruleLen = document.getElementById('ruleLen');
+                if (val.length >= 8) {
+                    ruleLen.className = 'rule-item valid';
+                    ruleLen.textContent = '✔️ At least 8 characters long';
+                } else {
+                    ruleLen.className = 'rule-item invalid';
+                    ruleLen.textContent = '❌ At least 8 characters long';
+                }
+
+                // Rule 2: Complexity (Upper, Lower, Digit, Special)
+                const ruleComplexity = document.getElementById('ruleComplexity');
+                const hasUpper = /[A-Z]/.test(val);
+                const hasLower = /[a-z]/.test(val);
+                const hasDigit = /[0-9]/.test(val);
+                const hasSpecial = /[\W_]/.test(val);
+
+                if (hasUpper && hasLower && hasDigit && hasSpecial) {
+                    ruleComplexity.className = 'rule-item valid';
+                    ruleComplexity.textContent = '✔️ Uppercase, Lowercase, Number & Symbol satisfied!';
+                } else {
+                    ruleComplexity.className = 'rule-item invalid';
+                    ruleComplexity.textContent = '❌ Must include Uppercase, Lowercase, Number & Symbol (@, #, $, !)';
+                }
+
+                // Rule 3: Not initial Reg Code
+                const ruleNotInitial = document.getElementById('ruleNotInitial');
+                if (userCode && val.toLowerCase() === userCode) {
+                    ruleNotInitial.className = 'rule-item invalid';
+                    ruleNotInitial.textContent = '❌ Cannot be your initial Registration Code / Staff ID';
+                } else {
+                    ruleNotInitial.className = 'rule-item valid';
+                    ruleNotInitial.textContent = '✔️ Different from initial Registration Code / Staff ID';
+                }
+
+                // Rule 4: Not name parts
+                const ruleNotName = document.getElementById('ruleNotName');
+                let containsName = false;
+                if (fullName) {
+                    const parts = fullName.split(' ').filter(p => p.trim().length >= 3);
+                    for (const p of parts) {
+                        if (val.toLowerCase().includes(p.trim())) {
+                            containsName = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (containsName) {
+                    ruleNotName.className = 'rule-item invalid';
+                    ruleNotName.textContent = '❌ Cannot contain your name or parts of your name';
+                } else {
+                    ruleNotName.className = 'rule-item valid';
+                    ruleNotName.textContent = '✔️ Does not contain your name or name parts';
+                }
+            }
+
+            pwdInput.addEventListener('input', validateRules);
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                alertBox.style.display = 'none';
+
+                const newPassword = pwdInput.value.trim();
+                const confirmPassword = confirmInput.value.trim();
+                const phone = phoneInput.value.trim();
+                const email = emailInput.value.trim();
+
+                const genderEl = document.querySelector('input[name="gender"]:checked');
+                const gender = genderEl ? genderEl.value : '';
+
+                if (!gender) {
+                    alertBox.textContent = 'Please select your gender (Male or Female).';
+                    alertBox.style.display = 'block';
+                    return;
+                }
+
+                if (newPassword !== confirmPassword) {
+                    alertBox.textContent = 'Passwords do not match.';
+                    alertBox.style.display = 'block';
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Saving account details...';
+
+                try {
+                    const res = await fetch('/shule-cafe/api/auth/complete_first_login.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            new_password: newPassword,
+                            confirm_password: confirmPassword,
+                            phone: phone,
+                            email: email,
+                            gender: gender
+                        })
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok && data.success) {
+                        alertBox.className = 'alert-setup alert-success';
+                        alertBox.textContent = data.message || 'Congratulations! Your details have been saved. Redirecting...';
+                        alertBox.style.display = 'block';
+
+                        setTimeout(() => {
+                            window.location.href = data.redirect_url || '../teacher/dashboard.html';
+                        }, 1200);
+                    } else {
+                        alertBox.className = 'alert-setup alert-danger';
+                        alertBox.textContent = data.message || 'An error occurred. Please try again.';
+                        alertBox.style.display = 'block';
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Complete Setup & Sign In ➔';
+                    }
+                } catch (err) {
+                    console.error("Setup failed", err);
+                    alertBox.className = 'alert-setup alert-danger';
+                    alertBox.textContent = 'Network or server error. Please try again.';
+                    alertBox.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Complete Setup & Sign In ➔';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

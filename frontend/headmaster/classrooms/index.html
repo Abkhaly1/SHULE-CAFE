@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Management ‹ Headmaster ‹ SHULE CAFE</title>
+
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+
+    <style>
+        /* ── Page Tabs ─────────────────────────────────────────── */
+        .page-tabs {
+            display: flex; gap: 4px;
+            background: #f1f5f9; border-radius: 10px; padding: 5px;
+            margin-bottom: 24px; width: fit-content;
+        }
+        .page-tab {
+            padding: 9px 22px; border-radius: 7px; font-size: 13px;
+            font-weight: 700; color: var(--c-text-muted); cursor: pointer;
+            border: none; background: transparent; transition: all .18s;
+            display: flex; align-items: center; gap: 7px;
+        }
+        .page-tab.active { background: white; color: var(--c-text-primary); box-shadow: 0 1px 6px rgba(0,0,0,.12); }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ── Year selector bar ─────────────────────────────────── */
+        .year-bar {
+            display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+            background: linear-gradient(135deg,#0f172a,#1e293b);
+            border-radius: 10px; padding: 14px 20px; margin-bottom: 20px; color: white;
+        }
+        .year-bar label { font-size: 12px; font-weight: 700; color: #94a3b8; }
+        .year-bar input, .year-bar select {
+            background: #1e293b; border: 1px solid #334155; color: white;
+            border-radius: 6px; padding: 7px 12px; font-size: 13px; font-weight: 600;
+        }
+        .year-badge {
+            margin-left: auto; background: #059669; color: white;
+            border-radius: 6px; padding: 6px 14px; font-size: 12px; font-weight: 800;
+        }
+
+        /* ── Level section header ──────────────────────────────── */
+        .level-header {
+            display: flex; align-items: center; gap: 10px;
+            margin: 20px 0 12px;
+        }
+        .level-header h3 {
+            margin: 0; font-size: 15px; font-weight: 800; color: var(--c-text-primary);
+        }
+        .level-line {
+            flex: 1; height: 1px; background: var(--c-border-light);
+        }
+
+        /* ── Grade card grid styles ───────────────────────────────── */
+        .grades-grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .grade-card-grid {
+            background: #ffffff;
+            border: 1px solid var(--c-border-light);
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .grade-card-grid::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #cbd5e1;
+        }
+        .grade-card-grid.configured::before {
+            background: #10b981;
+        }
+        .grade-card-grid.unconfigured::before {
+            background: #f59e0b;
+        }
+        .grade-card-grid:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            border-color: #cbd5e1;
+        }
+        .grade-row-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 180px;
+        }
+        .grade-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .grade-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--c-text-primary);
+        }
+        .grade-subtitle {
+            font-size: 12px;
+            color: var(--c-text-muted);
+            margin-top: 2px;
+        }
+        .grade-row-middle {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 0 10px;
+        }
+        .stream-preview-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .stream-empty-tag {
+            font-size: 12px;
+            color: #94a3b8;
+            font-style: italic;
+        }
+        .grade-row-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        /* ── Grade accordion cards ─────────────────────────────── */
+        .grade-card {
+            background: white; border: 1px solid var(--c-border-light);
+            border-radius: 10px; margin-bottom: 10px; overflow: hidden;
+        }
+        .grade-card-header {
+            display: flex; align-items: center; gap: 14px;
+            padding: 14px 18px; cursor: pointer;
+            transition: background .15s;
+        }
+        .grade-card-header:hover { background: #f8fafc; }
+        .grade-icon { font-size: 20px; flex-shrink: 0; }
+        .grade-name { font-weight: 800; font-size: 15px; color: var(--c-text-primary); flex: 1; }
+        .classroom-count-badge {
+            font-size: 11px; font-weight: 700; padding: 4px 12px;
+            border-radius: 12px; white-space: nowrap;
+        }
+        .badge-configured  { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+        .badge-unconfigured{ background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+        .grade-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+        /* ── Classroom chips inside expanded grade ─────────────── */
+        .grade-body { padding: 0 18px 18px; border-top: 1px solid var(--c-border-light); }
+        .classroom-chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 10px; }
+        .classroom-chip {
+            display: flex; align-items: center; gap: 6px;
+            background: #f0fdf4; border: 1px solid #6ee7b7; border-radius: 20px;
+            padding: 5px 12px; font-size: 12px; font-weight: 700; color: #065f46;
+        }
+        .chip-delete {
+            background: none; border: none; color: #dc2626; cursor: pointer;
+            font-size: 13px; font-weight: 800; padding: 0; line-height: 1;
+            opacity: .6; transition: opacity .15s;
+        }
+        .chip-delete:hover { opacity: 1; }
+
+        /* ── Setup/Edit Modal ──────────────────────────────────── */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(15,23,42,.6); z-index: 9000;
+            backdrop-filter: blur(3px);
+            align-items: center; justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: white; border-radius: 14px; width: 560px; max-width: 95vw;
+            max-height: 90vh; overflow-y: auto;
+            box-shadow: 0 24px 60px rgba(0,0,0,.28);
+            animation: popIn .2s ease;
+        }
+        @keyframes popIn { from{transform:scale(.95);opacity:0} to{transform:scale(1);opacity:1} }
+        .modal-head {
+            padding: 22px 24px 0; position: sticky; top: 0; background: white; z-index: 1;
+        }
+        .modal-title { font-size: 18px; font-weight: 800; margin: 0 0 4px; color: var(--c-text-primary); }
+        .modal-sub   { font-size: 13px; color: var(--c-text-muted); margin: 0 0 18px; }
+        .modal-body  { padding: 4px 24px 24px; }
+        .modal-foot  { padding: 16px 24px; border-top: 1px solid var(--c-border-light); display: flex; justify-content: flex-end; gap: 10px; }
+
+        /* ── Qty selector + dynamic rows ───────────────────────── */
+        .qty-selector-row {
+            display: flex; align-items: center; gap: 12px;
+            background: #f8fafc; border: 1px solid var(--c-border-light);
+            border-radius: 8px; padding: 12px 16px; margin-bottom: 16px;
+        }
+        .qty-selector-row label { font-size: 13px; font-weight: 700; color: var(--c-text-secondary); }
+        .qty-input {
+            width: 80px; text-align: center; font-size: 16px; font-weight: 800;
+            border: 2px solid var(--c-border-light); border-radius: 6px; padding: 6px;
+        }
+        .qty-btn {
+            width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--c-border-light);
+            background: white; font-size: 18px; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; line-height: 1;
+            transition: all .15s; color: var(--c-text-primary);
+        }
+        .qty-btn:hover { background: var(--c-primary); color: white; border-color: var(--c-primary); }
+        .dynamic-room { margin-bottom: 10px; }
+        .dynamic-room label { font-size: 12px; font-weight: 700; color: var(--c-text-muted); margin-bottom: 4px; display: block; }
+        .dynamic-room .room-row { display: flex; gap: 8px; }
+        .dynamic-room .room-name { flex: 1; }
+        .dynamic-room .room-cap { width: 90px; }
+
+        /* ── Allocation Workspace ──────────────────────────────── */
+        .alloc-workspace {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 16px; margin-top: 16px;
+        }
+        @media (max-width:768px) { .alloc-workspace { grid-template-columns: 1fr; } }
+        .alloc-panel {
+            background: white; border: 1px solid var(--c-border-light);
+            border-radius: 10px; overflow: hidden;
+        }
+        .alloc-panel-header {
+            padding: 12px 16px; background: var(--c-bg-subtle);
+            border-bottom: 1px solid var(--c-border-light);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .alloc-panel-title { font-size: 13px; font-weight: 800; color: var(--c-text-primary); }
+        .alloc-search {
+            width: 100%; border: none; border-bottom: 1px solid var(--c-border-light);
+            padding: 10px 14px; font-size: 13px; outline: none;
+        }
+        .alloc-list { max-height: 380px; overflow-y: auto; }
+        .alloc-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 14px; border-bottom: 1px solid #f1f5f9;
+            font-size: 13px; cursor: pointer; transition: background .12s;
+        }
+        .alloc-item:hover { background: #f8fafc; }
+        .alloc-item input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; flex-shrink: 0; }
+        .alloc-item .student-name { font-weight: 600; color: var(--c-text-primary); flex: 1; }
+        .alloc-item .student-code { font-size: 11px; color: var(--c-text-muted); }
+        .alloc-item .remove-btn {
+            background: none; border: 1px solid #fca5a5; color: #dc2626;
+            border-radius: 5px; padding: 3px 8px; font-size: 11px; font-weight: 700;
+            cursor: pointer; transition: all .12s;
+        }
+        .alloc-item .remove-btn:hover { background: #fef2f2; }
+        .alloc-action-bar {
+            padding: 10px 14px; border-top: 1px solid var(--c-border-light);
+            display: flex; justify-content: space-between; align-items: center;
+            background: #f8fafc;
+        }
+        .capacity-bar { height: 5px; background: #e2e8f0; border-radius: 3px; margin: 6px 16px; }
+        .capacity-fill { height: 100%; border-radius: 3px; background: #059669; transition: width .3s; }
+
+        /* ── Promotion Wizard ──────────────────────────────────── */
+        .promo-step-bar {
+            display: flex; gap: 0; margin-bottom: 24px;
+        }
+        .promo-step {
+            flex: 1; padding: 10px 16px; text-align: center;
+            font-size: 12px; font-weight: 700; color: var(--c-text-muted);
+            background: #f1f5f9; border: 1px solid var(--c-border-light);
+            position: relative;
+        }
+        .promo-step:first-child { border-radius: 8px 0 0 8px; }
+        .promo-step:last-child  { border-radius: 0 8px 8px 0; }
+        .promo-step.active { background: #059669; color: white; border-color: #059669; }
+        .promo-step.done   { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+        .promo-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .promo-table th { background: #1e293b; color: #f1f5f9; padding: 10px 12px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .4px; }
+        .promo-table td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; }
+        .promo-table tr:hover td { background: #f8fafc; }
+        .outcome-select { font-size: 12px; border: 1px solid var(--c-border-light); border-radius: 5px; padding: 4px 8px; }
+        .target-select  { font-size: 12px; border: 1px solid var(--c-border-light); border-radius: 5px; padding: 4px 8px; width: 100%; }
+
+        /* ── Empty state ───────────────────────────────────────── */
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--c-text-muted); }
+        .empty-state .es-icon { font-size: 40px; margin-bottom: 10px; }
+        .empty-state h4 { margin: 0 0 6px; color: var(--c-text-secondary); }
+        .empty-state p  { margin: 0; font-size: 13px; }
+
+        /* ── Toast ─────────────────────────────────────────────── */
+        .toast-pop {
+            display: none; position: fixed; bottom: 24px; right: 24px;
+            border-radius: 10px; padding: 13px 18px; font-size: 13px; font-weight: 600;
+            z-index: 9999; max-width: 420px;
+            box-shadow: 0 8px 28px rgba(0,0,0,.13);
+            animation: slideUp .25s ease;
+        }
+        .toast-pop.show { display: block; }
+        @keyframes slideUp { from{transform:translateY(14px);opacity:0} to{transform:translateY(0);opacity:1} }
+    </style>
+</head>
+<body>
+<div class="app-layout">
+    <app-sidebar role="tenant_admin" active-path="/headmaster/classrooms/index.html"></app-sidebar>
+    <div class="app-main">
+        <app-topbar username="Headmaster Portal"></app-topbar>
+        <main class="app-content-wrapper">
+            <div class="app-content">
+                <app-breadcrumb path="Headmaster, Classroom Management"></app-breadcrumb>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 16px; flex-wrap: wrap;">
+                    <div>
+                        <h1 style="margin: 0; font-size: 16px; font-weight: 800; color: var(--c-text-primary); letter-spacing: -0.3px;">Classroom Management</h1>
+                        <p style="margin: 2px 0 0 0; font-size: 12px; color: var(--c-text-secondary);">Select any grade cohort below to open its workspace for streams setup, student allocation, and annual promotion.</p>
+                    </div>
+                    <span class="badge badge-success" style="font-weight: 700; padding: 5px 12px; font-size: 11px; border-radius: 999px;">Active Year: <span class="current-year">2026</span></span>
+                </div>
+
+                <!-- ══════════════════════════════════════════════════
+                     TAB 1: CLASSROOM SETUP WIZARD
+                ══════════════════════════════════════════════════ -->
+                <div id="panel-setup" class="tab-panel active">
+                    <div id="gradesAccordion">
+                        <div class="empty-state"><div class="es-icon">⏳</div><p>Loading grades…</p></div>
+                    </div>
+                </div>
+
+                <!-- ══════════════════════════════════════════════════
+                     TAB 2: STUDENT ALLOCATION
+                ══════════════════════════════════════════════════ -->
+                <div id="panel-allocation" class="tab-panel">
+                    <!-- Filter bar -->
+                    <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;background:white;border:1px solid var(--c-border-light);border-radius:10px;padding:16px 20px;margin-bottom:4px;">
+                        <div>
+                            <label class="form-label" style="font-size:12px;font-weight:700;">Select Grade</label>
+                            <select id="allocGradeSelect" class="form-control" style="width:180px;" onchange="onAllocGradeChange()">
+                                <option value="">-- Grade --</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label" style="font-size:12px;font-weight:700;">Target Classroom</label>
+                            <select id="allocClassroomSelect" class="form-control" style="width:220px;" onchange="loadAllocation()">
+                                <option value="">-- Select Classroom --</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary btn-sm" style="margin-top:18px;" onclick="loadAllocation()">Load Workspace</button>
+                        <button class="btn btn-outline btn-sm" style="margin-top:18px;border-color:#059669;color:#059669;font-weight:700;display:inline-flex;align-items:center;gap:5px;" onclick="openGradeImportModal()">
+                            📥 Bulk Import Students to Grade
+                        </button>
+                    </div>
+
+                    <div id="allocWorkspace">
+                        <div class="empty-state" style="margin-top:16px;background:white;border:1px solid var(--c-border-light);border-radius:10px;">
+                            <div class="es-icon">🏫</div>
+                            <h4>Select a grade and classroom above</h4>
+                            <p>The student pool and classroom roster will appear here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══════════════════════════════════════════════════
+                     TAB 3: ANNUAL PROMOTION WIZARD
+                ══════════════════════════════════════════════════ -->
+                <div id="panel-promotion" class="tab-panel">
+                    <!-- Step bar -->
+                    <div class="promo-step-bar">
+                        <div class="promo-step active" id="pstep1">① Select Source Classroom</div>
+                        <div class="promo-step"        id="pstep2">② Review & Assign</div>
+                        <div class="promo-step"        id="pstep3">③ Confirm & Execute</div>
+                    </div>
+
+                    <!-- Step 1: source selection -->
+                    <div id="promoStep1">
+                        <div style="background:white;border:1px solid var(--c-border-light);border-radius:10px;padding:22px;">
+                            <h3 style="margin:0 0 6px;font-size:16px;font-weight:800;">Step 1 — Select Source Classroom</h3>
+                            <p style="margin:0 0 20px;font-size:13px;color:var(--c-text-muted);">Choose the academic year and classroom you want to promote students FROM.</p>
+                            <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;">
+                                <div>
+                                    <label class="form-label" style="font-size:12px;font-weight:700;">Source Year</label>
+                                    <input type="text" id="promoFromYear" value="" placeholder="Previous Year" class="form-control" style="width:100px;">
+                                </div>
+                                <div>
+                                    <label class="form-label" style="font-size:12px;font-weight:700;">Source Classroom</label>
+                                    <select id="promoSourceClass" class="form-control" style="width:240px;">
+                                        <option value="">-- Load classrooms --</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-outline" onclick="loadPromoClassrooms()">🔄 Load Classrooms</button>
+                                <button class="btn btn-primary" onclick="loadPromoStudents()">Next: Review Students ➡</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: review table -->
+                    <div id="promoStep2" style="display:none;margin-top:16px;">
+                        <div style="background:white;border:1px solid var(--c-border-light);border-radius:10px;padding:22px;">
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                                <div>
+                                    <h3 style="margin:0 0 4px;font-size:16px;font-weight:800;">Step 2 — Review & Assign Destinations</h3>
+                                    <p style="margin:0;font-size:13px;color:var(--c-text-muted);" id="promoSubLabel">Set outcome and target classroom for each student.</p>
+                                </div>
+                                <button class="btn btn-outline btn-sm" onclick="backToPromoStep1()">⬅ Back</button>
+                            </div>
+
+                            <!-- Bulk actions -->
+                            <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+                                <button class="btn btn-sm" style="background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;font-weight:700;" onclick="bulkSetOutcome('Promoted')">✅ Set All Promoted</button>
+                                <button class="btn btn-sm" style="background:#fef9c3;color:#92400e;border:1px solid #fcd34d;font-weight:700;" onclick="bulkSetOutcome('Repeated')">🔁 Set All Repeated</button>
+                                <button class="btn btn-sm btn-outline" onclick="bulkSetTarget()" id="bulkTargetBtn">🏫 Bulk Set Target Classroom</button>
+                                <select id="bulkTargetSelect" style="display:none;font-size:12px;border:1px solid var(--c-border-light);border-radius:5px;padding:4px 8px;"></select>
+                            </div>
+
+                            <div style="overflow-x:auto;border:1px solid var(--c-border-light);border-radius:8px;">
+                                <table class="promo-table" id="promoTable">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:40px;"><input type="checkbox" id="promoSelectAll" onchange="togglePromoAll(this)"></th>
+                                            <th>Student Name</th>
+                                            <th>ID / Code</th>
+                                            <th>Final GPA</th>
+                                            <th>Auto-Recommendation</th>
+                                            <th>Action</th>
+                                            <th>Target Room (New Year)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="promoTableBody"></tbody>
+                                </table>
+                            </div>
+
+                            <div style="margin-top:16px;display:flex;justify-content:flex-end;">
+                                <button class="btn btn-primary" style="font-weight:800;" onclick="goPromoStep3()">Next: Confirm & Execute ➡</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: confirmation -->
+                    <div id="promoStep3" style="display:none;margin-top:16px;">
+                        <div style="background:white;border:1px solid var(--c-border-light);border-radius:10px;padding:22px;">
+                            <h3 style="margin:0 0 6px;font-size:16px;font-weight:800;">Step 3 — Confirm & Execute Promotion</h3>
+                            <p style="margin:0 0 20px;font-size:13px;color:var(--c-text-muted);">Review the summary below. This action is permanent.</p>
+
+                            <div id="promoSummary" style="background:#f8fafc;border:1px solid var(--c-border-light);border-radius:8px;padding:18px;margin-bottom:20px;"></div>
+
+                            <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#92400e;font-weight:600;">
+                                ⚠️ This action will permanently lock the source year records and create new allocations for the target year. Please verify the summary before proceeding.
+                            </div>
+                            <div style="display:flex;gap:10px;justify-content:flex-end;">
+                                <button class="btn btn-outline" onclick="backToPromoStep2()">⬅ Back to Review</button>
+                                <button class="btn btn-primary" style="font-weight:800;background:#059669;" id="executePromoBtn" onclick="executePromotion()">🎓 Execute Promotion Now</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /app-content -->
+            <app-footer></app-footer>
+        </main>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     CLASSROOM SETUP MODAL
+══════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="setupModal">
+    <div class="modal-box">
+        <div class="modal-head">
+            <p class="modal-title" id="modalGradeTitle">Configure Classrooms</p>
+            <p class="modal-sub"   id="modalGradeSub">Set the number and names of classrooms for this grade.</p>
+        </div>
+        <div class="modal-body">
+            <!-- Quantity selector -->
+            <div class="qty-selector-row">
+                <label>Number of Classrooms / Streams:</label>
+                <button class="qty-btn" onclick="adjustQty(-1)">−</button>
+                <input  class="qty-input form-control" type="number" id="classroomQty" value="2" min="1" max="20" oninput="generateRoomFields(this.value)">
+                <button class="qty-btn" onclick="adjustQty(1)">+</button>
+            </div>
+            <!-- Dynamic name fields -->
+            <div id="dynamicFields"></div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-outline" onclick="closeSetupModal()">Cancel</button>
+            <button class="btn btn-primary" style="font-weight:800;" onclick="saveClassrooms()">💾 Save Classrooms</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     LAYER 2: DOUBLE-CONFIRMATION DELETION MODAL
+══════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="deleteConfirmModal">
+    <div class="modal-box" style="border-top:5px solid #dc2626;">
+        <div class="modal-head">
+            <p class="modal-title" style="color:#dc2626;display:flex;align-items:center;gap:8px;">
+                ⚠️ DANGER ZONE: CONFIRM CLASSROOM DELETION
+            </p>
+            <p class="modal-sub" style="color:#791919;background:#fef2f2;border:1px solid #fca5a5;padding:12px;border-radius:8px;margin-top:10px;">
+                Warning: Deleting this classroom will unallocate all students assigned to it and drop active timetables. This action <strong>CANNOT be undone</strong>.
+            </p>
+        </div>
+        <div class="modal-body">
+            <div class="form-group mb-3">
+                <label class="form-label" style="font-weight:700;font-size:13px;color:var(--c-text-primary);">
+                    To confirm, type the exact name of the classroom (<span id="deleteExpectedName" style="font-weight:800;color:#dc2626;user-select:all;"></span>) below:
+                </label>
+                <input type="text" class="form-control" id="confirmDeleteInput" placeholder="Type exact classroom name to enable delete button..." autocomplete="off" oninput="validateDeleteInput()">
+            </div>
+        </div>
+        <div class="modal-foot" style="background:#f8fafc;">
+            <button class="btn btn-outline" onclick="closeDeleteModal()">Cancel</button>
+            <button class="btn" id="confirmDeleteBtn" disabled style="background:#dc2626;color:white;font-weight:800;opacity:0.5;cursor:not-allowed;" onclick="executeVerifiedDeletion()">🔴 CONFIRM DELETE</button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     GRADE-CONTEXTUAL BULK CSV IMPORT MODAL
+══════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="gradeImportModal">
+    <div class="modal-box" style="max-width:540px;border-top:5px solid #059669;">
+        <div class="modal-head">
+            <p class="modal-title" style="color:#059669;display:flex;align-items:center;gap:8px;">
+                📥 Bulk Import Students to Grade Cohort
+            </p>
+            <p class="modal-sub" style="color:#047857;background:#ecfdf5;border:1px solid #a7f3d0;padding:12px;border-radius:8px;margin-top:10px;">
+                All imported students will be <strong>automatically locked to <span id="importTargetGradeName" style="font-weight:800;text-decoration:underline;">the selected Grade</span></strong> and placed into its Unassigned Student Pool for classroom distribution.
+            </p>
+        </div>
+        <div class="modal-body">
+            <div style="margin-bottom:16px;background:#f8fafc;padding:12px;border-radius:6px;border:1px solid #e2e8f0;font-size:12px;color:#475569;">
+                <strong>📋 CSV Column Format:</strong><br>
+                <code>Full Name, Phone Number, Email, Student Reg Code</code><br>
+                <span style="font-size:11px;color:#64748b;">(No Grade or Level column needed — Grade is automatically assigned by page context).</span>
+                <br><br>
+                <a href="data:text/csv;charset=utf-8,Full%20Name%2CPhone%20Number%2CEmail%2CStudent%20Reg%20Code%0ANeema%20Baraka%2C0712345678%2Cneema%40school.tz%2CSTD%2F2026%2F101%0AJuma%20Mussa%2C0712345679%2Cjuma%40school.tz%2CSTD%2F2026%2F102" download="sample_grade_students_import.csv" style="color:#0284c7;font-weight:700;text-decoration:underline;">📥 Download Sample CSV Template</a>
+            </div>
+            <form id="gradeImportForm" onsubmit="executeGradeImport(event)">
+                <div class="form-group mb-3">
+                    <label class="form-label" style="font-weight:700;">Select CSV File (*.csv):</label>
+                    <input type="file" id="gradeCsvFile" class="form-control" accept=".csv" required>
+                </div>
+                <div class="modal-foot" style="background:#f8fafc;padding:12px 0 0;margin-top:16px;display:flex;justify-content:flex-end;gap:10px;">
+                    <button type="button" class="btn btn-outline" onclick="closeGradeImportModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="gradeImportBtn" style="font-weight:800;background:#059669;border-color:#059669;">📥 Upload & Lock to Grade Cohort</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TOAST
+══════════════════════════════════════════════════════ -->
+<div class="toast-pop" id="toast"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════════ -->
+<script>
+// ── STATE ──────────────────────────────────────────────────
+let currentYear    = new Date().getFullYear().toString();
+let allGrades      = [];   // [{id, grade_name, level_name, classrooms:[]}]
+let modalGradeId   = 0;
+let modalGradeName = '';
+let promoData      = null; // stores fetched promotion data
+
+// ── INIT ───────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+    loadSetup();
+});
+
+function onYearChange() {
+    currentYear = document.getElementById('yearInput').value.trim() || new Date().getFullYear().toString();
+    document.getElementById('yearBadge').textContent = `Academic Year: ${currentYear}`;
+    document.getElementById('yearQuick').value = currentYear;
+    loadSetup();
+}
+
+// ── TAB SWITCHING ───────────────────────────────────────────
+function switchTab(name) {
+    ['setup','allocation','promotion'].forEach(t => {
+        document.getElementById(`panel-${t}`).classList.toggle('active', t===name);
+        document.getElementById(`tab-${t}`).classList.toggle('active', t===name);
+    });
+    if (name==='allocation') loadAllocGrades();
+}
+
+// ══════════════════════════════════════════════════════════
+//  TAB 1 — CLASSROOM SETUP
+// ══════════════════════════════════════════════════════════
+async function loadSetup() {
+    const data = await api(`/shule-cafe/api/headmaster/classrooms/classrooms_api.php?year=${currentYear}`);
+    if (!data.success) return;
+    allGrades = data.grades;
+    renderAccordion(allGrades);
+}
+
+function renderAccordion(grades) {
+    const el = document.getElementById('gradesAccordion');
+    if (!grades.length) { el.innerHTML = '<div class="empty-state"><div class="es-icon">📋</div><p>No grades found.</p></div>'; return; }
+
+    // Group by level
+    const byLevel = {};
+    grades.forEach(g => { (byLevel[g.level_name] = byLevel[g.level_name] || []).push(g); });
+
+    const levelIcons = { 'O-Level':'📗', 'A-Level':'📘', 'Primary':'📒' };
+    let html = '';
+
+    Object.entries(byLevel).forEach(([level, gs]) => {
+        html += `<div class="level-header">
+            <h3>${levelIcons[level]||'🏫'} ${level}</h3>
+            <div class="level-line"></div>
+        </div>
+        <div class="grades-grid-layout">`;
+
+        gs.forEach(g => {
+            const configured = g.classroom_count > 0;
+            const btnLabel   = configured ? '👁️ Manage Workspace ➔' : '⚡ Setup Streams ➔';
+
+            let streamChipsHtml = '';
+            if (g.classrooms && g.classrooms.length > 0) {
+                streamChipsHtml = g.classrooms.map(c => `
+                    <span class="stream-preview-chip" style="display: inline-flex; align-items: center; gap: 4px;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="11" rx="2"/><path d="M7 8h10M7 11h5"/></svg>
+                        ${c.classroom_name}
+                    </span>
+                `).join('');
+            } else {
+                streamChipsHtml = `<span class="stream-empty-tag">⚠️ No active streams</span>`;
+            }
+
+            html += `
+                <div class="grade-card-grid ${configured ? 'configured' : 'unconfigured'}" onclick="window.location.href='workspace.html?grade_id=${g.id}&year=${currentYear}'">
+                    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div class="grade-avatar" style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(2,132,199,0.3); flex-shrink: 0;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="11" rx="2"/><path d="M7 8h10M7 11h5M12 15v4M9 19h6"/></svg>
+                            </div>
+                            <div>
+                                <div class="grade-title" style="font-size: 14px; font-weight: 800; color: var(--c-text-primary); margin: 0 0 1px 0;">${g.grade_name}</div>
+                                <div class="grade-subtitle" style="font-size: 11px; color: var(--c-text-muted); font-weight: 600;">${configured ? `${g.classroom_count} Stream(s)` : 'Setup Needed'}</div>
+                            </div>
+                        </div>
+                        <span class="badge ${configured ? 'badge-success' : 'badge-warning'}" style="font-weight: 700; font-size: 10px; padding: 2px 6px; flex-shrink: 0; border-radius: 999px;">
+                            ${configured ? `🟢 ${g.classroom_count} Stream` : '⚠️ Setup'}
+                        </span>
+                    </div>
+
+                    <div style="flex: 1; margin-bottom: 10px;">
+                        <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px; letter-spacing: 0.3px;">Active Streams</div>
+                        <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                            ${streamChipsHtml}
+                        </div>
+                    </div>
+
+                    <div style="margin-top: auto; border-top: 1px solid var(--c-border-light); padding-top: 8px;">
+                        <a href="workspace.html?grade_id=${g.id}&year=${currentYear}" class="btn btn-sm ${configured ? 'btn-outline' : 'btn-primary'}" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 4px; font-size: 11px; font-weight: 800; padding: 5px 8px; text-decoration: none; border-radius: 6px;" onclick="event.stopPropagation();">
+                            ${btnLabel}
+                        </a>
+                    </div>
+                </div>
+            `;
+        });
+
+        html += `</div>`;
+    });
+
+    el.innerHTML = html;
+}
+
+function renderClassroomChips(g) {
+    if (!g.classrooms.length) {
+        return `<div style="padding:14px 0;color:var(--c-text-muted);font-size:13px;">No classrooms configured yet. Click Create to set up rooms for ${g.grade_name}.</div>`;
+    }
+    const chips = g.classrooms.map(c => `
+        <div class="classroom-chip" id="chip-room-${c.id}">
+            🏫 ${c.classroom_name}
+            <button class="chip-delete" title="Delete ${c.classroom_name}" onclick="startDeleteProtection(${c.id},'${esc(c.classroom_name)}',this)">✕</button>
+        </div>`).join('');
+    return `<div class="classroom-chips">${chips}</div>`;
+}
+
+function toggleGrade(id) {
+    const body = document.getElementById(`grade-body-${id}`);
+    body.style.display = body.style.display==='none' ? 'block' : 'none';
+}
+
+// ── SETUP MODAL ─────────────────────────────────────────────
+function openSetupModal(gradeId, gradeName) {
+    modalGradeId   = gradeId;
+    modalGradeName = gradeName;
+    document.getElementById('modalGradeTitle').textContent = `Configure Classrooms — ${gradeName}`;
+    document.getElementById('modalGradeSub').textContent   = `Academic Year ${currentYear} · Enter names as they appear in school (e.g., Form 3 Science, Form 3 Arts)`;
+
+    // Pre-fill with existing classrooms
+    const g = allGrades.find(x => x.id==gradeId);
+    const existing = g ? g.classrooms : [];
+    const qty = Math.max(existing.length, 2);
+    document.getElementById('classroomQty').value = qty;
+    generateRoomFields(qty, existing);
+
+    document.getElementById('setupModal').classList.add('open');
+}
+
+function closeSetupModal() { document.getElementById('setupModal').classList.remove('open'); }
+
+function adjustQty(delta) {
+    const inp = document.getElementById('classroomQty');
+    const val = Math.max(1, Math.min(20, parseInt(inp.value||1) + delta));
+    inp.value = val;
+    generateRoomFields(val);
+}
+
+function generateRoomFields(qty, existing=[]) {
+    const container = document.getElementById('dynamicFields');
+    container.innerHTML = '';
+    qty = parseInt(qty) || 1;
+    for (let i = 1; i <= qty; i++) {
+        const ex = existing[i-1] || {};
+        const ph = `e.g., Form ${modalGradeName.replace('Form ','')} Stream ${String.fromCharCode(64+i)}`;
+        const div = document.createElement('div');
+        div.className = 'dynamic-room';
+        div.innerHTML = `
+            <label>Classroom Room #${i}:</label>
+            <div class="room-row">
+                <input type="text" class="form-control room-name" name="classroom_names[]"
+                    placeholder="${ph}" value="${esc2(ex.classroom_name||'')}" autocomplete="off">
+                <input type="number" class="form-control room-cap" name="capacities[]"
+                    placeholder="Capacity" value="${ex.capacity||45}" min="1" max="200">
+            </div>`;
+        container.appendChild(div);
+    }
+}
+
+async function saveClassrooms() {
+    const names = [...document.querySelectorAll('#dynamicFields .room-name')].map(i=>i.value.trim());
+    const caps  = [...document.querySelectorAll('#dynamicFields .room-cap')].map(i=>parseInt(i.value)||45);
+    const valid = names.filter(n=>n);
+    if (!valid.length) { showToast('Please enter at least one classroom name.',true); return; }
+
+    const res = await api('/shule-cafe/api/headmaster/classrooms/classrooms_api.php?action=save_classrooms', {
+        method:'POST', body: { action:'save_classrooms', grade_id:modalGradeId, year:currentYear, classroom_names:names, capacities:caps }
+    });
+    if (res.success) {
+        closeSetupModal();
+        showToast(res.message);
+        loadSetup();
+    } else {
+        showToast(res.message||'Save failed.', true);
+    }
+}
+
+// ── THREE-LAYER DELETION PROTECTION PATTERN ───────────────
+let activeDeletion = null; // { id, name, timerId, originalHtml, chipEl }
+let targetDeleteId   = 0;
+let targetDeleteName = '';
+
+// LAYER 1: CLIENT-SIDE REVERSAL (5s Undo Countdown)
+function startDeleteProtection(classroomId, name, btnEl) {
+    const chipEl = btnEl.closest('.classroom-chip');
+    if (!chipEl) return;
+
+    // If another deletion is queued, clear it immediately
+    if (activeDeletion && activeDeletion.timerId) {
+        clearInterval(activeDeletion.timerId);
+        if (activeDeletion.chipEl) activeDeletion.chipEl.innerHTML = activeDeletion.originalHtml;
+    }
+
+    const originalHtml = chipEl.innerHTML;
+    let secondsLeft = 5;
+
+    // Transform row into yellow alert with active undo button
+    chipEl.style.cssText = 'background:#fef9c3;border:1.5px solid #fcd34d;color:#92400e;padding:5px 12px;border-radius:20px;display:inline-flex;align-items:center;gap:8px;';
+    chipEl.innerHTML = `
+        <span style="font-weight:700;font-size:11px;">⚠️ "${name}" queued for deletion (<strong id="undo-timer-${classroomId}">5</strong>s)…</span>
+        <button style="background:#059669;color:white;padding:2px 8px;font-size:11px;font-weight:800;border:none;border-radius:12px;cursor:pointer;" onclick="event.stopPropagation();undoDeletion(${classroomId})">↩️ UNDO</button>
+    `;
+
+    const timerId = setInterval(() => {
+        secondsLeft--;
+        const timerEl = document.getElementById(`undo-timer-${classroomId}`);
+        if (timerEl) timerEl.textContent = secondsLeft;
+
+        if (secondsLeft <= 0) {
+            clearInterval(timerId);
+            // Restore chip & trigger Layer 2 Double-Confirmation Modal
+            chipEl.innerHTML = originalHtml;
+            chipEl.style.cssText = '';
+            activeDeletion = null;
+            openDeleteConfirmModal(classroomId, name);
+        }
+    }, 1000);
+
+    activeDeletion = { id: classroomId, name, timerId, originalHtml, chipEl };
+}
+
+function undoDeletion(classroomId) {
+    if (activeDeletion && activeDeletion.id === classroomId) {
+        clearInterval(activeDeletion.timerId);
+        activeDeletion.chipEl.innerHTML = activeDeletion.originalHtml;
+        activeDeletion.chipEl.style.cssText = '';
+        activeDeletion = null;
+        showToast('Deletion cancelled. Classroom safe.');
+    }
+}
+
+// LAYER 2: DOUBLE-CONFIRMATION MODAL WITH VALUE VERIFICATION
+function openDeleteConfirmModal(classroomId, name) {
+    targetDeleteId   = classroomId;
+    targetDeleteName = name;
+
+    document.getElementById('deleteExpectedName').textContent = name;
+    const inp = document.getElementById('confirmDeleteInput');
+    inp.value = '';
+
+    const btn = document.getElementById('confirmDeleteBtn');
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+    btn.style.cursor = 'not-allowed';
+
+    document.getElementById('deleteConfirmModal').classList.add('open');
+    setTimeout(() => inp.focus(), 150);
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteConfirmModal').classList.remove('open');
+}
+
+function validateDeleteInput() {
+    const val = document.getElementById('confirmDeleteInput').value.trim();
+    const btn = document.getElementById('confirmDeleteBtn');
+    if (val === targetDeleteName) {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+    } else {
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        btn.style.cursor = 'not-allowed';
+    }
+}
+
+// LAYER 3 TRIGGER: EXECUTE VERIFIED DELETION (Calls Backend Safety Valve)
+async function executeVerifiedDeletion() {
+    const btn = document.getElementById('confirmDeleteBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Verifying & Deleting…';
+
+    const res = await api('/shule-cafe/api/headmaster/classrooms/classrooms_api.php', {
+        method: 'POST',
+        body: { action: 'delete_classroom', classroom_id: targetDeleteId }
+    });
+
+    closeDeleteModal();
+    btn.textContent = '🔴 CONFIRM DELETE';
+
+    showToast(res.message, !res.success);
+    if (res.success) loadSetup();
+}
+
+// ── GRADE-CONTEXTUAL BULK CSV IMPORT ───────────────────────
+function openGradeImportModal() {
+    const gradeId = document.getElementById('allocGradeSelect').value;
+    if (!gradeId) { showToast('Please select a Grade first before importing.', true); return; }
+    const g = allGrades.find(x => x.id == gradeId);
+    const gradeName = g ? g.grade_name : `Grade #${gradeId}`;
+
+    document.getElementById('importTargetGradeName').textContent = gradeName;
+    document.getElementById('gradeCsvFile').value = '';
+    document.getElementById('gradeImportModal').classList.add('open');
+}
+
+function closeGradeImportModal() {
+    document.getElementById('gradeImportModal').classList.remove('open');
+}
+
+async function executeGradeImport(e) {
+    e.preventDefault();
+    const gradeId = document.getElementById('allocGradeSelect').value;
+    const fileInput = document.getElementById('gradeCsvFile');
+    if (!fileInput.files.length) { showToast('Please choose a CSV file.', true); return; }
+
+    const btn = document.getElementById('gradeImportBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ Importing Students…';
+
+    const formData = new FormData();
+    formData.append('grade_id', gradeId);
+    formData.append('academic_year', currentYear);
+    formData.append('student_csv', fileInput.files[0]);
+
+    try {
+        const res = await fetch('/shule-cafe/api/headmaster/classrooms/import_students_grade.php', {
+            method: 'POST',
+            body: formData,
+            credentials: 'include'
+        });
+        const data = await res.json();
+        closeGradeImportModal();
+        btn.disabled = false;
+        btn.textContent = '📥 Upload & Lock to Grade Cohort';
+
+        if (data.success) {
+            showToast(data.message);
+            loadAllocation();
+        } else {
+            showToast(data.message || 'Import failed.', true);
+        }
+    } catch (err) {
+        btn.disabled = false;
+        btn.textContent = '📥 Upload & Lock to Grade Cohort';
+        showToast('Network/system error during import.', true);
+    }
+}
+
+// ══════════════════════════════════════════════════════════
+//  TAB 2 — STUDENT ALLOCATION
+// ══════════════════════════════════════════════════════════
+let poolStudents   = [];
+let rosterStudents = [];
+let currentClassroomId = 0;
+
+async function loadAllocGrades() {
+    const data = await api(`/shule-cafe/api/headmaster/classrooms/classrooms_api.php?year=${currentYear}`);
+    if (!data.success) return;
+    const sel = document.getElementById('allocGradeSelect');
+    sel.innerHTML = '<option value="">-- Select Grade --</option>' +
+        data.grades.filter(g=>g.classroom_count>0).map(g => `<option value="${g.id}">${g.grade_name} (${g.classroom_count} classrooms)</option>`).join('');
+    allGrades = data.grades;
+}
+
+function onAllocGradeChange() {
+    const gradeId = document.getElementById('allocGradeSelect').value;
+    const sel     = document.getElementById('allocClassroomSelect');
+    sel.innerHTML = '<option value="">-- Select Classroom --</option>';
+    if (!gradeId) {
+        document.getElementById('allocWorkspace').innerHTML = `
+            <div class="empty-state" style="margin-top:16px;background:white;border:1px solid var(--c-border-light);border-radius:10px;">
+                <div class="es-icon">🏫</div>
+                <h4>Select a grade and classroom above</h4>
+                <p>The student pool and classroom roster will appear here.</p>
+            </div>`;
+        return;
+    }
+    const g = allGrades.find(x=>x.id==gradeId);
+    if (g && g.classrooms) {
+        sel.innerHTML += g.classrooms.map(c=>`<option value="${c.id}">${c.classroom_name} (${c.capacity} seats)</option>`).join('');
+        if (g.classrooms.length === 1) {
+            sel.value = g.classrooms[0].id;
+            loadAllocation();
+        }
+    }
+}
+
+async function loadAllocation() {
+    const classroomId = document.getElementById('allocClassroomSelect').value;
+    const gradeId     = document.getElementById('allocGradeSelect').value;
+    if (!gradeId) { showToast('Please select a Grade first.', true); return; }
+    if (!classroomId) { showToast('Please select a Target Classroom.', true); return; }
+    currentClassroomId = parseInt(classroomId);
+
+    const [poolData, rosterData] = await Promise.all([
+        api(`/shule-cafe/api/headmaster/classrooms/allocation_api.php?action=get_pool&year=${currentYear}&grade_id=${gradeId}`),
+        api(`/shule-cafe/api/headmaster/classrooms/allocation_api.php?action=get_roster&year=${currentYear}&classroom_id=${classroomId}`)
+    ]);
+
+    poolStudents   = poolData.pool   || [];
+    rosterStudents = rosterData.roster || [];
+    const classroom = rosterData.classroom || {};
+    renderAllocationWorkspace(classroom, gradeId);
+}
+
+function renderAllocationWorkspace(classroom, gradeId) {
+    const cap      = classroom.capacity || 45;
+    const fillPct  = Math.min(100, Math.round(rosterStudents.length / cap * 100));
+    const fillClr  = fillPct >= 100 ? '#dc2626' : fillPct >= 80 ? '#d97706' : '#059669';
+
+    document.getElementById('allocWorkspace').innerHTML = `
+        <div class="alloc-workspace">
+            <!-- LEFT: Unassigned pool -->
+            <div class="alloc-panel">
+                <div class="alloc-panel-header">
+                    <div>
+                        <div class="alloc-panel-title">🗳️ Unassigned Student Pool</div>
+                        <div style="font-size:11px;color:var(--c-text-muted);">${poolStudents.length} students not yet placed</div>
+                    </div>
+                    <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;cursor:pointer;">
+                        <input type="checkbox" id="selectAllPool" onchange="toggleSelectAll(this,'pool-student-')"> All
+                    </label>
+                </div>
+                <input class="alloc-search" id="poolSearch" placeholder="🔍 Search student name…" oninput="filterPool(this.value)">
+                <div class="alloc-list" id="poolList">
+                    ${poolStudents.length === 0
+                        ? '<div class="empty-state" style="padding:24px;"><div class="es-icon">✅</div><p>All students are allocated.</p></div>'
+                        : poolStudents.map(s=>`
+                        <div class="alloc-item" id="pool-student-${s.id}">
+                            <input type="checkbox" class="pool-check" value="${s.id}">
+                            <div>
+                                <div class="student-name">${s.full_name}</div>
+                                <div class="student-code">${s.user_code||'—'}</div>
+                            </div>
+                        </div>`).join('')
+                    }
+                </div>
+                <div class="alloc-action-bar">
+                    <span style="font-size:12px;color:var(--c-text-muted);" id="poolSelectedCount">0 selected</span>
+                    <button class="btn btn-primary btn-sm" onclick="assignSelected()" style="font-weight:700;">Move to Classroom ➡</button>
+                </div>
+            </div>
+
+            <!-- RIGHT: Classroom roster -->
+            <div class="alloc-panel">
+                <div class="alloc-panel-header">
+                    <div>
+                        <div class="alloc-panel-title">🏫 ${classroom.classroom_name||'Classroom'} Roster</div>
+                        <div style="font-size:11px;color:var(--c-text-muted);">${rosterStudents.length} / ${cap} seats filled</div>
+                    </div>
+                </div>
+                <div class="capacity-bar"><div class="capacity-fill" style="width:${fillPct}%;background:${fillClr};"></div></div>
+                <input class="alloc-search" id="rosterSearch" placeholder="🔍 Search roster…" oninput="filterRoster(this.value)">
+                <div class="alloc-list" id="rosterList">
+                    ${rosterStudents.length === 0
+                        ? '<div class="empty-state" style="padding:24px;"><div class="es-icon">📋</div><p>No students assigned yet.</p></div>'
+                        : rosterStudents.map((s,i)=>`
+                        <div class="alloc-item" id="roster-student-${s.id}">
+                            <div style="font-size:12px;font-weight:700;color:var(--c-text-muted);width:24px;flex-shrink:0;">${i+1}</div>
+                            <div style="flex:1;">
+                                <div class="student-name">${s.full_name}</div>
+                                <div class="student-code">${s.user_code||'—'}</div>
+                            </div>
+                            <button class="remove-btn" onclick="removeStudent('${s.id}')">Remove</button>
+                        </div>`).join('')
+                    }
+                </div>
+                <div class="alloc-action-bar">
+                    <span style="font-size:12px;color:${fillClr};font-weight:700;">${fillPct}% full</span>
+                    <span style="font-size:12px;color:var(--c-text-muted);">${cap - rosterStudents.length} seats remaining</span>
+                </div>
+            </div>
+        </div>`;
+
+    // Attach checkbox counter listener
+    document.getElementById('poolList').addEventListener('change', updatePoolCounter);
+}
+
+function updatePoolCounter() {
+    const count = document.querySelectorAll('.pool-check:checked').length;
+    const el    = document.getElementById('poolSelectedCount');
+    if (el) el.textContent = `${count} selected`;
+}
+
+function toggleSelectAll(chk, prefix) {
+    document.querySelectorAll(`.pool-check`).forEach(c => c.checked = chk.checked);
+    updatePoolCounter();
+}
+
+function filterPool(q) {
+    document.querySelectorAll('#poolList .alloc-item').forEach(el => {
+        el.style.display = el.querySelector('.student-name').textContent.toLowerCase().includes(q.toLowerCase()) ? 'flex' : 'none';
+    });
+}
+function filterRoster(q) {
+    document.querySelectorAll('#rosterList .alloc-item').forEach(el => {
+        el.style.display = el.querySelector('.student-name').textContent.toLowerCase().includes(q.toLowerCase()) ? 'flex' : 'none';
+    });
+}
+
+async function assignSelected() {
+    const ids = [...document.querySelectorAll('.pool-check:checked')].map(c=>c.value);
+    if (!ids.length) { showToast('Select at least one student first.', true); return; }
+    const res = await api('/shule-cafe/api/headmaster/classrooms/allocation_api.php', {
+        method:'POST', body:{ action:'assign', classroom_id:currentClassroomId, student_ids:ids, year:currentYear }
+    });
+    showToast(res.message, !res.success);
+    if (res.success) loadAllocation();
+}
+
+async function removeStudent(studentId) {
+    if (!confirm('Remove this student from the classroom?')) return;
+    const res = await api('/shule-cafe/api/headmaster/classrooms/allocation_api.php', {
+        method:'POST', body:{ action:'remove', classroom_id:currentClassroomId, student_id:studentId, year:currentYear }
+    });
+    showToast(res.message, !res.success);
+    if (res.success) loadAllocation();
+}
+
+// ══════════════════════════════════════════════════════════
+//  TAB 3 — PROMOTION WIZARD
+// ══════════════════════════════════════════════════════════
+async function loadPromoClassrooms() {
+    const year = document.getElementById('promoFromYear').value.trim();
+    const data = await api(`/shule-cafe/api/headmaster/classrooms/promotion_api.php?action=list_classrooms&year=${year}`);
+    if (!data.success) { showToast('Failed to load classrooms.',true); return; }
+    const sel = document.getElementById('promoSourceClass');
+    sel.innerHTML = '<option value="">-- Select Classroom --</option>' +
+        data.classrooms.map(c => `<option value="${c.id}">${c.level_name} · ${c.grade_name} · ${c.classroom_name} (${c.student_count} students)</option>`).join('');
+    showToast(`Loaded ${data.classrooms.length} classrooms for ${year}.`);
+}
+
+async function loadPromoStudents() {
+    const classroomId = document.getElementById('promoSourceClass').value;
+    const fromYear    = document.getElementById('promoFromYear').value.trim();
+    if (!classroomId) { showToast('Select a source classroom first.', true); return; }
+
+    const data = await api(`/shule-cafe/api/headmaster/classrooms/promotion_api.php?action=get_source&classroom_id=${classroomId}&from_year=${fromYear}`);
+    if (!data.success) { showToast('Failed to load students.',true); return; }
+    promoData = data;
+    renderPromoTable(data);
+    ['pstep1','pstep2','pstep3'].forEach((id,i)=>{
+        document.getElementById(id).className = 'promo-step' + (i===1?' active':i===0?' done':'');
+    });
+    document.getElementById('promoStep1').style.display = 'none';
+    document.getElementById('promoStep2').style.display = 'block';
+    document.getElementById('promoStep3').style.display = 'none';
+}
+
+function renderPromoTable(data) {
+    const { students, target_classrooms, repeat_classrooms, from_year, to_year } = data;
+    document.getElementById('promoSubLabel').textContent = `From ${from_year} → ${to_year} · ${students.length} students`;
+
+    const targetOpts = [...target_classrooms.map(c=>`<option value="${c.id}">⬆️ Promote → ${c.classroom_name}</option>`),
+                        ...repeat_classrooms.map(c=>`<option value="${c.id}">🔁 Repeat → ${c.classroom_name}</option>`)].join('');
+
+    // Populate bulk target select
+    document.getElementById('bulkTargetSelect').innerHTML = '<option value="">-- Choose target --</option>' + targetOpts;
+
+    const tbody = document.getElementById('promoTableBody');
+    tbody.innerHTML = students.map(s => {
+        const pass = s.auto_pass;
+        const recTag = pass 
+            ? `<span class="badge badge-success" style="font-weight:700;font-size:12px;">🟢 Promote</span>` 
+            : `<span class="badge badge-warning" style="font-weight:700;font-size:12px;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;">🔴 Repeat</span>`;
+        const gpaTag = `<span style="font-weight:800;color:${pass ? '#059669' : '#dc2626'};">${s.final_gpa}</span>`;
+
+        // Pre-select action from system recommendation
+        const defaultAction = s.auto_recommendation === 'Promote' ? 'Promoted' : 'Repeated';
+
+        return `
+        <tr id="promoRow-${s.student_id}">
+            <td><input type="checkbox" class="promo-row-check" value="${s.student_id}" checked></td>
+            <td style="font-weight:700;">${s.full_name}</td>
+            <td style="font-size:11px;color:var(--c-text-muted);">${s.user_code||'—'}</td>
+            <td>${gpaTag}</td>
+            <td>${recTag}</td>
+            <td>
+                <select class="outcome-select" id="outcome-${s.student_id}" onchange="updateRowStyle('${s.student_id}')">
+                    <option value="Promoted" ${defaultAction === 'Promoted' ? 'selected' : ''}>Promote</option>
+                    <option value="Repeated" ${defaultAction === 'Repeated' ? 'selected' : ''}>Repeat</option>
+                    <option value="Transferred">Drop Out / Exit</option>
+                </select>
+            </td>
+            <td>
+                <select class="target-select" id="target-${s.student_id}">
+                    <option value="">-- Select Target Room --</option>
+                </select>
+            </td>
+        </tr>`;
+    }).join('');
+
+    // Populate initial target options for each student row
+    students.forEach(s => updateRowStyle(s.student_id));
+
+    if (!target_classrooms.length) {
+        showToast(`⚠️ No target classrooms found for ${to_year}. Please set up ${to_year} classrooms first in the Setup tab.`, true);
+    }
+}
+
+function updateRowStyle(sid) {
+    if (!promoData) return;
+    const outcome = document.getElementById(`outcome-${sid}`).value;
+    const row     = document.getElementById(`promoRow-${sid}`);
+    const targetSelect = document.getElementById(`target-${sid}`);
+    const { target_classrooms, repeat_classrooms } = promoData;
+
+    if (outcome === 'Promoted') {
+        row.style.background = '#f0fdf4';
+        targetSelect.disabled = false;
+        targetSelect.innerHTML = target_classrooms.length
+            ? target_classrooms.map(c=>`<option value="${c.id}">⬆️ ${c.classroom_name}</option>`).join('')
+            : '<option value="">-- No Target Rooms --</option>';
+    } else if (outcome === 'Repeated') {
+        row.style.background = '#fef9c3';
+        targetSelect.disabled = false;
+        targetSelect.innerHTML = repeat_classrooms.length
+            ? repeat_classrooms.map(c=>`<option value="${c.id}">🔁 ${c.classroom_name}</option>`).join('')
+            : '<option value="">-- No Repeat Rooms --</option>';
+    } else {
+        row.style.background = '#f1f5f9';
+        targetSelect.disabled = true;
+        targetSelect.innerHTML = '<option value="">N/A - Account Exit / Transferred</option>';
+    }
+}
+
+function togglePromoAll(chk) {
+    document.querySelectorAll('.promo-row-check').forEach(c => c.checked = chk.checked);
+}
+
+function bulkSetOutcome(outcome) {
+    document.querySelectorAll('.promo-row-check:checked').forEach(chk => {
+        const sid = chk.value;
+        document.getElementById(`outcome-${sid}`).value = outcome;
+        updateRowStyle(sid);
+    });
+}
+
+function bulkSetTarget() {
+    const sel = document.getElementById('bulkTargetSelect');
+    sel.style.display = sel.style.display==='none' ? 'inline-block' : 'none';
+    if (sel.style.display !== 'none') {
+        sel.onchange = function() {
+            if (!this.value) return;
+            document.querySelectorAll('.promo-row-check:checked').forEach(chk => {
+                document.getElementById(`target-${chk.value}`).value = this.value;
+            });
+            showToast('Target classroom set for all selected students.');
+            sel.style.display = 'none';
+        };
+    }
+}
+
+function backToPromoStep1() {
+    document.getElementById('promoStep1').style.display = 'block';
+    document.getElementById('promoStep2').style.display = 'none';
+    ['pstep1','pstep2','pstep3'].forEach((id,i)=>{
+        document.getElementById(id).className = 'promo-step' + (i===0?' active':'');
+    });
+}
+
+function goPromoStep3() {
+    // Build summary
+    const rows = [...document.querySelectorAll('.promo-row-check:checked')];
+    if (!rows.length) { showToast('No students selected.',true); return; }
+
+    let promoted=0, repeated=0, transferred=0, missingTarget=0;
+    rows.forEach(chk => {
+        const sid = chk.value;
+        const outcome = document.getElementById(`outcome-${sid}`).value;
+        const target  = document.getElementById(`target-${sid}`).value;
+        if (!target) missingTarget++;
+        if (outcome==='Promoted')    promoted++;
+        else if (outcome==='Repeated')  repeated++;
+        else transferred++;
+    });
+
+    if (missingTarget) {
+        showToast(`⚠️ ${missingTarget} student(s) have no target classroom assigned. Please assign all before proceeding.`, true);
+        return;
+    }
+
+    const toYear = promoData.to_year;
+    document.getElementById('promoSummary').innerHTML = `
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:12px;">
+            <div style="text-align:center;background:#d1fae5;border-radius:8px;padding:14px;">
+                <div style="font-size:28px;font-weight:800;color:#059669;">${promoted}</div>
+                <div style="font-size:12px;font-weight:700;color:#065f46;">Promoted to ${toYear}</div>
+            </div>
+            <div style="text-align:center;background:#fef9c3;border-radius:8px;padding:14px;">
+                <div style="font-size:28px;font-weight:800;color:#d97706;">${repeated}</div>
+                <div style="font-size:12px;font-weight:700;color:#92400e;">Repeated Same Grade</div>
+            </div>
+            <div style="text-align:center;background:#e0f2fe;border-radius:8px;padding:14px;">
+                <div style="font-size:28px;font-weight:800;color:#0369a1;">${transferred}</div>
+                <div style="font-size:12px;font-weight:700;color:#075985;">Transferred Out</div>
+            </div>
+        </div>
+        <p style="margin:0;font-size:13px;color:var(--c-text-muted);">Total students being processed: <strong>${rows.length}</strong> students from ${promoData.from_year} → ${toYear}</p>`;
+
+    document.getElementById('promoStep2').style.display = 'none';
+    document.getElementById('promoStep3').style.display = 'block';
+    ['pstep1','pstep2','pstep3'].forEach((id,i)=>{
+        document.getElementById(id).className = 'promo-step' + (i===2?' active':' done');
+    });
+}
+
+function backToPromoStep2() {
+    document.getElementById('promoStep3').style.display = 'none';
+    document.getElementById('promoStep2').style.display = 'block';
+}
+
+async function executePromotion() {
+    const rows = [...document.querySelectorAll('.promo-row-check:checked')];
+    const fromClassroomId = document.getElementById('promoSourceClass').value;
+    const fromYear = promoData.from_year;
+    const toYear   = promoData.to_year;
+
+    const promotions = rows.map(chk => {
+        const sid = chk.value;
+        return {
+            student_id: sid,
+            target_classroom_id: document.getElementById(`target-${sid}`).value,
+            outcome: document.getElementById(`outcome-${sid}`).value
+        };
+    });
+
+    const btn = document.getElementById('executePromoBtn');
+    btn.disabled = true; btn.textContent = '⏳ Processing…';
+
+    const res = await api('/shule-cafe/api/headmaster/classrooms/promotion_api.php', {
+        method:'POST',
+        body: { action:'process', from_year:fromYear, to_year:toYear, from_classroom_id:parseInt(fromClassroomId), promotions }
+    });
+
+    btn.disabled = false; btn.textContent = '🎓 Execute Promotion Now';
+
+    if (res.success) {
+        showToast(`🎓 ${res.message}`);
+        // Reset wizard
+        setTimeout(() => {
+            document.getElementById('promoStep3').style.display = 'none';
+            document.getElementById('promoStep1').style.display = 'block';
+            ['pstep1','pstep2','pstep3'].forEach((id,i)=>{ document.getElementById(id).className = 'promo-step'+(i===0?' active':''); });
+        }, 2000);
+    } else {
+        showToast(res.message||'Promotion failed.', true);
+    }
+}
+
+// ── HELPERS ────────────────────────────────────────────────
+async function api(url, opts={}) {
+    try {
+        const res = await fetch(url, {
+            credentials: 'include',
+            method: opts.method || 'GET',
+            headers: opts.body ? {'Content-Type':'application/json'} : {},
+            body: opts.body ? JSON.stringify(opts.body) : undefined
+        });
+        return await res.json();
+    } catch(e) { return {success:false, message:'Network error.'}; }
+}
+
+function showToast(msg, isErr=false) {
+    const t = document.getElementById('toast');
+    t.style.background = isErr ? '#fef2f2' : '#f0fdf4';
+    t.style.border     = `1.5px solid ${isErr?'#fca5a5':'#6ee7b7'}`;
+    t.style.color      = isErr ? '#991b1b' : '#065f46';
+    t.innerHTML        = (isErr ? '⚠️ ' : '✅ ') + msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+function esc(s)  { return (s||'').replace(/'/g,"\\'"); }
+function esc2(s) { return (s||'').replace(/"/g,'&quot;'); }
+
+// Close modal on backdrop
+document.getElementById('setupModal').addEventListener('click', function(e) { if(e.target===this) closeSetupModal(); });
+
+// Generate initial fields when modal opens
+generateRoomFields(2);
+</script>
+</body>
+</html>

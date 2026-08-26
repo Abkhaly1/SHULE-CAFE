@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shule Cafe - Design System Inventory</title>
+    <link rel="stylesheet" href="css/design-system.css">
+    <style>
+        .inventory-layout { display: flex; }
+        .inventory-sidebar { width: 220px; background: #fff; border-right: 1px solid var(--c-border); height: 100vh; position: fixed; overflow-y: auto; padding: 20px 0; }
+        .inventory-nav { list-style: none; }
+        .inventory-nav a { display: block; padding: 8px 20px; color: var(--c-text-primary); border-left: 3px solid transparent; }
+        .inventory-nav a:hover { background: #f0f0f1; color: var(--c-primary-500); border-left-color: var(--c-primary-500); }
+        .inventory-content { margin-left: 220px; padding: 40px; flex: 1; max-width: 1000px; }
+        .section-header { margin: 60px 0 20px; padding-bottom: 10px; border-bottom: 2px solid var(--c-border-light); font-size: 24px; }
+        .component-row { margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-start; flex-wrap: wrap; }
+        .preview-box { border: 1px dashed var(--c-border-dark); padding: 20px; background: #fff; margin-bottom: 20px; }
+        .token-block { width: 100px; height: 100px; border-radius: 4px; display: flex; align-items: flex-end; padding: 8px; font-size: 11px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="inventory-layout">
+    <aside class="inventory-sidebar">
+        <h3 style="padding: 0 20px; margin-bottom: 15px; color: var(--c-primary-500);">Design System</h3>
+        <ul class="inventory-nav">
+            <li><a href="#tokens">1. Design Tokens</a></li>
+            <li><a href="#typography">2. Typography</a></li>
+            <li><a href="#buttons">3. Buttons</a></li>
+            <li><a href="#forms">4. Form Components</a></li>
+            <li><a href="#cards">5. Cards</a></li>
+            <li><a href="#badges">6. Badges</a></li>
+            <li><a href="#alerts">7. Alerts & Feedback</a></li>
+            <li><a href="#tables">8. Table System</a></li>
+            <li><a href="#workspace">9. Workspace Components</a></li>
+        </ul>
+    </aside>
+
+    <main class="inventory-content">
+        <h1>Component Inventory</h1>
+        <p class="text-muted">Single Source of Truth for Shule Cafe Phase 1.</p>
+
+        <!-- Tokens -->
+        <h2 id="tokens" class="section-header">1. Design Tokens (Colors)</h2>
+        <div class="component-row">
+            <div class="token-block" style="background: var(--c-primary-500); color: #fff;">Primary 500</div>
+            <div class="token-block" style="background: var(--c-bg-body); border: 1px solid var(--c-border);">Body BG</div>
+            <div class="token-block" style="background: var(--c-bg-surface); border: 1px solid var(--c-border);">Surface</div>
+            <div class="token-block" style="background: var(--c-success-text); color: #fff;">Success</div>
+            <div class="token-block" style="background: var(--c-warning-text); color: #fff;">Warning</div>
+            <div class="token-block" style="background: var(--c-danger-text); color: #fff;">Danger</div>
+        </div>
+
+        <!-- Typography -->
+        <h2 id="typography" class="section-header">2. Typography</h2>
+        <div class="preview-box">
+            <div class="text-display">Display (28px)</div>
+            <h1>H1 Heading (23px)</h1>
+            <h2>H2 Heading (20px)</h2>
+            <h3>H3 Heading (16px)</h3>
+            <h4>H4 Heading (14px)</h4>
+            <p class="text-body-large">Body Large (14px) - Useful for emphasis.</p>
+            <p class="text-body">Body Default (13px) - Standard text used across the administration interface.</p>
+            <p class="text-body-small">Body Small (12px) - Used for captions and help text.</p>
+            <a href="#">Standard Link</a>
+        </div>
+
+        <!-- Buttons -->
+        <h2 id="buttons" class="section-header">3. Buttons (Variants & Sizes)</h2>
+        <div class="preview-box">
+            <div class="component-row">
+                <button class="btn btn-primary">Primary</button>
+                <button class="btn btn-secondary">Secondary</button>
+                <button class="btn btn-outline">Outline</button>
+                <button class="btn btn-ghost">Ghost</button>
+                <button class="btn btn-danger">Danger</button>
+                <button class="btn btn-primary btn-loading">Loading</button>
+                <button class="btn btn-primary" disabled>Disabled</button>
+            </div>
+            <div class="component-row" style="align-items: center;">
+                <button class="btn btn-primary btn-sm">Small (24px)</button>
+                <button class="btn btn-primary btn-md">Medium (30px)</button>
+                <button class="btn btn-primary btn-lg">Large (40px)</button>
+                <button class="btn btn-secondary btn-icon">⚙</button>
+            </div>
+        </div>
+
+        <!-- Forms -->
+        <h2 id="forms" class="section-header">4. Form Components</h2>
+        <div class="preview-box" style="max-width: 400px;">
+            <div class="form-group">
+                <label class="form-label">Text Input</label>
+                <input type="text" class="form-control" placeholder="Enter text...">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Select Input</label>
+                <select class="form-select">
+                    <option>Option 1</option>
+                    <option>Option 2</option>
+                </select>
+                <span class="form-help">Helper text for selection.</span>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Textarea</label>
+                <textarea class="form-textarea" placeholder="Type here..."></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Invalid Input</label>
+                <input type="text" class="form-control is-invalid" value="Wrong data">
+                <span class="form-error-msg">This field is required.</span>
+            </div>
+            <div class="component-row">
+                <label class="form-check">
+                    <input type="checkbox" class="form-check-input" checked>
+                    <span class="form-check-label">Checkbox</span>
+                </label>
+                <label class="form-check">
+                    <input type="radio" class="form-check-input" name="rad" checked>
+                    <span class="form-check-label">Radio</span>
+                </label>
+                <label class="form-check">
+                    <span class="form-switch"><input type="checkbox" checked><span class="switch-slider"></span></span>
+                    <span class="form-check-label">Switch</span>
+                </label>
+            </div>
+            <div class="file-upload">
+                <p>Drag and drop files here, or <a href="#">browse</a>.</p>
+            </div>
+        </div>
+
+        <!-- Cards -->
+        <h2 id="cards" class="section-header">5. Cards</h2>
+        <div class="component-row">
+            <div class="card" style="width: 300px;">
+                <div class="card-header"><h3 class="card-title">Content Card</h3></div>
+                <div class="card-body">Standard card content goes here.</div>
+                <div class="card-footer"><button class="btn btn-secondary btn-sm">Action</button></div>
+            </div>
+            <div class="card stat-card" style="width: 200px;">
+                <span class="stat-card-title">Total Students</span>
+                <span class="stat-card-value">1,245</span>
+            </div>
+        </div>
+
+        <!-- Badges -->
+        <h2 id="badges" class="section-header">6. Badges</h2>
+        <div class="preview-box">
+            <span class="badge badge-active">Active</span>
+            <span class="badge badge-pending">Pending</span>
+            <span class="badge badge-suspended">Suspended</span>
+            <span class="badge badge-inactive">Inactive</span>
+        </div>
+
+        <!-- Alerts -->
+        <h2 id="alerts" class="section-header">7. Alerts & Feedback States</h2>
+        <div class="preview-box">
+            <div class="alert alert-success">
+                <div class="alert-content"><strong>Success!</strong> <p>Data saved successfully.</p></div>
+            </div>
+            <div class="alert alert-warning">
+                <div class="alert-content"><strong>Warning!</strong> <p>Your subscription ends soon.</p></div>
+            </div>
+            <div class="alert alert-error">
+                <div class="alert-content"><strong>Error!</strong> <p>Failed to delete record.</p></div>
+            </div>
+            <br>
+            <div class="empty-state">
+                <div class="empty-icon">📁</div>
+                <h3 class="empty-title">No Records Found</h3>
+                <p class="empty-text">There are currently no records available in this section. Get started by creating a new one.</p>
+                <button class="btn btn-primary">Create Record</button>
+            </div>
+            <br>
+            <div style="max-width: 300px;">
+                <p class="text-muted">Skeleton Loader:</p>
+                <div class="skeleton skeleton-avatar" style="margin-bottom: 10px;"></div>
+                <div class="skeleton skeleton-text"></div>
+                <div class="skeleton skeleton-text" style="width: 60%;"></div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <h2 id="tables" class="section-header">8. Table System</h2>
+        <div class="preview-box">
+            <div class="table-wrapper">
+                <div class="table-toolbar">
+                    <div class="table-actions">
+                        <select class="form-select btn-sm" style="width:120px;"><option>Bulk Actions</option></select>
+                        <button class="btn btn-secondary btn-sm">Apply</button>
+                    </div>
+                    <div class="table-search-bar">
+                        <input type="text" class="form-control btn-sm" placeholder="Search..." style="width:200px;">
+                        <button class="btn btn-secondary btn-sm">Search</button>
+                    </div>
+                </div>
+                <table class="table table-sticky">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" class="form-check-input"></th>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox" class="form-check-input"></td>
+                            <td>John Doe</td>
+                            <td><span class="badge badge-active">Active</span></td>
+                            <td><a href="#" class="table-view-action">View</a></td>
+                        </tr>
+                        <tr class="selected">
+                            <td><input type="checkbox" class="form-check-input" checked></td>
+                            <td>Jane Smith</td>
+                            <td><span class="badge badge-pending">Pending</span></td>
+                            <td><a href="#" class="table-view-action">View</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <span class="pagination-info">2 items</span>
+                    <a href="#" class="page-link disabled">&laquo;</a>
+                    <a href="#" class="page-link active">1</a>
+                    <a href="#" class="page-link">2</a>
+                    <a href="#" class="page-link">&raquo;</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workspace -->
+        <h2 id="workspace" class="section-header">9. Workspace Components</h2>
+        <div class="preview-box">
+            <app-breadcrumb path="My Account, Profile, Change my Password"></app-breadcrumb>
+            
+            <div class="workspace-header">
+                <div class="workspace-title-group">
+                    <h1 class="workspace-title">Azania Secondary</h1>
+                    <span class="workspace-meta">Created Aug 1, 2026 | Domain: azania.shulecafe.com</span>
+                </div>
+                <div class="workspace-actions">
+                    <button class="btn btn-outline">Suspend</button>
+                    <button class="btn btn-primary">Edit Settings</button>
+                </div>
+            </div>
+
+            <div class="workspace-tabs">
+                <button class="workspace-tab active">Overview</button>
+                <button class="workspace-tab">People</button>
+                <button class="workspace-tab">Billing</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+</body>
+</html>

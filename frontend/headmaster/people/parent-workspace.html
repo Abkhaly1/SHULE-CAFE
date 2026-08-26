@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Workspace ‹ Headmaster ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="tenant_admin" active-path="/headmaster/people/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Headmaster Mlimani"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content" style="padding: 0;">
+                    
+                    <app-workspace-layout back-url="index.html">
+                        
+                        <app-workspace-header 
+                            title="John Mussa" 
+                            subtitle="Parent / Guardian" 
+                            status="Active"
+                            initials="JM">
+                        </app-workspace-header>
+                        
+                        <app-workspace-summary>
+                            <app-workspace-summary-card label="Children Enrolled" value="2"></app-workspace-summary-card>
+                            <app-workspace-summary-card label="Primary Phone" value="0700 123 456"></app-workspace-summary-card>
+                            <app-workspace-summary-card label="Portal Status" value="Never Logged In"></app-workspace-summary-card>
+                        </app-workspace-summary>
+                        
+                        <!-- ── WORKSPACE WITH SECONDARY SIDEBAR ────────────────────────────────── -->
+                        <div class="workspace-with-sidebar">
+                            <div class="secondary-sidebar">
+                                <div class="secondary-sidebar-nav">
+                                    <button class="active" id="tabbtn-overview" onclick="switchTab('overview')">
+                                        <span class="icon" style="color: #3b82f6;">📁</span> Overview
+                                    </button>
+                                    <button id="tabbtn-children" onclick="switchTab('children')">
+                                        <span class="icon" style="color: #10b981;">👨‍👧‍👦</span> Children
+                                    </button>
+                                    <button id="tabbtn-communications" onclick="switchTab('communications')">
+                                        <span class="icon" style="color: #f59e0b;">💬</span> Communications
+                                    </button>
+                                    <button id="tabbtn-settings" onclick="switchTab('settings')">
+                                        <span class="icon" style="color: #64748b;">⚙️</span> Settings
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- ── MAIN CONTENT CONTAINER ──────────────────────────── -->
+                            <div class="workspace-main-content">
+                        
+                        <div id="panel-overview" style="display:block;">
+                            <div class="card" style="padding: var(--sp-6);">
+                                <h3>Parent Overview</h3>
+                                <p style="color: var(--c-text-secondary); margin-bottom: var(--sp-4);">General contact information and linked students.</p>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6);">
+                                    <div>
+                                        <h4 style="font-size: var(--text-sm); color: var(--c-text-muted); text-transform: uppercase; margin-bottom: var(--sp-2);">Contact Details</h4>
+                                        <ul style="list-style: none; padding: 0; margin: 0; font-size: var(--text-sm);">
+                                            <li style="padding: 8px 0; border-bottom: 1px solid var(--c-border-light);"><strong>Email:</strong> john.mussa@example.com</li>
+                                            <li style="padding: 8px 0; border-bottom: 1px solid var(--c-border-light);"><strong>Phone:</strong> 0700 123 456</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h4 style="font-size: var(--text-sm); color: var(--c-text-muted); text-transform: uppercase; margin-bottom: var(--sp-2);">Quick Actions</h4>
+                                        <div style="display: flex; flex-direction: column; gap: var(--sp-2);">
+                                            <button class="btn btn-outline" style="justify-content: flex-start;">Send SMS</button>
+                                            <button class="btn btn-outline" style="justify-content: flex-start;">Send Portal Invitation</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="panel-children" style="display:none;">
+                            <app-workspace-toolbar search-placeholder="Search enrolled children..."></app-workspace-toolbar>
+                            <div class="card" style="margin: var(--sp-6);">
+                                <div id="childrenTableContainer"></div>
+                            </div>
+                        </div>
+                        
+                        <div id="panel-communications" style="display:none;">
+                            <div class="card" style="padding: var(--sp-6);">
+                                <h3>Communication History</h3>
+                                <app-table-empty title="No Messages" message="SMS and Email logs sent to this parent."></app-table-empty>
+                            </div>
+                        </div>
+
+                        <div id="panel-settings" style="display:none;">
+                            <div class="card" style="padding: var(--sp-6);">
+                                <h3>Parent Settings</h3>
+                                <div style="display: flex; flex-direction: column; gap: var(--sp-2);">
+                                    <button class="btn btn-outline" style="justify-content: flex-start; color: var(--c-warning); border-color: var(--c-warning);">Revoke Portal Access</button>
+                                </div>
+                            </div>
+                        </div>
+
+                            </div>
+                        </div>
+                        
+                    </app-workspace-layout>
+                    
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabId) {
+            ['overview','children','communications','settings'].forEach(id => {
+                document.getElementById(`panel-${id}`).style.display = id === tabId ? 'block' : 'none';
+                document.getElementById(`tabbtn-${id}`).className = (id === tabId ? 'active' : '');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const childrenContainer = document.getElementById('childrenTableContainer');
+            const childrenCols = [
+                { key: 'student', label: 'Student Name', type: 'avatar' },
+                { key: 'regNo', label: 'Reg No.', type: 'text' },
+                { key: 'class', label: 'Class', type: 'text' },
+                { key: 'status', label: 'Status', type: 'status' }
+            ];
+            const childrenData = [
+                { id: 'stu_1', student: { initials: 'AM', name: 'Asha Mussa' }, regNo: 'ST-001', class: 'Standard 7 A', status: 'Active' },
+                { id: 'stu_4', student: { initials: 'JM', name: 'Juma Mussa' }, regNo: 'ST-104', class: 'Standard 3 B', status: 'Active' }
+            ];
+
+            setTimeout(() => {
+                const sTable = document.createElement('app-table');
+                sTable.setAttribute('columns', JSON.stringify(childrenCols));
+                sTable.setAttribute('data', JSON.stringify(childrenData));
+                sTable.setAttribute('entity-url', 'student_workspace.html');
+                childrenContainer.innerHTML = '';
+                childrenContainer.appendChild(sTable);
+            }, 500);
+        });
+    </script>
+</body>
+</html>

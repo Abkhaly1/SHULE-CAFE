@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Master Attendance & History ‹ Form Master ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/teacher-theme.css">
+    
+    <script type="module" src="../layouts/global-layout.js"></script>
+    <script type="module" src="../js/auth/auth-guard.js"></script>
+
+    <style>
+        .headcount-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .hc-card {
+            background: white;
+            border: 1px solid var(--c-border-light);
+            border-radius: 10px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .hc-card .num {
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .hc-card .lbl {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--c-text-muted);
+            text-transform: uppercase;
+        }
+
+        .att-toggle-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .att-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            border: 1.5px solid var(--c-border-light);
+            background: #f8fafc;
+            color: var(--c-text-muted);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .att-btn.active-present {
+            background: #10b981 !important;
+            border-color: #10b981 !important;
+            color: white !important;
+        }
+
+        .att-btn.active-absent {
+            background: #ef4444 !important;
+            border-color: #ef4444 !important;
+            color: white !important;
+        }
+
+        .att-btn.active-excused {
+            background: #f59e0b !important;
+            border-color: #f59e0b !important;
+            color: white !important;
+        }
+
+        .tab-btn-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--c-border-light);
+            padding-bottom: 12px;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 14px;
+            border: 1.5px solid #cbd5e1;
+            background: white;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            background: #d97706;
+            border-color: #d97706;
+            color: white;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
+        }
+
+        .filter-panel {
+            background: white;
+            border: 1px solid var(--c-border-light);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="teacher" active-path="/teacher/attendance.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Teacher Portal"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <app-breadcrumb path="Teacher, Master Daily Attendance Hub"></app-breadcrumb>
+
+                    <!-- ACCESS CONTROL GUARD / NOT FORM MASTER WARNING -->
+                    <div id="notFormMasterAlert" style="display: none;" class="card">
+                        <div style="padding: 40px; text-align: center;">
+                            <div style="font-size: 48px; margin-bottom: 12px;">🔒</div>
+                            <h3 style="margin: 0 0 8px; color: var(--c-text-primary); font-weight: 800;" id="notFormMasterTitle">Access Restricted: Class Guider / Form Master Only</h3>
+                            <p id="notFormMasterMsg" style="color: var(--c-text-muted); max-width: 500px; margin: 0 auto; font-size: 14px;"></p>
+                        </div>
+                    </div>
+
+                    <!-- FORM MASTER DAILY ATTENDANCE HUB WORKSPACE -->
+                    <div id="formMasterWorkspace" style="display: none;">
+                        
+                        <!-- TAB SWITCHER BAR -->
+                        <div class="tab-btn-bar">
+                            <button id="btnTabEntry" class="tab-btn active">
+                                📋 Daily Roll-Call Register
+                            </button>
+                            <button id="btnTabHistory" class="tab-btn">
+                                📜 Attendance History Logs
+                            </button>
+                        </div>
+
+                        <!-- TAB 1: DAILY ROLL-CALL ENTRY WORKSPACE -->
+                        <div id="tabContentEntry">
+                            
+                            <!-- CONTROLS & HEADER CARD -->
+                            <div class="card" style="padding: 20px; margin-bottom: 20px; background: linear-gradient(135deg, #451a03 0%, #78350f 100%); color: white; border-radius: 12px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                                    <div>
+                                        <div style="font-size: 12px; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.5px;" id="lblHubTitle">📅 MASTER DAILY ATTENDANCE HUB</div>
+                                        <h2 style="margin: 4px 0 0 0; font-size: 22px; font-weight: 800; color: white;" id="hubClassroomName">Classroom: Loading...</h2>
+                                    </div>
+
+                                    <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+                                        <!-- Stream Selector -->
+                                        <div>
+                                            <label style="font-size: 11px; font-weight: 800; color: #fef3c7; display: block; margin-bottom: 2px;" id="lblSelClassroom">🏫 Select Classroom Stream:</label>
+                                            <select id="selManagedClassroom" class="form-control" style="font-size: 13px; font-weight: 700; height: 36px; padding: 4px 10px; background: white; color: #334155; border-radius: 6px;"></select>
+                                        </div>
+
+                                        <!-- Date Selector -->
+                                        <div>
+                                            <label style="font-size: 11px; font-weight: 800; color: #fef3c7; display: block; margin-bottom: 2px;" id="lblSelDate">📆 Select Date:</label>
+                                            <input type="date" id="inpAttendanceDate" class="form-control" style="font-size: 13px; font-weight: 700; height: 36px; padding: 4px 10px; background: white; color: #334155; border-radius: 6px;">
+                                        </div>
+
+                                        <div style="margin-top: 14px;">
+                                            <span id="updateModeBadge" class="badge" style="background: #059669; color: white; font-weight: 800; font-size: 12px; padding: 6px 12px;">🔒 Saved &amp; Sealed</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 📊 HEADCOUNT SUMMARY BAR -->
+                            <div class="headcount-bar">
+                                <div class="hc-card" style="border-left: 4px solid #64748b;">
+                                    <div>
+                                        <div class="lbl" id="lblTotalRoster">Total Roster</div>
+                                        <div class="num" id="hcTotal" style="color: #334155;">0</div>
+                                    </div>
+                                    <div style="font-size: 24px;">👥</div>
+                                </div>
+
+                                <div class="hc-card" style="border-left: 4px solid #10b981;">
+                                    <div>
+                                        <div class="lbl" id="lblPresent">🟢 Present</div>
+                                        <div class="num" id="hcPresent" style="color: #10b981;">0</div>
+                                    </div>
+                                    <div style="font-size: 24px;">✅</div>
+                                </div>
+
+                                <div class="hc-card" style="border-left: 4px solid #ef4444;">
+                                    <div>
+                                        <div class="lbl" id="lblAbsent">🔴 Absent</div>
+                                        <div class="num" id="hcAbsent" style="color: #ef4444;">0</div>
+                                    </div>
+                                    <div style="font-size: 24px;">❌</div>
+                                </div>
+
+                                <div class="hc-card" style="border-left: 4px solid #f59e0b;">
+                                    <div>
+                                        <div class="lbl" id="lblExcused">🟡 Excused</div>
+                                        <div class="num" id="hcExcused" style="color: #f59e0b;">0</div>
+                                    </div>
+                                    <div style="font-size: 24px;">⚠️</div>
+                                </div>
+                            </div>
+
+                            <!-- NOTIFICATION NOTICE ALERT -->
+                            <div id="attNotice" class="alert alert-success" style="display: none; margin-bottom: 20px; font-weight: 700;"></div>
+
+                            <!-- ROSTER TABLE SHEET -->
+                            <div class="card" style="padding: 24px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 12px;">
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 17px; font-weight: 800; color: var(--c-text-primary);" id="lblRosterTitle">👥 Student Roll-Call Roster Sheet</h3>
+                                        <p style="margin: 4px 0 0 0; font-size: 13px; color: var(--c-text-muted);" id="lblDateFormatted">Date: -</p>
+                                    </div>
+                                    <input type="text" id="inpSearchStudent" placeholder="🔍 Search student by name or ID..." class="form-control" style="max-width: 300px; font-size: 13px;">
+                                </div>
+
+                                <div style="overflow-x: auto;">
+                                    <table class="table" style="width: 100%; border-collapse: collapse;">
+                                        <thead>
+                                            <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left;">
+                                                <th style="padding: 12px; font-size: 12px; font-weight: 800;" id="thNum">#</th>
+                                                <th style="padding: 12px; font-size: 12px; font-weight: 800;" id="thRegId">Student Reg ID</th>
+                                                <th style="padding: 12px; font-size: 12px; font-weight: 800;" id="thName">Full Name</th>
+                                                <th style="padding: 12px; font-size: 12px; font-weight: 800; text-align: right;" id="thStatusCol">Attendance Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbRoster">
+                                            <tr>
+                                                <td colspan="4" style="text-align: center; padding: 40px; color: #94a3b8;">Loading roster...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- REMARKS FIELD -->
+                                <div style="margin-top: 24px;">
+                                    <label class="form-label" style="font-weight: 700; font-size: 13px;" id="lblRemarks">📝 Additional Remarks / Notes (Optional):</label>
+                                    <textarea id="inpRemarks" class="form-control" rows="2" placeholder="Enter optional remarks for this date (e.g. Baraka had a family emergency)..." style="width: 100%; font-size: 13px;"></textarea>
+                                </div>
+
+                                <!-- ACTION BUTTONS CONTAINER -->
+                                <div id="actionButtonsContainer" style="margin-top: 24px;">
+                                    <!-- Rendered dynamically by updateUIState() -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 2: ATTENDANCE HISTORY LOGS -->
+                        <div id="tabContentHistory" style="display: none;">
+                            
+                            <!-- FILTER PANEL -->
+                            <div class="filter-panel">
+                                <div>
+                                    <label style="font-size: 12px; font-weight: 800; color: #475569; display: block; margin-bottom: 4px;" id="lblFilterYear">📅 Academic Year:</label>
+                                    <select id="histFilterYear" class="form-control" style="font-size: 13px; font-weight: 700; padding: 6px 12px; height: 38px;">
+                                        <!-- populated by JS -->
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label style="font-size: 12px; font-weight: 800; color: #475569; display: block; margin-bottom: 4px;" id="lblFilterMonth">🗓️ Month:</label>
+                                    <select id="histFilterMonth" class="form-control" style="font-size: 13px; font-weight: 700; padding: 6px 12px; height: 38px;">
+                                        <!-- populated by JS with i18n month names -->
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label style="font-size: 12px; font-weight: 800; color: #475569; display: block; margin-bottom: 4px;" id="lblFilterRoom">🏫 Classroom Stream:</label>
+                                    <select id="histFilterRoom" class="form-control" style="font-size: 13px; font-weight: 700; padding: 6px 12px; height: 38px;">
+                                        <option value="0">All Classroom Streams</option>
+                                    </select>
+                                </div>
+
+                                <div style="margin-top: 20px;">
+                                    <button type="button" id="btnFilterHistory" class="btn btn-primary" style="font-weight: 800; background: #0284c7; border-color: #0284c7; height: 38px; padding: 0 20px;">
+                                        🔍 Filter History
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- HISTORY LIST CARD -->
+                            <div class="card" style="padding: 24px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+                                    <h3 style="margin: 0; font-size: 17px; font-weight: 800; color: var(--c-text-primary);" id="lblHistoryTitle">📜 Saved Attendance Roll-Call Logs</h3>
+                                    <span class="badge" style="background: #047857; color: white; font-weight: 800;" id="histCountBadge">0 Records</span>
+                                </div>
+
+                                <div style="overflow-x: auto;">
+                                    <table class="table" style="width: 100%; border-collapse: collapse;">
+                                        <thead>
+                                            <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left;">
+                                                <th style="padding: 12px; font-size: 12px; font-weight: 800;" id="thHistDate">Date &amp; Day</th>
+                                                <th style="padding: 12px; font-size: 12px; font-weight: 800;" id="thHistClass">Classroom &amp; Year</th>
+                                                <th style="padding: 12px; font-size: 12px; font-weight: 800;" id="thHistBreakdown">Student Attendance Breakdown</th>
+                                                <th style="padding: 12px; font-size: 12px; font-weight: 800;" id="thHistRemarks">Remarks</th>
+                                                <th style="padding: 12px; font-size: 12px; font-weight: 800; text-align: right;" id="thHistAction">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbHistory">
+                                            <tr>
+                                                <td colspan="5" style="text-align: center; padding: 40px; color: #94a3b8;">Loading history...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script type="module">
+        import { t as getTranslations, getLang } from '../js/i18n.js';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const currentLang = getLang();
+            const i18n = getTranslations();
+            // Convenience shorthand matching old `t` variable
+            const t = {
+                accessRestricted:   i18n.attendance.accessDeniedTitle,
+                tabEntry:           i18n.attendance.tabEntry,
+                tabHistory:         i18n.attendance.tabHistory,
+                hubTitle:           i18n.attendance.hubTitle,
+                selClassroom:       i18n.attendance.selectClassroom,
+                selDate:            i18n.attendance.selectDate,
+                modeLocked:         i18n.attendance.modeLocked,
+                modeEdit:           i18n.attendance.modeEdit,
+                totalRoster:        i18n.attendance.totalRoster,
+                present:            `🟢 ${i18n.common.present}`,
+                absent:             `🔴 ${i18n.common.absent}`,
+                excused:            `🟡 ${i18n.common.excused}`,
+                rosterTitle:        i18n.attendance.rosterTitle,
+                searchPlaceholder:  i18n.attendance.searchPlaceholder,
+                colNum:             i18n.attendance.colNum,
+                colRegId:           i18n.attendance.colRegId,
+                colName:            i18n.attendance.colName,
+                colStatus:          i18n.attendance.colStatus,
+                colStatusLocked:    i18n.attendance.colStatusLocked,
+                remarksLabel:       i18n.attendance.remarksLabel,
+                remarksPlaceholder: i18n.attendance.remarksPlaceholder,
+                savedNotice:        i18n.attendance.savedNotice,
+                btnEdit:            i18n.attendance.btnEdit,
+                btnSave:            i18n.attendance.btnSave,
+                btnCancel:          i18n.attendance.btnCancel,
+                filterYear:         i18n.attendance.filterYear,
+                filterMonth:        i18n.attendance.filterMonth,
+                filterRoom:         i18n.attendance.filterRoom,
+                btnFilter:          i18n.attendance.btnFilter,
+                historyTitle:       i18n.attendance.historyTitle,
+                histColDate:        i18n.attendance.histColDate,
+                histColClass:       i18n.attendance.histColClass,
+                histColBreakdown:   i18n.attendance.histColBreakdown,
+                histColRemarks:     i18n.attendance.histColRemarks,
+                histColAction:      i18n.attendance.histColAction,
+                histNoRemarks:      i18n.common.noRemarks,
+                noStudents:         i18n.attendance.noStudents,
+                noHistory:          i18n.attendance.noHistory,
+                allStreams:         i18n.common.allStreams,
+                saving:             i18n.attendance.saving,
+                savedMsg:           i18n.attendance.savedMsg,
+                errorSaving:        i18n.attendance.errorSaving,
+                networkError:       i18n.attendance.networkError,
+            };
+
+            // Apply static text labels
+            document.getElementById('btnTabEntry').textContent = t.tabEntry;
+            document.getElementById('btnTabHistory').textContent = t.tabHistory;
+            document.getElementById('lblHubTitle').textContent = `📅 ${t.hubTitle}`;
+            document.getElementById('lblSelClassroom').textContent = t.selClassroom;
+            document.getElementById('lblSelDate').textContent = t.selDate;
+            document.getElementById('lblTotalRoster').textContent = t.totalRoster;
+            document.getElementById('lblPresent').textContent = t.present;
+            document.getElementById('lblAbsent').textContent = t.absent;
+            document.getElementById('lblExcused').textContent = t.excused;
+            document.getElementById('lblRosterTitle').textContent = t.rosterTitle;
+            document.getElementById('inpSearchStudent').placeholder = t.searchPlaceholder;
+            document.getElementById('thNum').textContent = t.colNum;
+            document.getElementById('thRegId').textContent = t.colRegId;
+            document.getElementById('thName').textContent = t.colName;
+            document.getElementById('lblRemarks').textContent = t.remarksLabel;
+            document.getElementById('inpRemarks').placeholder = t.remarksPlaceholder;
+            document.getElementById('lblFilterYear').textContent = t.filterYear;
+            document.getElementById('lblFilterMonth').textContent = t.filterMonth;
+            document.getElementById('lblFilterRoom').textContent = t.filterRoom;
+            document.getElementById('btnFilterHistory').textContent = t.btnFilter;
+            document.getElementById('lblHistoryTitle').textContent = t.historyTitle;
+            document.getElementById('thHistDate').textContent = t.histColDate;
+            document.getElementById('thHistClass').textContent = t.histColClass;
+            document.getElementById('thHistBreakdown').textContent = t.histColBreakdown;
+            document.getElementById('thHistRemarks').textContent = t.histColRemarks;
+            document.getElementById('thHistAction').textContent = t.histColAction;
+
+            // ── Populate Year filter ──────────────────────────────────────────
+            const histFilterYearEl = document.getElementById('histFilterYear');
+            const thisYear = new Date().getFullYear();
+            histFilterYearEl.innerHTML = `<option value="All">${i18n.common.allYears}</option>`;
+            for (let y = thisYear; y >= thisYear - 5; y--) {
+                histFilterYearEl.innerHTML += `<option value="${y}" ${y === thisYear ? 'selected' : ''}>${y}</option>`;
+            }
+
+            // ── Populate Month filter with i18n names ─────────────────────────
+            const monthKeys = ['january','february','march','april','may','june',
+                               'july','august','september','october','november','december'];
+            const histFilterMonthEl = document.getElementById('histFilterMonth');
+            histFilterMonthEl.innerHTML = `<option value="All">${i18n.common.allMonths}</option>`;
+            monthKeys.forEach((mk, idx) => {
+                histFilterMonthEl.innerHTML += `<option value="${idx + 1}">${i18n.common[mk]}</option>`;
+            });
+
+            const notFormMasterAlert = document.getElementById('notFormMasterAlert');
+            const notFormMasterMsg   = document.getElementById('notFormMasterMsg');
+            const formMasterWorkspace = document.getElementById('formMasterWorkspace');
+
+            const btnTabEntry   = document.getElementById('btnTabEntry');
+            const btnTabHistory = document.getElementById('btnTabHistory');
+            const tabContentEntry   = document.getElementById('tabContentEntry');
+            const tabContentHistory = document.getElementById('tabContentHistory');
+
+            const selManagedClassroom = document.getElementById('selManagedClassroom');
+            const inpAttendanceDate   = document.getElementById('inpAttendanceDate');
+            const hubClassroomName    = document.getElementById('hubClassroomName');
+            const updateModeBadge     = document.getElementById('updateModeBadge');
+            const lblDateFormatted    = document.getElementById('lblDateFormatted');
+
+            const hcTotal   = document.getElementById('hcTotal');
+            const hcPresent = document.getElementById('hcPresent');
+            const hcAbsent  = document.getElementById('hcAbsent');
+            const hcExcused = document.getElementById('hcExcused');
+
+            const thStatusCol             = document.getElementById('thStatusCol');
+            const tbRoster                = document.getElementById('tbRoster');
+            const inpRemarks              = document.getElementById('inpRemarks');
+            const inpSearchStudent        = document.getElementById('inpSearchStudent');
+            const actionButtonsContainer = document.getElementById('actionButtonsContainer');
+            const attNotice               = document.getElementById('attNotice');
+
+            const histFilterYear  = document.getElementById('histFilterYear');
+            const histFilterMonth = document.getElementById('histFilterMonth');
+            const histFilterRoom  = document.getElementById('histFilterRoom');
+            const btnFilterHistory = document.getElementById('btnFilterHistory');
+            const tbHistory       = document.getElementById('tbHistory');
+            const histCountBadge  = document.getElementById('histCountBadge');
+
+            // Default date to TODAY YYYY-MM-DD
+            const todayStr = new Date().toISOString().split('T')[0];
+            inpAttendanceDate.value = todayStr;
+
+            let currentRosterData = [];
+            let currentStatusMap  = {}; // student_id => 'Present'|'Absent'|'Excused'
+            let isSavedRecord = false;
+            let isEditMode    = false;
+
+            // Tab Switching
+            btnTabEntry.addEventListener('click', () => {
+                btnTabEntry.classList.add('active');
+                btnTabHistory.classList.remove('active');
+                tabContentEntry.style.display = 'block';
+                tabContentHistory.style.display = 'none';
+            });
+
+            btnTabHistory.addEventListener('click', async () => {
+                btnTabHistory.classList.add('active');
+                btnTabEntry.classList.remove('active');
+                tabContentHistory.style.display = 'block';
+                tabContentEntry.style.display = 'none';
+                await loadAttendanceHistory();
+            });
+
+            // Initial Load of Daily Attendance
+            await loadDailyAttendance();
+
+            // Date or Classroom Dropdown Change Listener
+            inpAttendanceDate.addEventListener('change', async () => {
+                await loadDailyAttendance();
+            });
+
+            selManagedClassroom.addEventListener('change', async () => {
+                await loadDailyAttendance();
+            });
+
+            // Search Student Listener
+            inpSearchStudent.addEventListener('input', () => {
+                renderRosterTable();
+            });
+
+            // Filter History Button Listener
+            btnFilterHistory.addEventListener('click', async () => {
+                await loadAttendanceHistory();
+            });
+
+            // Core Function 1: Load Daily Attendance Roll-Call
+            async function loadDailyAttendance() {
+                try {
+                    const reqDate = inpAttendanceDate.value || todayStr;
+                    const reqCid  = selManagedClassroom.value || 0;
+
+                    const res = await fetch(`/shule-cafe/api/teacher/teacher_portal_api.php?action=get_daily_attendance&date=${reqDate}&classroom_id=${reqCid}`, { credentials: 'include' });
+                    const data = await res.json();
+
+                    if (!data.success || !data.is_form_master) {
+                        notFormMasterAlert.style.display = 'block';
+                        notFormMasterMsg.textContent = data.message || t.accessRestricted;
+                        formMasterWorkspace.style.display = 'none';
+                        return;
+                    }
+
+                    // User is a valid Form Master
+                    notFormMasterAlert.style.display = 'none';
+                    formMasterWorkspace.style.display = 'block';
+
+                    // Populate Managed Classes Dropdown if empty
+                    if (data.managed_classes && data.managed_classes.length > 0) {
+                        if (selManagedClassroom.children.length === 0) {
+                            selManagedClassroom.innerHTML = data.managed_classes.map(c => 
+                                `<option value="${c.classroom_id}">${c.classroom_name} (${c.academic_year})</option>`
+                            ).join('');
+
+                            // Also populate history filter dropdown
+                            histFilterRoom.innerHTML = `<option value="0">${t.allStreams}</option>` +
+                                data.managed_classes.map(c => `<option value="${c.classroom_id}">${c.classroom_name} (${c.academic_year})</option>`).join('');
+                        }
+                        selManagedClassroom.value = data.classroom_id;
+                    }
+
+                    hubClassroomName.textContent = `Classroom: ${data.classroom_name} (${data.academic_year})`;
+                    lblDateFormatted.textContent = `Date: ${data.date_formatted}`;
+                    inpRemarks.value = data.general_remarks || '';
+
+                    isSavedRecord = data.is_update_mode === true;
+                    // If it is ALREADY a saved record, default to LOCKED/SEALED mode!
+                    // If it is a NEW record, default directly to EDIT mode so teacher can take attendance!
+                    isEditMode = !isSavedRecord;
+
+                    currentRosterData = data.roster || [];
+                    currentStatusMap = {};
+                    currentRosterData.forEach(r => {
+                        currentStatusMap[r.student_id] = r.status || 'Present';
+                    });
+
+                    updateHeadcountUI();
+                    renderUIState();
+
+                } catch(e) {
+                    console.error('Error loading daily attendance:', e);
+                }
+            }
+
+            // Update UI State (Locked vs Edit Mode)
+            function renderUIState() {
+                if (isEditMode) {
+                    // EDIT MODE ACTIVE
+                    updateModeBadge.innerHTML = t.modeEdit;
+                    updateModeBadge.style.background = '#0284c7';
+                    thStatusCol.textContent = t.colStatus;
+
+                    inpRemarks.readOnly = false;
+                    inpRemarks.style.background = '#ffffff';
+
+                    actionButtonsContainer.innerHTML = `
+                        <div style="display: flex; justify-content: flex-end; align-items: center; gap: 12px;">
+                            ${isSavedRecord ? `
+                                <button type="button" id="btnCancelEdit" class="btn btn-outline" style="font-weight: 700; font-size: 14px; padding: 10px 20px;">
+                                    ${t.btnCancel}
+                                </button>
+                            ` : ''}
+                            <button type="button" id="btnSaveAttendance" class="btn btn-primary" style="font-weight: 800; background: #047857; border-color: #047857; padding: 12px 28px; font-size: 15px;">
+                                ${t.btnSave}
+                            </button>
+                        </div>
+                    `;
+
+                    // Attach event listeners for dynamic buttons
+                    const btnSave = document.getElementById('btnSaveAttendance');
+                    if (btnSave) btnSave.addEventListener('click', saveAttendanceHandler);
+
+                    const btnCancel = document.getElementById('btnCancelEdit');
+                    if (btnCancel) {
+                        btnCancel.addEventListener('click', async () => {
+                            isEditMode = false;
+                            await loadDailyAttendance();
+                        });
+                    }
+
+                } else {
+                    // LOCKED / SEALED MODE
+                    updateModeBadge.innerHTML = t.modeLocked;
+                    updateModeBadge.style.background = '#059669';
+                    thStatusCol.textContent = t.colStatus;
+
+                    inpRemarks.readOnly = true;
+                    inpRemarks.style.background = '#f8fafc';
+
+                    actionButtonsContainer.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: #ecfdf5; border: 1.5px solid #a7f3d0; padding: 16px 20px; border-radius: 10px; flex-wrap: wrap; gap: 12px;">
+                            <div style="display: flex; align-items: center; gap: 10px; color: #047857; font-weight: 800; font-size: 14px;">
+                                <span>🔒</span>
+                                <span>${t.savedNotice}</span>
+                            </div>
+                            <button type="button" id="btnEnableEdit" class="btn btn-primary" style="font-weight: 800; background: #d97706; border-color: #d97706; padding: 10px 24px; font-size: 14px;">
+                                ${t.btnEdit}
+                            </button>
+                        </div>
+                    `;
+
+                    const btnEnableEdit = document.getElementById('btnEnableEdit');
+                    if (btnEnableEdit) {
+                        btnEnableEdit.addEventListener('click', () => {
+                            isEditMode = true;
+                            renderUIState();
+                        });
+                    }
+                }
+
+                renderRosterTable();
+            }
+
+            // Render Roster Table (Switches between Locked Badges vs Active Toggles)
+            function renderRosterTable() {
+                const search = inpSearchStudent.value.toLowerCase().trim();
+                const filtered = currentRosterData.filter(r => 
+                    r.full_name.toLowerCase().includes(search) || 
+                    (r.user_code && r.user_code.toLowerCase().includes(search))
+                );
+
+                if (filtered.length === 0) {
+                    tbRoster.innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 40px; color: #94a3b8;">
+                                ${t.noStudents}
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                let html = '';
+                filtered.forEach((r, idx) => {
+                    const st = currentStatusMap[r.student_id] || 'Present';
+
+                    let statusCellHTML = '';
+                    if (isEditMode) {
+                        // INTERACTIVE TOGGLES IN EDIT MODE
+                        const isPres = st === 'Present' ? 'active-present' : '';
+                        const isAbs  = st === 'Absent' ? 'active-absent' : '';
+                        const isExc  = st === 'Excused' ? 'active-excused' : '';
+
+                        statusCellHTML = `
+                            <div class="att-toggle-group" style="justify-content: flex-end;">
+                                <button type="button" class="att-btn ${isPres}" onclick="window.setStudentStatus('${r.student_id}', 'Present')">🟢 ${i18n.common.present}</button>
+                                <button type="button" class="att-btn ${isAbs}" onclick="window.setStudentStatus('${r.student_id}', 'Absent')">🔴 ${i18n.common.absent}</button>
+                                <button type="button" class="att-btn ${isExc}" onclick="window.setStudentStatus('${r.student_id}', 'Excused')">🟡 ${i18n.common.excused}</button>
+                            </div>
+                        `;
+                    } else {
+                        // LOCKED ELEGANT BADGES IN SEALED MODE
+                        if (st === 'Present') {
+                            statusCellHTML = `<span class="badge" style="background: #ecfdf5; color: #047857; border: 1.5px solid #a7f3d0; font-size: 13px; font-weight: 800; padding: 6px 16px; border-radius: 20px;">🟢 ${i18n.common.present}</span>`;
+                        } else if (st === 'Absent') {
+                            statusCellHTML = `<span class="badge" style="background: #fef2f2; color: #b91c1c; border: 1.5px solid #fecaca; font-size: 13px; font-weight: 800; padding: 6px 16px; border-radius: 20px;">🔴 ${i18n.common.absent}</span>`;
+                        } else {
+                            statusCellHTML = `<span class="badge" style="background: #fffbeb; color: #b45309; border: 1.5px solid #fde68a; font-size: 13px; font-weight: 800; padding: 6px 16px; border-radius: 20px;">🟡 ${i18n.common.excused}</span>`;
+                        }
+                    }
+
+                    html += `
+                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                            <td style="padding: 12px; font-weight: 700; color: #64748b;">${idx + 1}</td>
+                            <td style="padding: 12px;">
+                                <code style="font-family: monospace; font-weight: 800; color: #047857; background: #ecfdf5; padding: 3px 8px; border-radius: 4px;">${r.user_code || 'N/A'}</code>
+                            </td>
+                            <td style="padding: 12px; font-weight: 700; color: #1e293b;">${r.full_name}</td>
+                            <td style="padding: 12px; text-align: right;">
+                                ${statusCellHTML}
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                tbRoster.innerHTML = html;
+            }
+
+            // Window level method to toggle student status
+            window.setStudentStatus = (studentId, status) => {
+                if (!isEditMode) return;
+                currentStatusMap[studentId] = status;
+                updateHeadcountUI();
+                renderRosterTable();
+            };
+
+            // Save Handler
+            async function saveAttendanceHandler() {
+                const btnSave = document.getElementById('btnSaveAttendance');
+                const selectedCid = selManagedClassroom.value;
+                const selectedDate = inpAttendanceDate.value;
+                const remarks = inpRemarks.value.trim();
+
+                if (!selectedCid) {
+                    alert(i18n.attendance.selectClassroom);
+                    return;
+                }
+
+                if (btnSave) {
+                    btnSave.disabled = true;
+                    btnSave.textContent = t.saving;
+                }
+                attNotice.style.display = 'none';
+
+                try {
+                    const res = await fetch('/shule-cafe/api/teacher/teacher_portal_api.php?action=save_daily_attendance', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            classroom_id: selectedCid,
+                            attendance_date: selectedDate,
+                            statuses: currentStatusMap,
+                            remarks: remarks
+                        })
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok && data.success) {
+                        attNotice.className = 'alert alert-success';
+                        attNotice.textContent = '✅ ' + (data.message || t.savedMsg);
+                        attNotice.style.display = 'block';
+                        
+                        // Switch back to LOCKED state immediately after save!
+                        isEditMode = false;
+                        await loadDailyAttendance();
+                    } else {
+                        attNotice.className = 'alert alert-danger';
+                        attNotice.textContent = '❌ ' + (data.message || t.errorSaving);
+                        attNotice.style.display = 'block';
+                    }
+                } catch(e) {
+                    attNotice.className = 'alert alert-danger';
+                    attNotice.textContent = '❌ ' + t.networkError;
+                    attNotice.style.display = 'block';
+                } finally {
+                    if (btnSave) {
+                        btnSave.disabled = false;
+                        btnSave.textContent = t.btnSave;
+                    }
+                }
+            }
+
+            // Update Headcount Cards
+            function updateHeadcountUI() {
+                const total = currentRosterData.length;
+                let pres = 0, abs = 0, exc = 0;
+                Object.values(currentStatusMap).forEach(s => {
+                    if (s === 'Present') pres++;
+                    else if (s === 'Absent') abs++;
+                    else if (s === 'Excused') exc++;
+                });
+
+                hcTotal.textContent = total;
+                hcPresent.textContent = pres;
+                hcAbsent.textContent = abs;
+                hcExcused.textContent = exc;
+            }
+
+            // Core Function 2: Load Attendance History
+            async function loadAttendanceHistory() {
+                try {
+                    const yr = histFilterYear.value;
+                    const mo = histFilterMonth.value;
+                    const cid = histFilterRoom.value;
+
+                    tbHistory.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:#94a3b8;">${i18n.common.loading}</td></tr>`;
+
+                    const res = await fetch(`/shule-cafe/api/teacher/teacher_portal_api.php?action=get_attendance_history&year=${yr}&month=${mo}&classroom_id=${cid}`, { credentials: 'include' });
+                    const data = await res.json();
+
+                    if (!data.success || !data.history) {
+                        tbHistory.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:#94a3b8;">${t.noHistory}</td></tr>`;
+                        histCountBadge.textContent = '0 Records';
+                        return;
+                    }
+
+                    histCountBadge.textContent = `${data.count} Records`;
+
+                    if (data.history.length === 0) {
+                        tbHistory.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:#94a3b8;">${t.noHistory}</td></tr>`;
+                        return;
+                    }
+
+                    let html = '';
+                    data.history.forEach(h => {
+                        html += `
+                            <tr style="border-bottom: 1px solid #e2e8f0;">
+                                <td style="padding: 12px; font-weight: 800; color: #1e293b;">
+                                    ${h.date_formatted}
+                                </td>
+                                <td style="padding: 12px;">
+                                    <span class="badge" style="background: #0284c7; color: white; font-weight: 700;">${h.classroom_name} (${h.academic_year})</span>
+                                </td>
+                                <td style="padding: 12px;">
+                                    <span style="color: #10b981; font-weight: 700;">🟢 ${h.present_count} ${i18n.common.present}</span> • 
+                                    <span style="color: #ef4444; font-weight: 700;">🔴 ${h.absent_count} ${i18n.common.absent}</span> • 
+                                    <span style="color: #f59e0b; font-weight: 700;">🟡 ${h.excused_count} ${i18n.common.excused}</span>
+                                </td>
+                                <td style="padding: 12px; font-size: 13px; color: #64748b;">
+                                    ${h.general_remarks ? htmlspecialchars(h.general_remarks) : `<i style="color:#cbd5e1;">${t.histNoRemarks}</i>`}
+                                </td>
+                                <td style="padding: 12px; text-align: right;">
+                                    <button type="button" class="btn btn-sm" style="background: #d97706; color: white; font-weight: 700;" onclick="window.editHistoryEntry('${h.attendance_date}', '${h.classroom_id}')">
+                                        ${t.btnEdit}
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    tbHistory.innerHTML = html;
+
+                } catch(e) {
+                    console.error('Error loading attendance history:', e);
+                }
+            }
+
+            // Window level method to edit historical roll call entry
+            window.editHistoryEntry = async (dateStr, cidStr) => {
+                inpAttendanceDate.value = dateStr;
+                if (cidStr) selManagedClassroom.value = cidStr;
+
+                // Switch to Entry Tab
+                btnTabEntry.click();
+
+                // Load that date's attendance & enable edit mode directly
+                await loadDailyAttendance();
+                isEditMode = true;
+                renderUIState();
+            };
+
+            function htmlspecialchars(str) {
+                return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+            }
+        });
+    </script>
+</body>
+</html>

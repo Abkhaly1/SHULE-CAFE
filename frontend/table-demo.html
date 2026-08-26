@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Table Demo ‹ SHULE CAFE</title>
+    
+    <!-- Design System & Base Layout CSS -->
+    <link rel="stylesheet" href="css/design-system.css">
+    <link rel="stylesheet" href="css/layout.css">
+    
+    <!-- Global Layout Web Components (includes layout, workspace, and table) -->
+    <script type="module" src="layouts/global-layout.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        
+        <!-- Sidebar Component -->
+        <app-sidebar role="tenant_admin" active-path="/headmaster/students.html"></app-sidebar>
+        
+        <!-- Main Area -->
+        <div class="app-main">
+            
+            <!-- Topbar Component -->
+            <app-topbar username="Headmaster Demo"></app-topbar>
+            
+            <!-- Content Area -->
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    
+                    <!-- Breadcrumb Component -->
+                    <app-breadcrumb path="Dashboard, Students, View All"></app-breadcrumb>
+                    
+                    <!-- Page Header Component -->
+                    <app-page-header 
+                        title="Student Management" 
+                        subtitle="View and manage all registered students."
+                        primary-action="Register Student">
+                    </app-page-header>
+                    
+                    <!-- Universal Table System -->
+                    <div class="card" style="margin-top: var(--sp-4);">
+                        
+                        <!-- Table Toolbar -->
+                        <app-table-toolbar search-placeholder="Search students..." show-export="true" show-import="true"></app-table-toolbar>
+                        
+                        <!-- Main Table Component -->
+                        <div id="tableContainer">
+                            <!-- Skeleton loader while "fetching" -->
+                            <app-table-skeleton rows="5" cols="4"></app-table-skeleton>
+                        </div>
+                        
+                        <!-- Table Pagination -->
+                        <app-table-pagination current-page="1" total-pages="5" total-records="48"></app-table-pagination>
+                        
+                    </div>
+                </div>
+                
+                <!-- Footer Component -->
+                <app-footer></app-footer>
+                
+            </main>
+        </div>
+    </div>
+
+    <!-- Script to simulate data fetching and populating the table -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tableContainer = document.getElementById('tableContainer');
+            
+            // Define columns configuration
+            const columns = [
+                { key: 'student', label: 'Student', type: 'avatar' },
+                { key: 'class', label: 'Class', type: 'text' },
+                { key: 'parent', label: 'Parent/Guardian', type: 'text' },
+                { key: 'status', label: 'Status', type: 'status' }
+            ];
+
+            // Define mock data
+            const mockData = [
+                { id: 1, student: { initials: 'AA', name: 'Ahmed Ali' }, class: 'Form 1A', parent: 'Fatma Juma', status: 'Active' },
+                { id: 2, student: { initials: 'SJ', name: 'Sarah John' }, class: 'Form 2B', parent: 'John Doe', status: 'Active' },
+                { id: 3, student: { initials: 'MM', name: 'Mussa Mussa' }, class: 'Form 4C', parent: 'Amina Mussa', status: 'Suspended' },
+                { id: 4, student: { initials: 'ZK', name: 'Zainab Khamis' }, class: 'Form 1A', parent: 'Khamis Ali', status: 'Pending' },
+                { id: 5, student: { initials: 'JP', name: 'James Peter' }, class: 'Form 3A', parent: 'Peter Simon', status: 'Inactive' }
+            ];
+
+            // Simulate network delay
+            setTimeout(() => {
+                // Create the table component dynamically
+                const appTable = document.createElement('app-table');
+                
+                // Pass configuration as JSON strings
+                appTable.setAttribute('columns', JSON.stringify(columns));
+                appTable.setAttribute('data', JSON.stringify(mockData));
+                appTable.setAttribute('entity-url', 'workspace-demo.html');
+                
+                // Replace skeleton with actual table
+                tableContainer.innerHTML = '';
+                tableContainer.appendChild(appTable);
+            }, 1500); // 1.5 seconds delay
+        });
+    </script>
+</body>
+</html>

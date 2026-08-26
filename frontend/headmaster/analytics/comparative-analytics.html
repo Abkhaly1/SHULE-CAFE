@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparative Grade-Wide Analytics Board ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="headmaster" active-path="/headmaster/analytics/comparative-analytics.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Headmaster Portal"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <app-breadcrumb path="Analytics, Comparative Grade-Wide Board"></app-breadcrumb>
+
+                    <div class="card" style="margin-top: 14px; padding: 24px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 24px;">
+                            <div>
+                                <h1 style="margin: 0 0 6px; font-size: 22px; font-weight: 800; color: var(--c-text-primary);">📈 Comparative Grade-Wide Performance Board</h1>
+                                <p style="margin: 0; font-size: 13px; color: var(--c-text-muted);">
+                                    Headmaster analytics workspace comparing pass rates and average scores across streams and gender cohorts.
+                                </p>
+                            </div>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <select id="selTerm" class="form-control" style="width: 140px; font-weight: 700;">
+                                    <option value="Term 1" selected>Term 1</option>
+                                    <option value="Term 2">Term 2</option>
+                                </select>
+                                <select id="selYear" class="form-control" style="width: 110px; font-weight: 700;">
+                                    <script>
+                                        const _yr = new Date().getFullYear();
+                                        document.write(`<option value="${_yr}" selected>${_yr}</option>`);
+                                        document.write(`<option value="${_yr-1}">${_yr-1}</option>`);
+                                        document.write(`<option value="${_yr-2}">${_yr-2}</option>`);
+                                    </script>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Gender Performance Cards (Task 4.3) -->
+                        <h2 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 14px;">👫 Gender Cohort Pass Rate Comparison</h2>
+                        <div id="genderContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 30px;">
+                            <!-- Gender Cards -->
+                        </div>
+
+                        <!-- Stream Comparison Table (Task 4.3) -->
+                        <h2 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 14px;">🏫 Classroom Stream Comparison Matrix</h2>
+                        <div style="border: 1px solid var(--c-border-light); border-radius: 10px; overflow: hidden;">
+                            <table class="table" style="width: 100%; margin: 0; font-size: 13px; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: #0f172a; color: white;">
+                                        <th style="padding: 12px 16px;">Classroom Stream</th>
+                                        <th style="padding: 12px 16px;">Grade Level Tier</th>
+                                        <th style="padding: 12px 16px; text-align: center;">Total Evaluated Marks</th>
+                                        <th style="padding: 12px 16px; text-align: center;">Passed Marks (>=45)</th>
+                                        <th style="padding: 12px 16px; text-align: center;">Overall Pass Rate %</th>
+                                        <th style="padding: 12px 16px; text-align: center;">Average Stream Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="streamRows">
+                                    <!-- Stream Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAnalytics();
+            document.getElementById('selTerm').addEventListener('change', loadAnalytics);
+            document.getElementById('selYear').addEventListener('change', loadAnalytics);
+        });
+
+        async function loadAnalytics() {
+            const year = document.getElementById('selYear').value;
+            const term = document.getElementById('selTerm').value;
+            const genderBox = document.getElementById('genderContainer');
+            const streamBox = document.getElementById('streamRows');
+
+            genderBox.innerHTML = '<div style="padding:20px;">Loading gender cohort metrics...</div>';
+            streamBox.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">Loading stream comparison data...</td></tr>';
+
+            try {
+                const res = await fetch(`/shule-cafe/api/headmaster/analytics/analytics_api.php?action=comparative_analytics&year=${year}&term=${encodeURIComponent(term)}`, { credentials: 'include' });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    // Render Gender Analytics Cards
+                    const genders = data.gender_analytics || [];
+                    genderBox.innerHTML = '';
+                    if (genders.length === 0) {
+                        genderBox.innerHTML = '<div style="padding:20px; color:var(--c-text-muted);">No evaluation data available.</div>';
+                    } else {
+                        genders.forEach(g => {
+                            const isMale = g.gender.includes('Male');
+                            const borderCol = isMale ? '#3b82f6' : '#ec4899';
+                            const bgCol     = isMale ? '#eff6ff' : '#fdf2f8';
+
+                            genderBox.innerHTML += `
+                                <div style="background: ${bgCol}; border: 2px solid ${borderCol}; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 8px;">
+                                    <div style="font-size: 13px; font-weight: 800; color: #0f172a;">${isMale ? '👦' : '👧'} ${g.gender} Cohort</div>
+                                    <div style="font-size: 28px; font-weight: 900; color: ${borderCol};">${g.pass_rate_percent}% <span style="font-size: 13px; font-weight: 700; color: #475569;">Pass Rate</span></div>
+                                    <div style="font-size: 12px; color: #475569; font-weight: 700;">
+                                        Average Score: <strong>${g.average_score} / 100</strong> | Passed: <strong>${g.pass_entries} / ${g.total_entries}</strong>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    // Render Stream Analytics Rows
+                    const streams = data.stream_analytics || [];
+                    streamBox.innerHTML = '';
+                    if (streams.length === 0) {
+                        streamBox.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--c-text-muted);">No stream evaluation data available.</td></tr>';
+                    } else {
+                        streams.forEach(st => {
+                            const tr = document.createElement('tr');
+                            tr.style.borderBottom = '1px solid #f1f5f9';
+                            tr.innerHTML = `
+                                <td style="padding: 12px 16px; font-weight: 800; color: #0f172a;">${st.classroom_name}</td>
+                                <td style="padding: 12px 16px; font-weight: 700; color: #475569;">${st.grade_name || '-'}</td>
+                                <td style="padding: 12px 16px; text-align: center;">${st.total_entries}</td>
+                                <td style="padding: 12px 16px; text-align: center; font-weight: 700; color: #047857;">${st.pass_entries}</td>
+                                <td style="padding: 12px 16px; text-align: center;">
+                                    <span class="badge ${st.pass_rate_percent >= 60 ? 'badge-success' : 'badge-danger'}" style="font-size: 12px; font-weight: 800; padding: 4px 10px;">${st.pass_rate_percent}% Pass</span>
+                                </td>
+                                <td style="padding: 12px 16px; text-align: center; font-weight: 800; color: #0f172a;">${st.average_score}</td>
+                            `;
+                            streamBox.appendChild(tr);
+                        });
+                    }
+                }
+            } catch(e) {
+                streamBox.innerHTML = '<tr><td colspan="6" style="text-align:center; color:crimson; padding:20px;">Network connection error.</td></tr>';
+            }
+        }
+    </script>
+</body>
+</html>

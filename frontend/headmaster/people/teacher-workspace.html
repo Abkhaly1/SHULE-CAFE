@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Workspace ‹ Headmaster ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+
+    <style>
+        .workspace-header-banner {
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+            color: white;
+            padding: 24px 30px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.3);
+        }
+        .teacher-avatar-lg {
+            width: 72px; height: 72px; border-radius: 50%;
+            background: #ffffff; color: #0f766e;
+            font-size: 32px; font-weight: 800;
+            display: flex; align-items: center; justify-content: center;
+            border: 3px solid rgba(255,255,255,0.4);
+        }
+        .nav-tabs-bar {
+            display: flex; gap: 8px; border-bottom: 2px solid var(--c-border-light);
+            margin-bottom: 20px; overflow-x: auto;
+        }
+        .tab-btn {
+            padding: 12px 20px; font-size: 14px; font-weight: 700; color: var(--c-text-muted);
+            background: transparent; border: none; border-bottom: 3px solid transparent;
+            cursor: pointer; transition: all 0.2s; white-space: nowrap;
+        }
+        .tab-btn.active {
+            color: var(--c-primary); border-bottom-color: var(--c-primary);
+        }
+        .tab-btn:hover:not(.active) { color: var(--c-text-primary); }
+
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .info-box { background: white; border: 1px solid var(--c-border-light); border-radius: 10px; padding: 20px; }
+        .info-box h4 { margin: 0 0 14px; font-size: 15px; font-weight: 800; color: var(--c-text-primary); border-bottom: 1px solid var(--c-border-light); padding-bottom: 8px; }
+        .info-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; }
+        .info-row span:first-child { color: var(--c-text-muted); font-weight: 600; }
+        .info-row span:last-child { color: var(--c-text-primary); font-weight: 700; text-align: right; }
+
+        .report-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 13px; }
+        .report-table th { background: #1e293b; color: white; padding: 10px 12px; text-align: left; text-transform: uppercase; font-size: 11px; }
+        .report-table td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; }
+        .stat-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: white; border: 1px solid var(--c-border-light); border-radius: 10px; padding: 18px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .stat-card .num { font-size: 26px; font-weight: 800; color: var(--c-text-primary); }
+        .stat-card .lbl { font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--c-text-muted); margin-top: 4px; }
+    </style>
+</head>
+<body>
+<div class="app-layout">
+    <app-sidebar role="tenant_admin" active-path="/headmaster/people/teachers.html"></app-sidebar>
+    <div class="app-main">
+        <app-topbar username="Headmaster Portal"></app-topbar>
+        <main class="app-content-wrapper">
+            <div class="app-content" style="padding: var(--sp-4) var(--sp-6);">
+                <app-breadcrumb path="Headmaster, Teachers/Staffs, Teacher Workspace"></app-breadcrumb>
+
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;margin-bottom:16px;">
+                    <a href="teachers.html" class="btn btn-outline btn-sm" style="display:inline-flex;align-items:center;gap:4px;text-decoration:none;font-weight:600;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                        Back to Teachers/Staffs
+                    </a>
+                    <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print Teacher Profile</button>
+                </div>
+
+                <!-- HEADER BANNER -->
+                <div class="workspace-header-banner">
+                    <div style="display:flex;align-items:center;gap:18px;">
+                        <div class="teacher-avatar-lg" id="tchAvatar">T</div>
+                        <div>
+                            <h2 style="margin:0 0 4px;font-size:22px;font-weight:800;color:white;" id="tchName">Loading Teacher...</h2>
+                            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                                <span id="tchCode" style="background:rgba(255,255,255,0.2);padding:3px 10px;border-radius:4px;font-size:12px;font-weight:700;">TCH-000</span>
+                                <span id="tchGender" style="background:rgba(255,255,255,0.2);padding:3px 10px;border-radius:4px;font-size:12px;font-weight:700;">-</span>
+                                <span id="tchStatus" class="badge badge-success" style="font-weight:700;">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.8);text-transform:uppercase;">Class Guider Role</div>
+                        <div style="font-size:16px;font-weight:800;color:#fef08a;" id="tchFormMasterOf">Class Guider: Checking...</div>
+                    </div>
+                </div>
+
+                <!-- STAT SUMMARY CARDS -->
+                <div class="stat-card-grid">
+                    <div class="stat-card">
+                        <div class="num" id="statClassesCount">0</div>
+                        <div class="lbl">Assigned Classes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="num" id="statSubjectsCount">0</div>
+                        <div class="lbl">Assigned Subjects</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="num" id="statFormMaster" style="font-size: 16px; word-break: break-word;">-</div>
+                        <div class="lbl">Class Guider</div>
+                    </div>
+                </div>
+
+                <!-- ── WORKSPACE WITH SECONDARY SIDEBAR ────────────────────────────────── -->
+                <div class="workspace-with-sidebar">
+                    <div class="secondary-sidebar">
+                        <div class="secondary-sidebar-nav">
+                            <button class="active" id="tabbtn-overview" onclick="switchTab('overview')">
+                                <span class="icon" style="color: #3b82f6;">📁</span> Profile & Overview
+                            </button>
+                            <button id="tabbtn-assignments" onclick="switchTab('assignments')">
+                                <span class="icon" style="color: #10b981;">📚</span> Teaching Assignments
+                            </button>
+                            <button id="tabbtn-schedule" onclick="switchTab('schedule')">
+                                <span class="icon" style="color: #f59e0b;">📅</span> Weekly Schedule (Live)
+                            </button>
+                            <button id="tabbtn-security" onclick="switchTab('security')">
+                                <span class="icon" style="color: #64748b;">🔒</span> Account & Security
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ── MAIN CONTENT CONTAINER ──────────────────────────── -->
+                    <div class="workspace-main-content">
+
+                <!-- TAB 1: OVERVIEW -->
+                <div id="panel-overview">
+                    <div class="info-grid">
+                        <div class="info-box">
+                            <h4>👨‍🏫 Personal & Contact Details</h4>
+                            <div class="info-row"><span>Full Name:</span><span id="bioName">-</span></div>
+                            <div class="info-row"><span>Staff ID / Reg Code:</span><span id="bioCode">-</span></div>
+                            <div class="info-row"><span>Gender:</span><span id="bioGender">-</span></div>
+                            <div class="info-row"><span>Department:</span><span id="bioDept">Academics</span></div>
+                            <div class="info-row"><span>Phone Number:</span><span id="bioPhone">-</span></div>
+                            <div class="info-row"><span>Email Address:</span><span id="bioEmail">-</span></div>
+                            <div class="info-row"><span>Account Status:</span><span id="bioStatus">-</span></div>
+                        </div>
+
+                        <div class="info-box">
+                            <h4>⚡ Quick Management Actions</h4>
+                            <div style="display:flex;flex-direction:column;gap:14px;margin-top:16px;">
+                                <a id="btnAssignSubjects" href="../allocations/subject-allocations.html" class="btn btn-outline btn-md" style="justify-content:flex-start;padding:12px 18px;height:auto;font-size:14px;border-radius:8px;font-weight:600;">
+                                    ➕ Manage Master Subject Qualifications
+                                </a>
+                                <a href="../allocations/class-guiders.html" class="btn btn-outline btn-md" style="justify-content:flex-start;padding:12px 18px;height:auto;font-size:14px;border-radius:8px;font-weight:600;">
+                                    🏫 Assign as Class Guider
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: ASSIGNMENTS & QUALIFICATIONS -->
+                <div id="panel-assignments" style="display:none;">
+                    <div class="info-box" style="margin-bottom:20px;">
+                        <h4>📚 Master Subject Qualifications</h4>
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th>Curriculum Level</th>
+                                    <th>Subject Code</th>
+                                    <th>Subject Name</th>
+                                    <th>Implicit Grade Cohorts</th>
+                                </tr>
+                            </thead>
+                            <tbody id="qualificationsTbody">
+                                <tr><td colspan="4" style="text-align:center;padding:24px;">Loading master subject qualifications...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>🏫 Classroom Stream Assignments (Physical Room Placements)</h4>
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th>Classroom Stream</th>
+                                    <th>Subject Code</th>
+                                    <th>Subject Name</th>
+                                    <th>Level</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assignmentsTbody">
+                                <tr><td colspan="4" style="text-align:center;padding:24px;">Loading stream assignments...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 3: STAGE 8 LIVE WEEKLY SCHEDULE -->
+                <div id="panel-schedule" style="display:none;">
+                    <div class="info-box">
+                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
+                            <div>
+                                <h4 style="margin:0;" id="lblScheduleTitle">📅 MY OFFICIAL WEEKLY TEACHING SCHEDULE</h4>
+                                <div style="font-size:12px; color:var(--c-text-muted);" id="lblSchedulePublishedStatus">Checking status...</div>
+                            </div>
+                            <button type="button" class="btn btn-outline btn-sm" id="btnToggleHomeroomSchedule" style="display:none; font-weight:700;">
+                                📋 View My Classroom Master Timetable
+                            </button>
+                        </div>
+
+                        <div class="table-responsive" id="boxScheduleGrid">
+                            <table class="report-table">
+                                <thead>
+                                    <tr id="trScheduleHeader">
+                                        <th>Day / Period</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblTeacherScheduleBody">
+                                    <tr><td colspan="6" style="text-align:center; padding:32px; color:var(--c-text-muted);">Loading weekly schedule...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 4: SECURITY -->
+                <div id="panel-security" style="display:none;">
+                    <div class="info-box">
+                        <h4>🔒 Security & Access Credentials</h4>
+                        <div style="max-width:540px;display:flex;flex-direction:column;gap:14px;margin-top:16px;">
+                            <button type="button" class="btn btn-outline btn-md" style="justify-content:flex-start;padding:12px 18px;height:auto;font-size:14px;border-radius:8px;font-weight:600;" onclick="alert('Password reset link dispatched to teacher email.')">
+                                🔑 Send Password Reset Link
+                            </button>
+                            <button type="button" class="btn btn-danger btn-md" style="justify-content:flex-start;padding:12px 18px;height:auto;font-size:14px;border-radius:8px;font-weight:600;" onclick="confirm('Are you sure you want to suspend this teacher?')">
+                                🚫 Suspend Teacher Account
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    let teacherId = new URLSearchParams(window.location.search).get('id');
+
+    function switchTab(tabId) {
+        ['overview','assignments','schedule','security'].forEach(id => {
+            document.getElementById(`panel-${id}`).style.display = id === tabId ? 'block' : 'none';
+            document.getElementById(`tabbtn-${id}`).className = (id === tabId ? 'active' : '');
+        });
+
+        if (tabId === 'schedule') {
+            loadTeacherSchedule(teacherId, 0);
+        }
+    }
+
+    async function loadTeacherWorkspace() {
+        if (!teacherId) {
+            alert('No teacher ID provided.');
+            return;
+        }
+
+        $('#btnAssignSubjects').attr('href', `../allocations/subject-allocations.html?teacher_id=${encodeURIComponent(teacherId)}`);
+
+        try {
+            const res = await fetch(`/shule-cafe/api/teachers/teacher_workspace.php?id=${teacherId}`, { credentials: 'include' });
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                const t = data.teacher;
+
+                const formattedGender = (t.gender && t.gender.toString().match(/^m/i)) ? 'Male' : ((t.gender && t.gender.toString().match(/^f/i)) ? 'Female' : (t.gender || 'Unknown'));
+
+                // Header & Avatar
+                $('#tchAvatar').text(t.full_name ? t.full_name.charAt(0).toUpperCase() : 'T');
+                $('#tchName').text(t.full_name);
+                $('#tchCode').text(t.user_code || `TCH/${new Date().getFullYear()}/001`);
+                $('#tchGender').text(formattedGender);
+                $('#tchStatus').text(t.status === 'active' ? 'Active' : 'Suspended');
+                $('#tchFormMasterOf').text(data.class_teacher_of);
+
+                // Stat Cards
+                $('#statClassesCount').text(data.assigned_classes_count || 0);
+                $('#statSubjectsCount').text(data.qualifications ? data.qualifications.length : 0);
+                $('#statFormMaster').text(data.class_teacher_of);
+
+                // Bio
+                $('#bioName').text(t.full_name);
+                $('#bioCode').text(t.user_code || `TCH/${new Date().getFullYear()}/001`);
+                $('#bioGender').text(formattedGender);
+                $('#bioDept').text(t.department || 'Academics');
+                $('#bioPhone').text(t.phone || 'N/A');
+                $('#bioEmail').text(t.email || 'N/A');
+                $('#bioStatus').text(t.status === 'active' ? 'Active' : 'Suspended');
+
+                // 1. Qualifications Table (Step 2 Data)
+                const qbody = $('#qualificationsTbody');
+                qbody.empty();
+
+                if (!data.qualifications || data.qualifications.length === 0) {
+                    qbody.append('<tr><td colspan="4" style="text-align:center;color:var(--c-text-muted);padding:24px;">No master subject qualifications assigned yet. Click "Manage Master Subject Qualifications" to assign.</td></tr>');
+                } else {
+                    data.qualifications.forEach(q => {
+                        const isALevel = (q.level_code || '').toUpperCase().includes('A');
+                        const cohortBadge = isALevel ? '<span class="badge" style="background:#fef3c7;color:#92400e;font-weight:700;">Forms 5, 6</span>' : '<span class="badge" style="background:#e0f2fe;color:#0369a1;font-weight:700;">Forms 1, 2, 3, 4</span>';
+                        const levelBadge = isALevel ? 'Advanced Level (A-Level)' : 'Ordinary Level (O-Level)';
+
+                        qbody.append(`
+                            <tr>
+                                <td><strong>${levelBadge}</strong></td>
+                                <td><code>${q.subject_code}</code></td>
+                                <td><strong>${q.subject_name}</strong></td>
+                                <td>${cohortBadge}</td>
+                            </tr>
+                        `);
+                    });
+                }
+
+                // 2. Stream Assignments Table
+                const tbody = $('#assignmentsTbody');
+                tbody.empty();
+
+                if (!data.assignments || data.assignments.length === 0) {
+                    tbody.append('<tr><td colspan="4" style="text-align:center;color:var(--c-text-muted);padding:24px;">No physical classroom stream assignments mapped yet. (Classroom streams are assigned in Timetables Module).</td></tr>');
+                } else {
+                    data.assignments.forEach(a => {
+                        tbody.append(`
+                            <tr>
+                                <td><strong>${a.class_name || 'Unassigned'}</strong></td>
+                                <td><code>${a.subject_code}</code></td>
+                                <td><strong>${a.subject_name}</strong></td>
+                                <td>${a.level_code || 'O-LEVEL'}</td>
+                            </tr>
+                        `);
+                    });
+                }
+            } else {
+                alert(data.message || 'Error loading teacher profile.');
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    let isClassroomView = 0;
+    async function loadTeacherSchedule(tId, viewClassroom = 0) {
+        isClassroomView = viewClassroom;
+        try {
+            const res = await fetch(`/shule-cafe/api/timetable/teacher_schedule_api.php?teacher_id=${encodeURIComponent(tId)}&view_classroom=${viewClassroom}`, { credentials: 'include' });
+            const data = await res.json();
+
+            if (!data.success) return;
+
+            if (!data.is_published) {
+                $('#lblSchedulePublishedStatus').html('<span class="badge" style="background:#fef3c7; color:#92400e; font-weight:800;">🟡 DRAFT STATE (Unpublished)</span>');
+                $('#boxScheduleGrid').html('<div style="text-align:center; padding:36px; color:var(--c-text-muted); font-weight:700;">🔒 Official Weekly Timetable is currently locked in Draft state by the Headmaster. Schedules will appear here once published live.</div>');
+                return;
+            }
+
+            $('#lblSchedulePublishedStatus').html('<span class="badge" style="background:#dcfce7; color:#15803d; font-weight:800;">🟢 LIVE PUBLISHED SHULENI</span>');
+
+            // Render Homeroom toggle button if teacher is Class Teacher
+            if (data.homeroom) {
+                $('#btnToggleHomeroomSchedule').show();
+                if (viewClassroom === 1) {
+                    $('#btnToggleHomeroomSchedule').html('👨‍🏫 Switch to My Personal Teaching Schedule').attr('onclick', `loadTeacherSchedule('${tId}', 0)`);
+                    $('#lblScheduleTitle').text(`📋 Master Classroom Schedule (${data.homeroom})`);
+                } else {
+                    $('#btnToggleHomeroomSchedule').html(`📋 View My Classroom Master Timetable (${data.homeroom})`).attr('onclick', `loadTeacherSchedule('${tId}', 1)`);
+                    $('#lblScheduleTitle').text('📅 My Official Weekly Teaching Schedule');
+                }
+            } else {
+                $('#btnToggleHomeroomSchedule').hide();
+            }
+
+            const periods = data.periods || [];
+            const slots = data.slots || [];
+
+            const slotMap = {};
+            slots.forEach(s => {
+                if (!slotMap[s.day_of_week]) slotMap[s.day_of_week] = {};
+                slotMap[s.day_of_week][s.period_id] = s;
+            });
+
+            const ths = periods.map(p => `<th style="padding:10px; font-weight:800; text-align:center;">${p.period_name}<br><span style="font-size:10px; font-weight:600; color:#64748b;">${p.start_time || ''} - ${p.end_time || ''}</span></th>`).join('');
+            $('#trScheduleHeader').html('<th style="padding:10px; font-weight:800;">Day / Period</th>' + ths);
+
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+            const rows = days.map(day => {
+                const cells = periods.map(p => {
+                    if (p.is_break == 1) {
+                        return `<td style="background:#f8fafc; text-align:center; vertical-align:middle; font-weight:700; color:#92400e; font-size:12px;">☕ ${p.period_name}</td>`;
+                    }
+
+                    const s = (slotMap[day] && slotMap[day][p.id]) ? slotMap[day][p.id] : null;
+                    if (s) {
+                        return `
+                            <td style="padding:10px; background:#f0fdf4; border:1px solid #bbf7d0;">
+                                <div style="font-weight:800; color:#166534; font-size:13px;">🏫 ${s.class_name}</div>
+                                <div style="font-weight:700; color:#0f172a; font-size:12px; margin-top:2px;">📖 ${s.subject_name}</div>
+                            </td>
+                        `;
+                    } else {
+                        return `
+                            <td style="padding:10px; background:#fafafa; text-align:center; vertical-align:middle; color:#94a3b8; font-weight:700; font-size:12px;">
+                                FREE PERIOD
+                            </td>
+                        `;
+                    }
+                }).join('');
+
+                return `<tr><td style="font-weight:800; background:#f8fafc; color:#0f172a; text-align:center; vertical-align:middle;">${day}</td>${cells}</tr>`;
+            }).join('');
+
+            $('#tblTeacherScheduleBody').html(rows);
+
+        } catch (e) {
+            console.error("Error loading teacher schedule:", e);
+        }
+    }
+
+    $(document).ready(() => {
+        loadTeacherWorkspace();
+    });
+</script>
+</body>
+</html>

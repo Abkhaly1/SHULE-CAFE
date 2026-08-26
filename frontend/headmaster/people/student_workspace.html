@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student 360° Profile Workspace ‹ Headmaster ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+
+    <style>
+        .workspace-header {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.3);
+        }
+        .student-avatar-lg {
+            width: 50px; height: 50px; border-radius: 50%;
+            background: #ffffff; color: #047857;
+            font-size: 24px; font-weight: 800;
+            display: flex; align-items: center; justify-content: center;
+            border: 3px solid rgba(255,255,255,0.4);
+        }
+        .nav-tabs-bar {
+            display: flex; gap: 8px; border-bottom: 2px solid var(--c-border-light);
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            padding: 12px 20px; font-size: 14px; font-weight: 700; color: var(--c-text-muted);
+            background: transparent; border: none; border-bottom: 3px solid transparent;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .tab-btn.active {
+            color: var(--c-primary); border-bottom-color: var(--c-primary);
+        }
+        .tab-btn:hover:not(.active) { color: var(--c-text-primary); }
+
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .info-box { background: white; border: 1px solid var(--c-border-light); border-radius: 10px; padding: 20px; }
+        .info-box h4 { margin: 0 0 14px; font-size: 15px; font-weight: 800; color: var(--c-text-primary); border-bottom: 1px solid var(--c-border-light); padding-bottom: 8px; }
+        .info-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; }
+        .info-row span:first-child { color: var(--c-text-muted); font-weight: 600; }
+        .info-row span:last-child { color: var(--c-text-primary); font-weight: 700; text-align: right; }
+
+        .readonly-banner {
+            background: #fffbebf8; border: 1px solid #fde68a; color: #92400e;
+            padding: 12px 18px; border-radius: 8px; font-weight: 700; font-size: 13px;
+            display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
+        }
+        .report-table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 13px; }
+        .report-table th { background: #1e293b; color: white; padding: 10px 12px; text-align: left; text-transform: uppercase; font-size: 11px; }
+        .report-table td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; }
+        .stat-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-top: 20px; }
+        .stat-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; text-align: center; }
+        .stat-card .num { font-size: 24px; font-weight: 800; color: var(--c-text-primary); }
+        .stat-card .lbl { font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--c-text-muted); margin-top: 2px; }
+
+        /* Modal custom overlay */
+        .custom-modal-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
+            display: none; align-items: center; justify-content: center; z-index: 9999;
+        }
+        .custom-modal-content {
+            background: white; border-radius: 12px; width: 100%; max-width: 540px;
+            padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+<div class="app-layout">
+    <app-sidebar role="tenant_admin" active-path="/headmaster/people/index.html"></app-sidebar>
+    <div class="app-main">
+        <app-topbar username="Headmaster Portal"></app-topbar>
+        <main class="app-content-wrapper">
+            <div class="app-content">
+                <!-- ── HEADER ANCHORED BANNER ────────────────────────── -->
+                <style>
+                    /* Custom styles for breadcrumb inside the green header */
+                    .header-top-row app-breadcrumb .breadcrumb { margin-bottom: 0 !important; }
+                    .header-top-row app-breadcrumb .breadcrumb-item { color: rgba(255,255,255,0.9) !important; }
+                    .header-top-row app-breadcrumb .breadcrumb-link { color: white !important; font-weight: 600; text-decoration: none; }
+                    .header-top-row app-breadcrumb .breadcrumb-separator { color: rgba(255,255,255,0.5) !important; }
+                    
+                    /* Custom styles for buttons inside the green header */
+                    .header-top-row .btn-outline { border-color: white !important; color: white !important; background: rgba(0,0,0,0.1) !important; font-weight: 800 !important; }
+                    .header-top-row .btn-outline:hover { background: rgba(255,255,255,0.2) !important; border-color: white !important; }
+                    .header-top-row .btn-primary { background: white !important; color: #047857 !important; border: none !important; font-weight: 800 !important; }
+                    .header-top-row .btn-primary:hover { background: #f0fdf4 !important; }
+                </style>
+                <div class="workspace-header" style="margin-bottom: 12px; display: flex; flex-direction: column; align-items: stretch; gap: 12px; padding: 14px 20px;">
+                    
+                    <!-- Top Row: Breadcrumb & Actions -->
+                    <div class="header-top-row" style="display:flex;justify-content:space-between;align-items:center; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 12px;">
+                        <app-breadcrumb path="Headmaster, People Directory, Student 360° Workspace"></app-breadcrumb>
+                        <div style="display:flex;gap:10px;">
+                            <button class="btn btn-outline btn-sm" onclick="window.location.href='/shule-cafe/frontend/headmaster/people/index.html'">⬅ Back</button>
+                            <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print</button>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Row: Student Identity -->
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <div style="display:flex;align-items:center;gap:18px;">
+                            <div class="student-avatar-lg skeleton" id="stuAvatar"></div>
+                            <div>
+                                <h2 style="margin:0 0 4px;font-size:20px;font-weight:800;color:white;" id="stuName"><span class="skeleton skeleton-title" style="width:220px;display:block;"></span></h2>
+                                <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                                    <span id="stuCode"><span class="skeleton skeleton-sub" style="width:100px;display:block;"></span></span>
+                                    <span id="stuGender"><span class="skeleton skeleton-sub" style="width:80px;display:block;"></span></span>
+                                    <span id="stuStatus"><span class="skeleton skeleton-sub" style="width:70px;display:block;"></span></span>
+                                </div>
+                            </div>
+                        </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.8);text-transform:uppercase;">Current Allocation</div>
+                        <div style="font-size:16px;font-weight:800;color:#fef08a;" id="stuCurrentRoom"><span class="skeleton skeleton-title" style="width:130px;display:block;"></span></div>
+                    </div>
+                </div> <!-- End Bottom Row -->
+                </div> <!-- End Workspace Header -->
+
+                <!-- ── WORKSPACE WITH SECONDARY SIDEBAR ────────────────────────────────── -->
+                <div class="workspace-with-sidebar">
+                    <div class="secondary-sidebar">
+                        <div class="secondary-sidebar-nav">
+                            <button class="active" id="tabbtn-profile" onclick="switchWorkspaceTab('profile')">
+                                <span class="icon" style="color: #3b82f6;">📁</span> Profile Info
+                            </button>
+                            <button id="tabbtn-academics" onclick="switchWorkspaceTab('academics')">
+                                <span class="icon" style="color: #10b981;">📊</span> Academic Ledger
+                            </button>
+                            <button id="tabbtn-attendance" onclick="switchWorkspaceTab('attendance')">
+                                <span class="icon" style="color: #f59e0b;">📅</span> Attendance Tracker
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ── MAIN CONTENT CONTAINER ──────────────────────────── -->
+                    <div class="workspace-main-content">
+
+                    <!-- 📍 TAB 1: PROFILE INFO -->
+                    <div id="panel-profile">
+                        <div class="info-grid">
+                            <div class="info-box">
+                                <h4>ℹ️ Biographical Details</h4>
+                                <div class="info-row"><span>Full Name:</span><span id="bioName"><span class="skeleton skeleton-text" style="width:140px;"></span></span></div>
+                                <div class="info-row"><span>Registration ID:</span><span id="bioCode"><span class="skeleton skeleton-text" style="width:100px;"></span></span></div>
+                                <div class="info-row"><span>Gender:</span><span id="bioGender"><span class="skeleton skeleton-text" style="width:70px;"></span></span></div>
+                                <div class="info-row"><span>Enrollment Date:</span><span id="bioEnrollDate"><span class="skeleton skeleton-text" style="width:90px;"></span></span></div>
+                                <div class="info-row"><span>Student Status:</span><span id="bioStatus"><span class="skeleton skeleton-text" style="width:60px;"></span></span></div>
+                            </div>
+                            <div class="info-box">
+                                <h4>👨‍👩‍👧 Parent & Guardian Profile</h4>
+                                <div class="info-row"><span>Primary Guardian:</span><span id="parName"><span class="skeleton skeleton-text" style="width:140px;"></span></span></div>
+                                <div class="info-row"><span>Relational Link:</span><span id="parRelation"><span class="skeleton skeleton-text" style="width:70px;"></span></span></div>
+                                <div class="info-row"><span>Primary Contact Phone:</span><span id="parPhone"><span class="skeleton skeleton-text" style="width:110px;"></span></span></div>
+                                <div class="info-row"><span>Alternative Phone:</span><span id="parAltPhone"><span class="skeleton skeleton-text" style="width:110px;"></span></span></div>
+                                <div class="info-row"><span>Email Address:</span><span id="parEmail"><span class="skeleton skeleton-text" style="width:130px;"></span></span></div>
+                                <div class="info-row"><span>Street Address:</span><span id="parAddress"><span class="skeleton skeleton-text" style="width:160px;"></span></span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 📍 TAB 2: ACADEMIC LEDGER -->
+                    <div id="panel-academics" style="display:none;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;background:#f8fafc;padding:14px 18px;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:18px;">
+                            <div>
+                                <h4 style="margin:0;font-size:15px;font-weight:800;color:var(--c-text-primary);">Historical Gradebook Matrix</h4>
+                                <div style="font-size:12px;color:var(--c-text-muted);" id="acadClassInfo">Class Registered: Loading…</div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <label style="font-size:13px;font-weight:700;">🕒 Academic Year Context:</label>
+                                <select id="workspaceYearSelect" class="form-control" style="width:220px;font-weight:700;" onchange="onYearContextChange(this.value)">
+                                    <!-- Options populated dynamically via JS -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="readonlyWarn" class="readonly-banner" style="display:none;">
+                            🔒 <strong>ARCHIVED ACADEMIC RECORD (READ-ONLY)</strong> — Historical data for <span id="warnYr">Past Academic Year</span>. Past performance records are locked and cannot be edited.
+                        </div>
+
+                        <!-- 📚 STUDENT GRADE SUBJECT ELECTIVES ENROLLMENT CARD -->
+                        <div style="background:#ffffff;border:1px solid var(--c-border-light);border-radius:10px;padding:20px;margin-bottom:20px;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+                                <div>
+                                    <h4 style="margin:0 0 4px;font-size:15px;font-weight:800;color:var(--c-text-primary);">📚 Enrolled Subjects (<span id="subjEnrollGradeName">Grade</span> Pool)</h4>
+                                    <div style="font-size:12px;color:var(--c-text-muted);">Subjects inherited from the Grade Master Pool + custom electives selected for this student.</div>
+                                </div>
+                                <button class="btn btn-outline btn-sm" id="btnManageElectives" onclick="openManageElectivesModal()">⚙️ Manage Electives</button>
+                            </div>
+                            <div id="studentEnrolledSubjectsContainer" style="display:flex;flex-wrap:wrap;gap:8px;">
+                                <span class="skeleton skeleton-text" style="width:220px;"></span>
+                            </div>
+                        </div>
+
+                        <table class="report-table">
+                            <thead id="acadMarksHead">
+                                <tr>
+                                    <th>Subject Code</th>
+                                    <th>Subject Name</th>
+                                    <th>Total (100%)</th>
+                                    <th>Grade</th>
+                                    <th>Points</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody id="acadMarksBody">
+                                <tr><td colspan="8" style="text-align:center;padding:24px;">Loading marks…</td></tr>
+                            </tbody>
+                        </table>
+
+                        <div class="stat-card-grid">
+                            <div class="stat-card"><div class="num" id="acadTotalSum">0.0</div><div class="lbl">Total Marks</div></div>
+                            <div class="stat-card"><div class="num" id="acadGpa">0.0%</div><div class="lbl">GPA Average</div></div>
+                            <div class="stat-card"><div class="num" id="acadPts">0</div><div class="lbl">Total Points</div></div>
+                            <div class="stat-card" style="border-color:#059669;background:#ecfdf5;"><div class="num" id="acadDiv" style="color:#059669;">-</div><div class="lbl" style="color:#047857;">NECTA Division</div></div>
+                        </div>
+                    </div>
+
+                    <!-- 📍 TAB 3: ATTENDANCE TRACKER -->
+                    <div id="panel-attendance" style="display:none;">
+                        <h4 style="margin:0 0 6px;font-size:16px;font-weight:800;">📅 Attendance Summary & Tracking</h4>
+                        <p style="margin:0 0 18px;font-size:13px;color:var(--c-text-muted);">Quantitative attendance tracking metrics across the selected academic year context.</p>
+
+                        <div class="stat-card-grid">
+                            <div class="stat-card" style="border-color:#059669;background:#ecfdf5;"><div class="num" id="attPresent" style="color:#059669;">0</div><div class="lbl" style="color:#047857;">Days Present</div></div>
+                            <div class="stat-card" style="border-color:#dc2626;background:#fef2f2;"><div class="num" id="attAbsent" style="color:#dc2626;">0</div><div class="lbl" style="color:#991b1b;">Unexcused Absences</div></div>
+                            <div class="stat-card" style="border-color:#d97706;background:#fffbebf8;"><div class="num" id="attExcused" style="color:#d97706;">0</div><div class="lbl" style="color:#92400e;">Excused Absences</div></div>
+                            <div class="stat-card"><div class="num" id="attPct">0.0%</div><div class="lbl">Attendance Rate</div></div>
+                        </div>
+                    </div>
+
+                    </div>
+
+                </div>
+            </div>
+            <app-footer></app-footer>
+        </main>
+    </div>
+</div>
+
+<!-- ⚙️ MANAGE ELECTIVES MODAL -->
+<div class="custom-modal-overlay" id="manageElectivesModal">
+    <div class="custom-modal-content">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #e2e8f0;">
+            <h4 style="margin:0;font-size:16px;font-weight:800;color:var(--c-text-primary);">⚙️ Manage Student Elective Subjects</h4>
+            <button style="background:none;border:none;font-size:20px;cursor:pointer;" onclick="closeManageElectivesModal()">✕</button>
+        </div>
+        <p style="margin:0 0 16px;font-size:13px;color:var(--c-text-muted);">
+            Select optional/elective subjects from the Grade Master Pool for <strong id="modalStudentName">Student</strong>. Core subjects are mandatory and automatically locked.
+        </p>
+
+        <form id="manageElectivesForm">
+            <div id="modalElectivesChecklist" style="max-height:280px;overflow-y:auto;margin-bottom:20px;border:1px solid #e2e8f0;border-radius:8px;padding:12px;">
+                <div style="color:var(--c-text-muted);">Loading subjects from Grade Pool…</div>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;gap:10px;">
+                <button type="button" class="btn btn-outline btn-sm" onclick="closeManageElectivesModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary btn-sm" style="font-weight:700;">Save Elective Enrolments</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let currentStudentId = '';
+let currentContextYear = new Date().getFullYear().toString();
+let workspaceData = null;
+let studentSubjectData = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Dynamically populate year select
+    const selYear = document.getElementById('workspaceYearSelect');
+    if (selYear) {
+        const currentYear = new Date().getFullYear();
+        for (let y = currentYear; y >= currentYear - 5; y--) {
+            selYear.add(new Option(y, y, false, y === currentYear));
+        }
+    }
+    const params = new URLSearchParams(window.location.search);
+    currentStudentId = params.get('id') || 'fc5cc4e2-3e5a-4b8b-88e7-de517e4e6cc7';
+    currentContextYear = params.get('year') || new Date().getFullYear().toString();
+
+    // Set the select to the correct year
+    if (selYear) selYear.value = currentContextYear;
+
+    loadWorkspace(currentStudentId, currentContextYear);
+    loadStudentSubjects(currentStudentId, currentContextYear);
+});
+
+async function loadWorkspace(studentId, year) {
+    try {
+        const res = await fetch(`/shule-cafe/api/students/student_workspace.php?id=${studentId}&year=${year}`, { credentials: 'include' });
+        const data = await res.json();
+
+        if (!data.success) {
+            alert(data.message || 'Failed to load student workspace.');
+            return;
+        }
+
+        workspaceData = data;
+
+        // Render Anchored Header
+        const p = data.profile;
+        document.getElementById('stuName').textContent = p.full_name;
+
+        const avatarEl = document.getElementById('stuAvatar');
+        avatarEl.classList.remove('skeleton');
+        avatarEl.textContent = p.full_name ? p.full_name.charAt(0).toUpperCase() : 'S';
+
+        const genderVal = (p.gender && p.gender.toString().match(/^m/i)) ? 'Male' : ((p.gender && p.gender.toString().match(/^f/i)) ? 'Female' : (p.gender || 'Unknown'));
+        document.getElementById('stuCode').innerHTML   = `<span style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.9);background:rgba(0,0,0,0.2);padding:3px 10px;border-radius:4px;">REG #${p.user_code || p.id.substr(0,8)}</span>`;
+        document.getElementById('stuGender').innerHTML = `<span style="font-size:12px;font-weight:700;color:#e0f2fe;">Gender: ${genderVal}</span>`;
+        document.getElementById('stuStatus').innerHTML = `<span style="font-size:12px;font-weight:800;background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:12px;">${p.status === 'active' ? 'Active' : 'Suspended'}</span>`;
+
+        const alloc = data.allocation;
+        document.getElementById('stuCurrentRoom').textContent = alloc ? `${alloc.grade_name} ${alloc.classroom_name} (${year})` : `Form 1 (${year})`;
+
+        // Populate Timeline Dropdown
+        const yrSelect = document.getElementById('workspaceYearSelect');
+        if (data.timeline && data.timeline.length) {
+            yrSelect.innerHTML = data.timeline.map(t => `<option value="${t.academic_year}" ${t.academic_year === year ? 'selected' : ''}>📅 ${t.academic_year} — ${t.classroom_name}</option>`).join('');
+        }
+
+        // TAB 1: Profile Info
+        document.getElementById('bioName').textContent       = p.full_name;
+        document.getElementById('bioCode').textContent       = p.user_code || '—';
+        document.getElementById('bioGender').textContent     = genderVal;
+        document.getElementById('bioEnrollDate').textContent = p.created_at ? p.created_at.substr(0,10) : new Date().getFullYear() + '-01-10';
+        document.getElementById('bioStatus').textContent     = p.status === 'active' ? 'Active' : 'Suspended';
+
+        document.getElementById('parName').textContent    = p.guardian_name || '—';
+        document.getElementById('parRelation').textContent = p.relation || 'Parent/Guardian';
+        document.getElementById('parPhone').textContent   = p.guardian_phone || '—';
+        document.getElementById('parAltPhone').textContent= p.alternative_phone || '—';
+        document.getElementById('parEmail').textContent   = p.guardian_email || '—';
+        document.getElementById('parAddress').textContent = p.home_address || '—';
+
+        // TAB 2: Academics
+        document.getElementById('acadClassInfo').textContent = alloc ? `Class Registered: ${alloc.grade_name} ${alloc.classroom_name} · Status: ${alloc.year_status}` : 'Class Registered: Unassigned';
+
+        const banner = document.getElementById('readonlyWarn');
+        if (data.is_read_only) {
+            banner.style.display = 'flex';
+            document.getElementById('warnYr').textContent = year;
+            document.getElementById('btnManageElectives').style.display = 'none';
+        } else {
+            banner.style.display = 'none';
+            document.getElementById('btnManageElectives').style.display = 'inline-block';
+        }
+
+        const acad = data.academics;
+        document.getElementById('acadTotalSum').textContent = acad.total_score;
+        document.getElementById('acadGpa').textContent      = `${acad.gpa_avg}%`;
+        document.getElementById('acadPts').textContent      = acad.total_points;
+        document.getElementById('acadDiv').textContent      = acad.division || '-';
+
+        // Build dynamic table headers
+        const headTr = document.querySelector('#acadMarksHead tr');
+        headTr.innerHTML = `<th>Subject Code</th><th>Subject Name</th>` + 
+                           data.assessment_types.map(t => `<th>${t.name} (${t.weight_percent}%)</th>`).join('') +
+                           `<th>Total (100%)</th><th>Grade</th><th>Points</th><th>Remarks</th>`;
+
+        const tbody = document.getElementById('acadMarksBody');
+        if (!acad.marks || acad.marks.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="${4 + data.assessment_types.length}" style="text-align:center;padding:24px;color:var(--c-text-muted);font-weight:600;">No academic records have been entered for this year.</td></tr>`;
+        } else {
+            tbody.innerHTML = acad.marks.map(m => {
+                let dynamicCells = data.assessment_types.map(t => {
+                    let score = m.scores && m.scores[t.id] !== undefined ? m.scores[t.id] : 0;
+                    return `<td>${score}%</td>`;
+                }).join('');
+                return `
+                <tr>
+                    <td style="font-weight:700;color:var(--c-text-muted);">${m.subject_code}</td>
+                    <td style="font-weight:700;">${m.subject_name}</td>
+                    ${dynamicCells}
+                    <td style="font-weight:800;">${m.total_score}%</td>
+                    <td><span style="padding:2px 8px;border-radius:10px;font-weight:800;font-size:11px;background:${m.grade==='A'?'#d1fae5':m.grade==='B'?'#e0f2fe':m.grade==='C'?'#fef9c3':'#fee2e2'};">${m.grade}</span></td>
+                    <td>${m.points}</td>
+                    <td style="font-size:12px;color:var(--c-text-muted);">${m.remark}</td>
+                </tr>
+            `}).join('');
+        }
+
+        // TAB 3: Attendance
+        const att = data.attendance;
+        document.getElementById('attPresent').textContent = att.days_present || 0;
+        document.getElementById('attAbsent').textContent  = att.days_absent  || 0;
+        document.getElementById('attExcused').textContent = att.days_excused || 0;
+        document.getElementById('attPct').textContent     = `${att.attendance_pct || 0}%`;
+
+    } catch (e) {
+        console.error('Error loading student workspace:', e);
+    }
+}
+
+async function loadStudentSubjects(studentId, year) {
+    try {
+        const res = await fetch(`/shule-cafe/api/students/student_subjects_api.php?student_id=${studentId}&year=${year}`, { credentials: 'include' });
+        const data = await res.json();
+        if (!data.success) return;
+
+        studentSubjectData = data;
+        const gradeName = data.student ? data.student.grade_name : 'Grade';
+        document.getElementById('subjEnrollGradeName').textContent = gradeName;
+
+        const container = document.getElementById('studentEnrolledSubjectsContainer');
+        const activeSubjects = data.active_subjects || [];
+
+        if (activeSubjects.length === 0) {
+            container.innerHTML = '<span style="color:var(--c-text-muted);font-size:13px;">No subjects enrolled yet.</span>';
+            return;
+        }
+
+        container.innerHTML = activeSubjects.map(s => {
+            const badgeClass = s.is_core ? 'background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;' : 'background:#e0f2fe;color:#0369a1;border:1px solid #7dd3fc;';
+            const typeText = s.is_core ? 'Core' : 'Elective';
+            return `
+                <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;${badgeClass}">
+                    <span>${s.subject_name} (${s.subject_code})</span>
+                    <span style="font-size:10px;opacity:0.8;text-transform:uppercase;">• ${typeText}</span>
+                </span>
+            `;
+        }).join('');
+    } catch (err) {
+        console.error('Error fetching student subjects:', err);
+    }
+}
+
+function openManageElectivesModal() {
+    if (!studentSubjectData) return;
+    document.getElementById('modalStudentName').textContent = studentSubjectData.student ? studentSubjectData.student.full_name : 'Student';
+
+    const pool = studentSubjectData.grade_subject_pool || [];
+    const container = document.getElementById('modalElectivesChecklist');
+
+    if (pool.length === 0) {
+        container.innerHTML = '<div style="color:var(--c-text-muted);font-size:13px;">No subjects assigned to this Grade pool yet.</div>';
+    } else {
+        container.innerHTML = pool.map(s => {
+            const isChecked = s.is_enrolled ? 'checked' : '';
+            const isDisabled = s.is_core ? 'disabled' : '';
+            const coreLabel = s.is_core ? '<span style="font-size:11px;color:#059669;font-weight:700;">🟢 Core Mandatory (Locked)</span>' : '<span style="font-size:11px;color:#0284c7;font-weight:700;">🔵 Optional Elective</span>';
+
+            return `
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 6px;border-bottom:1px solid #f1f5f9;">
+                    <label style="display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;cursor:pointer;">
+                        <input type="checkbox" class="chk-stu-elective" value="${s.subject_code}" ${isChecked} ${isDisabled} style="width:16px;height:16px;">
+                        <span>${s.subject_name} (${s.subject_code})</span>
+                    </label>
+                    ${coreLabel}
+                </div>
+            `;
+        }).join('');
+    }
+
+    document.getElementById('manageElectivesModal').style.display = 'flex';
+}
+
+function closeManageElectivesModal() {
+    document.getElementById('manageElectivesModal').style.display = 'none';
+}
+
+document.getElementById('manageElectivesForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const selectedCodes = [];
+    $('.chk-stu-elective:checked').each(function () {
+        selectedCodes.push($(this).val());
+    });
+
+    try {
+        const res = await fetch('/shule-cafe/api/students/student_subjects_api.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+                action: 'update_student_subjects',
+                student_id: currentStudentId,
+                year: currentContextYear,
+                subject_codes: selectedCodes
+            })
+        });
+        const result = await res.json();
+
+        if (res.ok && result.success) {
+            alert('✅ Student elective enrollments updated successfully!');
+            closeManageElectivesModal();
+            loadStudentSubjects(currentStudentId, currentContextYear);
+        } else {
+            alert(result.message || 'Failed to update electives.');
+        }
+    } catch (err) {
+        alert('Network error updating student electives.');
+    }
+});
+
+function switchWorkspaceTab(tabId) {
+    ['profile','academics','attendance'].forEach(id => {
+        document.getElementById(`panel-${id}`).style.display = id === tabId ? 'block' : 'none';
+        document.getElementById(`tabbtn-${id}`).className    = (id === tabId ? 'active' : '');
+    });
+}
+
+function onYearContextChange(newYear) {
+    currentContextYear = newYear;
+    loadWorkspace(currentStudentId, newYear);
+    loadStudentSubjects(currentStudentId, newYear);
+}
+</script>
+</body>
+</html>

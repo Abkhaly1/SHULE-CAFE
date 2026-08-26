@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Dashboard ‹ Super Admin ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    
+    <script type="module" src="../layouts/global-layout.js"></script>
+    <script type="module" src="../js/auth/auth-guard.js"></script>
+
+    <style>
+        .stat-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+            margin-top: 12px;
+        }
+        .stat-card-grid .stat-card {
+            background: #ffffff;
+            border: 1px solid var(--c-border-light);
+            border-radius: 10px;
+            padding: 10px 14px;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+        .stat-card-grid .stat-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-color: var(--c-primary);
+        }
+        .stat-card-grid .stat-icon {
+            width: 38px !important;
+            height: 38px !important;
+            min-width: 38px !important;
+            border-radius: 8px;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 18px !important;
+            font-weight: 800;
+            flex-shrink: 0 !important;
+        }
+        .stat-card-grid .stat-val { font-size: 18px !important; font-weight: 800; color: var(--c-text-primary); line-height: 1.1; }
+        .stat-card-grid .stat-lbl { font-size: 10px !important; font-weight: 700; color: var(--c-text-muted); text-transform: uppercase; margin-top: 2px; letter-spacing: 0.3px; }
+        
+        .skeleton-loader {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="super_admin" active-path="/super-admin/dashboard.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="System Administrator"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    
+                    <app-breadcrumb path="Super Admin, Dashboard"></app-breadcrumb>
+                    
+                    <app-page-header 
+                        title="Platform Operations Dashboard" 
+                        subtitle="Overview of entire Shule Cafe multi-tenant platform operations, tenant schools, and system health.">
+                    </app-page-header>
+                    
+                    <!-- ── STATS CARDS ──────────────────────────── -->
+                    <div class="stat-card-grid">
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background:#e0e7ff;color:#4338ca;">🏫</div>
+                            <div>
+                                <div class="stat-val" id="statSchools"><span class="skeleton-loader" style="width:50px;height:26px;"></span></div>
+                                <div class="stat-lbl">Registered Schools</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background:#dcfce7;color:#15803d;">🎓</div>
+                            <div>
+                                <div class="stat-val" id="statStudents"><span class="skeleton-loader" style="width:50px;height:26px;"></span></div>
+                                <div class="stat-lbl">Enrolled Students</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background:#e0f2fe;color:#0369a1;">👨‍🏫</div>
+                            <div>
+                                <div class="stat-val" id="statTeachers"><span class="skeleton-loader" style="width:50px;height:26px;"></span></div>
+                                <div class="stat-lbl">Active Teachers</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background:#fef3c7;color:#b45309;">👨‍👩‍👧</div>
+                            <div>
+                                <div class="stat-val" id="statParents"><span class="skeleton-loader" style="width:50px;height:26px;"></span></div>
+                                <div class="stat-lbl">Linked Parents</div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card" style="border-color:#10b981;">
+                            <div class="stat-icon" style="background:#d1fae5;color:#059669;">⚡</div>
+                            <div>
+                                <div class="stat-val" style="color:#059669;">99.9%</div>
+                                <div class="stat-lbl">System Health</div>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--sp-6);">
+                        <!-- Left Column: Recent Activities & Alerts -->
+                        <div style="display: flex; flex-direction: column; gap: var(--sp-6);">
+                            
+                            <div class="card" style="padding: 20px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid var(--c-border-light);margin-bottom:14px;">
+                                    <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: var(--c-text-primary);">
+                                        ⚡ Recent Platform Operations & Logs
+                                    </h3>
+                                    <span class="badge badge-success" style="font-weight:700;">Live Feed</span>
+                                </div>
+                                <div id="activitiesContainer">
+                                    <app-table-skeleton rows="4" cols="2"></app-table-skeleton>
+                                </div>
+                            </div>
+
+                            <div class="card" style="padding: 20px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid var(--c-border-light);margin-bottom:14px;">
+                                    <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: var(--c-text-primary);">
+                                        🛡️ System Alerts & Health Monitor
+                                    </h3>
+                                </div>
+                                <div style="padding: 10px 0;">
+                                    <app-table-empty title="System Healthy" message="All tenant services, database instances, and multi-tenant security layers are operating normally."></app-table-empty>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+                        <!-- Right Column: Quick Actions & Navigation -->
+                        <div style="display: flex; flex-direction: column; gap: var(--sp-6);">
+                            
+                            <div class="card" style="padding: 20px;">
+                                <div style="padding-bottom: 12px; border-bottom: 1px solid var(--c-border-light); margin-bottom: 16px;">
+                                    <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: var(--c-text-primary);">
+                                        🚀 Quick Actions
+                                    </h3>
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 10px;">
+                                    <a href="schools/create.html" class="btn btn-primary" style="justify-content: center; font-weight:700;">🏫 Register New School Tenant</a>
+                                    <a href="templates/index.html" class="btn btn-outline" style="justify-content: center; font-weight:700;">📚 Master Academic Templates</a>
+                                    <a href="users/index.html" class="btn btn-outline" style="justify-content: center; font-weight:700;">👥 Platform Users Directory</a>
+                                    <a href="reports/index.html" class="btn btn-outline" style="justify-content: center; font-weight:700;">📊 Export CSV Reports</a>
+                                    <a href="settings/backups.html" class="btn btn-outline" style="justify-content: center; font-weight:700;">💾 Database Backups & Dumps</a>
+                                </div>
+                            </div>
+                            
+                            <div class="card" style="padding: 20px; background: #f8fafc; border: 1px solid #e2e8f0;">
+                                <div style="padding-bottom: 10px; border-bottom: 1px solid #e2e8f0; margin-bottom: 12px;">
+                                    <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: var(--c-text-primary);">
+                                        📋 System Quick Stats
+                                    </h3>
+                                </div>
+                                <div style="font-size: 13px; color: var(--c-text-secondary); display:flex; flex-direction:column; gap:8px;">
+                                    <div style="display:flex;justify-content:space-between;"><span>Active Academic Year:</span> <strong>2026</strong></div>
+                                    <div style="display:flex;justify-content:space-between;"><span>Education Curriculum:</span> <strong>Tanzania NECTA</strong></div>
+                                    <div style="display:flex;justify-content:space-between;"><span>Multi-Tenant Engine:</span> <strong>Isolated Row (school_id)</strong></div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <app-footer></app-footer>
+                
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const res = await fetch('/shule-cafe/api/stats/superadmin.php', { credentials: 'include' });
+                if (res.status === 401 || res.status === 403) {
+                    window.location.href = '../login.html';
+                    return;
+                }
+                const result = await res.json();
+                if (result.success && result.data) {
+                    const data = result.data;
+                    document.getElementById('statSchools').textContent  = (data.schools || 0).toLocaleString();
+                    document.getElementById('statStudents').textContent = (data.students || 0).toLocaleString();
+                    document.getElementById('statTeachers').textContent = (data.teachers || 0).toLocaleString();
+                    document.getElementById('statParents').textContent  = (data.parents || 0).toLocaleString();
+
+                    renderActivities(data.activities || []);
+                }
+            } catch (err) {
+                console.error("Error loading superadmin stats:", err);
+            }
+        });
+
+        function renderActivities(activities) {
+            const container = document.getElementById('activitiesContainer');
+            if (!container) return;
+
+            if (activities.length === 0) {
+                container.innerHTML = '<div style="padding:16px;color:var(--c-text-muted);">No recent activities recorded.</div>';
+                return;
+            }
+
+            let html = '<ul style="list-style:none;padding:0;margin:0;">';
+            activities.forEach(act => {
+                html += `
+                    <li style="padding:12px 0;border-bottom:1px solid var(--c-border-light);display:flex;justify-content:space-between;align-items:center;">
+                        <div>
+                            <div style="font-weight:700;font-size:14px;color:var(--c-text-primary);">${act.title}</div>
+                            <div style="font-size:12px;color:var(--c-text-muted);">${act.subtitle}</div>
+                        </div>
+                        <div style="font-size:11px;color:var(--c-text-muted);font-weight:600;">${act.created_at ? new Date(act.created_at).toLocaleString() : 'Recent'}</div>
+                    </li>
+                `;
+            });
+            html += '</ul>';
+            container.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

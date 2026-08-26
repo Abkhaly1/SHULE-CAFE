@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Children ‹ SHULE CAFE</title>
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <script type="module" src="../layouts/global-layout.js"></script>
+    <script type="module" src="../js/auth/auth-guard.js"></script>
+    <style>
+        .child-card { background:#fff; border:1px solid var(--c-border-light); border-radius:16px; padding:22px; margin-bottom:20px; box-shadow:0 8px 24px rgba(15,23,42,0.04); }
+        .child-header { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:16px; }
+        .child-stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; }
+        .stat-block { background:#f8fafc; border-radius:12px; padding:14px; }
+        .stat-label { font-size:12px; font-weight:700; color:var(--c-text-muted); text-transform:uppercase; margin-bottom:4px; }
+        .stat-value { font-size:20px; font-weight:800; color:var(--c-text-primary); }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="parent" active-path="/parent/children.html"></app-sidebar>
+        <div class="app-main">
+            <app-topbar username="Parent Portal"></app-topbar>
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <div class="child-card">
+                        <div class="child-header">
+                            <div>
+                                <h1 style="margin:0; font-size:24px; font-weight:800;">My Children</h1>
+                                <p style="margin:8px 0 0; color:var(--c-text-secondary);">Track grades, attendance, and classroom information for your child.</p>
+                            </div>
+                            <button class="btn btn-primary" style="font-weight:700;">Add Child</button>
+                        </div>
+                        <div class="child-stats">
+                            <div class="stat-block"><div class="stat-label">Child</div><div class="stat-value">Juma Abdallah</div></div>
+                            <div class="stat-block"><div class="stat-label">Grade</div><div class="stat-value">Form 1</div></div>
+                            <div class="stat-block"><div class="stat-label">Attendance</div><div class="stat-value">92%</div></div>
+                            <div class="stat-block"><div class="stat-label">Average</div><div class="stat-value">68%</div></div>
+                        </div>
+                    </div>
+                    <app-footer></app-footer>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

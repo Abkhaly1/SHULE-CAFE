@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regional Dashboard ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/regional-theme.css">
+    
+    <script type="module" src="../layouts/global-layout.js"></script>
+    <script type="module" src="../js/auth/auth-guard.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="regional_officer" active-path="/regional/dashboard.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Regional Officer Portal"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <app-breadcrumb path="Regional Officer, Dashboard"></app-breadcrumb>
+                    
+                    <app-page-header 
+                        title="Regional Overview" 
+                        subtitle="Monitoring regional education statistics and registered school tenants.">
+                    </app-page-header>
+                    
+                    <!-- Stats Cards -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--sp-4); margin-bottom: var(--sp-6); margin-top: var(--sp-4);">
+                        <div class="card" style="padding: var(--sp-4);">
+                            <div style="font-size: var(--text-sm); color: var(--c-text-muted); font-weight: 500; margin-bottom: var(--sp-2);">Registered Schools</div>
+                            <div style="font-size: var(--text-2xl); font-weight: 700; color: var(--c-primary);" id="statSchools">-</div>
+                        </div>
+                        <div class="card" style="padding: var(--sp-4);">
+                            <div style="font-size: var(--text-sm); color: var(--c-text-muted); font-weight: 500; margin-bottom: var(--sp-2);">Total Teachers</div>
+                            <div style="font-size: var(--text-2xl); font-weight: 700; color: var(--c-primary);" id="statTeachers">-</div>
+                        </div>
+                        <div class="card" style="padding: var(--sp-4);">
+                            <div style="font-size: var(--text-sm); color: var(--c-text-muted); font-weight: 500; margin-bottom: var(--sp-2);">Total Students</div>
+                            <div style="font-size: var(--text-2xl); font-weight: 700; color: var(--c-primary);" id="statStudents">-</div>
+                        </div>
+                        <div class="card" style="padding: var(--sp-4);">
+                            <div style="font-size: var(--text-sm); color: var(--c-text-muted); font-weight: 500; margin-bottom: var(--sp-2);">Total Parents</div>
+                            <div style="font-size: var(--text-2xl); font-weight: 700; color: var(--c-primary);" id="statParents">-</div>
+                        </div>
+                    </div>
+
+                    <!-- Regional Schools Table -->
+                    <div class="card" style="padding: var(--sp-6);">
+                        <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">Schools Directory</h3>
+                        <div id="schoolsTableContainer">
+                            <app-table-skeleton rows="5" cols="4"></app-table-skeleton>
+                        </div>
+                    </div>
+
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load Stats
+            try {
+                const res = await fetch('/shule-cafe/api/stats/regional.php', { credentials: 'include' });
+                if (res.status === 401 || res.status === 403) {
+                    window.location.href = '/shule-cafe/frontend/auth/login.html';
+                    return;
+                }
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('statSchools').textContent = data.data.schools.toLocaleString();
+                    document.getElementById('statTeachers').textContent = data.data.teachers.toLocaleString();
+                    document.getElementById('statStudents').textContent = data.data.students.toLocaleString();
+                    document.getElementById('statParents').textContent = data.data.parents.toLocaleString();
+                }
+            } catch (error) {
+                console.error("Failed to load regional stats", error);
+            }
+
+            // Load Regional Schools
+            try {
+                const sRes = await fetch('/shule-cafe/api/schools/list.php', { credentials: 'include' });
+                const sResult = await sRes.json();
+                const container = document.getElementById('schoolsTableContainer');
+
+                if (sRes.ok && sResult.success && sResult.data.length > 0) {
+                    const cols = [
+                        { key: 'school', label: 'School Name', type: 'avatar' },
+                        { key: 'type', label: 'School Type', type: 'text' },
+                        { key: 'region', label: 'Region', type: 'text' },
+                        { key: 'status', label: 'Status', type: 'status' }
+                    ];
+                    const sData = sResult.data.map(item => ({
+                        id: item.id,
+                        school: { initials: item.name ? item.name.charAt(0).toUpperCase() : 'S', name: item.name },
+                        type: item.type || 'Secondary',
+                        region: item.region || 'N/A',
+                        status: item.status === 'active' ? 'Active' : 'Suspended'
+                    }));
+                    const table = document.createElement('app-table');
+                    table.setAttribute('columns', JSON.stringify(cols));
+                    table.setAttribute('data', JSON.stringify(sData));
+                    container.innerHTML = '';
+                    container.appendChild(table);
+                } else {
+                    container.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-text-muted);">No schools registered in region yet.</div>';
+                }
+            } catch (e) {
+                console.error("Failed to load schools", e);
+            }
+        });
+    </script>
+</body>
+</html>

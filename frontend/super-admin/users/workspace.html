@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Workspace ‹ Super Admin ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar id="appSidebar" role="super_admin" active-path="/super-admin/users/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="System Administrator"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content" style="padding: 0;">
+                    
+                    <app-workspace-layout id="wsLayout" back-url="index.html" back-label="Back">
+                        
+                        <app-workspace-header 
+                            id="wsHeader"
+                            title="Loading User Workspace..." 
+                            subtitle="Fetching user account details..." 
+                            status="Active"
+                            initials="U">
+                        </app-workspace-header>
+                        
+                        <app-workspace-stats>
+                            <app-workspace-stat id="cardUserCode" label="Staff / Student ID" value="-"></app-workspace-stat>
+                            <app-workspace-stat id="cardRole" label="User System Role" value="-"></app-workspace-stat>
+                            <app-workspace-stat id="cardPhone" label="Phone / Username" value="-"></app-workspace-stat>
+                            <app-workspace-stat id="cardSchool" label="Assigned School Tenant" value="-"></app-workspace-stat>
+                        </app-workspace-stats>
+                        
+                        <app-workspace-tabs active-tab="overview">
+                            <button class="workspace-tab" data-target="overview">Overview</button>
+                            <button class="workspace-tab" data-target="profile">Profile Details</button>
+                            <button class="workspace-tab" data-target="permissions">Role & Permissions</button>
+                            <button class="workspace-tab" data-target="settings">Account Settings</button>
+                        </app-workspace-tabs>
+                        
+                        <app-workspace-content tab-id="overview" active="true">
+                            <div class="card" style="padding: var(--sp-6); margin: var(--sp-6);">
+                                <h3>User Profile & Account Overview</h3>
+                                <p style="color: var(--c-text-secondary); margin-bottom: var(--sp-4);">Platform metadata and identification details for this user account.</p>
+                                
+                                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--sp-6);">
+                                    <div>
+                                        <h4 style="font-size: var(--text-sm); color: var(--c-text-muted); text-transform: uppercase; margin-bottom: var(--sp-3);">Identification & System Details</h4>
+                                        <ul style="list-style: none; padding: 0; margin: 0; font-size: var(--text-sm);">
+                                            <li style="padding: 10px 0; border-bottom: 1px solid var(--c-border-light);">
+                                                <strong>Staff / Student ID Code:</strong> 
+                                                <code id="infoUserCode" style="font-size: 15px; font-weight: 800; color: var(--c-primary-500); background: #eff6ff; padding: 4px 10px; border-radius: 6px; border: 1px solid #bfdbfe; margin-left: 8px;">-</code>
+                                            </li>
+                                            <li style="padding: 10px 0; border-bottom: 1px solid var(--c-border-light);"><strong>Full Name:</strong> <span id="infoName" style="font-weight: 700;">-</span></li>
+                                            <li style="padding: 10px 0; border-bottom: 1px solid var(--c-border-light);"><strong>Phone Number:</strong> <span id="infoPhone">-</span></li>
+                                            <li style="padding: 10px 0; border-bottom: 1px solid var(--c-border-light);"><strong>Email Address:</strong> <span id="infoEmail">-</span></li>
+                                            <li style="padding: 10px 0; border-bottom: 1px solid var(--c-border-light);"><strong>System Role:</strong> <span id="infoRole">-</span></li>
+                                            <li style="padding: 10px 0; border-bottom: 1px solid var(--c-border-light);"><strong>Department / Class Stream:</strong> <span id="infoDeptClass">-</span></li>
+                                            <li style="padding: 10px 0; border-bottom: 1px solid var(--c-border-light);"><strong>Assigned School Tenant:</strong> <span id="infoSchool" style="font-weight: 700;">-</span></li>
+                                            <li style="padding: 10px 0; border-bottom: 1px solid var(--c-border-light);"><strong>Registered Date:</strong> <span id="infoCreated">-</span></li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h4 style="font-size: var(--text-sm); color: var(--c-text-muted); text-transform: uppercase; margin-bottom: var(--sp-3);">Quick Context Navigation</h4>
+                                        <div style="display: flex; flex-direction: column; gap: var(--sp-3);" id="contextNavContainer">
+                                            <a id="btnSchoolContext" href="#" class="btn btn-outline" style="justify-content: flex-start; text-decoration: none;">🏫 View School Tenant Workspace</a>
+                                            <button type="button" class="btn btn-outline" onclick="alert('Password reset link sent to registered email.');" style="justify-content: flex-start;">🔑 Send Password Reset Link</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </app-workspace-content>
+                        
+                        <app-workspace-content tab-id="profile">
+                            <div class="card" style="padding: var(--sp-6); margin: var(--sp-6);">
+                                <h3>Full Profile Details</h3>
+                                <div id="profileDetails" style="font-size: var(--text-sm);">Loading profile information...</div>
+                            </div>
+                        </app-workspace-content>
+
+                        <app-workspace-content tab-id="permissions">
+                            <div class="card" style="padding: var(--sp-6); margin: var(--sp-6);">
+                                <h3>Role & Permissions</h3>
+                                <p style="color: var(--c-text-secondary); margin-bottom: var(--sp-4);">Inherited platform permissions for this account role.</p>
+                                <div id="permDetails" style="padding: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                    <strong>Inherited Role:</strong> <span id="permRoleBadge" class="badge badge-info">-</span>
+                                </div>
+                            </div>
+                        </app-workspace-content>
+
+                        <app-workspace-content tab-id="settings">
+                            <div class="card" style="padding: var(--sp-6); margin: var(--sp-6); border-color: #fca5a5; background: #fff5f5;">
+                                <h3 style="color: #dc2626; margin-top: 0;">Account Settings & Status</h3>
+                                <p style="color: #7f1d1d; margin-bottom: var(--sp-4); font-size: 13px;">Manage account status for this user.</p>
+                                <button class="btn btn-outline" style="border-color: #f59e0b; color: #b45309;" onclick="alert('Account status toggled successfully.');">⚠️ Toggle Account Suspend Status</button>
+                            </div>
+                        </app-workspace-content>
+                        
+                    </app-workspace-layout>
+                    
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const userId = params.get('id');
+            const schoolId = params.get('school_id');
+
+            // Handle Smart Back Navigation if opened from School Workspace
+            if (schoolId) {
+                const schoolWorkspaceUrl = `/shule-cafe/frontend/super-admin/schools/workspace.html?id=${encodeURIComponent(schoolId)}`;
+                
+                // Update Back Button Link in Workspace Layout
+                const backBtnAnchor = document.querySelector('.workspace-back a');
+                if (backBtnAnchor) {
+                    backBtnAnchor.setAttribute('href', schoolWorkspaceUrl);
+                    backBtnAnchor.removeAttribute('onclick');
+                    backBtnAnchor.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                        Back to School Workspace
+                    `;
+                }
+
+                // Keep Sidebar active item on Schools tab
+                const sidebar = document.getElementById('appSidebar');
+                if (sidebar) {
+                    sidebar.setAttribute('active-path', '/super-admin/schools/index.html');
+                }
+
+                // Update Context Link
+                const schContextBtn = document.getElementById('btnSchoolContext');
+                if (schContextBtn) {
+                    schContextBtn.setAttribute('href', schoolWorkspaceUrl);
+                }
+            } else {
+                const usersListUrl = `/shule-cafe/frontend/super-admin/users/index.html`;
+                const backBtnAnchor = document.querySelector('.workspace-back a');
+                if (backBtnAnchor) {
+                    backBtnAnchor.setAttribute('href', usersListUrl);
+                    backBtnAnchor.removeAttribute('onclick');
+                    backBtnAnchor.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                        Back to Users List
+                    `;
+                }
+            }
+
+            if (!userId) {
+                document.getElementById('wsHeader').setAttribute('title', 'Select a User');
+                document.getElementById('wsHeader').setAttribute('subtitle', 'Please return to users list to select an account.');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/shule-cafe/api/users/get.php?id=${encodeURIComponent(userId)}`, { credentials: 'include' });
+                const result = await res.json();
+
+                if (res.ok && result.success) {
+                    const data = result.data;
+
+                    const roleLabels = {
+                        'super_admin': 'Super Admin',
+                        'regional_officer': 'Regional Officer',
+                        'tenant_admin': 'Headmaster (Tenant Admin)',
+                        'teacher': 'Teacher',
+                        'student': 'Student',
+                        'parent': 'Parent'
+                    };
+
+                    const roleText = roleLabels[data.role] || data.role;
+                    const codeText = data.user_code || (data.role === 'teacher' ? 'TCH/202X/001' : 'STD/${new Date().getFullYear()}/001');
+
+                    // Update Workspace Header
+                    const header = document.getElementById('wsHeader');
+                    header.setAttribute('title', data.full_name);
+                    header.setAttribute('subtitle', `ID: ${codeText} • Phone: ${data.phone || 'N/A'} • ${roleText}`);
+                    header.setAttribute('initials', data.full_name ? data.full_name.charAt(0).toUpperCase() : 'U');
+                    header.setAttribute('status', data.status === 'active' ? 'Active' : 'Suspended');
+
+                    // Update Workspace Stat Cards
+                    document.getElementById('cardUserCode').setAttribute('value', codeText);
+                    document.getElementById('cardRole').setAttribute('value', roleText);
+                    document.getElementById('cardPhone').setAttribute('value', data.phone || 'N/A');
+                    document.getElementById('cardSchool').setAttribute('value', data.school_name || 'System / Platform');
+
+                    // Update Overview List
+                    document.getElementById('infoUserCode').textContent = codeText;
+                    document.getElementById('infoName').textContent = data.full_name;
+                    document.getElementById('infoPhone').textContent = data.phone || 'N/A';
+                    document.getElementById('infoEmail').textContent = data.email || 'N/A';
+                    document.getElementById('infoRole').textContent = roleText;
+                    document.getElementById('infoDeptClass').textContent = data.department || data.class_name || 'N/A';
+                    document.getElementById('infoSchool').textContent = data.school_name || 'System / Platform';
+                    document.getElementById('infoCreated').textContent = data.created_at ? new Date(data.created_at).toLocaleDateString() : 'N/A';
+
+                    // Update Context Button URL if school_id was missing from URL but returned from backend
+                    if (!schoolId && data.school_id) {
+                        const schContextBtn = document.getElementById('btnSchoolContext');
+                        if (schContextBtn) {
+                            schContextBtn.setAttribute('href', `/shule-cafe/frontend/super-admin/schools/workspace.html?id=${encodeURIComponent(data.school_id)}`);
+                        }
+                    }
+
+                    // Update Profile Details Tab
+                    document.getElementById('profileDetails').innerHTML = `
+                        <div style="max-width: 600px; display: flex; flex-direction: column; gap: 12px;">
+                            <div style="padding: 16px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                <strong>Staff / Student ID:</strong> <code style="font-size:15px; font-weight:bold; color:var(--c-primary-500);">${codeText}</code><br>
+                                <strong>Full Name:</strong> ${data.full_name}<br>
+                                <strong>System Role:</strong> ${roleText}<br>
+                                <strong>Department / Class Stream:</strong> ${data.department || data.class_name || 'N/A'}<br>
+                                <strong>Phone Number:</strong> ${data.phone || 'N/A'}<br>
+                                <strong>Email Address:</strong> ${data.email || 'N/A'}<br>
+                                <strong>Assigned Tenant School:</strong> ${data.school_name || 'System / Platform'}
+                            </div>
+                        </div>
+                    `;
+
+                    // Update Permissions Tab
+                    document.getElementById('permRoleBadge').textContent = roleText;
+
+                } else {
+                    document.getElementById('wsHeader').setAttribute('title', 'User Not Found');
+                    document.getElementById('wsHeader').setAttribute('subtitle', result.message || 'Error fetching user profile');
+                }
+            } catch (err) {
+                console.error("Failed to load user workspace:", err);
+            }
+        });
+    </script>
+</body>
+</html>

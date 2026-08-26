@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teachers & Staff ‹ Headmaster ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+    
+    <script type="module" src="../../layouts/global-layout.js?v=20260809"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+    <script type="module" src="../../components/modals/same-name-audit-modal.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="tenant_admin" active-path="/headmaster/people/teachers.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Headmaster Portal"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content" style="padding: var(--sp-4) var(--sp-6);">
+                    
+                    <!-- Compact Top Header Box with Embedded Back Button and Navigation Tabs -->
+                    <div class="card" style="margin-bottom: var(--sp-4); padding: var(--sp-4) var(--sp-6); background: white; border-radius: 8px; border: 1px solid var(--c-primary-border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--sp-3);">
+                            <div style="display: flex; align-items: center; gap: 16px;">
+                                <a href="../dashboard.html" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none; font-weight: 600;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                                    Back
+                                </a>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 44px; height: 44px; border-radius: 8px; background: var(--c-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800;">
+                                        TCH
+                                    </div>
+                                    <div>
+                                        <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: var(--c-text-primary);">Teachers/Staffs</h2>
+                                        <span style="font-size: 13px; color: var(--c-text-muted);">Manage all academic teachers and school staff registered under your school.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Spacious Workspace Content Container -->
+                    <div class="workspace-main-area">
+                        
+                        <!-- Teachers Tab Content -->
+                        <app-workspace-content tab-id="teachers" active="true">
+                            <app-workspace-toolbar 
+                                id="teacherToolbar" 
+                                search-placeholder="Search teachers by name, Staff ID, or department..." 
+                                primary-action="Register Teacher"
+                                secondary-actions='[{"label":"📥 Bulk CSV Import","action":"import_teachers"},{"label":"📤 Export Data As...","menu":[{"label":"PDF Document (.pdf)","action":"export_teachers_pdf"},{"label":"Excel Spreadsheet (.xlsx)","action":"export_teachers_excel"},{"label":"CSV Raw File (.csv)","action":"export_teachers_csv"}]}]'>
+                            </app-workspace-toolbar>
+                            <div class="card" style="margin-top: var(--sp-3);">
+                                <div id="teachersTableContainer">
+                                    <app-table-skeleton rows="5" cols="5"></app-table-skeleton>
+                                </div>
+                                <app-table-pagination id="teachersPagination" current-page="1" total-pages="1" total-records="0" page-size="10"></app-table-pagination>
+                            </div>
+                        </app-workspace-content>
+                        
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal: Register Student -->
+    <div id="addStudentModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 500px; padding: var(--sp-6); background: white;">
+            <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">Register New Student</h3>
+            <div id="studentAlert" class="alert alert-danger" style="display: none; margin-bottom: var(--sp-4);"></div>
+            <form id="addStudentForm">
+                <div class="form-group" style="margin-bottom: var(--sp-3);">
+                    <label class="form-label">Full Name <span style="color:var(--c-danger);">*</span></label>
+                    <input type="text" id="stu_name" class="form-control" required placeholder="e.g. Baraka Juma Mussa">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: var(--sp-3);">
+                    <div class="form-group">
+                        <label class="form-label">Student ID (Reg No)</label>
+                        <input type="text" id="stu_code" class="form-control" placeholder="Auto-generated">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Class Level</label>
+                        <select id="stu_class_id" class="form-control">
+                            <option value="">-- Select Class --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-3);">
+                    <label class="form-label">Guardian / Parent Phone Number <span style="color:var(--c-danger);">*</span></label>
+                    <input type="text" id="stu_phone" class="form-control" required placeholder="e.g. +255788111222">
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-6);">
+                    <label class="form-label">Student Email (Optional)</label>
+                    <input type="email" id="stu_email" class="form-control" placeholder="e.g. student.amani@shulecafe.com">
+                </div>
+                <div style="display: flex; gap: var(--sp-2); justify-content: flex-end;">
+                    <button type="button" id="closeStudentModal" class="btn btn-outline">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Register Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Register Teacher -->
+    <div id="addTeacherModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 500px; padding: var(--sp-6); background: white;">
+            <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">Register New Teacher</h3>
+            <div id="teacherAlert" class="alert alert-danger" style="display: none; margin-bottom: var(--sp-4);"></div>
+            <form id="addTeacherForm">
+                <div class="form-group" style="margin-bottom: var(--sp-3);">
+                    <label class="form-label">Full Name <span style="color:var(--c-danger);">*</span></label>
+                    <input type="text" id="tch_name" class="form-control" required placeholder="e.g. Mr. Moses John">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: var(--sp-3);">
+                    <div class="form-group">
+                        <label class="form-label">Teacher Staff ID</label>
+                        <input type="text" id="tch_code" class="form-control" placeholder="Auto-generated">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Department / Subject Area</label>
+                        <input type="text" id="tch_dept" class="form-control" placeholder="e.g. Mathematics">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-3);">
+                    <label class="form-label">Email Address (Login Username) <span style="color:var(--c-danger);">*</span></label>
+                    <input type="email" id="tch_email" class="form-control" required placeholder="e.g. teacher.juma@shulecafe.com">
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-6);">
+                    <label class="form-label">Phone Number <span style="color:var(--c-danger);">*</span></label>
+                    <input type="text" id="tch_phone" class="form-control" required placeholder="e.g. +255755111222">
+                </div>
+                <div style="display: flex; gap: var(--sp-2); justify-content: flex-end;">
+                    <button type="button" id="closeTeacherModal" class="btn btn-outline">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Register Teacher</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Register Parent -->
+    <div id="addParentModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 480px; padding: var(--sp-6); background: white;">
+            <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">Register New Parent</h3>
+            <div id="parentAlert" class="alert alert-danger" style="display: none; margin-bottom: var(--sp-4);"></div>
+            <form id="addParentForm">
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">Full Name <span style="color:var(--c-danger);">*</span></label>
+                    <input type="text" id="par_name" class="form-control" required placeholder="e.g. Mzazi Juma Hassan">
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">Phone Number <span style="color:var(--c-danger);">*</span></label>
+                    <input type="text" id="par_phone" class="form-control" required placeholder="e.g. +255799333444">
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-6);">
+                    <label class="form-label">Email Address (Optional)</label>
+                    <input type="email" id="par_email" class="form-control" placeholder="e.g. parent.juma@shulecafe.com">
+                </div>
+                <div style="display: flex; gap: var(--sp-2); justify-content: flex-end;">
+                    <button type="button" id="closeParentModal" class="btn btn-outline">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Register Parent</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: View User Details -->
+    <div id="viewUserModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 520px; padding: var(--sp-6); background: white;">
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div id="viewAvatar" style="width: 48px; height: 48px; border-radius: 50%; background: var(--c-primary-light); color: var(--c-primary); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; border: 2px solid var(--c-primary-border);">
+                        -
+                    </div>
+                    <div>
+                        <h3 id="viewFullName" style="margin: 0; font-size: 18px; color: var(--c-text-primary);">-</h3>
+                        <div style="display: flex; gap: 6px; margin-top: 4px;">
+                            <span id="viewRoleBadge" class="badge badge-info" style="font-size: 11px;">-</span>
+                            <span id="viewStatusBadge" class="badge badge-success" style="font-size: 11px;">-</span>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" id="closeViewUserModalX" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #64748b;">&times;</button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 16px; font-size: 13px;">
+                <div>
+                    <span style="color: #64748b; font-weight: 500;">ID / Reg Code:</span>
+                    <div id="viewUserCode" style="font-weight: 700; color: #0f172a; margin-top: 2px;">-</div>
+                </div>
+                <div>
+                    <span style="color: #64748b; font-weight: 500;">School / Tenant:</span>
+                    <div id="viewSchoolName" style="font-weight: 600; color: #0f172a; margin-top: 2px;">-</div>
+                </div>
+                <div>
+                    <span style="color: #64748b; font-weight: 500;">Phone Number:</span>
+                    <div id="viewPhone" style="font-weight: 600; color: #0f172a; margin-top: 2px;">-</div>
+                </div>
+                <div>
+                    <span style="color: #64748b; font-weight: 500;">Email Address:</span>
+                    <div id="viewEmail" style="font-weight: 600; color: var(--c-primary); margin-top: 2px;">-</div>
+                </div>
+                <div id="viewClassDeptWrapper">
+                    <span id="viewClassDeptLabel" style="color: #64748b; font-weight: 500;">Class / Dept:</span>
+                    <div id="viewClassDeptVal" style="font-weight: 600; color: #0f172a; margin-top: 2px;">-</div>
+                </div>
+                <div>
+                    <span style="color: #64748b; font-weight: 500;">Password Status:</span>
+                    <div id="viewPwdStatus" style="font-weight: 600; color: #0f172a; margin-top: 2px;">-</div>
+                </div>
+                <div style="grid-column: span 2;">
+                    <span style="color: #64748b; font-weight: 500;">Registered Date:</span>
+                    <div id="viewCreatedAt" style="font-weight: 500; color: #475569; margin-top: 2px;">-</div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                <button type="button" id="closeViewUserModal" class="btn btn-outline">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Edit User -->
+    <div id="editUserModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 480px; padding: var(--sp-6); background: white;">
+            <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">Edit Record</h3>
+            <div id="editUserAlert" class="alert alert-danger" style="display: none; margin-bottom: var(--sp-4);"></div>
+            <form id="editUserForm">
+                <input type="hidden" id="edit_usr_id">
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">Full Name <span style="color:var(--c-danger);">*</span></label>
+                    <input type="text" id="edit_usr_name" class="form-control" required>
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">Phone Number <span style="color:var(--c-danger);">*</span></label>
+                    <input type="text" id="edit_usr_phone" class="form-control" required>
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" id="edit_usr_email" class="form-control">
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-6);">
+                    <label class="form-label">Status</label>
+                    <select id="edit_usr_status" class="form-control">
+                        <option value="active">Active</option>
+                        <option value="suspended">Suspended</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: var(--sp-2); justify-content: flex-end;">
+                    <button type="button" id="closeEditUserModal" class="btn btn-outline">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Teacher Credentials Display -->
+    <div id="teacherCredsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 480px; padding: var(--sp-6); background: white;">
+            <h3 style="margin-top: 0; color: var(--c-primary);">Teacher Created Successfully</h3>
+            <p style="font-size: var(--text-sm); color: var(--c-text-secondary);">An auto-generated temporary password was assigned. The teacher must change this password on first login.</p>
+            
+            <div style="background: #f8fafc; padding: 12px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: var(--text-sm); margin-bottom: 16px;">
+                <strong>Staff ID:</strong> <span id="credCode">-</span><br>
+                <strong>Name:</strong> <span id="credName">-</span><br>
+                <strong>Email (Login Username):</strong> <code id="credEmail" style="color:var(--c-primary);">-</code><br>
+                <strong>Phone:</strong> <span id="credPhone">-</span><br>
+                <div style="margin-top: 8px;">
+                    <strong>Temporary Password:</strong><br>
+                    <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
+                        <code id="credPwd" style="font-size: 16px; font-weight: bold; color: #b45309; background:#fef3c7; padding:4px 8px; border-radius:4px;">-</code>
+                        <button type="button" id="copyCredBtn" class="btn btn-outline btn-sm">📋 Copy</button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: right;">
+                <button type="button" id="closeCredModalBtn" class="btn btn-primary">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk CSV Import Modal Component -->
+    <app-csv-import-modal id="csvImportModal" type="users"></app-csv-import-modal>
+
+    <!-- Same Name Audit Modal Component -->
+    <app-same-name-audit-modal id="sameNameAuditModal"></app-same-name-audit-modal>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const studentModal = document.getElementById('addStudentModal');
+            const teacherModal = document.getElementById('addTeacherModal');
+            const parentModal = document.getElementById('addParentModal');
+            const editModal = document.getElementById('editUserModal');
+            const viewModal = document.getElementById('viewUserModal');
+            const credsModal = document.getElementById('teacherCredsModal');
+            const csvModal = document.getElementById('csvImportModal');
+            const sameNameModal = document.getElementById('sameNameAuditModal');
+
+            // Pagination States
+            let allStudents = [];
+            let studentPage = 1;
+            let studentPageSize = 10;
+
+            let allTeachers = [];
+            let teacherPage = 1;
+            let teacherPageSize = 10;
+
+            let allParents = [];
+            let parentPage = 1;
+            let parentPageSize = 10;
+
+            // Populate Classes Dropdown for Student Registration
+            async function populateClasses() {
+                const select = document.getElementById('stu_class_id');
+                try {
+                    const res = await fetch('/shule-cafe/api/classes/list.php', { credentials: 'include' });
+                    const result = await res.json();
+                    if (res.ok && result.success && result.data.length > 0) {
+                        select.innerHTML = '<option value="">-- Select Class --</option>';
+                        result.data.forEach(cls => {
+                            select.innerHTML += `<option value="${cls.id}">${cls.name}</option>`;
+                        });
+                    }
+                } catch (e) {}
+            }
+            populateClasses();
+
+            // Handle primary action buttons from workspace toolbars
+            document.addEventListener('toolbar-primary-click', (e) => {
+                if (e.target.closest('#studentToolbar')) studentModal.style.display = 'flex';
+                if (e.target.closest('#teacherToolbar')) teacherModal.style.display = 'flex';
+                if (e.target.closest('#parentToolbar')) parentModal.style.display = 'flex';
+            });
+
+            // Handle secondary action buttons (Bulk Import & Export CSV)
+            document.addEventListener('toolbar-secondary-click', (e) => {
+                const action = e.detail ? e.detail.action : '';
+                if (action === 'audit_same_names') {
+                    if (sameNameModal && typeof sameNameModal.open === 'function') {
+                        sameNameModal.open('teacher');
+                    }
+                } else if (action === 'import_students' || action === 'import_teachers') {
+                    if (csvModal && typeof csvModal.open === 'function') {
+                        csvModal.open(action === 'import_students' ? 'students' : 'teachers');
+                    }
+                } else if (action === 'export_students_pdf') {
+                    window.location.href = '/shule-cafe/api/export/users.php?role=student&format=pdf';
+                } else if (action === 'export_students_csv') {
+                    window.location.href = '/shule-cafe/api/export/users.php?role=student&format=csv';
+                } else if (action === 'export_students_excel') {
+                    window.location.href = '/shule-cafe/api/export/users.php?role=student&format=excel';
+                } else if (action === 'export_teachers_pdf') {
+                    window.location.href = '/shule-cafe/api/export/users.php?role=teacher&format=pdf';
+                } else if (action === 'export_teachers_csv') {
+                    window.location.href = '/shule-cafe/api/export/users.php?role=teacher&format=csv';
+                } else if (action === 'export_teachers_excel') {
+                    window.location.href = '/shule-cafe/api/export/users.php?role=teacher&format=excel';
+                } else if (action === 'export_parents_pdf') {
+                    window.location.href = '/shule-cafe/api/export/users.php?role=parent&format=pdf';
+                } else if (action === 'export_parents_csv') {
+                    window.location.href = '/shule-cafe/api/export/users.php?role=parent&format=csv';
+                } else if (action === 'export_parents_excel') {
+                    window.location.href = '/shule-cafe/api/export/users.php?role=parent&format=excel';
+                }
+            });
+
+            // Listen for Pagination Page Changes
+            document.getElementById('teachersPagination').addEventListener('page-change', (e) => {
+                teacherPage = e.detail.page;
+                renderPaginatedTeachers();
+            });
+            document.getElementById('teachersPagination').addEventListener('page-size-change', (e) => {
+                teacherPageSize = e.detail.size;
+                teacherPage = 1;
+                renderPaginatedTeachers();
+            });
+
+            // Handle Table View Action
+            document.addEventListener('table-view-action', async (e) => {
+                const userId = e.detail ? e.detail.id : null;
+                if (!userId) return;
+                try {
+                    const res = await fetch(`/shule-cafe/api/users/get.php?id=${userId}`, { credentials: 'include' });
+                    const result = await res.json();
+                    if (res.ok && result.success && result.data) {
+                        const u = result.data;
+                        if (u.role === 'student') {
+                            window.location.href = `/shule-cafe/frontend/headmaster/people/student_workspace.html?id=${u.id}`;
+                            return;
+                        }
+                        document.getElementById('viewAvatar').textContent = u.full_name ? u.full_name.charAt(0).toUpperCase() : 'U';
+                        document.getElementById('viewFullName').textContent = u.full_name;
+                        document.getElementById('viewRoleBadge').textContent = (u.role || '').toUpperCase();
+                        document.getElementById('viewStatusBadge').textContent = (u.status || '').toUpperCase();
+                        
+                        document.getElementById('viewUserCode').textContent = u.user_code || 'N/A';
+                        document.getElementById('viewSchoolName').textContent = u.school_name || 'N/A';
+                        document.getElementById('viewPhone').textContent = u.phone || 'N/A';
+                        document.getElementById('viewEmail').textContent = u.email || 'N/A';
+                        
+                        if (u.role === 'student') {
+                            document.getElementById('viewClassDeptLabel').textContent = 'Class Level:';
+                            document.getElementById('viewClassDeptVal').textContent = u.class_name || 'Standard 7 A';
+                        } else if (u.role === 'teacher') {
+                            document.getElementById('viewClassDeptLabel').textContent = 'Department:';
+                            document.getElementById('viewClassDeptVal').textContent = u.department || 'Mathematics';
+                        } else {
+                            document.getElementById('viewClassDeptLabel').textContent = 'Role Info:';
+                            document.getElementById('viewClassDeptVal').textContent = 'Parent / Guardian';
+                        }
+
+                        document.getElementById('viewPwdStatus').textContent = u.is_password_changed == 1 ? '✅ Password Changed' : `⚠️ Pending Change (Temp: ${u.temp_password || 'N/A'})`;
+                        document.getElementById('viewCreatedAt').textContent = u.created_at || 'N/A';
+
+                        viewModal.style.display = 'flex';
+                    } else {
+                        alert(result.message || 'Error fetching user details.');
+                    }
+                } catch (err) {
+                    alert('Network error fetching user details.');
+                }
+            });
+
+            // Handle Table Delete Action
+            document.addEventListener('table-delete-action', async (e) => {
+                const userId = e.detail ? e.detail.id : null;
+                if (!userId) return;
+                try {
+                    const res = await fetch('/shule-cafe/api/users/delete.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ id: userId })
+                    });
+                    const result = await res.json();
+                    if (res.ok && result.success) {
+                        loadTeachers();
+                    } else {
+                        alert(result.message || 'Error deleting record.');
+                    }
+                } catch (err) {
+                    alert('Network error deleting record.');
+                }
+            });
+
+            // Handle Table Edit Action
+            document.addEventListener('table-edit-action', (e) => {
+                const row = e.detail ? e.detail.row : null;
+                if (!row) return;
+
+                document.getElementById('edit_usr_id').value = row.id;
+                document.getElementById('edit_usr_name').value = row.raw_name || (row.student ? row.student.name : row.teacher ? row.teacher.name : row.parent ? row.parent.name : '');
+                document.getElementById('edit_usr_phone').value = row.phone || '';
+                document.getElementById('edit_usr_email').value = row.email || '';
+                document.getElementById('edit_usr_status').value = row.status === 'Active' ? 'active' : 'suspended';
+
+                editModal.style.display = 'flex';
+            });
+
+            document.getElementById('closeStudentModal').addEventListener('click', () => studentModal.style.display = 'none');
+            document.getElementById('closeTeacherModal').addEventListener('click', () => teacherModal.style.display = 'none');
+            document.getElementById('closeParentModal').addEventListener('click', () => parentModal.style.display = 'none');
+            document.getElementById('closeEditUserModal').addEventListener('click', () => editModal.style.display = 'none');
+            document.getElementById('closeViewUserModal').addEventListener('click', () => viewModal.style.display = 'none');
+            document.getElementById('closeViewUserModalX').addEventListener('click', () => viewModal.style.display = 'none');
+            document.getElementById('closeCredModalBtn').addEventListener('click', () => credsModal.style.display = 'none');
+
+            // Form Submit: Edit User
+            document.getElementById('editUserForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const alertBox = document.getElementById('editUserAlert');
+                alertBox.style.display = 'none';
+
+                const data = {
+                    id: document.getElementById('edit_usr_id').value,
+                    full_name: document.getElementById('edit_usr_name').value,
+                    phone: document.getElementById('edit_usr_phone').value,
+                    email: document.getElementById('edit_usr_email').value,
+                    status: document.getElementById('edit_usr_status').value
+                };
+
+                try {
+                    const res = await fetch('/shule-cafe/api/users/update.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(data)
+                    });
+                    const result = await res.json();
+                    if (res.ok && result.success) {
+                        editModal.style.display = 'none';
+                        loadStudents();
+                        loadTeachers();
+                        loadParents();
+                    } else {
+                        alertBox.textContent = result.message || 'Error updating record.';
+                        alertBox.style.display = 'block';
+                    }
+                } catch (err) {
+                    alertBox.textContent = 'Network error updating record.';
+                    alertBox.style.display = 'block';
+                }
+            });
+
+            // Form Submit: Student
+            document.getElementById('addStudentForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const alertBox = document.getElementById('studentAlert');
+                alertBox.style.display = 'none';
+
+                const data = {
+                    full_name: document.getElementById('stu_name').value,
+                    user_code: document.getElementById('stu_code').value,
+                    class_id: document.getElementById('stu_class_id').value,
+                    phone: document.getElementById('stu_phone').value,
+                    email: document.getElementById('stu_email').value,
+                    role: 'student'
+                };
+
+                try {
+                    const res = await fetch('/shule-cafe/api/users/create.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(data)
+                    });
+                    const result = await res.json();
+                    if (res.ok && result.success) {
+                        studentModal.style.display = 'none';
+                        document.getElementById('addStudentForm').reset();
+                        loadStudents();
+                    } else {
+                        alertBox.textContent = result.message || 'Error creating student.';
+                        alertBox.style.display = 'block';
+                    }
+                } catch (err) {
+                    alertBox.textContent = 'Network error creating student.';
+                    alertBox.style.display = 'block';
+                }
+            });
+
+            // Form Submit: Teacher
+            document.getElementById('addTeacherForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const alertBox = document.getElementById('teacherAlert');
+                alertBox.style.display = 'none';
+
+                const data = {
+                    full_name: document.getElementById('tch_name').value,
+                    user_code: document.getElementById('tch_code').value,
+                    department: document.getElementById('tch_dept').value,
+                    phone: document.getElementById('tch_phone').value,
+                    email: document.getElementById('tch_email').value,
+                    role: 'teacher'
+                };
+
+                try {
+                    const res = await fetch('/shule-cafe/api/users/create.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(data)
+                    });
+                    const result = await res.json();
+                    if (res.ok && result.success) {
+                        teacherModal.style.display = 'none';
+                        document.getElementById('addTeacherForm').reset();
+                        
+                        // Show Creds
+                        if (result.credentials) {
+                            document.getElementById('credCode').textContent = result.credentials.user_code || 'N/A';
+                            document.getElementById('credName').textContent = result.credentials.name;
+                            document.getElementById('credEmail').textContent = result.credentials.email;
+                            document.getElementById('credPhone').textContent = result.credentials.phone;
+                            document.getElementById('credPwd').textContent = result.credentials.temp_password;
+
+                            document.getElementById('copyCredBtn').onclick = () => {
+                                navigator.clipboard.writeText(`Email: ${result.credentials.email}\nTemp Password: ${result.credentials.temp_password}`);
+                                alert('Credentials copied to clipboard!');
+                            };
+
+                            credsModal.style.display = 'flex';
+                        }
+                        loadTeachers();
+                    } else {
+                        alertBox.textContent = result.message || 'Error creating teacher.';
+                        alertBox.style.display = 'block';
+                    }
+                } catch (err) {
+                    alertBox.textContent = 'Network error creating teacher.';
+                    alertBox.style.display = 'block';
+                }
+            });
+
+            // Form Submit: Parent
+            document.getElementById('addParentForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const alertBox = document.getElementById('parentAlert');
+                alertBox.style.display = 'none';
+
+                const data = {
+                    full_name: document.getElementById('par_name').value,
+                    phone: document.getElementById('par_phone').value,
+                    email: document.getElementById('par_email').value,
+                    role: 'parent'
+                };
+
+                try {
+                    const res = await fetch('/shule-cafe/api/users/create.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(data)
+                    });
+                    const result = await res.json();
+                    if (res.ok && result.success) {
+                        parentModal.style.display = 'none';
+                        document.getElementById('addParentForm').reset();
+                        loadParents();
+                    } else {
+                        alertBox.textContent = result.message || 'Error creating parent.';
+                        alertBox.style.display = 'block';
+                    }
+                } catch (err) {
+                    alertBox.textContent = 'Network error creating parent.';
+                    alertBox.style.display = 'block';
+                }
+            });
+
+            // Render Paginated Students Table
+            function renderPaginatedStudents() {
+                const container = document.getElementById('studentsTableContainer');
+                const paginator = document.getElementById('studentsPagination');
+
+                if (!allStudents || allStudents.length === 0) {
+                    container.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-text-muted);">No students registered yet.</div>';
+                    paginator.setAttribute('total-records', '0');
+                    paginator.setAttribute('total-pages', '1');
+                    paginator.setAttribute('current-page', '1');
+                    return;
+                }
+
+                const totalRecords = allStudents.length;
+                const totalPages = Math.ceil(totalRecords / studentPageSize);
+                studentPage = Math.min(studentPage, totalPages);
+
+                paginator.setAttribute('total-records', totalRecords.toString());
+                paginator.setAttribute('total-pages', totalPages.toString());
+                paginator.setAttribute('current-page', studentPage.toString());
+                paginator.setAttribute('page-size', studentPageSize.toString());
+
+                const startIndex = (studentPage - 1) * studentPageSize;
+                const pageSlice = allStudents.slice(startIndex, startIndex + studentPageSize);
+
+                const cols = [
+                    { key: 'code', label: 'Student ID', type: 'text' },
+                    { key: 'student', label: 'Student Name', type: 'avatar' },
+                    { key: 'gender', label: 'Gender', type: 'text' },
+                    { key: 'class', label: 'Class', type: 'text' },
+                    { key: 'phone', label: 'Guardian Phone', type: 'text' },
+                    { key: 'email', label: 'Email Address', type: 'text' },
+                    { key: 'status', label: 'Status', type: 'status' }
+                ];
+                const data = pageSlice.map(item => ({
+                    id: item.id,
+                    code: item.user_code || ('STD/' + new Date().getFullYear() + '/001'),
+                    raw_name: item.full_name,
+                    gender: (item.gender === 'F' || item.gender === 'Female') ? 'Female' : ((item.gender === 'M' || item.gender === 'Male') ? 'Male' : (item.gender || 'Female')),
+                    class: item.class_name || 'Unassigned',
+                    phone: item.phone || 'N/A',
+                    email: item.email || 'N/A',
+                    student: { initials: item.full_name ? item.full_name.charAt(0).toUpperCase() : 'S', name: item.full_name },
+                    status: item.status === 'active' ? 'Active' : 'Suspended'
+                }));
+                const table = document.createElement('app-table');
+                table.setAttribute('columns', JSON.stringify(cols));
+                table.setAttribute('data', JSON.stringify(data));
+                table.setAttribute('actions', 'view');
+                table.setAttribute('entity-url', 'student_workspace.html');
+                container.innerHTML = '';
+                container.appendChild(table);
+            }
+
+            // Load Students
+            async function loadStudents() {
+                document.getElementById('studentsTableContainer').innerHTML = '<app-table-skeleton rows="6" cols="6"></app-table-skeleton>';
+                try {
+                    const res = await fetch('/shule-cafe/api/students/list.php', { credentials: 'include' });
+                    const result = await res.json();
+                    if (res.ok && result.success) {
+                        allStudents = result.data || [];
+                        renderPaginatedStudents();
+                    }
+                } catch (e) {
+                    document.getElementById('studentsTableContainer').innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-danger);">Error loading students.</div>';
+                }
+            }
+
+            let teacherSearchQuery = '';
+            document.addEventListener('toolbar-search', (e) => {
+                teacherSearchQuery = (e.detail ? e.detail.query : '').toLowerCase().trim();
+                teacherPage = 1;
+                renderPaginatedTeachers();
+            });
+
+            // Render Paginated Teachers Table
+            function renderPaginatedTeachers() {
+                const container = document.getElementById('teachersTableContainer');
+                const paginator = document.getElementById('teachersPagination');
+
+                let filtered = allTeachers || [];
+                if (teacherSearchQuery) {
+                    filtered = filtered.filter(t => 
+                        (t.full_name && t.full_name.toLowerCase().includes(teacherSearchQuery)) ||
+                        (t.user_code && t.user_code.toLowerCase().includes(teacherSearchQuery)) ||
+                        (t.department && t.department.toLowerCase().includes(teacherSearchQuery)) ||
+                        (t.phone && t.phone.toLowerCase().includes(teacherSearchQuery)) ||
+                        (t.email && t.email.toLowerCase().includes(teacherSearchQuery))
+                    );
+                }
+
+                if (!filtered || filtered.length === 0) {
+                    container.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-text-muted);">No teachers found matching search criteria.</div>';
+                    paginator.setAttribute('total-records', '0');
+                    paginator.setAttribute('total-pages', '1');
+                    paginator.setAttribute('current-page', '1');
+                    return;
+                }
+
+                const totalRecords = filtered.length;
+                const totalPages = Math.ceil(totalRecords / teacherPageSize);
+                teacherPage = Math.min(teacherPage, totalPages);
+
+                paginator.setAttribute('total-records', totalRecords.toString());
+                paginator.setAttribute('total-pages', totalPages.toString());
+                paginator.setAttribute('current-page', teacherPage.toString());
+                paginator.setAttribute('page-size', teacherPageSize.toString());
+
+                const startIndex = (teacherPage - 1) * teacherPageSize;
+                const pageSlice = filtered.slice(startIndex, startIndex + teacherPageSize);
+
+                const cols = [
+                    { key: 'code', label: 'Staff ID', type: 'text' },
+                    { key: 'teacher', label: 'Teacher Name', type: 'avatar' },
+                    { key: 'gender', label: 'Gender', type: 'text' },
+                    { key: 'department', label: 'Department', type: 'text' },
+                    { key: 'phone', label: 'Phone', type: 'text' },
+                    { key: 'email', label: 'Email (Login Username)', type: 'text' },
+                    { key: 'status', label: 'Status', type: 'status' }
+                ];
+                const data = pageSlice.map(item => ({
+                    id: item.id,
+                    code: item.user_code || ('TCH/' + new Date().getFullYear() + '/001'),
+                    raw_name: item.full_name,
+                    gender: (item.gender === 'F' || item.gender === 'Female') ? 'Female' : ((item.gender === 'M' || item.gender === 'Male') ? 'Male' : (item.gender || 'Female')),
+                    department: item.department || 'Mathematics',
+                    phone: item.phone || 'N/A',
+                    email: item.email || 'N/A',
+                    teacher: { initials: item.full_name ? item.full_name.charAt(0).toUpperCase() : 'T', name: item.full_name },
+                    status: item.status === 'active' ? 'Active' : 'Suspended'
+                }));
+                const table = document.createElement('app-table');
+                table.setAttribute('columns', JSON.stringify(cols));
+                table.setAttribute('data', JSON.stringify(data));
+                table.setAttribute('actions', 'view');
+                table.setAttribute('entity-url', 'teacher-workspace.html');
+                container.innerHTML = '';
+                container.appendChild(table);
+            }
+
+            // Auto-Check Duplicate Names
+            async function autoCheckDuplicates(role = 'teacher') {
+                try {
+                    const res = await fetch(`/shule-cafe/api/headmaster/people/duplicate_names_api.php?role=${role}`, { credentials: 'include' });
+                    const data = await res.json();
+                    const container = document.getElementById(role === 'teacher' ? 'teachersTableContainer' : 'studentsTableContainer');
+                    
+                    let alertBox = document.getElementById(`autoCheckAlert_${role}`);
+                    if (!alertBox && container) {
+                        alertBox = document.createElement('div');
+                        alertBox.id = `autoCheckAlert_${role}`;
+                        alertBox.style.cssText = 'background: #fffbeb; border: 1px solid #fde68a; color: #92400e; padding: 12px 16px; border-radius: 8px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700;';
+                        container.parentNode.insertBefore(alertBox, container);
+                    }
+
+                    if (data.success && data.group_count > 0 && alertBox) {
+                        alertBox.style.display = 'flex';
+                        alertBox.innerHTML = `
+                            <span>⚠️ <strong>Duplicate Name Auto-Audit Alert:</strong> System detected ${data.group_count} duplicate name group(s) in database.</span>
+                            <button type="button" id="btnAutoViewDups_${role}" class="btn btn-sm" style="background: #b45309; color: white; border: none; font-weight: 800; padding: 5px 14px; border-radius: 6px; cursor: pointer;">Review Duplicates</button>
+                        `;
+                        document.getElementById(`btnAutoViewDups_${role}`).addEventListener('click', () => {
+                            if (sameNameModal && typeof sameNameModal.open === 'function') {
+                                sameNameModal.open(role);
+                            }
+                        });
+                    } else if (alertBox) {
+                        alertBox.style.display = 'none';
+                    }
+                } catch (e) {
+                    console.error("Auto check error:", e);
+                }
+            }
+
+            // Load Teachers
+            async function loadTeachers() {
+                document.getElementById('teachersTableContainer').innerHTML = '<app-table-skeleton rows="6" cols="5"></app-table-skeleton>';
+                try {
+                    const res = await fetch('/shule-cafe/api/teachers/list.php', { credentials: 'include' });
+                    const result = await res.json();
+                    if (res.ok && result.success) {
+                        allTeachers = result.data || [];
+                        renderPaginatedTeachers();
+                        autoCheckDuplicates('teacher');
+                    }
+                } catch (e) {
+                    document.getElementById('teachersTableContainer').innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-danger);">Error loading teachers.</div>';
+                }
+            }
+
+            // Render Paginated Parents Table
+            function renderPaginatedParents() {
+                const container = document.getElementById('parentsTableContainer');
+                const paginator = document.getElementById('parentsPagination');
+
+                if (!allParents || allParents.length === 0) {
+                    container.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-text-muted);">No parents registered yet.</div>';
+                    paginator.setAttribute('total-records', '0');
+                    paginator.setAttribute('total-pages', '1');
+                    paginator.setAttribute('current-page', '1');
+                    return;
+                }
+
+                const totalRecords = allParents.length;
+                const totalPages = Math.ceil(totalRecords / parentPageSize);
+                parentPage = Math.min(parentPage, totalPages);
+
+                paginator.setAttribute('total-records', totalRecords.toString());
+                paginator.setAttribute('total-pages', totalPages.toString());
+                paginator.setAttribute('current-page', parentPage.toString());
+                paginator.setAttribute('page-size', parentPageSize.toString());
+
+                const startIndex = (parentPage - 1) * parentPageSize;
+                const pageSlice = allParents.slice(startIndex, startIndex + parentPageSize);
+
+                const cols = [
+                    { key: 'parent', label: 'Parent Name', type: 'avatar' },
+                    { key: 'phone', label: 'Phone Number', type: 'text' },
+                    { key: 'email', label: 'Email Address', type: 'text' },
+                    { key: 'status', label: 'Status', type: 'status' }
+                ];
+                const data = pageSlice.map(item => ({
+                    id: item.id,
+                    raw_name: item.full_name,
+                    phone: item.phone || 'N/A',
+                    email: item.email || 'N/A',
+                    parent: { initials: item.full_name ? item.full_name.charAt(0).toUpperCase() : 'P', name: item.full_name },
+                    status: item.status === 'active' ? 'Active' : 'Suspended'
+                }));
+                const table = document.createElement('app-table');
+                table.setAttribute('columns', JSON.stringify(cols));
+                table.setAttribute('data', JSON.stringify(data));
+                table.setAttribute('actions', 'view');
+                table.setAttribute('entity-url', 'parent-workspace.html');
+                container.innerHTML = '';
+                container.appendChild(table);
+            }
+
+            // Load Parents
+            async function loadParents() {
+                document.getElementById('parentsTableContainer').innerHTML = '<app-table-skeleton rows="6" cols="4"></app-table-skeleton>';
+                try {
+                    const res = await fetch('/shule-cafe/api/parents/list.php', { credentials: 'include' });
+                    const result = await res.json();
+                    if (res.ok && result.success) {
+                        allParents = result.data || [];
+                        renderPaginatedParents();
+                    }
+                } catch (e) {
+                    document.getElementById('parentsTableContainer').innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-danger);">Error loading parents.</div>';
+                }
+            }
+
+            loadTeachers();
+        });
+    </script>
+</body>
+</html>

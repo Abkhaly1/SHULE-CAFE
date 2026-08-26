@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated & Manual Timetable Generation Module ‹ Headmaster ‹ SHULE CAFE</title>
+
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+
+    <style>
+        .tt-hero {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px 24px; background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+            border-radius: 12px; margin-bottom: 16px; color: white;
+            box-shadow: 0 4px 16px -2px rgba(4, 120, 87, 0.25);
+        }
+        .tt-hero-icon {
+            width: 44px; height: 44px; border-radius: 10px; background: rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center; font-size: 22px;
+            backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.25);
+        }
+
+        .fallback-card {
+            background: #ffffff; border: 2px dashed #cbd5e1; border-radius: 14px;
+            padding: 48px 24px; text-align: center; margin-bottom: 20px;
+        }
+
+        .wizard-card {
+            background: #ffffff; border: 1px solid var(--c-border-light);
+            border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            margin-bottom: 20px;
+        }
+
+        /* Wizard Step Progress Tracker */
+        .wizard-steps-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 24px; border-bottom: 2px solid #e2e8f0; padding-bottom: 12px;
+            overflow-x: auto; gap: 10px;
+        }
+        .step-item {
+            display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700;
+            color: #94a3b8; white-space: nowrap;
+        }
+        .step-item.active { color: #047857; }
+        .step-item.completed { color: #166534; }
+        .step-num {
+            width: 26px; height: 26px; border-radius: 50%; background: #e2e8f0; color: #64748b;
+            display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800;
+        }
+        .step-item.active .step-num { background: #047857; color: white; }
+        .step-item.completed .step-num { background: #166534; color: white; }
+
+        /* Level & Grade Selector Grid */
+        .option-pill-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px; margin-top: 12px;
+        }
+        .option-pill-card {
+            display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+            background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px;
+            cursor: pointer; transition: all 0.15s ease; user-select: none;
+        }
+        .option-pill-card:hover { border-color: #047857; background: #f0fdf4; }
+        .option-pill-card.selected { border-color: #047857; background: #ecfdf5; box-shadow: 0 0 0 2px rgba(4,120,87,0.15); }
+        .option-pill-card input[type="checkbox"], .option-pill-card input[type="radio"] {
+            width: 16px; height: 16px; accent-color: #047857; cursor: pointer;
+        }
+
+        /* Stage 4 Balance Meter */
+        .balance-meter-box {
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;
+            padding: 16px 20px; margin-bottom: 20px;
+        }
+        .meter-badge {
+            display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px;
+            border-radius: 8px; font-size: 13px; font-weight: 800; margin-top: 10px;
+        }
+        .badge-balanced { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+        .badge-overload { background: #fef2f2; color: #b91c1c; border: 1px solid #fca5a5; }
+        .badge-underload { background: #fefce8; color: #a16207; border: 1px solid #fde047; }
+
+        /* Timetable Matrix Grid */
+        .tt-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 14px; }
+        .tt-table th {
+            background: #1e293b; color: white; padding: 12px; text-align: center;
+            font-weight: 800; font-size: 12px; text-transform: uppercase;
+        }
+        .tt-table td {
+            padding: 10px; border: 1px solid #e2e8f0; vertical-align: top; height: 75px; width: 18%;
+        }
+        .tt-slot-box {
+            background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px;
+            padding: 8px; height: 100%; display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .tt-break-box {
+            background: #f1f5f9; border: 1px dashed #cbd5e1; border-radius: 6px;
+            padding: 8px; text-align: center; color: #64748b; font-weight: 700; font-size: 11px;
+        }
+
+        .btn-action-primary {
+            background: #047857; color: white !important; font-weight: 700;
+            padding: 10px 22px; border-radius: 8px; border: none; cursor: pointer;
+            box-shadow: 0 2px 6px rgba(4,120,87,0.3); transition: all 0.2s; font-size: 14px;
+        }
+        .btn-action-primary:hover { background: #065f46; }
+        .btn-action-primary:disabled { background: #cbd5e1 !important; cursor: not-allowed; box-shadow: none; }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="tenant_admin" active-path="/headmaster/timetable/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Headmaster Portal"></app-topbar>
+            
+            <main class="app-content-wrapper" style="padding-top: 10px;">
+                <div class="app-content" style="padding: 0;">
+                    
+                    <app-workspace-layout hide-back style="gap: 12px;">
+                        
+                        <!-- HERO BANNER -->
+                        <div class="tt-hero">
+                            <div style="display: flex; align-items: center; gap: 14px;">
+                                <div class="tt-hero-icon">📅</div>
+                                <div>
+                                    <h2 style="margin: 0; font-size: 19px; font-weight: 800; color: white; line-height: 1.2;">
+                                        Automated & Manual Timetable Generation Module
+                                    </h2>
+                                    <div style="color: #a7f3d0; font-size: 12px; margin-top: 2px;">
+                                        Configure operational boundaries, weekly period capacities, and generate conflict-free schedules.
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <button id="btnReconfigWizard" class="btn btn-sm" style="background:rgba(255,255,255,0.2); color:white; border:1px solid rgba(255,255,255,0.3); font-weight:700; border-radius:8px; display:none;" onclick="launchSetupWizard()">
+                                    ⚙️ Re-Configure Setup Wizard
+                                </button>
+                            </div>
+                        </div>
+
+
+                        <!-- =================================================================== -->
+                        <!-- STAGE 0: INITIALIZATION FALLBACK SCREEN                             -->
+                        <!-- =================================================================== -->
+                        <div id="viewStage0Fallback" style="display: none;">
+                            <div class="fallback-card">
+                                <div style="font-size: 48px; margin-bottom: 14px;">⚠️</div>
+                                <h3 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 800; color: #0f172a;">
+                                    No Active Timetable Found for Academic Year <span class="current-year"></span>
+                                </h3>
+                                <p style="margin: 0 0 24px 0; color: #64748b; font-size: 14px; max-width: 540px; display: inline-block;">
+                                    Initialize your school's master timetable boundaries, operational days, daily period limits, and subject frequencies before scheduling classrooms.
+                                </p>
+                                <div>
+                                    <button class="btn-action-primary" onclick="launchSetupWizard()">
+                                        🚀 Initialize Master Timetable Setup Wizard Now
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- =================================================================== -->
+                        <!-- SEMI-AUTOMATED TIMETABLE SETUP WIZARD (STAGES 1 TO 5)                -->
+                        <!-- =================================================================== -->
+                        <div id="viewSetupWizard" style="display: none;">
+                            
+                            <div class="wizard-card">
+                                <!-- Progress Bar -->
+                                <div class="wizard-steps-bar">
+                                    <div class="step-item active" id="stepMarker1">
+                                        <div class="step-num">1</div> Cohorts & Level
+                                    </div>
+                                    <div class="step-item" id="stepMarker2">
+                                        <div class="step-num">2</div> Operational Days
+                                    </div>
+                                    <div class="step-item" id="stepMarker3">
+                                        <div class="step-num">3</div> Periods & Time Matrix
+                                    </div>
+                                    <div class="step-item" id="stepMarker4">
+                                        <div class="step-num">4</div> Subject Frequencies
+                                    </div>
+                                    <div class="step-item" id="stepMarker5">
+                                        <div class="step-num">5</div> Automated Engine Execution
+                                    </div>
+                                </div>
+
+                                <!-- 📍 STAGE 1: Education Level & Grade Multi-Selection -->
+                                <div id="wizardStage1" style="display: block;">
+                                    <h3 style="margin:0 0 6px 0; font-size:16px; font-weight:800; color:#0f172a;">
+                                        STAGE 1: Education Level & Multi-Grade Cohort Selection
+                                    </h3>
+                                    <p style="margin:0 0 16px 0; font-size:13px; color:#64748b;">
+                                        Select the targeted education level and check the grade cohorts to schedule together. Processing grades together scans teacher availability across multiple rooms simultaneously.
+                                    </p>
+
+                                    <div style="font-weight:700; font-size:13px; color:#334155; margin-bottom:8px;">Target Education Level:</div>
+                                    <div class="option-pill-grid" id="gridLevelSelectors" style="margin-bottom:20px;">
+                                        <!-- Loaded dynamically -->
+                                    </div>
+
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                        <div style="font-weight:700; font-size:13px; color:#334155;">Target Grade Cohorts (Multi-Select):</div>
+                                        <button class="btn btn-outline btn-sm" style="font-size:11px; font-weight:700;" onclick="selectAllGrades(true)">Check All Grades</button>
+                                    </div>
+                                    <div class="option-pill-grid" id="gridGradeCheckboxes" style="margin-bottom:24px;">
+                                        <!-- Loaded dynamically -->
+                                    </div>
+
+                                    <div style="display:flex; justify-content:flex-end;">
+                                        <button class="btn-action-primary" onclick="proceedToStage2()">
+                                            Next: Operational Days Setup ➔
+                                        </button>
+                                    </div>
+                                </div>
+
+
+                                <!-- 📍 STAGE 2: Operational Days Setup -->
+                                <div id="wizardStage2" style="display: none;">
+                                    <h3 style="margin:0 0 6px 0; font-size:16px; font-weight:800; color:#0f172a;">
+                                        STAGE 2: Operational Days Baseline Setup
+                                    </h3>
+                                    <p style="margin:0 0 16px 0; font-size:13px; color:#64748b;">
+                                        Which days of the week should classes be scheduled for this timetable track?
+                                    </p>
+
+                                    <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+                                        <button class="btn btn-outline" id="btnDaysPresetWeekdays" onclick="applyDaysPreset('weekdays')" style="font-weight:700; font-size:13px;">
+                                            📅 [ Weekdays Only ] (Mon-Fri)
+                                        </button>
+                                        <button class="btn btn-outline" id="btnDaysPresetWeekends" onclick="applyDaysPreset('weekends')" style="font-weight:700; font-size:13px;">
+                                            🏖️ [ Weekends Only ] (Sat-Sun)
+                                        </button>
+                                        <button class="btn btn-outline" id="btnDaysPresetCustom" onclick="applyDaysPreset('custom')" style="font-weight:700; font-size:13px;">
+                                            🛠️ [ Custom Days Selection ]
+                                        </button>
+                                    </div>
+
+                                    <div style="font-weight:700; font-size:13px; color:#334155; margin-bottom:8px;">Active Operational Cycle Days:</div>
+                                    <div class="option-pill-grid" id="gridDayCheckboxes" style="margin-bottom:24px;">
+                                        <!-- Mon-Sun checkboxes -->
+                                    </div>
+
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <button class="btn btn-outline" onclick="navStage(1)" style="font-weight:700;">⬅ Back</button>
+                                        <button class="btn-action-primary" onclick="proceedToStage3()">
+                                            Next: Periods & Time Matrix ➔
+                                        </button>
+                                    </div>
+                                </div>
+
+
+                                <!-- 📍 STAGE 3: Quantitative Period Load & Dynamic Time Mapping -->
+                                <div id="wizardStage3" style="display: none;">
+                                    <h3 style="margin:0 0 6px 0; font-size:16px; font-weight:800; color:#0f172a;">
+                                        STAGE 3: Daily Period Load & Time Matrix Mapping
+                                    </h3>
+                                    <p style="margin:0 0 16px 0; font-size:13px; color:#64748b;">
+                                        Define how many class periods and rest breaks to conduct per day.
+                                    </p>
+
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px; max-width:600px;">
+                                        <div>
+                                            <label style="font-weight:700; font-size:13px; color:#334155; display:block; margin-bottom:4px;">Class Periods Per Day:</label>
+                                            <input type="number" id="numPeriodsPerDay" value="8" min="1" max="15" class="form-control" style="font-weight:800;" onchange="generateTimeMatrixRows()">
+                                        </div>
+                                        <div>
+                                            <label style="font-weight:700; font-size:13px; color:#334155; display:block; margin-bottom:4px;">Rest / Break Slots Per Day:</label>
+                                            <input type="number" id="numBreaksPerDay" value="2" min="0" max="5" class="form-control" style="font-weight:800;" onchange="generateTimeMatrixRows()">
+                                        </div>
+                                    </div>
+
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                                        <div style="font-weight:800; font-size:14px; color:#0f172a;">Daily Period Time Table:</div>
+                                        <div style="font-size:12px; color:#047857; font-weight:700;">
+                                            ⚡ Times apply globally to all operational week days
+                                        </div>
+                                    </div>
+
+                                    <div class="table-responsive" style="margin-bottom:24px;">
+                                        <table class="alloc-table" style="width:100%; border-collapse:collapse; font-size:13px;">
+                                            <thead>
+                                                <tr style="background:#f8fafc; border-bottom:2px solid #e2e8f0; text-align:left;">
+                                                    <th style="padding:10px;">Slot Type</th>
+                                                    <th style="padding:10px;">Slot Label / Name</th>
+                                                    <th style="padding:10px;">Start Time</th>
+                                                    <th style="padding:10px;">End Time</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tblTimeMatrixBody">
+                                                <!-- Generated dynamically -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <button class="btn btn-outline" onclick="navStage(2)" style="font-weight:700;">⬅ Back</button>
+                                        <button class="btn-action-primary" onclick="proceedToStage4()">
+                                            Next: Subject Frequency Calibration ➔
+                                        </button>
+                                    </div>
+                                </div>
+
+
+                                <!-- 📍 STAGE 4: Subject Frequency Calibration & Capacity Balance Meter -->
+                                <div id="wizardStage4" style="display: none;">
+                                    <h3 style="margin:0 0 6px 0; font-size:16px; font-weight:800; color:#0f172a;">
+                                        STAGE 4: Subject Frequency Calibration & Real-Time Capacity Meter
+                                    </h3>
+                                    <p style="margin:0 0 16px 0; font-size:13px; color:#64748b;">
+                                        Calibrate weekly subject period frequencies for each grade cohort in your school curriculum.
+                                    </p>
+
+                                    <!-- Grade-by-Grade Tab Bar -->
+                                    <div style="font-weight:700; font-size:12px; color:#475569; text-transform:uppercase; margin-bottom:6px;">Select Grade Cohort:</div>
+                                    <div id="barStage4GradeTabs" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
+                                        <!-- Loaded dynamically -->
+                                    </div>
+
+                                    <!-- Capacity Meter Box -->
+                                    <div class="balance-meter-box">
+                                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                                            <div>
+                                                <div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase;">Total Weekly School Capacity:</div>
+                                                <div style="font-size:24px; font-weight:800; color:#0f172a;" id="lblSchoolCapacity">40 Slots</div>
+                                                <div style="font-size:11px; color:#64748b;" id="lblCapacityCalc">(5 Days × 8 Daily Periods)</div>
+                                            </div>
+                                            <div>
+                                                <div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase;" id="lblCurriculumLoadHeader">Requested Load:</div>
+                                                <div style="font-size:24px; font-weight:800; color:#047857;" id="lblCurriculumLoad">0 Slots</div>
+                                                <div style="font-size:11px; color:#64748b;">Sum of subject frequencies for active grade</div>
+                                            </div>
+                                            <div>
+                                                <div id="boxMeterBadge" class="meter-badge badge-balanced">
+                                                    ✅ Balanced Capacity
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Subject Frequency Inputs -->
+                                    <div class="table-responsive" style="margin-bottom:24px;">
+                                        <table class="alloc-table" style="width:100%; border-collapse:collapse; font-size:13px;">
+                                            <thead>
+                                                <tr style="background:#f8fafc; border-bottom:2px solid #e2e8f0; text-align:left;">
+                                                    <th style="padding:10px;">Grade Tier</th>
+                                                    <th style="padding:10px;">Subject Code</th>
+                                                    <th style="padding:10px;">Subject Name</th>
+                                                    <th style="padding:10px; width:180px;">Weekly Frequency</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="tblSubjectFrequencyBody">
+                                                <!-- Generated dynamically -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div style="display:flex; justify-content:space-between;">
+                                        <button class="btn btn-outline" onclick="navStage(3)" style="font-weight:700;">⬅ Back</button>
+                                        <button id="btnWizardStage4Next" class="btn-action-primary" onclick="proceedToStage5()">
+                                            Next: Run Automated Engine ➔
+                                        </button>
+                                    </div>
+                                </div>
+
+
+                                <!-- 📍 STAGE 5: Automated Conflict-Free Engine Execution -->
+                                <div id="wizardStage5" style="display: none;">
+                                    <h3 style="margin:0 0 6px 0; font-size:16px; font-weight:800; color:#0f172a;">
+                                        STAGE 5: Automated Conflict-Free Generator Execution
+                                    </h3>
+                                    <p style="margin:0 0 16px 0; font-size:13px; color:#64748b;">
+                                        The backend algorithm scans qualified teachers, enforces 3-level collision checks, and schedules conflict-free periods.
+                                    </p>
+
+                                    <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:18px; margin-bottom:20px; color:#166534; font-size:13px;">
+                                        <div style="font-weight:800; font-size:14px; margin-bottom:6px;">🛡️ Multi-Tier Time-Conflict Matrix Checks:</div>
+                                        <ul style="margin:0; padding-left:20px; line-height:1.6;">
+                                            <li><strong>Teacher Collision Prevention:</strong> Ensures no teacher is scheduled in 2 classrooms during exact same day & period slot.</li>
+                                            <li><strong>Cross-Level Verification:</strong> Scans O-Level and A-Level simultaneously for teachers working across both tracks.</li>
+                                            <li><strong>Frequency Cap Enforcement:</strong> Strictly schedules each subject up to its Stage 4 weekly limit.</li>
+                                        </ul>
+                                    </div>
+
+                                    <div id="boxEngineProgress" style="display:none; text-align:center; padding:32px 0;">
+                                        <div style="font-size:32px; margin-bottom:8px;">⚡</div>
+                                        <div style="font-weight:800; font-size:16px; color:#0f172a;">Running Conflict-Free Automated Engine...</div>
+                                        <div style="font-size:13px; color:#64748b; margin-top:4px;">Scanning teacher qualifications & classroom slots.</div>
+                                    </div>
+
+                                    <!-- Bottleneck Report (if any) -->
+                                    <div id="boxBottleneckReport" style="display:none; background:#fef2f2; border:1px solid #fca5a5; border-radius:10px; padding:18px; margin-bottom:20px;">
+                                        <h4 style="margin:0 0 8px 0; color:#991b1b; font-size:15px; font-weight:800;">
+                                            ⚠️ Structural Bottleneck Report
+                                        </h4>
+                                        <div style="font-size:13px; color:#7f1d1d; margin-bottom:12px;" id="lblBottleneckSummary"></div>
+                                        <ul id="listBottlenecks" style="margin:0; padding-left:20px; font-size:12px; color:#991b1b;"></ul>
+                                    </div>
+
+                                    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;" id="barStage5Controls">
+                                        <button class="btn btn-outline" onclick="navStage(4)" style="font-weight:700;">⬅ Back</button>
+                                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                                            <button class="btn-action-primary" id="btnRunEngine" onclick="runAutomatedEngine()">
+                                                ⚡ Run Automated Generator Now
+                                            </button>
+                                            <button class="btn btn-primary" id="btnProceedToMatrix" onclick="loadTimetableMatrixData()" style="display:none; background:#047857; font-weight:800; padding:10px 20px;">
+                                                📊 View & Refine Timetable Matrix ➡
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+                        <!-- =================================================================== -->
+                        <!-- INTERACTIVE FINAL TIMETABLE MATRIX VIEW                             -->
+                        <!-- =================================================================== -->
+                        <div id="viewTimetableMatrix" style="display: none;">
+                            <div class="card" style="padding:20px; background:white; border:1px solid var(--c-border-light); border-radius:12px; margin-bottom:20px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px;">
+                                    <div>
+                                        <div style="display:flex; align-items:center; gap:10px;">
+                                            <h3 style="margin:0; font-size:16px; font-weight:800; color:#0f172a;">
+                                                Master Timetable Matrix Overview
+                                            </h3>
+                                            <span id="badgeTimetableStatus" class="badge" style="background:#fef3c7; color:#92400e; font-weight:800; font-size:12px; padding:6px 14px;">
+                                                🟡 DRAFT LAYOUT (Unpublished)
+                                            </span>
+                                        </div>
+                                        <div style="font-size:12px; color:#64748b; margin-top:4px;">
+                                            Weekly schedule layout for Academic Year <span class="current-year"></span>. 💡 <strong>Drag & Drop</strong> any period card to refine slots. Live engine validates teacher collisions.
+                                        </div>
+                                    </div>
+                                    <div style="display:flex; gap:10px; align-items:center;">
+                                        <select id="selMatrixStream" class="form-control" style="width:220px; font-weight:700;" onchange="renderTimetableGrid()">
+                                            <option value="">-- Select Classroom Stream --</option>
+                                        </select>
+                                        <button class="btn btn-outline btn-sm" style="font-weight:700;" onclick="launchSetupWizard()">
+                                            ⚙️ Setup Wizard
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="tt-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Day / Period</th>
+                                                <th id="thPeriodsColHeader">Period Slots</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tblMatrixGridBody">
+                                            <tr><td colspan="6" style="text-align:center; padding:32px; color:#64748b;">Select a classroom stream above to view schedule.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- STAGE 7: Save Draft vs Publish Live Controls -->
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; padding-top:16px; border-top:1px solid #e2e8f0; flex-wrap:wrap; gap:12px;">
+                                    <span style="font-size:12px; color:#64748b;" id="lblPublicationHelp">Draft changes remain hidden from teacher & student portals until published live.</span>
+                                    <div style="display:flex; gap:12px; align-items:center;">
+                                        <!-- Split-Button Dropdown for Document Exportation -->
+                                        <div style="position:relative; display:inline-block;" id="exportDropdownContainer">
+                                            <button type="button" class="btn btn-outline" onclick="$('#exportMenu').toggle()" style="font-weight:700; background:#f8fafc; color:#0f172a;">📥 Export Data As... ▾</button>
+                                            <div id="exportMenu" style="display:none; position:absolute; bottom:100%; right:0; background:#fff; border:1px solid #e2e8f0; border-radius:6px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); z-index:1000; min-width:240px; padding:4px 0; margin-bottom:8px; text-align:left;">
+                                                <a href="javascript:void(0)" onclick="exportTimetable('pdf'); $('#exportMenu').hide();" style="display:block; padding:10px 16px; color:#0f172a; text-decoration:none; font-weight:600; border-bottom:1px solid #f1f5f9; transition: background 0.2s;"><span style="color:#ef4444; margin-right:8px;">📄</span> PDF Document (.pdf)</a>
+                                                <a href="javascript:void(0)" onclick="exportTimetable('excel'); $('#exportMenu').hide();" style="display:block; padding:10px 16px; color:#0f172a; text-decoration:none; font-weight:600; border-bottom:1px solid #f1f5f9; transition: background 0.2s;"><span style="color:#10b981; margin-right:8px;">📊</span> Excel Spreadsheet (.xlsx)</a>
+                                                <a href="javascript:void(0)" onclick="exportTimetable('csv'); $('#exportMenu').hide();" style="display:block; padding:10px 16px; color:#0f172a; text-decoration:none; font-weight:600; transition: background 0.2s;"><span style="color:#64748b; margin-right:8px;">📝</span> CSV Raw File (.csv)</a>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-outline" onclick="saveTimetableAsDraft()" style="font-weight:700;">💾 Save Layout as Draft</button>
+                                        <button type="button" class="btn btn-primary" onclick="publishTimetableLive()" style="font-weight:800; background:#047857; padding:10px 24px;">🚀 Publish Timetable Live</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </app-workspace-layout>
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- CUSTOM UI WARNING / COLLISION POPUP MODAL -->
+    <div id="modalWarningPopup" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); align-items:center; justify-content:center; z-index:999999; backdrop-filter:blur(4px);">
+        <div style="background:white; width:90%; max-width:440px; border-radius:16px; padding:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); text-align:center;">
+            <div style="width:54px; height:54px; border-radius:50%; background:#fef2f2; color:#dc2626; display:flex; align-items:center; justify-content:center; font-size:26px; margin:0 auto 14px; border:2px solid #fecaca;">
+                ⚠️
+            </div>
+            <h3 id="lblWarningModalTitle" style="margin:0 0 8px; font-size:17px; font-weight:800; color:#0f172a;">
+                Collision Warning
+            </h3>
+            <p id="lblWarningModalMessage" style="font-size:13px; color:#475569; margin:0 0 20px; line-height:1.5; font-weight:600;"></p>
+            <button type="button" onclick="closeWarningModal()" class="btn btn-primary" style="background:#dc2626; border:none; padding:10px 28px; border-radius:8px; font-weight:800; font-size:13px; cursor:pointer;">
+                Got It
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const ACADEMIC_YEAR = new Date().getFullYear().toString();
+        let currentConfig = null;
+        let wizardData = null;
+        let selectedLevelCode = 'O-LEVEL';
+        let selectedGradeIds = [];
+        let selectedOperationalDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+        let activeTimeMatrix = [];
+        let subjectFrequencies = {}; // { `${gradeId}_${subjectCode}`: frequencyInt }
+        let currentTimetableData = null;
+
+        const DAYS_ALL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+        // Initial Load Status Check
+        async function checkTimetableStatus() {
+            try {
+                const res = await fetch(`/shule-cafe/api/timetable/timetable_config_api.php?action=status&year=${ACADEMIC_YEAR}`, { credentials: 'include' });
+                const data = await res.json();
+                
+                if (data.success && data.has_active_config) {
+                    currentConfig = data.config;
+                    $('#btnReconfigWizard').show();
+                    loadTimetableMatrixData();
+                } else {
+                    $('#viewStage0Fallback').show();
+                    $('#viewSetupWizard').hide();
+                    $('#viewTimetableMatrix').hide();
+                }
+            } catch (e) {
+                console.error("Error checking timetable status:", e);
+                $('#viewStage0Fallback').show();
+            }
+        }
+
+        // Launch Setup Wizard
+        async function launchSetupWizard() {
+            $('#viewStage0Fallback').hide();
+            $('#viewTimetableMatrix').hide();
+            $('#viewSetupWizard').show();
+
+            try {
+                const res = await fetch(`/shule-cafe/api/timetable/timetable_config_api.php?action=get_wizard_data&year=${ACADEMIC_YEAR}`, { credentials: 'include' });
+                wizardData = await res.json();
+
+                renderStage1();
+                navStage(1);
+            } catch (e) {
+                console.error("Error launching wizard:", e);
+                alert("Error connecting to server.");
+            }
+        }
+
+        // Navigation between wizard stages
+        function navStage(stageNum) {
+            for (let i = 1; i <= 5; i++) {
+                $(`#wizardStage${i}`).hide();
+                $(`#stepMarker${i}`).removeClass('active completed');
+                if (i < stageNum) $(`#stepMarker${i}`).addClass('completed');
+            }
+            $(`#wizardStage${stageNum}`).show();
+            $(`#stepMarker${stageNum}`).addClass('active');
+        }
+
+        // STAGE 1: Level & Multi-Grade
+        function renderStage1() {
+            if (!wizardData) return;
+
+            // Levels
+            const levelsHtml = (wizardData.education_levels || []).map(l => {
+                const isSel = l.level_code === selectedLevelCode;
+                const displayName = l.level_name || l.name || l.level_code;
+                return `
+                    <div class="option-pill-card ${isSel ? 'selected' : ''}" onclick="selectLevelCode('${l.level_code}')">
+                        <input type="radio" name="radLevel" value="${l.level_code}" ${isSel ? 'checked' : ''}>
+                        <span style="font-weight:700; font-size:13px; color:#0f172a;">${displayName} (${l.level_code})</span>
+                    </div>
+                `;
+            }).join('');
+            $('#gridLevelSelectors').html(levelsHtml || '<div style="color:#64748b;">No active levels.</div>');
+
+            renderGradesForLevel();
+        }
+
+        function selectLevelCode(code) {
+            selectedLevelCode = code;
+            renderStage1();
+        }
+
+        function renderGradesForLevel() {
+            const gradesForLevel = (wizardData.grades || []).filter(g => {
+                if (selectedLevelCode === 'O-LEVEL') return g.level_code === 'O-LEVEL' || g.grade_name.includes('Form 1') || g.grade_name.includes('Form 2') || g.grade_name.includes('Form 3') || g.grade_name.includes('Form 4');
+                if (selectedLevelCode === 'A-LEVEL') return g.level_code === 'A-LEVEL' || g.grade_name.includes('Form 5') || g.grade_name.includes('Form 6');
+                return true;
+            });
+
+            const gradesHtml = gradesForLevel.map(g => {
+                const isChecked = selectedGradeIds.includes(g.id);
+                return `
+                    <div class="option-pill-card ${isChecked ? 'selected' : ''}" onclick="toggleGradeSelection(this, ${g.id})">
+                        <input type="checkbox" class="chkGradeId" value="${g.id}" ${isChecked ? 'checked' : ''} onclick="event.stopPropagation(); toggleGradeCardClass(this, ${g.id});">
+                        <span style="font-weight:700; font-size:13px; color:#0f172a;">${g.grade_name}</span>
+                    </div>
+                `;
+            }).join('');
+
+            $('#gridGradeCheckboxes').html(gradesHtml || '<div style="color:#64748b;">No grades available.</div>');
+        }
+
+        function toggleGradeSelection(cardEl, gradeId) {
+            const chk = $(cardEl).find('.chkGradeId');
+            chk.prop('checked', !chk.prop('checked'));
+            toggleGradeCardClass(chk[0], gradeId);
+        }
+
+        function toggleGradeCardClass(chkEl, gradeId) {
+            const isChecked = $(chkEl).prop('checked');
+            $(chkEl).closest('.option-pill-card').toggleClass('selected', isChecked);
+            if (isChecked) {
+                if (!selectedGradeIds.includes(gradeId)) selectedGradeIds.push(gradeId);
+            } else {
+                selectedGradeIds = selectedGradeIds.filter(id => id !== gradeId);
+            }
+        }
+
+        function selectAllGrades(checkAll) {
+            $('.chkGradeId').prop('checked', checkAll).each(function() {
+                const gId = parseInt($(this).val());
+                toggleGradeCardClass(this, gId);
+            });
+        }
+
+        function proceedToStage2() {
+            if (selectedGradeIds.length === 0) {
+                alert("Please select at least one target grade cohort to proceed.");
+                return;
+            }
+            renderStage2();
+            navStage(2);
+        }
+
+        // STAGE 2: Operational Days
+        function renderStage2() {
+            const daysHtml = DAYS_ALL.map(day => {
+                const isChecked = selectedOperationalDays.includes(day);
+                return `
+                    <div class="option-pill-card ${isChecked ? 'selected' : ''}" onclick="toggleDaySelection(this, '${day}')">
+                        <input type="checkbox" class="chkDayName" value="${day}" ${isChecked ? 'checked' : ''} onclick="event.stopPropagation(); toggleDayCardClass(this, '${day}');">
+                        <span style="font-weight:700; font-size:13px; color:#0f172a;">${day}</span>
+                    </div>
+                `;
+            }).join('');
+
+            $('#gridDayCheckboxes').html(daysHtml);
+        }
+
+        function applyDaysPreset(preset) {
+            if (preset === 'weekdays') {
+                selectedOperationalDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+            } else if (preset === 'weekends') {
+                selectedOperationalDays = ['Saturday', 'Sunday'];
+            }
+            renderStage2();
+        }
+
+        function toggleDaySelection(cardEl, dayName) {
+            const chk = $(cardEl).find('.chkDayName');
+            chk.prop('checked', !chk.prop('checked'));
+            toggleDayCardClass(chk[0], dayName);
+        }
+
+        function toggleDayCardClass(chkEl, dayName) {
+            const isChecked = $(chkEl).prop('checked');
+            $(chkEl).closest('.option-pill-card').toggleClass('selected', isChecked);
+            if (isChecked) {
+                if (!selectedOperationalDays.includes(dayName)) selectedOperationalDays.push(dayName);
+            } else {
+                selectedOperationalDays = selectedOperationalDays.filter(d => d !== dayName);
+            }
+        }
+
+        function proceedToStage3() {
+            if (selectedOperationalDays.length === 0) {
+                alert("Please select at least one operational day for your school week.");
+                return;
+            }
+            generateTimeMatrixRows();
+            navStage(3);
+        }
+
+        // STAGE 3: Time Matrix & Breaks
+        function generateTimeMatrixRows() {
+            const numPeriods = parseInt($('#numPeriodsPerDay').val()) || 8;
+            const numBreaks = parseInt($('#numBreaksPerDay').val()) || 2;
+
+            activeTimeMatrix = [];
+            let periodSeq = 1;
+            let breakSeq = 1;
+
+            const breakPositions = numBreaks === 2 ? [3, 6] : (numBreaks === 1 ? [4] : []);
+
+            for (let i = 1; i <= numPeriods; i++) {
+                // Add Period (timers start empty for intelligent input)
+                activeTimeMatrix.push({
+                    period_number: periodSeq++,
+                    period_name: `Period ${i}`,
+                    start_time: '',
+                    end_time: '',
+                    is_break: 0
+                });
+
+                // Inject Break if position matches
+                if (breakPositions.includes(i)) {
+                    const bName = breakSeq === 1 ? 'Tea / Breakfast Break' : 'Lunch Break';
+                    activeTimeMatrix.push({
+                        period_number: periodSeq++,
+                        period_name: bName,
+                        start_time: '',
+                        end_time: '',
+                        is_break: 1
+                    });
+                    breakSeq++;
+                }
+            }
+
+            renderTimeMatrixTable();
+        }
+
+        function renderTimeMatrixTable() {
+            const html = activeTimeMatrix.map((p, idx) => {
+                const isB = p.is_break === 1;
+
+                let labelControlHtml = '';
+                if (isB) {
+                    const breakPresets = ['Tea / Breakfast Break', 'Lunch Break', 'Muslim Prayer Break', 'Assembly / Sports Break', 'Custom Rest Break'];
+                    const isCustom = !breakPresets.includes(p.period_name) && p.period_name !== '';
+                    const selectedPreset = isCustom ? 'Custom Rest Break' : p.period_name;
+
+                    labelControlHtml = `
+                        <div style="display:flex; gap:6px; align-items:center;">
+                            <select class="form-control form-control-sm selBreakPreset" data-idx="${idx}" onchange="handleBreakPresetChange(${idx}, this.value)" style="font-weight:700;">
+                                <option value="Tea / Breakfast Break" ${selectedPreset === 'Tea / Breakfast Break' ? 'selected' : ''}>☕ Tea / Breakfast Break</option>
+                                <option value="Lunch Break" ${selectedPreset === 'Lunch Break' ? 'selected' : ''}>🍲 Lunch Break</option>
+                                <option value="Muslim Prayer Break" ${selectedPreset === 'Muslim Prayer Break' ? 'selected' : ''}>🕌 Muslim Prayer Break</option>
+                                <option value="Assembly / Sports Break" ${selectedPreset === 'Assembly / Sports Break' ? 'selected' : ''}>🏃 Assembly / Sports Break</option>
+                                <option value="Custom Rest Break" ${isCustom ? 'selected' : ''}>✏️ Custom Rest Break...</option>
+                            </select>
+                            <input type="text" class="form-control form-control-sm txtCustomBreakLabel" data-idx="${idx}" value="${p.period_name}" style="display:${isCustom ? 'block' : 'none'}; font-weight:700; width:140px;" placeholder="Custom label...">
+                        </div>
+                    `;
+                } else {
+                    labelControlHtml = `
+                        <input type="text" class="form-control form-control-sm txtSlotName" data-idx="${idx}" value="${p.period_name}" style="font-weight:700;">
+                    `;
+                }
+
+                return `
+                    <tr style="border-bottom:1px solid #f1f5f9; background:${isB ? '#f8fafc' : '#ffffff'};">
+                        <td style="padding:8px 10px; width:190px;">
+                            <select class="form-control form-control-sm selSlotType" data-idx="${idx}" onchange="handleSlotTypeChange(${idx}, this.value)" style="font-weight:800; cursor:pointer; color:${isB ? '#92400e' : '#0369a1'}; background:${isB ? '#fef3c7' : '#e0f2fe'}; border:1px solid ${isB ? '#fde047' : '#bae6fd'};">
+                                <option value="0" ${!isB ? 'selected' : ''}>📚 Class Period</option>
+                                <option value="1" ${isB ? 'selected' : ''}>☕ Rest Break</option>
+                            </select>
+                        </td>
+                        <td style="padding:8px 10px;">
+                            ${labelControlHtml}
+                        </td>
+                        <td style="padding:8px 10px; width:140px;">
+                            <input type="time" class="form-control form-control-sm txtSlotStart" data-idx="${idx}" value="${p.start_time}" onchange="onSlotStartTimeChanged(${idx}, this.value)">
+                        </td>
+                        <td style="padding:8px 10px; width:140px;">
+                            <input type="time" class="form-control form-control-sm txtSlotEnd" data-idx="${idx}" value="${p.end_time}" onchange="onSlotEndTimeChanged(${idx}, this.value)">
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            $('#tblTimeMatrixBody').html(html);
+        }
+
+        window.handleSlotTypeChange = function(idx, newTypeValue) {
+            const isBreak = parseInt(newTypeValue) === 1;
+            activeTimeMatrix[idx].is_break = isBreak ? 1 : 0;
+            activeTimeMatrix[idx].period_name = isBreak ? (idx > 5 ? 'Lunch Break' : 'Tea / Breakfast Break') : `Period ${idx + 1}`;
+            renderTimeMatrixTable();
+        };
+
+        window.handleBreakPresetChange = function(idx, presetVal) {
+            const rowEl = $('#tblTimeMatrixBody tr').eq(idx);
+            const customInput = rowEl.find('.txtCustomBreakLabel');
+            if (presetVal === 'Custom Rest Break') {
+                customInput.show().focus();
+                activeTimeMatrix[idx].period_name = customInput.val() || 'Custom Rest Break';
+            } else {
+                customInput.hide();
+                activeTimeMatrix[idx].period_name = presetVal;
+            }
+        };
+
+        $(document).on('input', '.txtCustomBreakLabel', function() {
+            const idx = $(this).data('idx');
+            activeTimeMatrix[idx].period_name = $(this).val();
+        });
+
+        function addMinutesToTime(timeStr, minsToAdd) {
+            if (!timeStr) return '';
+            const parts = timeStr.split(':');
+            let h = parseInt(parts[0], 10);
+            let m = parseInt(parts[1], 10);
+
+            if (isNaN(h) || isNaN(m)) return '';
+
+            m += minsToAdd;
+            if (m >= 60) {
+                h += Math.floor(m / 60);
+                m = m % 60;
+            }
+            if (h >= 24) {
+                h = h % 24;
+            }
+
+            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        }
+
+        window.onSlotStartTimeChanged = function(idx, startVal) {
+            activeTimeMatrix[idx].start_time = startVal;
+
+            if (startVal) {
+                const isBreak = activeTimeMatrix[idx].is_break === 1;
+                const durationMins = isBreak ? 30 : 40;
+                const suggestedEndTime = addMinutesToTime(startVal, durationMins);
+
+                const rowEl = $('#tblTimeMatrixBody tr').eq(idx);
+                const endInput = rowEl.find('.txtSlotEnd');
+
+                endInput.val(suggestedEndTime);
+                activeTimeMatrix[idx].end_time = suggestedEndTime;
+
+                // Ripple cascade times to subsequent period slots
+                rippleCascadeTimesFrom(idx);
+            }
+
+            validateSlotTimes(idx);
+        };
+
+        window.onSlotEndTimeChanged = function(idx, endVal) {
+            activeTimeMatrix[idx].end_time = endVal;
+
+            if (endVal) {
+                // Ripple cascade times to subsequent period slots starting from next index
+                rippleCascadeTimesFrom(idx);
+            }
+
+            validateSlotTimes(idx);
+        };
+
+        function rippleCascadeTimesFrom(fromIdx) {
+            let currentEnd = activeTimeMatrix[fromIdx].end_time;
+            if (!currentEnd) return;
+
+            for (let i = fromIdx + 1; i < activeTimeMatrix.length; i++) {
+                const rowEl = $('#tblTimeMatrixBody tr').eq(i);
+                const startInput = rowEl.find('.txtSlotStart');
+                const endInput = rowEl.find('.txtSlotEnd');
+
+                // Set start time to previous end time
+                startInput.val(currentEnd);
+                activeTimeMatrix[i].start_time = currentEnd;
+
+                // Auto-calculate end time (+40 mins for period, +30 mins for break)
+                const isBreak = activeTimeMatrix[i].is_break === 1;
+                const durationMins = isBreak ? 30 : 40;
+                const nextEndTime = addMinutesToTime(currentEnd, durationMins);
+
+                endInput.val(nextEndTime);
+                activeTimeMatrix[i].end_time = nextEndTime;
+
+                currentEnd = nextEndTime;
+            }
+        }
+
+        function validateSlotTimes(idx) {
+            const rowEl = $('#tblTimeMatrixBody tr').eq(idx);
+            const startInput = rowEl.find('.txtSlotStart');
+            const endInput = rowEl.find('.txtSlotEnd');
+            const sVal = activeTimeMatrix[idx].start_time;
+            const eVal = activeTimeMatrix[idx].end_time;
+
+            startInput.css('border-color', '#cbd5e1');
+            endInput.css('border-color', '#cbd5e1');
+
+            if (sVal && eVal) {
+                if (sVal >= eVal) {
+                    endInput.css('border-color', '#dc2626');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function proceedToStage4() {
+            // Read all DOM values
+            let hasError = false;
+            let errorMessage = '';
+
+            for (let i = 0; i < activeTimeMatrix.length; i++) {
+                const rowEl = $('#tblTimeMatrixBody tr').eq(i);
+                const sInput = rowEl.find('.txtSlotStart');
+                const eInput = rowEl.find('.txtSlotEnd');
+                const sVal = sInput.val();
+                const eVal = eInput.val();
+                const pName = activeTimeMatrix[i].period_name || `Slot ${i+1}`;
+
+                activeTimeMatrix[i].start_time = sVal;
+                activeTimeMatrix[i].end_time = eVal;
+
+                if (!sVal || !eVal) {
+                    hasError = true;
+                    if (!sVal) sInput.css('border-color', '#dc2626');
+                    if (!eVal) eInput.css('border-color', '#dc2626');
+                    errorMessage = `Please enter Start Time and End Time for ${pName}.`;
+                    break;
+                }
+
+                if (sVal >= eVal) {
+                    hasError = true;
+                    eInput.css('border-color', '#dc2626');
+                    errorMessage = `${pName}: End Time (${eVal}) must be after Start Time (${sVal}).`;
+                    break;
+                }
+
+                // Check overlap / identical times with previous slot
+                if (i > 0) {
+                    const prevEnd = activeTimeMatrix[i-1].end_time;
+                    if (prevEnd && sVal < prevEnd) {
+                        hasError = true;
+                        sInput.css('border-color', '#dc2626');
+                        errorMessage = `${pName}: Start Time (${sVal}) overlaps with previous slot's End Time (${prevEnd}).`;
+                        break;
+                    }
+                }
+            }
+
+            if (hasError) {
+                alert(`⚠️ Time Matrix Validation Error:\n${errorMessage}`);
+                return;
+            }
+
+            renderStage4();
+            navStage(4);
+        }
+
+        // STAGE 4: Frequency Calibration & Balance Meter (Grade-by-Grade Workflow)
+        let activeStage4GradeId = null;
+
+        function renderStage4() {
+            const strGradeIds = selectedGradeIds.map(id => String(id));
+            const selectedGradesList = (wizardData.grades || []).filter(g => strGradeIds.includes(String(g.id)));
+
+            if (selectedGradesList.length === 0) return;
+
+            if (!activeStage4GradeId || !strGradeIds.includes(String(activeStage4GradeId))) {
+                activeStage4GradeId = selectedGradesList[0].id;
+            }
+
+            const numPeriods = parseInt($('#numPeriodsPerDay').val()) || 8;
+            const totalCapacity = selectedOperationalDays.length * numPeriods;
+
+            $('#lblSchoolCapacity').text(`${totalCapacity} Slots`);
+            $('#lblCapacityCalc').text(`(${selectedOperationalDays.length} Days × ${numPeriods} Daily Periods)`);
+
+            // Render Grade Cohort Tabs
+            const tabsHtml = selectedGradesList.map(g => {
+                const isAct = String(g.id) === String(activeStage4GradeId);
+                const gradeLoad = getGradeCurriculumLoad(g.id);
+                const isBal = gradeLoad === totalCapacity;
+                const isOver = gradeLoad > totalCapacity;
+                const badgeStyle = isBal ? 'background:#dcfce7; color:#15803d;' : (isOver ? 'background:#fef2f2; color:#b91c1c;' : 'background:#fefce8; color:#a16207;');
+
+                return `
+                    <button type="button" class="btn ${isAct ? 'btn-primary' : 'btn-outline'} btn-sm" onclick="switchStage4GradeTab(${g.id})" style="font-weight:700; border-radius:6px; font-size:12px; padding:6px 12px;">
+                        ${g.grade_name} <span class="badge" style="${badgeStyle} font-size:10px; margin-left:4px; font-weight:800;">${gradeLoad}/${totalCapacity}</span>
+                    </button>
+                `;
+            }).join('');
+
+            $('#barStage4GradeTabs').html(tabsHtml);
+
+            // Render active grade subjects table
+            renderStage4GradeSubjectTable(activeStage4GradeId);
+            updateCapacityMeter();
+        }
+
+        function switchStage4GradeTab(gradeId) {
+            // Save current input values before switching
+            readSubjectFrequenciesFromDom();
+            activeStage4GradeId = gradeId;
+            renderStage4();
+        }
+
+        function getGradeCurriculumLoad(gradeId) {
+            let load = 0;
+            const strGId = String(gradeId);
+            const gradeSubjs = getGradeSubjectsForGrade(gradeId);
+            gradeSubjs.forEach(s => {
+                const code = s.code || s.subject_code;
+                const key = `${strGId}_${code}`;
+                const val = subjectFrequencies[key] ? (parseInt(subjectFrequencies[key]) || 0) : 0;
+                load += val;
+            });
+            return load;
+        }
+
+        function getGradeSubjectsForGrade(gradeId) {
+            // 1. Check if school has explicit grade_subjects assigned for this grade
+            let gradeSubjs = (wizardData.grade_subjects_map && wizardData.grade_subjects_map[gradeId]) ? wizardData.grade_subjects_map[gradeId] : null;
+
+            // 2. Fallback: If no explicit grade_subjects mapped yet, use approved_subjects for school's active level
+            if (!gradeSubjs || gradeSubjs.length === 0) {
+                gradeSubjs = (wizardData.approved_subjects || []).filter(s => {
+                    const sLvl = (s.level_code || '').toUpperCase();
+                    if (selectedLevelCode === 'O-LEVEL') return sLvl.includes('O') || sLvl.includes('ORDINARY');
+                    if (selectedLevelCode === 'A-LEVEL') return sLvl.includes('A') || sLvl.includes('ADVANCED');
+                    return true;
+                });
+            }
+
+            return gradeSubjs || [];
+        }
+
+        function renderStage4GradeSubjectTable(gradeId) {
+            const gradeObj = (wizardData.grades || []).find(g => String(g.id) === String(gradeId));
+            const gradeName = gradeObj ? gradeObj.grade_name : 'Selected Grade';
+            const gradeSubjs = getGradeSubjectsForGrade(gradeId);
+
+            $('#lblCurriculumLoadHeader').text(`Form Curriculum Load (${gradeName}):`);
+
+            const rows = gradeSubjs.map(s => {
+                const code = s.code || s.subject_code;
+                const name = s.name || s.subject_name;
+                const key = `${gradeId}_${code}`;
+                const freqVal = subjectFrequencies[key] !== undefined ? subjectFrequencies[key] : '';
+
+                return `
+                    <tr style="border-bottom:1px solid #f1f5f9;">
+                        <td style="padding:10px 12px; font-weight:800; color:#0f172a;">${gradeName}</td>
+                        <td style="padding:10px 12px;"><span class="badge" style="background:#f1f5f9; color:#475569; font-weight:700;">${code}</span></td>
+                        <td style="padding:10px 12px; font-weight:700; color:#334155;">${name}</td>
+                        <td style="padding:10px 12px;">
+                            <input type="number" class="form-control form-control-sm numSubjFreq" data-key="${key}" value="${freqVal}" placeholder="0" min="0" max="15" style="width:110px; font-weight:800;" onchange="updateCapacityMeter()" oninput="updateCapacityMeter()">
+                        </td>
+                    </tr>
+                `;
+            });
+
+            $('#tblSubjectFrequencyBody').html(rows.join('') || `<tr><td colspan="4" style="text-align:center; padding:24px; color:#64748b;">No subjects assigned to ${gradeName} in school curriculum.</td></tr>`);
+        }
+
+        function readSubjectFrequenciesFromDom() {
+            $('.numSubjFreq').each(function() {
+                const key = $(this).data('key');
+                const rawVal = $(this).val();
+                subjectFrequencies[key] = rawVal !== '' ? (parseInt(rawVal) || 0) : '';
+            });
+        }
+
+        function updateCapacityMeter() {
+            readSubjectFrequenciesFromDom();
+
+            const numPeriods = parseInt($('#numPeriodsPerDay').val()) || 8;
+            const totalCapacity = selectedOperationalDays.length * numPeriods;
+
+            const strGradeIds = selectedGradeIds.map(id => String(id));
+            const selectedGradesList = (wizardData.grades || []).filter(g => strGradeIds.includes(String(g.id)));
+
+            // Update Tab Badges
+            selectedGradesList.forEach(g => {
+                const gLoad = getGradeCurriculumLoad(g.id);
+                const isBal = gLoad === totalCapacity;
+                const isOver = gLoad > totalCapacity;
+                const badgeStyle = isBal ? 'background:#dcfce7; color:#15803d;' : (isOver ? 'background:#fef2f2; color:#b91c1c;' : 'background:#fefce8; color:#a16207;');
+                $(`#barStage4GradeTabs button:contains("${g.grade_name}") .badge`).attr('style', `${badgeStyle} font-size:10px; margin-left:4px; font-weight:800;`).text(`${gLoad}/${totalCapacity}`);
+            });
+
+            // Update Active Grade Load Display
+            const activeLoad = activeStage4GradeId ? getGradeCurriculumLoad(activeStage4GradeId) : 0;
+            const activeGradeObj = (wizardData.grades || []).find(g => String(g.id) === String(activeStage4GradeId));
+            const activeGradeName = activeGradeObj ? activeGradeObj.grade_name : 'Active Grade';
+
+            $('#lblCurriculumLoad').text(`${activeLoad} Slots`);
+
+            // Check overall status across all selected grades
+            let anyOverload = false;
+            let overloadedGrades = [];
+            selectedGradesList.forEach(g => {
+                const gLoad = getGradeCurriculumLoad(g.id);
+                if (gLoad > totalCapacity) {
+                    anyOverload = true;
+                    overloadedGrades.push(`${g.grade_name} (+${gLoad - totalCapacity} slots)`);
+                }
+            });
+
+            const badgeBox = $('#boxMeterBadge');
+            const btnNext = $('#btnWizardStage4Next');
+
+            if (anyOverload) {
+                badgeBox.attr('class', 'meter-badge badge-overload').html(`⚠️ Overload Detected: ${overloadedGrades.join(', ')}`);
+                btnNext.prop('disabled', true); // BLOCK Progression!
+            } else if (activeLoad === totalCapacity) {
+                badgeBox.attr('class', 'meter-badge badge-balanced').html(`✅ ${activeGradeName} Balanced Capacity (${activeLoad}/${totalCapacity} Slots)`);
+                btnNext.prop('disabled', false);
+            } else {
+                const diff = totalCapacity - activeLoad;
+                badgeBox.attr('class', 'meter-badge badge-underload').html(`💡 ${activeGradeName}: ${diff} free remaining slots`);
+                btnNext.prop('disabled', false);
+            }
+        }
+
+        async function proceedToStage5() {
+            // Save Stages 1-4 configuration via API first
+            const frequenciesList = [];
+            Object.keys(subjectFrequencies).forEach(key => {
+                const parts = key.split('_');
+                frequenciesList.push({
+                    grade_id: parseInt(parts[0]),
+                    subject_code: parts[1],
+                    weekly_frequency: subjectFrequencies[key]
+                });
+            });
+
+            try {
+                const res = await fetch('/shule-cafe/api/timetable/timetable_config_api.php', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'save_config',
+                        level_code: selectedLevelCode,
+                        selected_grades: selectedGradeIds,
+                        operational_days: selectedOperationalDays,
+                        periods_per_day: parseInt($('#numPeriodsPerDay').val()) || 8,
+                        breaks_count: parseInt($('#numBreaksPerDay').val()) || 2,
+                        time_matrix: activeTimeMatrix,
+                        frequencies: frequenciesList
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    currentConfig = { id: data.config_id };
+                    navStage(5);
+                } else {
+                    alert(data.message || 'Failed to save configuration.');
+                }
+            } catch (e) {
+                console.error("Save config error:", e);
+                alert("Error connecting to server.");
+            }
+        }
+
+        // STAGE 5: Automated Conflict-Free Engine Run
+        async function runAutomatedEngine() {
+            $('#boxEngineProgress').show();
+            $('#boxBottleneckReport').hide();
+            $('#btnProceedToMatrix').hide();
+            $('#btnRunEngine').prop('disabled', true);
+
+            try {
+                const res = await fetch('/shule-cafe/api/timetable/timetable_config_api.php', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'generate_automated_timetable',
+                        config_id: currentConfig ? currentConfig.id : null
+                    })
+                });
+
+                const data = await res.json();
+                $('#boxEngineProgress').hide();
+                $('#btnRunEngine').prop('disabled', false);
+
+                if (data.success) {
+                    if (data.scheduled_slots_count > 0) {
+                        $('#btnProceedToMatrix').show();
+                    }
+
+                    if (data.bottlenecks && data.bottlenecks.length > 0) {
+                        $('#lblBottleneckSummary').text(`Engine scheduled ${data.scheduled_slots_count} slots, but encountered ${data.unresolved_slots_count} unresolved bottleneck(s):`);
+                        const bHtml = data.bottlenecks.map(b => `<li><strong>${b.classroom || b.grade}:</strong> ${b.subject ? b.subject + ' - ' : ''}${b.issue}</li>`).join('');
+                        $('#listBottlenecks').html(bHtml);
+                        $('#boxBottleneckReport').show();
+                    } else {
+                        alert(`🎉 Conflict-Free Timetable Generated Successfully! ${data.scheduled_slots_count} period slots created with zero collisions.`);
+                        loadTimetableMatrixData();
+                    }
+                } else {
+                    alert(data.message || 'Automated engine execution failed.');
+                }
+            } catch (e) {
+                console.error("Engine execution error:", e);
+                $('#boxEngineProgress').hide();
+                $('#btnRunEngine').prop('disabled', false);
+                alert("Error executing automated engine.");
+            }
+        }
+
+        // STAGE 6 & 7: Dynamic Drag & Drop, Draft Saving & Live Publication
+        let activeDragSlot = null;
+
+        async function loadTimetableMatrixData() {
+            $('#viewSetupWizard').hide();
+            $('#viewStage0Fallback').hide();
+            $('#viewTimetableMatrix').show();
+            $('#btnReconfigWizard').show();
+
+            try {
+                // Check timetable status for publication badge
+                const resStatus = await fetch(`/shule-cafe/api/timetable/timetable_config_api.php?action=status&year=${ACADEMIC_YEAR}`, { credentials: 'include' });
+                const dataStatus = await resStatus.json();
+                if (dataStatus.success && dataStatus.config) {
+                    const isPub = parseInt(dataStatus.config.is_published || 0) === 1;
+                    const badge = $('#badgeTimetableStatus');
+                    if (isPub) {
+                        badge.css({'background': '#dcfce7', 'color': '#15803d'}).html('🟢 LIVE PUBLISHED (Active Shuleni)');
+                    } else {
+                        badge.css({'background': '#fef3c7', 'color': '#92400e'}).html('🟡 DRAFT LAYOUT (Unpublished)');
+                    }
+                }
+
+                const res = await fetch(`/shule-cafe/api/timetable/timetable_config_api.php?action=get_timetable_matrix&year=${ACADEMIC_YEAR}`, { credentials: 'include' });
+                currentTimetableData = await res.json();
+
+                if (currentTimetableData.success) {
+                    const streams = Object.keys(currentTimetableData.matrix || {});
+                    const sel = $('#selMatrixStream');
+                    const prevVal = sel.val();
+                    sel.empty().append('<option value="">-- Select Classroom Stream --</option>');
+                    streams.forEach(st => {
+                        sel.append(`<option value="${st}">${st}</option>`);
+                    });
+
+                    if (streams.length > 0) {
+                        sel.val(prevVal && streams.includes(prevVal) ? prevVal : streams[0]);
+                        renderTimetableGrid();
+                    }
+                }
+            } catch (e) {
+                console.error("Error loading matrix data:", e);
+            }
+        }
+
+        function renderTimetableGrid() {
+            if (!currentTimetableData) return;
+
+            const selectedStream = $('#selMatrixStream').val();
+            const periods = currentTimetableData.periods || [];
+            const matrix = currentTimetableData.matrix || {};
+
+            if (!selectedStream || !matrix[selectedStream]) {
+                $('#tblMatrixGridBody').html('<tr><td colspan="6" style="text-align:center; padding:32px; color:#64748b;">Select a classroom stream above to view schedule.</td></tr>');
+                return;
+            }
+
+            const streamMatrix = matrix[selectedStream];
+
+            // Render Rows: One per Day
+            const rows = DAYS_ALL.map(day => {
+                const daySlots = streamMatrix[day] || {};
+
+                const periodCells = periods.map(p => {
+                    if (p.is_break === 1) {
+                        return `
+                            <td style="background:#f8fafc; text-align:center; vertical-align:middle;">
+                                <div class="tt-break-box">☕ ${p.period_name}</div>
+                            </td>
+                        `;
+                    }
+
+                    const slot = daySlots[p.id] || null;
+
+                    if (slot) {
+                        return `
+                            <td style="padding:6px; background:#f0fdf4; border:1px solid #bbf7d0;"
+                                draggable="true"
+                                ondragstart="handleDragStartSlot(event, '${day}', ${p.id}, '${selectedStream}', '${slot.subject_code}', '${slot.teacher_id}', '${slot.teacher_name}')"
+                                ondragover="handleDragOverSlot(event)"
+                                ondragleave="handleDragLeaveSlot(event)"
+                                ondrop="handleDropSlot(event, '${day}', ${p.id}, '${selectedStream}')">
+                                <div class="tt-slot-card">
+                                    <div style="font-weight:800; color:#166534; font-size:12px;">${slot.subject_name || slot.subject_code}</div>
+                                    <span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:700; font-size:10px;">${slot.subject_code}</span>
+                                    <div style="font-size:11px; color:#475569; margin-top:4px; font-weight:700;">👩‍🏫 ${slot.teacher_name || 'Assigned Staff'}</div>
+                                </div>
+                            </td>
+                        `;
+                    } else {
+                        return `
+                            <td style="padding:6px; background:#ffffff;"
+                                ondragover="handleDragOverSlot(event)"
+                                ondragleave="handleDragLeaveSlot(event)"
+                                ondrop="handleDropSlot(event, '${day}', ${p.id}, '${selectedStream}')">
+                                <div class="tt-slot-empty">Free Slot</div>
+                            </td>
+                        `;
+                    }
+                }).join('');
+
+                return `
+                    <tr>
+                        <td style="font-weight:800; background:#f8fafc; color:#0f172a; text-align:center; vertical-align:middle; width:120px;">
+                            ${day}
+                        </td>
+                        ${periodCells}
+                    </tr>
+                `;
+            }).join('');
+
+            $('#tblMatrixGridBody').html(rows);
+        }
+
+        // HTML5 DRAG & DROP HANDLERS (STAGE 6)
+        window.handleDragStartSlot = function(e, day, periodId, streamId, subjectCode, teacherId, teacherName) {
+            activeDragSlot = {
+                from_day: day,
+                from_period_id: periodId,
+                class_stream_id: streamId,
+                subject_code: subjectCode,
+                teacher_id: teacherId,
+                teacher_name: teacherName
+            };
+            e.dataTransfer.setData('text/plain', JSON.stringify(activeDragSlot));
+            e.dataTransfer.effectAllowed = 'move';
+        };
+
+        window.handleDragOverSlot = function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            $(e.currentTarget).css({'background': '#dcfce7', 'outline': '2px dashed #10b981'});
+        };
+
+        window.handleDragLeaveSlot = function(e) {
+            $(e.currentTarget).css({'background': '', 'outline': ''});
+        };
+
+        window.showWarningModal = function(title, message) {
+            let cleanMsg = message || 'An unexpected timetable action occurred. Please try again.';
+
+            // Sanitize raw technical database / developer terms into clear human language
+            if (cleanMsg.includes('SQLSTATE') || cleanMsg.includes('1265') || cleanMsg.includes('1062') || cleanMsg.includes('column') || cleanMsg.includes('Swap error')) {
+                if (cleanMsg.includes('unique_teacher_slot') || cleanMsg.includes('teacher')) {
+                    cleanMsg = 'Invalid Action: The selected teacher is already assigned to another classroom stream during this period slot.';
+                } else if (cleanMsg.includes('day_of_week') || cleanMsg.includes('1265') || cleanMsg.includes('truncated')) {
+                    cleanMsg = 'Invalid Action: The target day or period slot is invalid for this classroom schedule.';
+                } else {
+                    cleanMsg = 'Invalid Action: Unable to complete slot swap due to a timetable schedule conflict.';
+                }
+            }
+
+            $('#lblWarningModalTitle').text(title || 'Timetable Conflict Warning');
+            $('#lblWarningModalMessage').text(cleanMsg);
+            $('#modalWarningPopup').css('display', 'flex');
+        };
+
+        window.closeWarningModal = function() {
+            $('#modalWarningPopup').hide();
+        };
+
+        window.handleDropSlot = async function(e, toDay, toPeriodId, streamId) {
+            e.preventDefault();
+            $(e.currentTarget).css({'background': '', 'outline': ''});
+
+            if (!activeDragSlot) return;
+
+            const dragData = activeDragSlot;
+            activeDragSlot = null;
+
+            if (dragData.from_day === toDay && dragData.from_period_id === toPeriodId) {
+                return;
+            }
+
+            try {
+                const res = await fetch('/shule-cafe/api/timetable/timetable_config_api.php', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'swap_slot',
+                        from_day: dragData.from_day,
+                        from_period_id: dragData.from_period_id,
+                        to_day: toDay,
+                        to_period_id: toPeriodId,
+                        class_stream_id: streamId,
+                        teacher_id: dragData.teacher_id,
+                        subject_code: dragData.subject_code
+                    })
+                });
+
+                const data = await res.json();
+                if (!data.success) {
+                    showWarningModal('⚠️ Timetable Conflict Warning', data.message || 'Invalid Action: Teacher is already assigned during this period slot.');
+                    return;
+                }
+
+                loadTimetableMatrixData();
+
+            } catch (err) {
+                console.error("Drop swap error:", err);
+                showWarningModal('⚠️ Drag & Drop Error', 'Error processing drag-and-drop move.');
+            }
+        };
+
+        // STAGE 7.5: DOCUMENT EXPORTATION PIPELINE
+        window.exportTimetable = function(format) {
+            let url = '';
+            if (format === 'pdf') {
+                url = `/shule-cafe/api/export/export_timetable_pdf.php?year=${ACADEMIC_YEAR}`;
+            } else if (format === 'excel') {
+                url = `/shule-cafe/api/export/export_timetable_excel.php?year=${ACADEMIC_YEAR}`;
+            } else if (format === 'csv') {
+                url = `/shule-cafe/api/export/export_timetable_csv.php?year=${ACADEMIC_YEAR}`;
+            }
+            if (url) {
+                // Trigger download by opening the URL in a hidden iframe or blank tab
+                window.open(url, '_blank');
+            }
+        };
+
+        // STAGE 7: STAGED SAVE & PUBLICATION CONTROLS
+        window.saveTimetableAsDraft = async function() {
+            try {
+                const res = await fetch('/shule-cafe/api/timetable/timetable_config_api.php', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'save_draft' })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    $('#badgeTimetableStatus').css({'background': '#fef3c7', 'color': '#92400e'}).html('🟡 DRAFT LAYOUT (Unpublished)');
+                    showWarningModal('💾 Timetable Saved as Draft', 'Timetable layout saved as DRAFT. Changes are locked from teacher and student dashboards until published.');
+                } else {
+                    showWarningModal('⚠️ Draft Save Failed', data.message || 'Error saving draft layout.');
+                }
+            } catch (e) {
+                console.error("Save draft error:", e);
+                showWarningModal('⚠️ Network Error', 'Network or server error while saving draft.');
+            }
+        };
+
+        window.publishTimetableLive = async function() {
+            try {
+                const res = await fetch('/shule-cafe/api/timetable/timetable_config_api.php', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'publish_live' })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    $('#badgeTimetableStatus').css({'background': '#dcfce7', 'color': '#15803d'}).html('🟢 LIVE PUBLISHED (Active Shuleni)');
+                    showWarningModal('🚀 Timetable Published Live!', 'Official schedules are now live and active across all teacher and classroom portals shuleni.');
+                } else {
+                    showWarningModal('⚠️ Publication Failed', data.message || 'Error publishing live timetable.');
+                }
+            } catch (e) {
+                console.error("Publish live error:", e);
+                showWarningModal('⚠️ Network Error', 'Network or server error while publishing live.');
+            }
+        };
+
+        $(document).ready(function() {
+            checkTimetableStatus();
+        });
+    </script>
+</body>
+</html>

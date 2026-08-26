@@ -1,0 +1,18 @@
+# SHULE CAFE Apache Configuration
+DirectoryIndex index.php index.html
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Auto-strip trailing commas accidentally typed in browser URL (e.g. login.html,)
+    RewriteCond %{REQUEST_URI} ,+$
+    RewriteRule ^(.*),+$ /shule-cafe/$1 [R=301,L]
+</IfModule>
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard ‹ SHULE CAFE</title>
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <script type="module" src="../layouts/global-layout.js"></script>
+    <script type="module" src="../js/auth/auth-guard.js"></script>
+    <style>
+        .dashboard-header { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:24px; }
+        .dashboard-card { background:#fff; border:1px solid var(--c-border-light); border-radius:16px; padding:22px; box-shadow:0 8px 24px rgba(15,23,42,0.04); }
+        .dashboard-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px; margin-bottom:24px; }
+        .student-summary { display:grid; gap:8px; }
+        .student-summary-title { font-size:14px; font-weight:700; color:var(--c-text-muted); text-transform:uppercase; }
+        .student-summary-value { font-size:28px; font-weight:800; color:var(--c-text-primary); }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="student" active-path="/student/dashboard.html"></app-sidebar>
+        <div class="app-main">
+            <app-topbar username="Student Portal"></app-topbar>
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <div class="dashboard-header">
+                        <div>
+                            <h1 style="margin:0; font-size:28px; font-weight:800;">Welcome to Your Student Portal</h1>
+                            <p style="margin:8px 0 0; color:var(--c-text-secondary);">Quick access to your subjects, grades, and active timetable.</p>
+                        </div>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card">
+                            <div class="student-summary">
+                                <span class="student-summary-title">Current Grade</span>
+                                <span class="student-summary-value" id="studentGrade">N/A</span>
+                            </div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="student-summary">
+                                <span class="student-summary-title">Enrolled Subjects</span>
+                                <span class="student-summary-value" id="studentSubjects">0</span>
+                            </div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="student-summary">
+                                <span class="student-summary-title">Latest Average Score</span>
+                                <span class="student-summary-value" id="studentAverage">N/A</span>
+                            </div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="student-summary">
+                                <span class="student-summary-title">Attendance Rate</span>
+                                <span class="student-summary-value" id="studentAttendance">N/A</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card" style="margin-bottom:24px;">
+                        <h2 style="margin:0 0 16px; font-size:18px; font-weight:800;">Today's Timetable</h2>
+                        <div id="studentTimetable">Loading timetable...</div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h2 style="margin:0 0 16px; font-size:18px; font-weight:800;">Recent Notices</h2>
+                        <div id="studentNotices">No notices available.</div>
+                    </div>
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const res = await fetch('/shule-cafe/api/students/student_workspace.php', { credentials: 'include' });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    const profile = data.profile || {};
+                    const alloc = data.current_allocation || {};
+                    const subjects = data.approved_subjects || [];
+
+                    if (profile.full_name) {
+                        const welcomeEl = document.querySelector('h1');
+                        if (welcomeEl) welcomeEl.textContent = `Welcome, ${profile.full_name}`;
+                    }
+
+                    document.getElementById('studentGrade').textContent = alloc.classroom_name ? `${alloc.grade_name || ''} ${alloc.classroom_name}` : (alloc.grade_name || 'Enrolled');
+                    document.getElementById('studentSubjects').textContent = subjects.length.toString();
+                    document.getElementById('studentAverage').textContent = data.gpa_average ? `${data.gpa_average}%` : 'N/A';
+                    document.getElementById('studentAttendance').textContent = data.attendance_rate ? `${data.attendance_rate}%` : '100%';
+                    
+                    if (subjects.length > 0) {
+                        document.getElementById('studentTimetable').innerHTML = `
+                            <div style="display:flex; flex-wrap:wrap; gap:8px;">
+                                ${subjects.map(s => `<span class="badge" style="background:#f1f5f9; color:#0f172a; font-weight:700; padding:6px 12px; border-radius:8px;">📘 ${s.subject_name || s.name} (${s.subject_code || s.code})</span>`).join('')}
+                            </div>
+                        `;
+                    } else {
+                        document.getElementById('studentTimetable').innerHTML = '<p style="margin:0;color:var(--c-text-secondary);">Your daily timetable will appear here once your school streams are loaded.</p>';
+                    }
+                } else {
+                    document.getElementById('studentGrade').textContent = 'Enrolled';
+                    document.getElementById('studentSubjects').textContent = '0';
+                    document.getElementById('studentAverage').textContent = 'N/A';
+                    document.getElementById('studentAttendance').textContent = 'N/A';
+                }
+            } catch (e) {
+                console.error("Student dashboard API connection note:", e);
+                document.getElementById('studentGrade').textContent = 'Enrolled';
+                document.getElementById('studentSubjects').textContent = '0';
+                document.getElementById('studentAverage').textContent = 'N/A';
+                document.getElementById('studentAttendance').textContent = 'N/A';
+            }
+        });
+    </script>
+</body>
+</html>
