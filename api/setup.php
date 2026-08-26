@@ -15,14 +15,32 @@ try {
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS schools (
             id VARCHAR(36) PRIMARY KEY,
+            school_code VARCHAR(50) UNIQUE DEFAULT NULL,
             name VARCHAR(150) NOT NULL,
             type ENUM('Primary', 'Secondary', 'High School', 'College') DEFAULT 'Secondary',
+            necta_no VARCHAR(50) DEFAULT NULL,
+            ownership_type VARCHAR(50) DEFAULT 'Private',
+            gender_classification VARCHAR(50) DEFAULT 'Co-Education',
             region VARCHAR(100) DEFAULT NULL,
+            district VARCHAR(100) DEFAULT NULL,
+            ward_address VARCHAR(255) DEFAULT NULL,
+            school_email VARCHAR(150) DEFAULT NULL,
+            school_phone VARCHAR(50) DEFAULT NULL,
             status ENUM('active', 'suspended') DEFAULT 'active',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ");
+
+    // Alter migrations for existing schools table
+    try { $pdo->exec("ALTER TABLE schools ADD COLUMN school_code VARCHAR(50) UNIQUE DEFAULT NULL"); } catch (Exception $e) {}
+    try { $pdo->exec("ALTER TABLE schools ADD COLUMN necta_no VARCHAR(50) DEFAULT NULL"); } catch (Exception $e) {}
+    try { $pdo->exec("ALTER TABLE schools ADD COLUMN ownership_type VARCHAR(50) DEFAULT 'Private'"); } catch (Exception $e) {}
+    try { $pdo->exec("ALTER TABLE schools ADD COLUMN gender_classification VARCHAR(50) DEFAULT 'Co-Education'"); } catch (Exception $e) {}
+    try { $pdo->exec("ALTER TABLE schools ADD COLUMN district VARCHAR(100) DEFAULT NULL"); } catch (Exception $e) {}
+    try { $pdo->exec("ALTER TABLE schools ADD COLUMN ward_address VARCHAR(255) DEFAULT NULL"); } catch (Exception $e) {}
+    try { $pdo->exec("ALTER TABLE schools ADD COLUMN school_email VARCHAR(150) DEFAULT NULL"); } catch (Exception $e) {}
+    try { $pdo->exec("ALTER TABLE schools ADD COLUMN school_phone VARCHAR(50) DEFAULT NULL"); } catch (Exception $e) {}
 
     // 2. Create Classes
     $pdo->exec("
@@ -77,6 +95,18 @@ try {
             PRIMARY KEY (parent_id, student_id),
             FOREIGN KEY (parent_id) REFERENCES users(id) ON DELETE CASCADE,
             FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ");
+
+    // 6. Create School Education Levels table
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS school_education_levels (
+            school_id VARCHAR(36) NOT NULL,
+            level_code VARCHAR(20) NOT NULL,
+            status ENUM('active', 'inactive') DEFAULT 'active',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (school_id, level_code),
+            FOREIGN KEY (school_id) REFERENCES schools(id) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ");
 

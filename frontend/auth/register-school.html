@@ -32,14 +32,15 @@
                 radial-gradient(at 50% 50%, rgba(5, 150, 105, 0.1) 0px, transparent 50%);
             min-height: 100vh;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
-            padding: 24px 16px;
+            padding: 40px 24px;
             margin: 0;
             position: relative;
             overflow-x: hidden;
         }
 
+        /* Ambient Glows */
         .ambient-glow-1 {
             position: absolute;
             top: -120px;
@@ -63,47 +64,165 @@
             pointer-events: none;
         }
 
-        .wizard-card {
+        /* Wide 2-Column Split Desktop Layout Container */
+        .wide-wizard-container {
             width: 100%;
-            max-width: 640px;
-            padding: 40px 36px;
-            background: rgba(255, 255, 255, 0.96);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            max-width: 1040px;
+            background: #ffffff;
             border-radius: 28px;
-            border: 1px solid rgba(255, 255, 255, 0.8);
             box-shadow: 
-                0 25px 60px -15px rgba(15, 23, 42, 0.35),
-                0 0 0 1px rgba(16, 185, 129, 0.1);
+                0 25px 60px -15px rgba(15, 23, 42, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.2);
+            display: grid;
+            grid-template-columns: 330px 1fr;
+            overflow: hidden;
             position: relative;
             z-index: 10;
         }
 
+        /* Left Hero Sidebar */
+        .hero-sidebar {
+            background: linear-gradient(145deg, #064e3b 0%, #047857 50%, #0d9488 100%);
+            padding: 40px 28px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background: radial-gradient(circle at 80% 20%, rgba(255,255,255,0.15) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .brand-logo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
         .brand-logo-icon {
-            width: 52px;
-            height: 52px;
-            background: linear-gradient(135deg, #059669, #0d9488);
-            border-radius: 16px;
+            width: 46px;
+            height: 46px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            box-shadow: 0 10px 20px -5px rgba(5, 150, 105, 0.4);
-            margin: 0 auto 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        .brand-title {
+        .brand-logo-text {
             font-family: var(--font-heading);
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 800;
-            background: linear-gradient(135deg, #0f172a 30%, #059669 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin: 0 0 6px;
             letter-spacing: -0.5px;
+            color: white;
+            margin: 0;
         }
 
-        /* Stepper Progress Bar */
+        .hero-sidebar-title {
+            font-family: var(--font-heading);
+            font-size: 22px;
+            font-weight: 800;
+            line-height: 1.3;
+            margin: 0 0 20px;
+            color: #ffffff;
+        }
+
+        /* Animated Left Sidebar Progress Checklist */
+        .hero-checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin-bottom: 24px;
+            position: relative;
+            padding-left: 4px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.4;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .checklist-item.active {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .checklist-item.completed {
+            color: #f0fdf4;
+        }
+
+        @keyframes pulseGlow {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.6);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(255, 255, 255, 0);
+                transform: scale(1.06);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+                transform: scale(1);
+            }
+        }
+
+        .checklist-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            flex-shrink: 0;
+            color: white;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .checklist-item.active .checklist-icon {
+            background: #ffffff;
+            color: #047857;
+            font-weight: 800;
+            animation: pulseGlow 2s infinite ease-in-out;
+        }
+
+        .checklist-item.completed .checklist-icon {
+            background: #10b981;
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Right Content Panel */
+        .wizard-content {
+            padding: 36px 36px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* 3-Step Stepper Progress Bar */
         .stepper-wrapper {
             display: flex;
             align-items: center;
@@ -115,7 +234,7 @@
         .stepper-step {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             z-index: 2;
             background: white;
             padding: 4px 8px;
@@ -148,7 +267,7 @@
         }
 
         .step-label {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 700;
             color: #64748b;
             transition: color 0.3s ease;
@@ -186,7 +305,7 @@
 
         .form-control-custom {
             width: 100%;
-            height: 48px;
+            height: 46px;
             padding: 0 16px !important;
             font-size: 14px;
             font-family: var(--font-main);
@@ -267,6 +386,21 @@
         .step-view {
             transition: opacity 0.3s ease, transform 0.3s ease;
         }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 860px) {
+            .wide-wizard-container {
+                grid-template-columns: 1fr;
+                max-width: 560px;
+                border-radius: 24px;
+            }
+            .hero-sidebar {
+                padding: 32px 28px;
+            }
+            .wizard-content {
+                padding: 32px 28px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -274,141 +408,266 @@
     <div class="ambient-glow-1"></div>
     <div class="ambient-glow-2"></div>
 
-    <div class="wizard-card">
+    <div class="wide-wizard-container">
         
-        <!-- Header -->
-        <div style="text-align: center; margin-bottom: 24px;">
-            <div class="brand-logo-icon">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        <!-- Left Hero Sidebar -->
+        <div class="hero-sidebar">
+            <div>
+                <div class="brand-logo-badge">
+                    <div class="brand-logo-icon">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                    </div>
+                    <h1 class="brand-logo-text">SHULE CAFE</h1>
+                </div>
+
+                <h2 class="hero-sidebar-title">Self-Service School Onboarding</h2>
+
+                <div class="hero-checklist">
+                    <div id="checkStep1" class="checklist-item active">
+                        <div class="checklist-icon">1</div>
+                        <div><strong>School Identity &amp; Levels</strong><br><span style="font-size:11px; opacity:0.85;">NECTA Reg, Ownership &amp; Levels</span></div>
+                    </div>
+                    <div id="checkStep2" class="checklist-item">
+                        <div class="checklist-icon">2</div>
+                        <div><strong>Location &amp; Contacts</strong><br><span style="font-size:11px; opacity:0.85;">Region, District, Phone &amp; Email</span></div>
+                    </div>
+                    <div id="checkStep3" class="checklist-item">
+                        <div class="checklist-icon">3</div>
+                        <div><strong>School Account Access</strong><br><span style="font-size:11px; opacity:0.85;">Create primary owner login</span></div>
+                    </div>
+                </div>
             </div>
-            <h1 class="brand-title">SHULE CAFE</h1>
-            <p style="font-size: 14px; color: #64748b; margin: 0; font-weight: 500;">Register your school in 2 simple steps</p>
+
+            <div style="font-size: 11px; color: rgba(255,255,255,0.7); text-align: center; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 12px;">
+                Secure Enterprise Portal &copy; 2026
+            </div>
         </div>
 
-        <!-- Stepper Progress Bar -->
-        <div class="stepper-wrapper">
-            <div class="stepper-line">
-                <div id="stepperProgress" class="stepper-line-progress"></div>
+        <!-- Right Content Panel -->
+        <div class="wizard-content">
+            
+            <!-- 3-Step Stepper Progress Bar -->
+            <div class="stepper-wrapper">
+                <div class="stepper-line">
+                    <div id="stepperProgress" class="stepper-line-progress"></div>
+                </div>
+
+                <div id="step1Indicator" class="stepper-step active">
+                    <div class="step-number">1</div>
+                    <span class="step-label">Identity</span>
+                </div>
+
+                <div id="step2Indicator" class="stepper-step">
+                    <div class="step-number">2</div>
+                    <span class="step-label">Location</span>
+                </div>
+
+                <div id="step3Indicator" class="stepper-step">
+                    <div class="step-number">3</div>
+                    <span class="step-label">Credentials</span>
+                </div>
             </div>
 
-            <div id="step1Indicator" class="stepper-step active">
-                <div class="step-number">1</div>
-                <span class="step-label">School Details</span>
+            <!-- Alert Notice -->
+            <div id="alertBox" class="alert alert-danger" style="display: none; margin-bottom: 20px; border-radius: 12px;">
+                <span id="alertMessage">Error occurred.</span>
             </div>
 
-            <div id="step2Indicator" class="stepper-step">
-                <div class="step-number">2</div>
-                <span class="step-label">Admin &amp; Password</span>
-            </div>
-        </div>
+            <form id="registerForm">
+                <!-- 🤖 Anti-Bot Honeypot Trap Field -->
+                <input type="text" name="website_hp_check" id="website_hp_check" tabindex="-1" style="display:none !important;" autocomplete="off">
 
-        <!-- Alert Notice -->
-        <div id="alertBox" class="alert alert-danger" style="display: none; margin-bottom: 20px; border-radius: 12px;">
-            <span id="alertMessage">Error occurred.</span>
-        </div>
+                <!-- STEP 1: School Identity & Registration -->
+                <div id="step1View" class="step-view">
+                    <h3 style="margin: 0 0 16px; font-size: 16px; font-weight: 700; color: #059669; display: flex; align-items: center; gap: 8px;">
+                        <span>🏫</span> Step 1: School Identification &amp; Ownership
+                    </h3>
 
-        <form id="registerForm">
-            <!-- 🤖 Anti-Bot Honeypot Trap Field -->
-            <input type="text" name="website_hp_check" id="website_hp_check" tabindex="-1" style="display:none !important;" autocomplete="off">
-
-            <!-- PAGE 1 / STEP 1: School Information -->
-            <div id="step1View" class="step-view">
-                <h3 style="margin: 0 0 16px; font-size: 16px; font-weight: 700; color: #059669; display: flex; align-items: center; gap: 8px;">
-                    <span>🏫</span> Step 1: School Basic Information
-                </h3>
-
-                <div style="margin-bottom: 18px; text-align: left;">
-                    <label class="form-label-custom" for="school_name">School Name <span style="color:#ef4444;">*</span></label>
-                    <input type="text" id="school_name" class="form-control-custom" placeholder="e.g. Kibo Secondary School" required>
-                    <div id="nameCheckBadge" style="margin-top: 8px; font-size: 12px; font-weight: 600; display: none;"></div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px;">
-                    <div style="text-align: left;">
-                        <label class="form-label-custom" for="school_type">School Category <span style="color:#ef4444;">*</span></label>
-                        <select id="school_type" class="form-control-custom" required>
-                            <option value="Secondary" selected>Secondary School</option>
-                            <option value="Primary">Primary School</option>
-                            <option value="High School">High School</option>
-                            <option value="College">College / Technical</option>
-                        </select>
+                    <div style="margin-bottom: 16px; text-align: left;">
+                        <label class="form-label-custom" for="school_name">School Name <span style="color:#ef4444;">*</span></label>
+                        <input type="text" id="school_name" class="form-control-custom" placeholder="e.g. Kibo Secondary School" required>
+                        <div id="nameCheckBadge" style="margin-top: 6px; font-size: 12px; font-weight: 600; display: none;"></div>
                     </div>
 
-                    <div style="text-align: left;">
-                        <label class="form-label-custom" for="region">Region / Location <span style="color:#ef4444;">*</span></label>
-                        <input type="text" id="region" class="form-control-custom" placeholder="e.g. Dar es Salaam" required>
-                    </div>
-                </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+                        <div style="text-align: left;">
+                            <label class="form-label-custom" for="necta_no">NECTA / Ministry Reg Number</label>
+                            <input type="text" id="necta_no" class="form-control-custom" placeholder="e.g. S.0101 or REG/S.4820">
+                            <div id="nectaCheckBadge" style="margin-top: 6px; font-size: 12px; font-weight: 600; display: none;"></div>
+                        </div>
 
-                <button type="button" id="btnNextStep" class="btn-next" disabled>
-                    Next: Admin Credentials &rarr;
-                </button>
-            </div>
-
-            <!-- PAGE 2 / STEP 2: Administrator & Credentials -->
-            <div id="step2View" class="step-view" style="display: none;">
-                <h3 style="margin: 0 0 16px; font-size: 16px; font-weight: 700; color: #059669; display: flex; align-items: center; gap: 8px;">
-                    <span>👤</span> Step 2: Administrator Account &amp; Credentials
-                </h3>
-
-                <div style="margin-bottom: 16px; text-align: left;">
-                    <label class="form-label-custom" for="admin_name">Full Name of Person Registering School <span style="color:#ef4444;">*</span></label>
-                    <input type="text" id="admin_name" class="form-control-custom" placeholder="Enter full name" required>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
-                    <div style="text-align: left;">
-                        <label class="form-label-custom" for="admin_phone">Phone Number (Login Identifier) <span style="color:#ef4444;">*</span></label>
-                        <input type="text" id="admin_phone" class="form-control-custom" placeholder="e.g. +255700000000" required>
+                        <div style="text-align: left;">
+                            <label class="form-label-custom" for="ownership_type">School Ownership / Type <span style="color:#ef4444;">*</span></label>
+                            <select id="ownership_type" class="form-control-custom" required>
+                                <option value="Private" selected>Private (Non-Government)</option>
+                                <option value="Government">Government (Public)</option>
+                                <option value="Religious">Religious / Mission</option>
+                                <option value="NGO">NGO / Trust</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div style="text-align: left;">
-                        <label class="form-label-custom" for="admin_email">Email Address (Optional)</label>
-                        <input type="email" id="admin_email" class="form-control-custom" placeholder="e.g. admin@school.com">
-                    </div>
-                </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px;">
+                        <div style="text-align: left;">
+                            <label class="form-label-custom" for="school_type">School Level Category <span style="color:#ef4444;">*</span></label>
+                            <select id="school_type" class="form-control-custom" required>
+                                <option value="Secondary" selected>Secondary School</option>
+                                <option value="Primary">Primary School</option>
+                            </select>
+                        </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px;">
-                    <div style="text-align: left;">
-                        <label class="form-label-custom" for="password">Password <span style="color:#ef4444;">*</span></label>
-                        <input type="password" id="password" class="form-control-custom" placeholder="At least 6 characters" required>
+                        <div style="text-align: left;">
+                            <label class="form-label-custom" for="gender_classification">Gender Classification <span style="color:#ef4444;">*</span></label>
+                            <select id="gender_classification" class="form-control-custom" required>
+                                <option value="Co-Education" selected>Co-Education (Boys &amp; Girls)</option>
+                                <option value="Boys Only">Boys Only</option>
+                                <option value="Girls Only">Girls Only</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div style="text-align: left;">
-                        <label class="form-label-custom" for="confirm_password">Confirm Password <span style="color:#ef4444;">*</span></label>
-                        <input type="password" id="confirm_password" class="form-control-custom" placeholder="Re-enter password" required>
-                    </div>
-                </div>
+                    <!-- Dynamic Education Levels Selection -->
+                    <div style="margin-bottom: 24px; text-align: left; background: #f8fafc; padding: 16px; border-radius: 14px; border: 1.5px dashed #cbd5e1;">
+                        <label class="form-label-custom" style="margin-bottom: 10px; color: #059669; font-weight: 700; display: flex; align-items: center; gap: 6px;">
+                            <span>🎓</span> Registered Education Levels for this School <span style="color:#ef4444;">*</span>
+                        </label>
+                        
+                        <!-- Secondary Levels Container -->
+                        <div id="secondaryLevelsBox" style="display: flex; flex-direction: column; gap: 10px;">
+                            <label style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; color: #1e293b; cursor: pointer; background: white; padding: 10px 14px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                <input type="checkbox" class="level-cb" name="education_levels" value="O-LEVEL" style="width: 18px; height: 18px; accent-color: #059669;">
+                                <span>📘 <strong>Ordinary Level (O-Level)</strong> &mdash; Form 1 to Form 4</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; color: #1e293b; cursor: pointer; background: white; padding: 10px 14px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                <input type="checkbox" class="level-cb" name="education_levels" value="A-LEVEL" style="width: 18px; height: 18px; accent-color: #059669;">
+                                <span>📙 <strong>Advanced Level (A-Level)</strong> &mdash; Form 5 to Form 6</span>
+                            </label>
+                        </div>
 
-                <div style="display: flex; gap: 12px;">
-                    <button type="button" id="btnPrevStep" class="btn-back">
-                        &larr; Back
+                        <!-- Primary Levels Container -->
+                        <div id="primaryLevelsBox" style="display: none; flex-direction: column; gap: 10px;">
+                            <label style="display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 600; color: #1e293b; cursor: pointer; background: white; padding: 10px 14px; border-radius: 10px; border: 1px solid #e2e8f0;">
+                                <input type="checkbox" class="level-cb" name="education_levels" value="PRIM" style="width: 18px; height: 18px; accent-color: #059669;">
+                                <span>📗 <strong>Primary Level</strong> &mdash; Standard 1 to Standard 7</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="button" id="btnNext1" class="btn-next">
+                        Next: Location &amp; Contact &rarr;
                     </button>
-                    <button type="submit" id="submitBtn" class="btn-next" style="flex: 1;">
-                        Complete Registration &amp; Get ShuleCafe ID &rarr;
-                    </button>
                 </div>
+
+                <!-- STEP 2: Location & Official Contacts -->
+                <div id="step2View" class="step-view" style="display: none;">
+                    <h3 style="margin: 0 0 16px; font-size: 16px; font-weight: 700; color: #059669; display: flex; align-items: center; gap: 8px;">
+                        <span>📍</span> Step 2: Location &amp; Official School Contact
+                    </h3>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+                        <div style="text-align: left;">
+                            <label class="form-label-custom" for="region">Region <span style="color:#ef4444;">*</span></label>
+                            <input type="text" id="region" class="form-control-custom" placeholder="e.g. Dar es Salaam" required>
+                        </div>
+
+                        <div style="text-align: left;">
+                            <label class="form-label-custom" for="district">District / Council</label>
+                            <input type="text" id="district" class="form-control-custom" placeholder="e.g. Kinondoni">
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 16px; text-align: left;">
+                        <label class="form-label-custom" for="ward_address">Ward / Physical Address</label>
+                        <input type="text" id="ward_address" class="form-control-custom" placeholder="e.g. Kijitonyama, Plot 142">
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px;">
+                        <div style="text-align: left;">
+                            <label class="form-label-custom" for="school_phone">Official School Phone</label>
+                            <input type="text" id="school_phone" class="form-control-custom" placeholder="e.g. +255 784 000 000">
+                        </div>
+
+                        <div style="text-align: left;">
+                            <label class="form-label-custom" for="school_email">Official School Email</label>
+                            <input type="email" id="school_email" class="form-control-custom" placeholder="e.g. info@school.ac.tz">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px;">
+                        <button type="button" id="btnPrev1" class="btn-back">
+                            &larr; Back
+                        </button>
+                        <button type="button" id="btnNext2" class="btn-next" style="flex: 1;">
+                            Next: Credentials &rarr;
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Primary Account Credentials -->
+                <div id="step3View" class="step-view" style="display: none;">
+                    <h3 style="margin: 0 0 16px; font-size: 16px; font-weight: 700; color: #059669; display: flex; align-items: center; gap: 8px;">
+                        <span>👤</span> Step 3: Primary Account &amp; Security Credentials
+                    </h3>
+
+                    <div style="margin-bottom: 16px; text-align: left;">
+                        <label class="form-label-custom" for="admin_name">Full Name of School Owner / Registrar <span style="color:#ef4444;">*</span></label>
+                        <input type="text" id="admin_name" class="form-control-custom" placeholder="Enter full name" required>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+                        <div style="text-align: left;">
+                            <label class="form-label-custom" for="admin_phone">Personal Phone (Login ID) <span style="color:#ef4444;">*</span></label>
+                            <input type="text" id="admin_phone" class="form-control-custom" placeholder="e.g. +255700000000" required>
+                        </div>
+
+                        <div style="text-align: left;">
+                            <label class="form-label-custom" for="admin_email">Personal Email Address</label>
+                            <input type="email" id="admin_email" class="form-control-custom" placeholder="e.g. owner@school.com">
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px;">
+                        <div style="text-align: left;">
+                            <label class="form-label-custom" for="password">Password <span style="color:#ef4444;">*</span></label>
+                            <input type="password" id="password" class="form-control-custom" placeholder="At least 6 characters" required>
+                        </div>
+
+                        <div style="text-align: left;">
+                            <label class="form-label-custom" for="confirm_password">Confirm Password <span style="color:#ef4444;">*</span></label>
+                            <input type="password" id="confirm_password" class="form-control-custom" placeholder="Re-enter password" required>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px;">
+                        <button type="button" id="btnPrev2" class="btn-back">
+                            &larr; Back
+                        </button>
+                        <button type="submit" id="submitBtn" class="btn-next" style="flex: 1;">
+                            Complete Registration &amp; Get ShuleCafe ID &rarr;
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <div style="margin-top: 20px; text-align: center; font-size: 13px;">
+                <span style="color: #64748b;">Already registered your school?</span>
+                <a href="login.html" style="color: #059669; font-weight: 700; text-decoration: none; margin-left: 4px;">Sign In Here</a>
             </div>
-        </form>
 
-        <div style="margin-top: 20px; text-align: center; font-size: 13px;">
-            <span style="color: #64748b;">Already registered your school?</span>
-            <a href="login.html" style="color: #059669; font-weight: 700; text-decoration: none; margin-left: 4px;">Sign In Here</a>
-        </div>
-
-        <div class="footer-text">
-            SHULE CAFE Enterprise &copy; 2026 • All Rights Reserved
+            <div class="footer-text">
+                SHULE CAFE Enterprise &copy; 2026 • All Rights Reserved
+            </div>
         </div>
     </div>
 
-    <!-- Step 3 / Success Modal -->
+    <!-- Step 4 / Success Modal -->
     <div id="successModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); align-items: center; justify-content: center; z-index: 9999; padding: 16px;">
-        <div style="background: white; border-radius: 24px; max-width: 480px; width: 100%; padding: 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4); text-align: center;">
+        <div style="background: white; border-radius: 24px; max-width: 500px; width: 100%; padding: 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4); text-align: center;">
             <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #dcfce7, #a7f3d0); color: #166534; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 16px; box-shadow: 0 8px 16px -4px rgba(22, 101, 52, 0.2);">
                 🎉
             </div>
             <h2 style="margin: 0 0 8px; font-size: 22px; font-weight: 800; color: #0f172a;">School Registered Successfully!</h2>
-            <p style="margin: 0 0 20px; font-size: 14px; color: #64748b;">Your school and School Admin account have been created.</p>
+            <p style="margin: 0 0 20px; font-size: 14px; color: #64748b;">Your school identity and Primary Account Credentials have been created.</p>
             
             <div style="background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 16px; padding: 20px; margin-bottom: 24px; text-align: left;">
                 <div style="margin-bottom: 12px;">
@@ -420,7 +679,7 @@
                     <div id="resSchoolName" style="font-size: 15px; font-weight: 700; color: #1e293b;">-</div>
                 </div>
                 <div>
-                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px;">School Admin Account</span>
+                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px;">Primary Account Holder</span>
                     <div id="resAdminName" style="font-size: 15px; font-weight: 700; color: #1e293b;">-</div>
                 </div>
             </div>
@@ -437,54 +696,91 @@
             const schoolNameInput = document.getElementById('school_name');
             const regionInput = document.getElementById('region');
             const nameCheckBadge = document.getElementById('nameCheckBadge');
-            const btnNextStep = document.getElementById('btnNextStep');
-            const btnPrevStep = document.getElementById('btnPrevStep');
+
+            const btnNext1 = document.getElementById('btnNext1');
+            const btnPrev1 = document.getElementById('btnPrev1');
+            const btnNext2 = document.getElementById('btnNext2');
+            const btnPrev2 = document.getElementById('btnPrev2');
             const submitBtn = document.getElementById('submitBtn');
             const alertBox = document.getElementById('alertBox');
             const alertMessage = document.getElementById('alertMessage');
 
             const step1View = document.getElementById('step1View');
             const step2View = document.getElementById('step2View');
+            const step3View = document.getElementById('step3View');
+
             const step1Indicator = document.getElementById('step1Indicator');
             const step2Indicator = document.getElementById('step2Indicator');
+            const step3Indicator = document.getElementById('step3Indicator');
             const stepperProgress = document.getElementById('stepperProgress');
+
+            const checkStep1 = document.getElementById('checkStep1');
+            const checkStep2 = document.getElementById('checkStep2');
+            const checkStep3 = document.getElementById('checkStep3');
 
             let isNameAvailable = false;
             let checkTimeout = null;
 
-            function validateStep1() {
-                const name = schoolNameInput.value.trim();
-                const region = regionInput.value.trim();
-                if (name.length >= 2 && isNameAvailable && region.length >= 2) {
-                    btnNextStep.disabled = false;
-                } else {
-                    btnNextStep.disabled = true;
+            function updateLeftChecklist(currentStep) {
+                // Step 1
+                if (currentStep === 1) {
+                    checkStep1.className = 'checklist-item active';
+                    checkStep1.querySelector('.checklist-icon').textContent = '1';
+
+                    checkStep2.className = 'checklist-item';
+                    checkStep2.querySelector('.checklist-icon').textContent = '2';
+
+                    checkStep3.className = 'checklist-item';
+                    checkStep3.querySelector('.checklist-icon').textContent = '3';
+                } 
+                // Step 2
+                else if (currentStep === 2) {
+                    checkStep1.className = 'checklist-item completed';
+                    checkStep1.querySelector('.checklist-icon').textContent = '✓';
+
+                    checkStep2.className = 'checklist-item active';
+                    checkStep2.querySelector('.checklist-icon').textContent = '2';
+
+                    checkStep3.className = 'checklist-item';
+                    checkStep3.querySelector('.checklist-icon').textContent = '3';
+                } 
+                // Step 3
+                else if (currentStep === 3) {
+                    checkStep1.className = 'checklist-item completed';
+                    checkStep1.querySelector('.checklist-icon').textContent = '✓';
+
+                    checkStep2.className = 'checklist-item completed';
+                    checkStep2.querySelector('.checklist-icon').textContent = '✓';
+
+                    checkStep3.className = 'checklist-item active';
+                    checkStep3.querySelector('.checklist-icon').textContent = '3';
                 }
             }
 
-            // Real-time School Name Availability Check
-            schoolNameInput.addEventListener('input', () => {
+            const nectaNoInput = document.getElementById('necta_no');
+            const nectaCheckBadge = document.getElementById('nectaCheckBadge');
+
+            let isNameAvailable = true;
+            let isNectaAvailable = true;
+
+            async function checkDetailsRealtime() {
                 const name = schoolNameInput.value.trim();
-                nameCheckBadge.style.display = 'none';
-                isNameAvailable = false;
-                validateStep1();
+                const nectaNo = nectaNoInput ? nectaNoInput.value.trim() : '';
 
-                if (checkTimeout) clearTimeout(checkTimeout);
-
-                if (name.length < 2) {
+                if (name.length < 2 && nectaNo.length < 2) {
+                    if (nameCheckBadge) nameCheckBadge.style.display = 'none';
+                    if (nectaCheckBadge) nectaCheckBadge.style.display = 'none';
                     return;
                 }
 
-                nameCheckBadge.style.display = 'block';
-                nameCheckBadge.style.color = '#64748b';
-                nameCheckBadge.innerHTML = '🔍 Checking availability...';
+                try {
+                    const res = await fetch(`/shule-cafe/api/schools/check_name.php?name=${encodeURIComponent(name)}&necta_no=${encodeURIComponent(nectaNo)}`);
+                    const data = await res.json();
 
-                checkTimeout = setTimeout(async () => {
-                    try {
-                        const res = await fetch(`/shule-cafe/api/schools/check_name.php?name=${encodeURIComponent(name)}`);
-                        const data = await res.json();
-
-                        if (data.available) {
+                    // School Name status badge
+                    if (name.length >= 2) {
+                        nameCheckBadge.style.display = 'block';
+                        if (data.name_available) {
                             nameCheckBadge.style.color = '#15803d';
                             nameCheckBadge.innerHTML = '🟢 Available - You can register this school name';
                             isNameAvailable = true;
@@ -493,32 +789,114 @@
                             nameCheckBadge.innerHTML = '🔴 Already Taken - Please enter a unique school name';
                             isNameAvailable = false;
                         }
-                    } catch (e) {
+                    } else {
                         nameCheckBadge.style.display = 'none';
-                    } finally {
-                        validateStep1();
+                        isNameAvailable = true;
                     }
-                }, 300);
+
+                    // NECTA Registration Number status badge
+                    if (nectaNo.length >= 2 && nectaCheckBadge) {
+                        nectaCheckBadge.style.display = 'block';
+                        if (data.necta_available) {
+                            nectaCheckBadge.style.color = '#15803d';
+                            nectaCheckBadge.innerHTML = '🟢 Available';
+                            isNectaAvailable = true;
+                        } else {
+                            nectaCheckBadge.style.color = '#b91c1c';
+                            nectaCheckBadge.innerHTML = '🔴 Registered to another school';
+                            isNectaAvailable = false;
+                        }
+                    } else if (nectaCheckBadge) {
+                        nectaCheckBadge.style.display = 'none';
+                        isNectaAvailable = true;
+                    }
+                } catch (e) {
+                    console.error('Realtime check error', e);
+                }
+            }
+
+            // Fast listeners: 80ms debounce + immediate blur
+            schoolNameInput.addEventListener('input', () => {
+                if (checkTimeout) clearTimeout(checkTimeout);
+                checkTimeout = setTimeout(checkDetailsRealtime, 80);
             });
+            schoolNameInput.addEventListener('blur', checkDetailsRealtime);
 
-            regionInput.addEventListener('input', validateStep1);
+            if (nectaNoInput) {
+                nectaNoInput.addEventListener('input', () => {
+                    if (checkTimeout) clearTimeout(checkTimeout);
+                    checkTimeout = setTimeout(checkDetailsRealtime, 80);
+                });
+                nectaNoInput.addEventListener('blur', checkDetailsRealtime);
+            }
 
-            // Step Navigation: Step 1 -> Step 2
-            btnNextStep.addEventListener('click', () => {
-                if (btnNextStep.disabled) return;
+            // Navigation: Step 1 -> Step 2
+            btnNext1.addEventListener('click', async () => {
                 alertBox.style.display = 'none';
 
+                const schoolName = schoolNameInput.value.trim();
+                if (schoolName.length < 2) {
+                    alertMessage.textContent = 'Please enter your School Name.';
+                    alertBox.style.display = 'block';
+                    schoolNameInput.focus();
+                    return;
+                }
+
+                const checkedLevelEls = document.querySelectorAll('input[name="education_levels"]:checked');
+                if (checkedLevelEls.length === 0) {
+                    alertMessage.textContent = 'Please check at least one Registered Education Level for your school (e.g. O-Level or A-Level).';
+                    alertBox.style.display = 'block';
+                    return;
+                }
+
+                // Instant live verification on Next click
+                const origText = btnNext1.innerHTML;
+                btnNext1.disabled = true;
+                btnNext1.innerHTML = '⏳ Verifying availability...';
+
+                try {
+                    const nectaNo = nectaNoInput ? nectaNoInput.value.trim() : '';
+                    const res = await fetch(`/shule-cafe/api/schools/check_name.php?name=${encodeURIComponent(schoolName)}&necta_no=${encodeURIComponent(nectaNo)}`);
+                    const data = await res.json();
+
+                    if (data.name_available === false) {
+                        alertMessage.textContent = 'The school name "' + schoolName + '" is already registered to another school.';
+                        alertBox.style.display = 'block';
+                        schoolNameInput.focus();
+                        btnNext1.disabled = false;
+                        btnNext1.innerHTML = origText;
+                        return;
+                    }
+
+                    if (nectaNo.length >= 2 && data.necta_available === false) {
+                        alertMessage.textContent = 'The NECTA Registration Number "' + nectaNo + '" is already registered to another school.';
+                        alertBox.style.display = 'block';
+                        nectaNoInput.focus();
+                        btnNext1.disabled = false;
+                        btnNext1.innerHTML = origText;
+                        return;
+                    }
+                } catch (e) {
+                    console.error("Live check error", e);
+                } finally {
+                    btnNext1.disabled = false;
+                    btnNext1.innerHTML = origText;
+                }
+
+                // Proceed to Step 2
                 step1View.style.display = 'none';
                 step2View.style.display = 'block';
 
                 step1Indicator.classList.remove('active');
                 step1Indicator.classList.add('completed');
                 step2Indicator.classList.add('active');
-                stepperProgress.style.width = '100%';
+                stepperProgress.style.width = '50%';
+
+                updateLeftChecklist(2);
             });
 
-            // Step Navigation: Step 2 -> Step 1
-            btnPrevStep.addEventListener('click', () => {
+            // Navigation: Step 2 -> Step 1
+            btnPrev1.addEventListener('click', () => {
                 alertBox.style.display = 'none';
 
                 step2View.style.display = 'none';
@@ -528,6 +906,60 @@
                 step1Indicator.classList.remove('completed');
                 step1Indicator.classList.add('active');
                 stepperProgress.style.width = '0%';
+
+                updateLeftChecklist(1);
+            });
+
+            // Navigation: Step 2 -> Step 3
+            btnNext2.addEventListener('click', () => {
+                const region = regionInput.value.trim();
+                if (region.length < 2) {
+                    alertMessage.textContent = 'Please enter your Region.';
+                    alertBox.style.display = 'block';
+                    regionInput.focus();
+                    return;
+                }
+                alertBox.style.display = 'none';
+
+                step2View.style.display = 'none';
+                step3View.style.display = 'block';
+
+                step2Indicator.classList.remove('active');
+                step2Indicator.classList.add('completed');
+                step3Indicator.classList.add('active');
+                stepperProgress.style.width = '100%';
+
+                updateLeftChecklist(3);
+            });
+
+            // Navigation: Step 3 -> Step 2
+            btnPrev2.addEventListener('click', () => {
+                alertBox.style.display = 'none';
+
+                step3View.style.display = 'none';
+                step2View.style.display = 'block';
+
+                step3Indicator.classList.remove('active');
+                step2Indicator.classList.remove('completed');
+                step2Indicator.classList.add('active');
+                stepperProgress.style.width = '50%';
+
+                updateLeftChecklist(2);
+            });
+
+            const schoolTypeSelect = document.getElementById('school_type');
+            const secondaryLevelsBox = document.getElementById('secondaryLevelsBox');
+            const primaryLevelsBox = document.getElementById('primaryLevelsBox');
+
+            // Dynamic toggle for Primary vs Secondary Education Levels
+            schoolTypeSelect.addEventListener('change', () => {
+                if (schoolTypeSelect.value === 'Primary') {
+                    secondaryLevelsBox.style.display = 'none';
+                    primaryLevelsBox.style.display = 'flex';
+                } else {
+                    secondaryLevelsBox.style.display = 'flex';
+                    primaryLevelsBox.style.display = 'none';
+                }
             });
 
             // Final Submission
@@ -535,8 +967,27 @@
                 e.preventDefault();
 
                 const schoolName = schoolNameInput.value.trim();
+                const nectaNo = document.getElementById('necta_no').value.trim();
+                const ownershipType = document.getElementById('ownership_type').value;
                 const schoolType = document.getElementById('school_type').value;
+                const gender = document.getElementById('gender_classification').value;
+
+                // Collect checked education levels
+                const checkedLevelEls = document.querySelectorAll('input[name="education_levels"]:checked');
+                const selectedEducationLevels = Array.from(checkedLevelEls).map(el => el.value);
+
+                if (selectedEducationLevels.length === 0) {
+                    alertMessage.textContent = 'Please select at least one Education Level for your school.';
+                    alertBox.style.display = 'block';
+                    return;
+                }
+
                 const region = regionInput.value.trim();
+                const district = document.getElementById('district').value.trim();
+                const wardAddr = document.getElementById('ward_address').value.trim();
+                const schoolPhone = document.getElementById('school_phone').value.trim();
+                const schoolEmail = document.getElementById('school_email').value.trim();
+
                 const adminName = document.getElementById('admin_name').value.trim();
                 const adminPhone = document.getElementById('admin_phone').value.trim();
                 const adminEmail = document.getElementById('admin_email').value.trim();
@@ -566,8 +1017,16 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             school_name: schoolName,
+                            necta_no: nectaNo,
+                            ownership_type: ownershipType,
                             school_type: schoolType,
+                            gender_classification: gender,
+                            education_levels: selectedEducationLevels,
                             region: region,
+                            district: district,
+                            ward_address: wardAddr,
+                            school_phone: schoolPhone,
+                            school_email: schoolEmail,
                             admin_name: adminName,
                             admin_phone: adminPhone,
                             admin_email: adminEmail,
