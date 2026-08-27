@@ -140,8 +140,10 @@ try {
 
     // Insert Super Admin
     $phone = '+255700000000';
-    $stmt = $pdo->prepare("SELECT id FROM users WHERE phone = ?");
-    $stmt->execute([$phone]);
+    $email = 'admin@shulecafe.com';
+    $userCode = 'S/CAFE-ADMIN-0001';
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE phone = ? OR email = ? OR user_code = ?");
+    $stmt->execute([$phone, $email, $userCode]);
     
     if (!$stmt->fetch()) {
         $id = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
@@ -153,9 +155,9 @@ try {
         );
         $hash = password_hash('ShuleAdmin@2026', PASSWORD_BCRYPT);
         
-        $insert = $pdo->prepare("INSERT INTO users (id, full_name, phone, password_hash, role) VALUES (?, ?, ?, ?, 'super_admin')");
-        $insert->execute([$id, 'System Administrator', $phone, $hash]);
-        echo "Super Admin created successfully.\n";
+        $insert = $pdo->prepare("INSERT INTO users (id, user_code, full_name, email, phone, password_hash, role, is_password_changed, first_login_completed) VALUES (?, ?, ?, ?, ?, ?, 'super_admin', 1, 1)");
+        $insert->execute([$id, $userCode, 'System Administrator', $email, $phone, $hash]);
+        echo "Super Admin created successfully (Email: admin@shulecafe.com | ID: S/CAFE-ADMIN-0001 | Pass: ShuleAdmin@2026).\n";
     } else {
         echo "Database setup completed. Super Admin exists.\n";
     }
