@@ -618,9 +618,6 @@
                         renderClassesSection('lvlClassesContainer', classes);
                         renderSubjectsSection('lvlSubjectsContainer', subjects);
                         renderTermsSection('lvlTermsContainer', terms);
-
-                        // Populate Calculator Inputs
-                        populateCalculatorInputs(subjects);
                     } else {
                         renderClassesSection('lvlClassesContainer', []);
                         renderSubjectsSection('lvlSubjectsContainer', []);
@@ -651,17 +648,24 @@
                     const countSbj = assignedList.length;
 
                     const sbjBadge = countSbj > 0
-                        ? `<span style="background:#ecfdf5;color:#065f46;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:4px;">📘 ${countSbj} Subjects Assigned</span>`
-                        : `<span style="background:#fef2f2;color:#991b1b;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:4px;">⚠️ 0 Subjects Assigned</span>`;
+                        ? `<span style="background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;padding:4px 14px;border-radius:9999px;font-size:12px;font-weight:800;display:inline-flex;align-items:center;gap:6px;box-shadow:0 1px 2px rgba(16,185,129,0.08);"><span style="width:6px;height:6px;border-radius:50%;background:#10b981;"></span>📘 ${countSbj} Subjects Configured</span>`
+                        : `<span style="background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;padding:4px 14px;border-radius:9999px;font-size:12px;font-weight:800;display:inline-flex;align-items:center;gap:6px;"><span style="width:6px;height:6px;border-radius:50%;background:#ef4444;"></span>⚠️ 0 Subjects Configured</span>`;
 
                     rowsHtml += `
                         <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='white';">
-                            <td style="padding: 16px; font-weight: 800; font-size: 15px; color: #1e293b;">${c.name}</td>
-                            <td style="padding: 16px;"><span class="badge" style="background:${activeColor.badgeBg};color:${activeColor.badgeColor};font-weight:800;font-size:12px;padding:4px 10px;border-radius:6px;">${c.code || 'N/A'}</span></td>
+                            <td style="padding: 16px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 16px;">🎓</span>
+                                    <strong style="font-size: 15px; font-weight: 800; color: #0f172a;">${c.name}</strong>
+                                </div>
+                            </td>
+                            <td style="padding: 16px;">
+                                <span style="font-family: monospace; font-weight: 700; font-size: 13px; color: ${activeColor.badgeColor}; background: ${activeColor.badgeBg}; padding: 4px 10px; border-radius: 6px; border: 1px solid ${activeColor.headerBorder};">${c.code || 'N/A'}</span>
+                            </td>
                             <td style="padding: 16px;">${sbjBadge}</td>
-                            <td style="padding: 16px; font-size: 13px; color: #64748b;">${c.description || '-'}</td>
+                            <td style="padding: 16px; font-size: 13px; color: #475569;">${c.description || '-'}</td>
                             <td style="padding: 16px; text-align: right;">
-                                <button class="btn btn-sm" style="font-weight:700;background:var(--c-primary);color:white;padding:6px 14px;border-radius:6px;" onclick="window.location.href='grade-workspace.html?class_id=${c.id}&code=${encodeURIComponent(levelCode)}'">Open Grade Workspace →</button>
+                                <button class="btn btn-primary btn-sm" style="font-weight: 700; padding: 6px 16px; border-radius: 8px;" onclick="window.location.href='grade-workspace.html?class_id=${c.id}&code=${encodeURIComponent(levelCode)}'">Open Grade Workspace →</button>
                             </td>
                         </tr>
                     `;
@@ -698,10 +702,21 @@
                 list.forEach(s => {
                     rowsHtml += `
                         <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='white';">
-                            <td style="padding: 14px 16px; font-weight: 700; font-size: 14px; color: #1e293b;">${s.name}</td>
-                            <td style="padding: 14px 16px;"><span class="badge" style="background:#e0e7ff;color:#3730a3;font-weight:800;font-size:12px;padding:4px 8px;border-radius:6px;">${s.code || 'N/A'}</span></td>
-                            <td style="padding: 14px 16px; font-size: 13px; color: #64748b;">${s.description || '-'}</td>
-                            <td style="padding: 14px 16px; text-align: center;"><span class="badge" style="background:#dcfce7;color:#15803d;font-weight:700;font-size:12px;padding:4px 8px;border-radius:6px;">Active</span></td>
+                            <td style="padding: 14px 16px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 15px;">📖</span>
+                                    <strong style="font-size: 14px; font-weight: 800; color: #0f172a;">${s.name}</strong>
+                                </div>
+                            </td>
+                            <td style="padding: 14px 16px;">
+                                <span style="font-family: monospace; font-weight: 800; font-size: 13px; color: #1d4ed8; background: #eff6ff; border: 1px solid #bfdbfe; padding: 4px 10px; border-radius: 6px;">${s.code || 'N/A'}</span>
+                            </td>
+                            <td style="padding: 14px 16px; font-size: 13px; color: #475569;">${s.description || '-'}</td>
+                            <td style="padding: 14px 16px; text-align: center;">
+                                <span style="display: inline-flex; align-items: center; gap: 6px; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-weight: 800; font-size: 12px; padding: 4px 12px; border-radius: 9999px;">
+                                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></span>Active
+                                </span>
+                            </td>
                         </tr>
                     `;
                 });
