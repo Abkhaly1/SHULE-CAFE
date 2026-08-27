@@ -13,22 +13,25 @@
     <script type="module" src="../../js/auth/auth-guard.js"></script>
 
     <style>
-        /* Step Container: clean & compact */
+        .app-content {
+            padding: 8px 16px !important;
+        }
+
         .step-container-box {
             background: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 24px 28px;
-            margin-bottom: 24px;
-            max-width: 760px; /* Not too wide */
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-top: 6px;
+            margin-bottom: 12px;
+            max-width: 680px;
         }
 
-        /* 2-Column Simple Listing */
         .compact-list-2col {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            column-gap: 32px;
-            row-gap: 10px;
+            column-gap: 24px;
+            row-gap: 8px;
         }
 
         @media (max-width: 640px) {
@@ -40,10 +43,10 @@
         .compact-list-item {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 14.5px;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 13.5px;
             font-weight: 700;
             color: #0284c7;
             text-decoration: none;
@@ -55,11 +58,11 @@
         .compact-list-item:hover {
             color: #0369a1;
             background: #f0f9ff;
-            transform: translateX(3px);
+            transform: translateX(2px);
         }
 
         .compact-list-item .bullet {
-            font-size: 17px;
+            font-size: 15px;
             font-weight: 900;
             color: #0284c7;
             line-height: 1;
@@ -68,9 +71,9 @@
         .sub-stream-link {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 3px 8px;
-            font-size: 12.5px;
+            gap: 4px;
+            padding: 2px 6px;
+            font-size: 12px;
             font-weight: 600;
             color: #64748b;
             text-decoration: none;
@@ -86,12 +89,12 @@
         }
 
         .step-heading {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 800;
             color: #0f172a;
             letter-spacing: 0.02em;
             text-transform: uppercase;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 6px;
@@ -100,15 +103,15 @@
         .term-pill-bar {
             display: inline-flex;
             background: #f1f5f9;
-            padding: 3px;
-            border-radius: 8px;
-            gap: 4px;
+            padding: 2px;
+            border-radius: 6px;
+            gap: 2px;
         }
 
         .term-pill-btn {
-            padding: 4px 14px;
-            border-radius: 6px;
-            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 11.5px;
             font-weight: 700;
             border: none;
             background: transparent;
@@ -120,28 +123,55 @@
         .term-pill-btn.active {
             background: #064e3b;
             color: #ffffff;
-            box-shadow: 0 1px 3px rgba(6, 78, 59, 0.2);
+            box-shadow: 0 1px 2px rgba(6, 78, 59, 0.2);
+        }
+
+        .workspace-ribbon-bar {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 6px 12px;
+            margin-top: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         /* Broadsheet Table Styling */
+        .broadsheet-table-box {
+            border: 1.5px solid #cbd5e1;
+            border-radius: 6px;
+            overflow-x: auto;
+            background: #ffffff;
+            margin-bottom: 12px;
+            max-height: calc(100vh - 280px);
+        }
+
         .broadsheet-table {
             width: 100%;
-            border-collapse: collapse;
-            font-size: 12.5px;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 12px;
         }
 
         .broadsheet-table th {
             background: #064e3b;
             color: white;
             font-weight: 700;
-            padding: 9px 8px;
-            border: 1px solid rgba(255,255,255,0.15);
+            padding: 6px 4px;
+            border-right: 1px solid rgba(255,255,255,0.15);
             text-align: center;
             white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         .broadsheet-table td {
-            padding: 8px 10px;
+            padding: 4px 6px;
             border-bottom: 1px solid #e2e8f0;
             border-right: 1px solid #f1f5f9;
             vertical-align: middle;
@@ -150,7 +180,7 @@
         }
 
         .broadsheet-table tr:hover td {
-            background: #f8fafc;
+            background: #f0fdf4;
         }
 
         /* Summary Matrix Table */
@@ -158,19 +188,19 @@
             width: 100%;
             border-collapse: collapse;
             text-align: center;
-            font-size: 12.5px;
+            font-size: 12px;
         }
 
         .summary-matrix-table th {
             background: #064e3b;
             color: white;
-            padding: 8px;
+            padding: 4px 6px;
             font-weight: 700;
             border: 1px solid rgba(255,255,255,0.2);
         }
 
         .summary-matrix-table td {
-            padding: 9px;
+            padding: 4px 6px;
             border: 1px solid #e2e8f0;
             font-weight: 700;
         }
@@ -179,20 +209,20 @@
         .subj-summary-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 12.5px;
+            font-size: 12px;
         }
 
         .subj-summary-table th {
             background: #0f172a;
             color: white;
-            padding: 8px;
+            padding: 5px 6px;
             font-weight: 700;
             border: 1px solid rgba(255,255,255,0.15);
             text-align: center;
         }
 
         .subj-summary-table td {
-            padding: 8px 10px;
+            padding: 4px 6px;
             border: 1px solid #e2e8f0;
             text-align: center;
         }
@@ -226,32 +256,27 @@
             
             <main class="app-content-wrapper">
                 <div class="app-content">
-                    <app-breadcrumb id="resultsBreadcrumb" path="Headmaster, Examinations, Results Records"></app-breadcrumb>
+                    <app-breadcrumb id="resultsBreadcrumb" path="Headmaster, Examinations, Results Records" style="margin-bottom: 2px;"></app-breadcrumb>
 
-                    <!-- Top Subheader Bar -->
-                    <div class="card no-print" style="margin-top: 14px; margin-bottom: 16px; padding: 14px 20px; background: white; border-radius: 10px; border: 1px solid var(--c-primary-border);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                            <div style="display: flex; align-items: center; gap: 14px;">
-                                <button id="btnDynamicBack" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700;">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                                    <span id="btnBackLabel">Back to Exams</span>
-                                </button>
-                                <div>
-                                    <h1 id="pageHeading" style="margin: 0; font-size: 18px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 6px;">
-                                        <span>📊 Results Records & Broadsheets</span>
-                                    </h1>
-                                </div>
-                            </div>
+                    <!-- COMPACT CONTROL RIBBON -->
+                    <div class="workspace-ribbon-bar no-print">
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <button id="btnDynamicBack" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700; height: 26px; padding: 2px 8px; font-size: 11.5px;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                                <span id="btnBackLabel">Back to Exams</span>
+                            </button>
+                            <h1 id="pageHeading" style="margin: 0; font-size: 14.5px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 6px;">
+                                <span>📊 Results Records & Broadsheets</span>
+                            </h1>
+                        </div>
 
-                            <!-- Right Controls: Action Buttons for Broadsheet View -->
-                            <div id="broadsheetActionButtons" style="display: none; align-items: center; gap: 8px;">
-                                <button id="btnPrintBroadsheet" class="btn btn-outline btn-sm" style="font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-                                    <span>🖨️</span> Print Broadsheet
-                                </button>
-                                <button id="btnExportCSV" class="btn btn-outline btn-sm" style="font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-                                    <span>📥</span> Export CSV
-                                </button>
-                            </div>
+                        <div id="broadsheetActionButtons" style="display: none; align-items: center; gap: 6px;">
+                            <button id="btnPrintBroadsheet" class="btn btn-outline btn-sm" style="font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 26px; font-size: 11.5px; padding: 2px 8px;">
+                                <span>🖨️</span> Print
+                            </button>
+                            <button id="btnExportCSV" class="btn btn-outline btn-sm" style="font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 26px; font-size: 11.5px; padding: 2px 8px;">
+                                <span>📥</span> CSV
+                            </button>
                         </div>
                     </div>
 
@@ -265,14 +290,14 @@
                         </div>
 
                         <!-- 10 Years Pagination -->
-                        <div id="yearsPaginationBar" style="display: none; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid #e2e8f0; margin-top: 18px; flex-wrap: wrap; gap: 8px;">
-                            <button id="btnPrevYears" class="btn btn-outline btn-sm" style="font-size: 11.5px; font-weight: 700; padding: 3px 10px;">
+                        <div id="yearsPaginationBar" style="display: none; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid #e2e8f0; margin-top: 12px; flex-wrap: wrap; gap: 6px;">
+                            <button id="btnPrevYears" class="btn btn-outline btn-sm" style="font-size: 11px; font-weight: 700; padding: 2px 8px; height: 24px;">
                                 ← Newer Years
                             </button>
-                            <span id="yearsPaginationInfo" style="font-size: 12px; font-weight: 700; color: #64748b;">
+                            <span id="yearsPaginationInfo" style="font-size: 11.5px; font-weight: 700; color: #64748b;">
                                 Page 1
                             </span>
-                            <button id="btnNextYears" class="btn btn-outline btn-sm" style="font-size: 11.5px; font-weight: 700; padding: 3px 10px;">
+                            <button id="btnNextYears" class="btn btn-outline btn-sm" style="font-size: 11px; font-weight: 700; padding: 2px 8px; height: 24px;">
                                 Older Years →
                             </button>
                         </div>
@@ -280,7 +305,7 @@
 
                     <!-- STEP 2: SELECT EDUCATION LEVEL (Clean 2 Columns) -->
                     <div id="stepLevelsView" class="step-container-box" style="display: none;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
                             <div class="step-heading" style="margin-bottom: 0;">
                                 <span>🏛️ Education Levels &bull; <strong id="step2YearBadge" style="color: #059669;">2026</strong></span>
                             </div>
@@ -304,26 +329,27 @@
                         </div>
                     </div>
 
-                    <!-- STEP 4: BROADSHEET WORKSPACE VIEW -->
+                    <!-- STEP 4: BROADSHEET WORKSPACE VIEW (High Density) -->
                     <div id="stepWorkspaceView" style="display: none;">
-                        <div class="card" style="padding: 18px 22px; background: white; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 24px;">
-                            
-                            <!-- National Examination Board Style Division Summary Matrix -->
-                            <div style="margin-bottom: 16px; padding: 0; overflow-x: auto; border: 1.5px solid #cbd5e1; border-radius: 8px; background: white;">
+                        
+                        <!-- Slim Top Bar: Division Summary Matrix & Badge -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 6px;">
+                            <!-- National Examination Board Division Matrix -->
+                            <div style="overflow-x: auto; border: 1.5px solid #cbd5e1; border-radius: 4px; background: white;">
                                 <table class="summary-matrix-table">
                                     <thead>
                                         <tr>
-                                            <th style="min-width: 60px;">I</th>
-                                            <th style="min-width: 60px;">II</th>
-                                            <th style="min-width: 60px;">III</th>
-                                            <th style="min-width: 60px;">IV</th>
-                                            <th style="min-width: 60px;">0</th>
-                                            <th style="min-width: 80px; background: #043d2e;">Total</th>
-                                            <th style="min-width: 90px; background: #043d2e;">Pass Rate</th>
+                                            <th style="min-width: 45px;">I</th>
+                                            <th style="min-width: 45px;">II</th>
+                                            <th style="min-width: 45px;">III</th>
+                                            <th style="min-width: 45px;">IV</th>
+                                            <th style="min-width: 45px;">0</th>
+                                            <th style="min-width: 60px; background: #043d2e;">Total</th>
+                                            <th style="min-width: 70px; background: #043d2e;">Pass %</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr style="font-size: 15px; font-weight: 800; color: #0f172a;">
+                                        <tr style="font-size: 13px; font-weight: 800; color: #0f172a;">
                                             <td id="topSumDiv1" style="color: #15803d; background: #f0fdf4;">0</td>
                                             <td id="topSumDiv2" style="color: #1d4ed8; background: #eff6ff;">0</td>
                                             <td id="topSumDiv3" style="color: #b45309; background: #fffbeb;">0</td>
@@ -336,59 +362,52 @@
                                 </table>
                             </div>
 
-                            <!-- Class & Framework Header -->
-                            <div style="padding: 12px 18px; margin-bottom: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                                <div>
-                                    <strong id="broadsheetHeaderTitle" style="font-size: 15px; color: #064e3b;">Classroom Broadsheet</strong>
-                                    <div id="broadsheetHeaderSub" style="font-size: 11.5px; color: #64748b; margin-top: 1px;">Adaptive Division Grading Framework</div>
-                                </div>
-                                <div id="bestSubjectBadge" class="badge" style="background: white; color: #065f46; border: 1.5px solid #059669; padding: 4px 10px; font-size: 11.5px; font-weight: 800;">
-                                    🏆 Best Subject: Loading...
-                                </div>
+                            <div id="bestSubjectBadge" class="badge" style="background: white; color: #065f46; border: 1.5px solid #059669; padding: 3px 8px; font-size: 11px; font-weight: 800;">
+                                🏆 Best Subject: Loading...
                             </div>
+                        </div>
 
-                            <!-- Student Results Master Table Card -->
-                            <div style="padding: 0; overflow-x: auto; border-radius: 8px; background: white; margin-bottom: 24px; border: 1.5px solid #cbd5e1;">
-                                <table id="broadsheetTable" class="broadsheet-table">
-                                    <thead id="broadsheetThead">
-                                        <!-- Dynamic Columns -->
+                        <!-- Student Results Master Table Box -->
+                        <div class="broadsheet-table-box">
+                            <table id="broadsheetTable" class="broadsheet-table">
+                                <thead id="broadsheetThead">
+                                    <!-- Dynamic Columns -->
+                                </thead>
+                                <tbody id="broadsheetTbody">
+                                    <!-- Dynamic Student Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Subject Examinations Summary Matrix -->
+                        <div style="padding: 10px 14px; border-radius: 6px; background: white; border: 1.5px solid #cbd5e1; margin-bottom: 14px;">
+                            <h3 style="margin: 0 0 8px; font-size: 12px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.02em;">
+                                📋 Subject Examinations Summary
+                            </h3>
+                            <div style="overflow-x: auto;">
+                                <table class="subj-summary-table" id="subjSummaryTable">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 35px;">S/N</th>
+                                            <th style="width: 60px;">Code</th>
+                                            <th style="text-align: left; min-width: 140px;">Subject Name</th>
+                                            <th style="width: 50px;">REG</th>
+                                            <th style="width: 50px;">SAT</th>
+                                            <th style="width: 40px; background: #15803d;">A</th>
+                                            <th style="width: 40px; background: #1d4ed8;">B</th>
+                                            <th style="width: 40px; background: #b45309;">C</th>
+                                            <th style="width: 40px; background: #c2410c;">D</th>
+                                            <th style="width: 40px; background: #dc2626;">F</th>
+                                            <th style="width: 65px; background: #064e3b;">Pass %</th>
+                                        </tr>
                                     </thead>
-                                    <tbody id="broadsheetTbody">
-                                        <!-- Dynamic Student Rows -->
+                                    <tbody id="subjSummaryTbody">
+                                        <!-- Dynamic Subject Summary Rows -->
                                     </tbody>
                                 </table>
                             </div>
-
-                            <!-- Subject Examinations Summary Matrix -->
-                            <div style="padding: 16px 20px; border-radius: 8px; background: white; margin-bottom: 20px; border: 1.5px solid #cbd5e1;">
-                                <h3 style="margin: 0 0 12px; font-size: 14px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.03em; display: flex; align-items: center; gap: 6px;">
-                                    <span>📋 Subject Examinations Summary</span>
-                                </h3>
-                                <div style="overflow-x: auto;">
-                                    <table class="subj-summary-table" id="subjSummaryTable">
-                                        <thead>
-                                            <tr>
-                                                <th style="width: 45px;">S/N</th>
-                                                <th style="width: 70px;">Code</th>
-                                                <th style="text-align: left; min-width: 150px;">Subject Name</th>
-                                                <th style="width: 60px;">REG</th>
-                                                <th style="width: 60px;">SAT</th>
-                                                <th style="width: 50px; background: #15803d;">A</th>
-                                                <th style="width: 50px; background: #1d4ed8;">B</th>
-                                                <th style="width: 50px; background: #b45309;">C</th>
-                                                <th style="width: 50px; background: #c2410c;">D</th>
-                                                <th style="width: 50px; background: #dc2626;">F</th>
-                                                <th style="width: 80px; background: #064e3b;">Pass %</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="subjSummaryTbody">
-                                            <!-- Dynamic Subject Summary Rows -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
                         </div>
+
                     </div>
 
                 </div>
@@ -508,7 +527,6 @@
             }
         }
 
-        // STEP 1: RENDER YEARS (Simple 2 Columns)
         function renderYearsStep() {
             if (!currentScopes) return;
             const container = document.getElementById('yearsGridContainer');
@@ -544,7 +562,6 @@
             }
         }
 
-        // STEP 2: RENDER ALL EDUCATION LEVELS (Simple 2 Columns)
         function setTermSelection(term) {
             selectedTerm = term;
             document.querySelectorAll('.term-pill-btn').forEach(btn => {
@@ -576,7 +593,6 @@
             });
         }
 
-        // STEP 3: RENDER ALL GRADES (Simple 2 Columns)
         function renderGradesStep() {
             if (!currentScopes) return;
             document.getElementById('step3LevelBadge').textContent = selectedLevel;
@@ -599,7 +615,7 @@
 
                 let streamsHtml = '';
                 if (streams.length > 0) {
-                    streamsHtml = `<div style="margin-left: 18px; display: flex; flex-direction: column; gap: 2px;">`;
+                    streamsHtml = `<div style="margin-left: 14px; display: flex; flex-direction: column; gap: 1px;">`;
                     streams.forEach(st => {
                         streamsHtml += `
                             <a href="javascript:void(0)" onclick="openClassStream(${st.id}, '${st.classroom_name}')" class="sub-stream-link">
@@ -637,7 +653,6 @@
             goToStep('WORKSPACE');
         }
 
-        // STEP 4: WORKSPACE BROADSHEET DATA RENDERING
         async function openBroadsheet(classroomId, gradeId, year, term) {
             const scopeParam = classroomId ? `classroom_id=${classroomId}` : `grade_id=${gradeId}`;
             try {
@@ -667,30 +682,27 @@
             document.getElementById('topSumPassRate').textContent = `${data.class_pass_rate_percent}%`;
 
             if (data.best_subject) {
-                document.getElementById('bestSubjectBadge').innerHTML = `🏆 Best Subject: <strong>${data.best_subject.name}</strong> (Avg: ${data.best_subject.average}, Pass: ${data.best_subject.pass_rate_percent}%)`;
+                document.getElementById('bestSubjectBadge').innerHTML = `🏆 Best: <strong>${data.best_subject.name}</strong> (Avg: ${data.best_subject.average}, Pass: ${data.best_subject.pass_rate_percent}%)`;
             } else {
                 document.getElementById('bestSubjectBadge').textContent = 'No evaluated subjects yet';
             }
 
-            document.getElementById('broadsheetHeaderTitle').textContent = `${data.class_info.classroom_name} ‹ ${data.term} ${data.year}`;
-            document.getElementById('broadsheetHeaderSub').textContent = `${data.level_type} Framework • Total ${data.total_students} Students Evaluated`;
-
             const thead = document.getElementById('broadsheetThead');
             let thHtml = `
                 <tr>
-                    <th style="width: 40px; text-align: center;">S/N</th>
-                    <th style="width: 120px; text-align: left;">Reg No</th>
-                    <th style="text-align: left; min-width: 170px;">Full Name</th>
+                    <th style="width: 30px; text-align: center;">S/N</th>
+                    <th style="width: 95px; text-align: left;">Reg No</th>
+                    <th style="text-align: left; min-width: 160px;">Full Name</th>
             `;
 
             data.subjects.forEach(sub => {
-                thHtml += `<th style="text-align: center; min-width: 65px;" title="${sub.name}">${sub.code}</th>`;
+                thHtml += `<th style="text-align: center; min-width: 58px;" title="${sub.name}">${sub.code}</th>`;
             });
 
             thHtml += `
-                    <th style="text-align: center; background: #065f46; width: 60px;">Points</th>
-                    <th style="text-align: center; background: #065f46; width: 75px;">Division</th>
-                    <th style="text-align: center; width: 50px;">Pos</th>
+                    <th style="text-align: center; background: #065f46; width: 48px;">Pts</th>
+                    <th style="text-align: center; background: #065f46; width: 52px;">Div</th>
+                    <th style="text-align: center; width: 42px;">Pos</th>
                 </tr>
             `;
             thead.innerHTML = thHtml;
@@ -699,7 +711,7 @@
             tbody.innerHTML = '';
 
             if (data.broadsheet.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="${data.subjects.length + 6}" style="text-align:center; padding:30px; color:#64748b;">No student records found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="${data.subjects.length + 6}" style="text-align:center; padding:20px; color:#64748b;">No student records found.</td></tr>`;
             } else {
                 data.broadsheet.forEach((stu, idx) => {
                     const tr = document.createElement('tr');
@@ -717,7 +729,7 @@
                             const gColor = getGradeColor(gradeObj.grade);
                             rowHtml += `
                                 <td style="text-align: center;" title="Score: ${gradeObj.mark}">
-                                    <strong style="color: ${gColor}; font-size: 13px;">${gradeObj.grade}</strong>
+                                    <strong style="color: ${gColor}; font-size: 12px;">${gradeObj.grade}</strong>
                                 </td>
                             `;
                         } else {
@@ -759,7 +771,7 @@
                     subjTbody.appendChild(tr);
                 });
             } else {
-                subjTbody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding:20px; color:#64748b;">No subject marks recorded yet.</td></tr>`;
+                subjTbody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding:15px; color:#64748b;">No subject marks recorded yet.</td></tr>`;
             }
         }
 
@@ -785,7 +797,7 @@
             else if (label === 'III') { bg = '#fef3c7'; color = '#92400e'; }
             else if (label === 'IV') { bg = '#ffedd5'; color = '#9a3412'; }
             else if (label === '0') { bg = '#fee2e2'; color = '#991b1b'; }
-            return `<span class="badge" style="background:${bg}; color:${color}; font-weight:900; font-size:11px; padding:3px 8px; border-radius:4px;">${label || '-'}</span>`;
+            return `<span class="badge" style="background:${bg}; color:${color}; font-weight:900; font-size:10px; padding:1px 5px; border-radius:3px;">${label || '-'}</span>`;
         }
 
         function exportToCSV() {

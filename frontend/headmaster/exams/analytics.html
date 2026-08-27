@@ -13,22 +13,25 @@
     <script type="module" src="../../js/auth/auth-guard.js"></script>
 
     <style>
-        /* Step Container: clean & compact */
+        .app-content {
+            padding: 8px 16px !important;
+        }
+
         .step-container-box {
             background: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 24px 28px;
-            margin-bottom: 24px;
-            max-width: 760px; /* Not too wide */
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-top: 6px;
+            margin-bottom: 12px;
+            max-width: 680px;
         }
 
-        /* 2-Column Simple Listing */
         .compact-list-2col {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            column-gap: 32px;
-            row-gap: 10px;
+            column-gap: 24px;
+            row-gap: 8px;
         }
 
         @media (max-width: 640px) {
@@ -40,10 +43,10 @@
         .compact-list-item {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 14.5px;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 13.5px;
             font-weight: 700;
             color: #0284c7;
             text-decoration: none;
@@ -55,11 +58,11 @@
         .compact-list-item:hover {
             color: #0369a1;
             background: #f0f9ff;
-            transform: translateX(3px);
+            transform: translateX(2px);
         }
 
         .compact-list-item .bullet {
-            font-size: 17px;
+            font-size: 15px;
             font-weight: 900;
             color: #0284c7;
             line-height: 1;
@@ -68,9 +71,9 @@
         .sub-stream-link {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 3px 8px;
-            font-size: 12.5px;
+            gap: 4px;
+            padding: 2px 6px;
+            font-size: 12px;
             font-weight: 600;
             color: #64748b;
             text-decoration: none;
@@ -86,12 +89,12 @@
         }
 
         .step-heading {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 800;
             color: #0f172a;
             letter-spacing: 0.02em;
             text-transform: uppercase;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 6px;
@@ -100,15 +103,15 @@
         .term-pill-bar {
             display: inline-flex;
             background: #f1f5f9;
-            padding: 3px;
-            border-radius: 8px;
-            gap: 4px;
+            padding: 2px;
+            border-radius: 6px;
+            gap: 2px;
         }
 
         .term-pill-btn {
-            padding: 4px 14px;
-            border-radius: 6px;
-            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 11.5px;
             font-weight: 700;
             border: none;
             background: transparent;
@@ -120,21 +123,35 @@
         .term-pill-btn.active {
             background: #064e3b;
             color: #ffffff;
-            box-shadow: 0 1px 3px rgba(6, 78, 59, 0.2);
+            box-shadow: 0 1px 2px rgba(6, 78, 59, 0.2);
+        }
+
+        .workspace-ribbon-bar {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 6px 12px;
+            margin-top: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .analytics-card {
             background: #ffffff;
             border: 1px solid var(--c-primary-border);
-            border-radius: 10px;
-            padding: 20px;
+            border-radius: 8px;
+            padding: 14px;
         }
 
         .stat-badge-box {
             background: #ffffff;
             border: 1px solid var(--c-primary-border);
-            border-radius: 8px;
-            padding: 16px;
+            border-radius: 6px;
+            padding: 10px 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -150,28 +167,24 @@
             
             <main class="app-content-wrapper">
                 <div class="app-content">
-                    <app-breadcrumb id="anBreadcrumb" path="Headmaster, Examinations, Class Analytics"></app-breadcrumb>
+                    <app-breadcrumb id="anBreadcrumb" path="Headmaster, Examinations, Class Analytics" style="margin-bottom: 2px;"></app-breadcrumb>
 
-                    <!-- Top Subheader Bar -->
-                    <div class="card" style="margin-top: 14px; margin-bottom: 16px; padding: 14px 20px; background: white; border-radius: 10px; border: 1px solid var(--c-primary-border);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                            <div style="display: flex; align-items: center; gap: 14px;">
-                                <button id="btnDynamicBack" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700;">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                                    <span id="btnBackLabel">Back to Exams</span>
-                                </button>
-                                <div>
-                                    <h1 id="pageHeading" style="margin: 0; font-size: 18px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 6px;">
-                                        <span>📈 Classroom & Grade Analytics</span>
-                                    </h1>
-                                </div>
-                            </div>
+                    <!-- COMPACT CONTROL RIBBON -->
+                    <div class="workspace-ribbon-bar">
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <button id="btnDynamicBack" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700; height: 26px; padding: 2px 8px; font-size: 11.5px;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                                <span id="btnBackLabel">Back to Exams</span>
+                            </button>
+                            <h1 id="pageHeading" style="margin: 0; font-size: 14.5px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 6px;">
+                                <span>📈 Classroom & Grade Analytics</span>
+                            </h1>
+                        </div>
 
-                            <div id="analyticsActionButtons" style="display: none;">
-                                <a id="linkToBroadsheet" href="records.html" class="btn btn-sm btn-primary" style="font-weight: 700;">
-                                    View Full Broadsheet &rarr;
-                                </a>
-                            </div>
+                        <div id="analyticsActionButtons" style="display: none;">
+                            <a id="linkToBroadsheet" href="records.html" class="btn btn-sm btn-primary" style="font-weight: 700; height: 26px; padding: 2px 10px; font-size: 11.5px;">
+                                View Broadsheet &rarr;
+                            </a>
                         </div>
                     </div>
 
@@ -185,14 +198,14 @@
                         </div>
 
                         <!-- 10 Years Pagination -->
-                        <div id="yearsPaginationBar" style="display: none; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid #e2e8f0; margin-top: 18px; flex-wrap: wrap; gap: 8px;">
-                            <button id="btnPrevYears" class="btn btn-outline btn-sm" style="font-size: 11.5px; font-weight: 700; padding: 3px 10px;">
+                        <div id="yearsPaginationBar" style="display: none; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid #e2e8f0; margin-top: 12px; flex-wrap: wrap; gap: 6px;">
+                            <button id="btnPrevYears" class="btn btn-outline btn-sm" style="font-size: 11px; font-weight: 700; padding: 2px 8px; height: 24px;">
                                 ← Newer Years
                             </button>
-                            <span id="yearsPaginationInfo" style="font-size: 12px; font-weight: 700; color: #64748b;">
+                            <span id="yearsPaginationInfo" style="font-size: 11.5px; font-weight: 700; color: #64748b;">
                                 Page 1
                             </span>
-                            <button id="btnNextYears" class="btn btn-outline btn-sm" style="font-size: 11.5px; font-weight: 700; padding: 3px 10px;">
+                            <button id="btnNextYears" class="btn btn-outline btn-sm" style="font-size: 11px; font-weight: 700; padding: 2px 8px; height: 24px;">
                                 Older Years →
                             </button>
                         </div>
@@ -200,7 +213,7 @@
 
                     <!-- STEP 2: SELECT EDUCATION LEVEL (Clean 2 Columns) -->
                     <div id="stepLevelsView" class="step-container-box" style="display: none;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
                             <div class="step-heading" style="margin-bottom: 0;">
                                 <span>🏛️ Education Levels &bull; <strong id="step2YearBadge" style="color: #059669;">2026</strong></span>
                             </div>
@@ -224,97 +237,85 @@
                         </div>
                     </div>
 
-                    <!-- STEP 4: ANALYTICS RESULTS PANEL VIEW -->
+                    <!-- STEP 4: ANALYTICS RESULTS PANEL VIEW (High Density) -->
                     <div id="stepWorkspaceView" style="display: none;">
-                        <div class="card" style="padding: 18px 22px; background: white; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 24px;">
+                        
+                        <!-- 1. Performance Overview Cards -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px;">
+                            <div class="stat-badge-box" style="border-left: 3px solid #059669;">
+                                <div>
+                                    <div style="font-size: 10.5px; font-weight: 700; color: #64748b; text-transform: uppercase;">Total Evaluated</div>
+                                    <div id="anTotalEvaluated" style="font-size: 18px; font-weight: 900; color: #0f172a; margin-top: 2px;">0</div>
+                                </div>
+                                <span style="font-size: 20px;">👨‍🎓</span>
+                            </div>
+
+                            <div class="stat-badge-box" style="border-left: 3px solid #2563eb;">
+                                <div>
+                                    <div style="font-size: 10.5px; font-weight: 700; color: #64748b; text-transform: uppercase;">Cohort Average</div>
+                                    <div id="anClassAvg" style="font-size: 18px; font-weight: 900; color: #2563eb; margin-top: 2px;">0.0</div>
+                                </div>
+                                <span style="font-size: 20px;">📊</span>
+                            </div>
+
+                            <div class="stat-badge-box" style="border-left: 3px solid #10b981;">
+                                <div>
+                                    <div style="font-size: 10.5px; font-weight: 700; color: #64748b; text-transform: uppercase;">Pass Rate</div>
+                                    <div id="anClassPassRate" style="font-size: 18px; font-weight: 900; color: #10b981; margin-top: 2px;">0%</div>
+                                </div>
+                                <span style="font-size: 20px;">📈</span>
+                            </div>
+
+                            <div class="stat-badge-box" style="border-left: 3px solid #7c3aed;">
+                                <div>
+                                    <div style="font-size: 10.5px; font-weight: 700; color: #64748b; text-transform: uppercase;">Total Subjects</div>
+                                    <div id="anTotalSubjects" style="font-size: 18px; font-weight: 900; color: #7c3aed; margin-top: 2px;">0</div>
+                                </div>
+                                <span style="font-size: 20px;">📚</span>
+                            </div>
+                        </div>
+
+                        <!-- 2. Grid: Subject Comparison Matrix & Top Achievers Leaderboard -->
+                        <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 14px; margin-bottom: 20px;">
                             
-                            <!-- Panel Subheader -->
-                            <div style="padding: 14px 18px; margin-bottom: 18px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                                    <div>
-                                        <h2 id="anClassTitle" style="margin: 0; font-size: 16px; font-weight: 800; color: #064e3b;">Performance Analytics Workspace</h2>
-                                        <div id="anClassSub" style="font-size: 12px; color: #64748b; margin-top: 2px;">Comprehensive analytics and subject comparison</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 1. Performance Overview Cards -->
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 20px;">
-                                <div class="stat-badge-box" style="border-left: 4px solid #059669;">
-                                    <div>
-                                        <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Total Evaluated</div>
-                                        <div id="anTotalEvaluated" style="font-size: 22px; font-weight: 900; color: #0f172a; margin-top: 4px;">0</div>
-                                    </div>
-                                    <span style="font-size: 26px;">👨‍🎓</span>
-                                </div>
-
-                                <div class="stat-badge-box" style="border-left: 4px solid #2563eb;">
-                                    <div>
-                                        <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Cohort Average</div>
-                                        <div id="anClassAvg" style="font-size: 22px; font-weight: 900; color: #2563eb; margin-top: 4px;">0.0</div>
-                                    </div>
-                                    <span style="font-size: 26px;">📊</span>
-                                </div>
-
-                                <div class="stat-badge-box" style="border-left: 4px solid #10b981;">
-                                    <div>
-                                        <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Pass Rate</div>
-                                        <div id="anClassPassRate" style="font-size: 22px; font-weight: 900; color: #10b981; margin-top: 4px;">0%</div>
-                                    </div>
-                                    <span style="font-size: 26px;">📈</span>
-                                </div>
-
-                                <div class="stat-badge-box" style="border-left: 4px solid #7c3aed;">
-                                    <div>
-                                        <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Total Subjects</div>
-                                        <div id="anTotalSubjects" style="font-size: 22px; font-weight: 900; color: #7c3aed; margin-top: 4px;">0</div>
-                                    </div>
-                                    <span style="font-size: 26px;">📚</span>
-                                </div>
-                            </div>
-
-                            <!-- 2. Grid: Subject Comparison Matrix & Top Achievers Leaderboard -->
-                            <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; margin-bottom: 30px;">
-                                
-                                <!-- Subject Comparison Table -->
-                                <div class="analytics-card">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-                                        <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 6px;">
-                                            <span>🏆 Subject Performance Ranking</span>
-                                        </h3>
-                                    </div>
-
-                                    <div style="overflow-x: auto;">
-                                        <table style="width: 100%; border-collapse: collapse; font-size: 12.5px;">
-                                            <thead>
-                                                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-                                                    <th style="padding: 8px; text-align: left; color: #64748b;">Subject</th>
-                                                    <th style="padding: 8px; text-align: center; color: #64748b;">Average</th>
-                                                    <th style="padding: 8px; text-align: center; color: #64748b;">Pass %</th>
-                                                    <th style="padding: 8px; text-align: center; color: #64748b;">Rank</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="anSubjectRankingTbody">
-                                                <!-- Dynamic Subject Rankings -->
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-
-                                <!-- Top Achievers Leaderboard -->
-                                <div class="analytics-card">
-                                    <h3 style="margin: 0 0 14px; font-size: 14px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 6px;">
-                                        <span>🌟 Top Performing Students</span>
+                            <!-- Subject Comparison Table -->
+                            <div class="analytics-card">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <h3 style="margin: 0; font-size: 12.5px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 4px;">
+                                        <span>🏆 Subject Performance Ranking</span>
                                     </h3>
-
-                                    <div id="anLeaderboardList" style="display: flex; flex-direction: column; gap: 10px;">
-                                        <!-- Dynamic Leaderboard Items -->
-                                    </div>
                                 </div>
 
+                                <div style="overflow-x: auto;">
+                                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                                        <thead>
+                                            <tr style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0;">
+                                                <th style="padding: 6px; text-align: left; color: #64748b;">Subject</th>
+                                                <th style="padding: 6px; text-align: center; color: #64748b;">Avg</th>
+                                                <th style="padding: 6px; text-align: center; color: #64748b;">Pass %</th>
+                                                <th style="padding: 6px; text-align: center; color: #64748b;">Rank</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="anSubjectRankingTbody">
+                                            <!-- Dynamic Subject Rankings -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Top Achievers Leaderboard -->
+                            <div class="analytics-card">
+                                <h3 style="margin: 0 0 8px; font-size: 12.5px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 4px;">
+                                    <span>🌟 Top Performing Students</span>
+                                </h3>
+
+                                <div id="anLeaderboardList" style="display: flex; flex-direction: column; gap: 6px;">
+                                    <!-- Dynamic Leaderboard Items -->
+                                </div>
                             </div>
 
                         </div>
+
                     </div>
 
                 </div>
@@ -431,7 +432,6 @@
             }
         }
 
-        // STEP 1: RENDER YEARS (Simple 2 Columns)
         function renderYearsStep() {
             if (!currentScopes) return;
             const container = document.getElementById('yearsGridContainer');
@@ -467,7 +467,6 @@
             }
         }
 
-        // STEP 2: RENDER ALL EDUCATION LEVELS (Simple 2 Columns)
         function setTermSelection(term) {
             selectedTerm = term;
             document.querySelectorAll('.term-pill-btn').forEach(btn => {
@@ -499,7 +498,6 @@
             });
         }
 
-        // STEP 3: RENDER ALL GRADES (Simple 2 Columns)
         function renderGradesStep() {
             if (!currentScopes) return;
             document.getElementById('step3LevelBadge').textContent = selectedLevel;
@@ -522,7 +520,7 @@
 
                 let streamsHtml = '';
                 if (streams.length > 0) {
-                    streamsHtml = `<div style="margin-left: 18px; display: flex; flex-direction: column; gap: 2px;">`;
+                    streamsHtml = `<div style="margin-left: 14px; display: flex; flex-direction: column; gap: 1px;">`;
                     streams.forEach(st => {
                         streamsHtml += `
                             <a href="javascript:void(0)" onclick="openClassStream(${st.id}, '${st.classroom_name}')" class="sub-stream-link">
@@ -578,7 +576,6 @@
         }
 
         function renderAnalyticsUI(data, year, term) {
-            document.getElementById('anClassTitle').textContent = `${data.classroom.classroom_name} Performance Analytics (${term} ${year})`;
             document.getElementById('pageHeading').innerHTML = `<span>📈 ${data.classroom.classroom_name} Analytics</span>`;
 
             document.getElementById('anTotalEvaluated').textContent = data.overall_metrics.total_evaluated || 0;
@@ -586,41 +583,39 @@
             document.getElementById('anClassPassRate').textContent = `${data.overall_metrics.pass_rate_percent || 0}%`;
             document.getElementById('anTotalSubjects').textContent = (data.subject_rankings || []).length;
 
-            // Subject Rankings
             const subjTbody = document.getElementById('anSubjectRankingTbody');
             subjTbody.innerHTML = '';
             (data.subject_rankings || []).forEach((sr, idx) => {
                 const tr = document.createElement('tr');
                 tr.style.borderBottom = '1px solid #f1f5f9';
                 tr.innerHTML = `
-                    <td style="padding: 8px; font-weight: 800; color: #0f172a;">${sr.name}</td>
-                    <td style="padding: 8px; text-align: center; font-weight: 800; color: #2563eb;">${sr.average}</td>
-                    <td style="padding: 8px; text-align: center; font-weight: 800; color: #059669;">${sr.pass_rate_percent}%</td>
-                    <td style="padding: 8px; text-align: center; font-weight: 800;">
-                        <span class="badge" style="background: ${idx === 0 ? '#dcfce7' : '#f1f5f9'}; color: ${idx === 0 ? '#15803d' : '#475569'};">#${idx + 1}</span>
+                    <td style="padding: 5px; font-weight: 800; color: #0f172a;">${sr.name}</td>
+                    <td style="padding: 5px; text-align: center; font-weight: 800; color: #2563eb;">${sr.average}</td>
+                    <td style="padding: 5px; text-align: center; font-weight: 800; color: #059669;">${sr.pass_rate_percent}%</td>
+                    <td style="padding: 5px; text-align: center; font-weight: 800;">
+                        <span class="badge" style="background: ${idx === 0 ? '#dcfce7' : '#f1f5f9'}; color: ${idx === 0 ? '#15803d' : '#475569'}; padding: 1px 4px; font-size: 10px;">#${idx + 1}</span>
                     </td>
                 `;
                 subjTbody.appendChild(tr);
             });
 
-            // Top Achievers Leaderboard
             const leadBox = document.getElementById('anLeaderboardList');
             leadBox.innerHTML = '';
             (data.top_students || []).slice(0, 5).forEach((stu, idx) => {
                 const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
                 const card = document.createElement('div');
-                card.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px;';
+                card.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px;';
                 card.innerHTML = `
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <span style="font-size:18px;">${medals[idx] || '⭐'}</span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:15px;">${medals[idx] || '⭐'}</span>
                         <div>
-                            <div style="font-weight:800; color:#0f172a; font-size:13px;">${stu.full_name}</div>
-                            <div style="font-size:11px; color:#64748b; font-weight:600;">${stu.user_code || ''}</div>
+                            <div style="font-weight:800; color:#0f172a; font-size:12px;">${stu.full_name}</div>
+                            <div style="font-size:10.5px; color:#64748b; font-weight:600;">${stu.user_code || ''}</div>
                         </div>
                     </div>
                     <div style="text-align:right;">
-                        <strong style="color:#064e3b; font-size:14px;">${stu.total_marks} Marks</strong>
-                        <div style="font-size:11px; color:#059669; font-weight:700;">${stu.division || ''} (${stu.points || 0} Pts)</div>
+                        <strong style="color:#064e3b; font-size:12.5px;">${stu.total_marks} Pts</strong>
+                        <div style="font-size:10px; color:#059669; font-weight:700;">${stu.division || ''}</div>
                     </div>
                 `;
                 leadBox.appendChild(card);

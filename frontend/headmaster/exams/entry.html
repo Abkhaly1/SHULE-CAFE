@@ -13,22 +13,28 @@
     <script type="module" src="../../js/auth/auth-guard.js"></script>
 
     <style>
+        /* Compact Page Layout & Zero Waste Padding */
+        .app-content {
+            padding: 8px 16px !important;
+        }
+
         /* Step Container: clean & compact */
         .step-container-box {
             background: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 24px 28px;
-            margin-bottom: 24px;
-            max-width: 760px; /* Not too wide */
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-top: 6px;
+            margin-bottom: 12px;
+            max-width: 680px;
         }
 
         /* 2-Column Simple Listing */
         .compact-list-2col {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            column-gap: 32px;
-            row-gap: 10px;
+            column-gap: 24px;
+            row-gap: 8px;
         }
 
         @media (max-width: 640px) {
@@ -40,10 +46,10 @@
         .compact-list-item {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 14.5px;
+            gap: 6px;
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 13.5px;
             font-weight: 700;
             color: #0284c7;
             text-decoration: none;
@@ -55,11 +61,11 @@
         .compact-list-item:hover {
             color: #0369a1;
             background: #f0f9ff;
-            transform: translateX(3px);
+            transform: translateX(2px);
         }
 
         .compact-list-item .bullet {
-            font-size: 17px;
+            font-size: 15px;
             font-weight: 900;
             color: #0284c7;
             line-height: 1;
@@ -68,9 +74,9 @@
         .sub-stream-link {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            padding: 3px 8px;
-            font-size: 12.5px;
+            gap: 4px;
+            padding: 2px 6px;
+            font-size: 12px;
             font-weight: 600;
             color: #64748b;
             text-decoration: none;
@@ -86,12 +92,12 @@
         }
 
         .step-heading {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 800;
             color: #0f172a;
             letter-spacing: 0.02em;
             text-transform: uppercase;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 6px;
@@ -100,15 +106,15 @@
         .term-pill-bar {
             display: inline-flex;
             background: #f1f5f9;
-            padding: 3px;
-            border-radius: 8px;
-            gap: 4px;
+            padding: 2px;
+            border-radius: 6px;
+            gap: 2px;
         }
 
         .term-pill-btn {
-            padding: 4px 14px;
-            border-radius: 6px;
-            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 11.5px;
             font-weight: 700;
             border: none;
             background: transparent;
@@ -120,50 +126,67 @@
         .term-pill-btn.active {
             background: #064e3b;
             color: #ffffff;
-            box-shadow: 0 1px 3px rgba(6, 78, 59, 0.2);
+            box-shadow: 0 1px 2px rgba(6, 78, 59, 0.2);
         }
 
-        /* Fast Data Entry Grid */
-        .entry-grid-container {
+        /* Ultra Compact Header Toolbar */
+        .workspace-ribbon-bar {
+            background: #ffffff;
             border: 1px solid #cbd5e1;
-            border-radius: 8px;
+            border-radius: 6px;
+            padding: 6px 12px;
+            margin-top: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        /* High-Density Fast Entry Spreadsheet Grid */
+        .entry-grid-container {
+            border: 1.5px solid #cbd5e1;
+            border-radius: 6px;
             overflow-x: auto;
             background: #ffffff;
-            margin-bottom: 16px;
-            max-height: 70vh;
+            margin-bottom: 6px;
+            max-height: calc(100vh - 200px); /* Fill entire screen height for large student rosters */
         }
 
         .entry-grid {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
-            font-size: 12.5px;
+            font-size: 12px;
         }
 
         .entry-grid th {
             background: #064e3b;
             color: #ffffff;
-            padding: 10px 8px;
+            padding: 6px 4px;
             font-weight: 700;
             text-align: center;
             position: sticky;
             top: 0;
             z-index: 10;
-            border-right: 1px solid rgba(255,255,255,0.12);
+            border-right: 1px solid rgba(255,255,255,0.15);
             white-space: nowrap;
+            line-height: 1.15;
         }
 
         .entry-grid td {
-            padding: 6px 8px;
+            padding: 2px 4px;
             border-bottom: 1px solid #f1f5f9;
             border-right: 1px solid #f1f5f9;
             vertical-align: middle;
             background: #ffffff;
             white-space: nowrap;
+            height: 30px;
         }
 
         .entry-grid tr:hover td {
-            background: #f8fafc !important;
+            background: #f0fdf4 !important;
         }
 
         .sticky-col-idx {
@@ -171,31 +194,34 @@
             left: 0;
             z-index: 5;
             background: #ffffff;
-            width: 35px;
+            width: 30px;
             text-align: center;
             font-weight: 700;
             color: #64748b;
+            padding: 2px 2px !important;
         }
 
         .sticky-col-reg {
             position: sticky;
-            left: 35px;
+            left: 30px;
             z-index: 5;
             background: #ffffff;
-            min-width: 110px;
+            min-width: 95px;
             font-weight: 700;
             color: #475569;
+            padding: 2px 6px !important;
         }
 
         .sticky-col-name {
             position: sticky;
-            left: 145px;
+            left: 125px;
             z-index: 5;
             background: #ffffff;
-            min-width: 190px;
+            min-width: 170px;
             font-weight: 800;
             color: #0f172a;
             border-right: 2px solid #cbd5e1 !important;
+            padding: 2px 8px !important;
         }
 
         .entry-grid th.sticky-col-idx,
@@ -205,26 +231,27 @@
             z-index: 15 !important;
         }
 
+        /* Ultra Compact Cell Score Input */
         .grid-score-input {
-            width: 62px;
-            height: 30px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            border: 1.5px solid #cbd5e1;
-            font-size: 13px;
+            width: 50px;
+            height: 24px;
+            padding: 0 4px;
+            border-radius: 3px;
+            border: 1px solid #cbd5e1;
+            font-size: 12.5px;
             font-weight: 800;
             text-align: center;
             color: #0f172a;
             background: #ffffff;
             outline: none;
-            transition: all 0.12s ease;
+            transition: all 0.1s ease;
         }
 
         .grid-score-input:focus {
             border-color: #059669;
             background: #f0fdf4;
-            box-shadow: 0 0 0 2.5px rgba(5, 150, 105, 0.25);
-            font-size: 14px;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.25);
+            font-size: 13px;
         }
 
         .grid-score-input.has-score {
@@ -249,27 +276,57 @@
             background: #f8fafc;
             text-align: center;
             font-weight: 800;
+            font-size: 11.5px;
+            padding: 2px 4px !important;
         }
 
         .mode-toggle-btn {
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-size: 11.5px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
             font-weight: 700;
-            border: 1.5px solid #cbd5e1;
+            border: 1px solid #cbd5e1;
             background: #ffffff;
             color: #475569;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: all 0.12s ease;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
+            height: 26px;
         }
 
         .mode-toggle-btn.active {
             background: #064e3b;
             color: #ffffff;
             border-color: #064e3b;
+        }
+
+        /* Slim Footer Summary Ribbon */
+        .grid-summary-ribbon {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+
+        .stat-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .stat-item strong {
+            font-size: 13px;
+            color: #0f172a;
         }
     </style>
 </head>
@@ -282,38 +339,63 @@
             
             <main class="app-content-wrapper">
                 <div class="app-content">
-                    <app-breadcrumb id="entryBreadcrumb" path="Headmaster, Examinations, Marks Entry"></app-breadcrumb>
+                    <app-breadcrumb id="entryBreadcrumb" path="Headmaster, Examinations, Marks Entry" style="margin-bottom: 2px;"></app-breadcrumb>
 
-                    <!-- Top Subheader Bar -->
-                    <div class="card" style="margin-top: 14px; margin-bottom: 16px; padding: 14px 20px; background: white; border-radius: 10px; border: 1px solid var(--c-primary-border);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                            <div style="display: flex; align-items: center; gap: 14px;">
-                                <button id="btnDynamicBack" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700;">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                                    <span id="btnBackLabel">Back to Exams</span>
+                    <!-- COMPACT CONTROL RIBBON (ALL IN ONE ROW) -->
+                    <div class="workspace-ribbon-bar">
+                        <!-- Left: Back & Title -->
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <button id="btnDynamicBack" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700; height: 26px; padding: 2px 8px; font-size: 11.5px;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                                <span id="btnBackLabel">Back to Exams</span>
+                            </button>
+                            <h1 id="pageHeading" style="margin: 0; font-size: 14.5px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 6px;">
+                                <span>✍️ Examinations Marks Entry</span>
+                            </h1>
+                        </div>
+
+                        <!-- Right: Controls (Mode, Assessment, Default, Save) -->
+                        <div id="gridControlHeader" style="display: none; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            
+                            <!-- Mode Toggle -->
+                            <div style="background: #f1f5f9; padding: 2px; border-radius: 6px; display: inline-flex; gap: 2px;">
+                                <button id="btnModeAll" class="mode-toggle-btn active" onclick="switchEntryMode('all')">
+                                    <span>⚡ All Subjects</span>
                                 </button>
-                                <div>
-                                    <h1 id="pageHeading" style="margin: 0; font-size: 18px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 6px;">
-                                        <span>✍️ Examinations Marks Entry</span>
-                                    </h1>
-                                </div>
-                            </div>
-
-                            <!-- Right Controls (Only in Grid View) -->
-                            <div id="gridControlHeader" style="display: none; align-items: center; gap: 10px;">
-                                <div style="background: #f1f5f9; padding: 3px; border-radius: 8px; display: inline-flex; gap: 4px;">
-                                    <button id="btnModeAll" class="mode-toggle-btn active" onclick="switchEntryMode('all')">
-                                        <span>⚡ All Subjects</span>
-                                    </button>
-                                    <button id="btnModeSingle" class="mode-toggle-btn" onclick="switchEntryMode('single')">
-                                        <span>🎯 Single Subject</span>
-                                    </button>
-                                </div>
-
-                                <button id="btnSaveMarks" class="btn btn-primary" style="font-weight: 800; display: inline-flex; align-items: center; gap: 6px; padding: 6px 18px; height: 34px;">
-                                    <span>💾</span> Save All Marks
+                                <button id="btnModeSingle" class="mode-toggle-btn" onclick="switchEntryMode('single')">
+                                    <span>🎯 Single</span>
                                 </button>
                             </div>
+
+                            <!-- Assessment Type -->
+                            <select id="gridAssessmentType" class="form-control" style="padding: 1px 6px; height: 26px; font-weight: 700; font-size: 11.5px; min-width: 170px;">
+                                <!-- Dynamic assessments -->
+                            </select>
+
+                            <!-- Single Subject Picker -->
+                            <div id="singleSubPickGroup" style="display: none; align-items: center; gap: 4px;">
+                                <select id="gridSubjectSelect" class="form-control" style="padding: 1px 6px; height: 26px; font-weight: 700; font-size: 11.5px; min-width: 130px; background: #eff6ff; color: #1e40af;">
+                                    <!-- Dynamic subjects -->
+                                </select>
+                            </div>
+
+                            <!-- Default Quick-Fill -->
+                            <div style="display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; color: #64748b;">
+                                <span>Default:</span>
+                                <input type="number" id="quickFillVal" placeholder="Mark" style="width: 44px; height: 24px; border: 1px solid #cbd5e1; border-radius: 3px; text-align: center; font-weight: 800; font-size: 11.5px; padding: 0;">
+                                <button id="btnQuickFill" class="btn btn-outline btn-sm" style="padding: 1px 5px; font-size: 10.5px; height: 24px; font-weight: 700;">Apply</button>
+                            </div>
+
+                            <div id="lockNotice" style="display: none;">
+                                <span class="badge" style="background:#fee2e2; color:#991b1b; font-weight:800; font-size:10.5px; padding:2px 6px;">
+                                    🔒 Locked
+                                </span>
+                            </div>
+
+                            <!-- Save Button -->
+                            <button id="btnSaveMarks" class="btn btn-primary" style="font-weight: 800; display: inline-flex; align-items: center; gap: 4px; padding: 2px 14px; height: 26px; font-size: 11.5px;">
+                                <span>💾</span> Save Marks
+                            </button>
                         </div>
                     </div>
 
@@ -327,14 +409,14 @@
                         </div>
 
                         <!-- 10 Years Pagination -->
-                        <div id="yearsPaginationBar" style="display: none; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid #e2e8f0; margin-top: 18px; flex-wrap: wrap; gap: 8px;">
-                            <button id="btnPrevYears" class="btn btn-outline btn-sm" style="font-size: 11.5px; font-weight: 700; padding: 3px 10px;">
+                        <div id="yearsPaginationBar" style="display: none; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid #e2e8f0; margin-top: 12px; flex-wrap: wrap; gap: 6px;">
+                            <button id="btnPrevYears" class="btn btn-outline btn-sm" style="font-size: 11px; font-weight: 700; padding: 2px 8px; height: 24px;">
                                 ← Newer Years
                             </button>
-                            <span id="yearsPaginationInfo" style="font-size: 12px; font-weight: 700; color: #64748b;">
+                            <span id="yearsPaginationInfo" style="font-size: 11.5px; font-weight: 700; color: #64748b;">
                                 Page 1
                             </span>
-                            <button id="btnNextYears" class="btn btn-outline btn-sm" style="font-size: 11.5px; font-weight: 700; padding: 3px 10px;">
+                            <button id="btnNextYears" class="btn btn-outline btn-sm" style="font-size: 11px; font-weight: 700; padding: 2px 8px; height: 24px;">
                                 Older Years →
                             </button>
                         </div>
@@ -342,7 +424,7 @@
 
                     <!-- STEP 2: SELECT EDUCATION LEVEL (Clean 2 Columns) -->
                     <div id="stepLevelsView" class="step-container-box" style="display: none;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
                             <div class="step-heading" style="margin-bottom: 0;">
                                 <span>🏛️ Education Levels &bull; <strong id="step2YearBadge" style="color: #059669;">2026</strong></span>
                             </div>
@@ -366,80 +448,45 @@
                         </div>
                     </div>
 
-                    <!-- STEP 4: DATA ENTRY WORKSPACE (Master Grid) -->
+                    <!-- STEP 4: DATA ENTRY WORKSPACE (High-Density Free Spreadsheet) -->
                     <div id="stepWorkspaceView" style="display: none;">
-                        <div class="card" style="padding: 18px 22px; background: white; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 24px;">
-                            
-                            <!-- Mini Controls Toolbar -->
-                            <div style="padding: 10px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-                                    <div style="display: inline-flex; align-items: center; gap: 6px;">
-                                        <span style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Exam Assessment:</span>
-                                        <select id="gridAssessmentType" class="form-control" style="padding: 3px 8px; height: 30px; font-weight: 700; font-size: 12px; min-width: 190px;">
-                                            <!-- Dynamic assessments -->
-                                        </select>
-                                    </div>
-
-                                    <div id="singleSubPickGroup" style="display: none; align-items: center; gap: 6px;">
-                                        <span style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Subject:</span>
-                                        <select id="gridSubjectSelect" class="form-control" style="padding: 3px 8px; height: 30px; font-weight: 700; font-size: 12px; min-width: 140px; background: #eff6ff; color: #1e40af;">
-                                            <!-- Dynamic subjects -->
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <div id="lockNotice" style="display: none;">
-                                        <span class="badge" style="background:#fee2e2; color:#991b1b; font-weight:800; font-size:11px; padding:3px 8px;">
-                                            🔒 Locked Scoresheet
-                                        </span>
-                                    </div>
-
-                                    <div style="display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: #64748b;">
-                                        <span>Default:</span>
-                                        <input type="number" id="quickFillVal" placeholder="Mark" style="width: 50px; height: 26px; border: 1px solid #cbd5e1; border-radius: 4px; text-align: center; font-weight: 800;">
-                                        <button id="btnQuickFill" class="btn btn-outline btn-sm" style="padding: 2px 6px; font-size: 11px; height: 26px;">Apply</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Data Entry Grid Container -->
-                            <div class="entry-grid-container">
-                                <table class="entry-grid" id="marksEntryGrid">
-                                    <thead id="gridThead">
-                                        <!-- Dynamic Headers -->
-                                    </thead>
-                                    <tbody id="gridTbody">
-                                        <!-- Dynamic Student Rows -->
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!-- Live Summary Bar -->
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; background: #f8fafc; padding: 12px 18px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                                <div>
-                                    <span style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Total Students:</span>
-                                    <div id="statGridTotalStudents" style="font-size: 17px; font-weight: 900; color: #0f172a;">0</div>
-                                </div>
-                                <div>
-                                    <span style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Marks Filled:</span>
-                                    <div id="statGridFilledCount" style="font-size: 17px; font-weight: 900; color: #059669;">0</div>
-                                </div>
-                                <div>
-                                    <span style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Class Average:</span>
-                                    <div id="statGridAverage" style="font-size: 17px; font-weight: 900; color: #2563eb;">0.0</div>
-                                </div>
-                                <div>
-                                    <span style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Pass Rate (>=45%):</span>
-                                    <div id="statGridPassRate" style="font-size: 17px; font-weight: 900; color: #10b981;">0%</div>
-                                </div>
-                                <div>
-                                    <span style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Max Weight:</span>
-                                    <div id="statGridMaxWeight" style="font-size: 17px; font-weight: 900; color: #7c3aed;">100%</div>
-                                </div>
-                            </div>
-
+                        
+                        <!-- High Density Data Entry Grid Container -->
+                        <div class="entry-grid-container">
+                            <table class="entry-grid" id="marksEntryGrid">
+                                <thead id="gridThead">
+                                    <!-- Dynamic Headers -->
+                                </thead>
+                                <tbody id="gridTbody">
+                                    <!-- Dynamic Student Rows -->
+                                </tbody>
+                            </table>
                         </div>
+
+                        <!-- Slim Single-Line Summary Ribbon -->
+                        <div class="grid-summary-ribbon">
+                            <div class="stat-item">
+                                <span>Students:</span>
+                                <strong id="statGridTotalStudents">0</strong>
+                            </div>
+                            <div class="stat-item">
+                                <span>Filled:</span>
+                                <strong id="statGridFilledCount" style="color: #059669;">0</strong>
+                            </div>
+                            <div class="stat-item">
+                                <span>Class Avg:</span>
+                                <strong id="statGridAverage" style="color: #2563eb;">0.0</strong>
+                            </div>
+                            <div class="stat-item">
+                                <span>Pass Rate (≥45%):</span>
+                                <strong id="statGridPassRate" style="color: #10b981;">0%</strong>
+                            </div>
+                            <div class="stat-item">
+                                <span>Max Weight:</span>
+                                <strong id="statGridMaxWeight" style="color: #7c3aed;">100%</strong>
+                            </div>
+                        </div>
+
                     </div>
 
                 </div>
@@ -448,7 +495,7 @@
     </div>
 
     <!-- Toast Notification Container -->
-    <div id="gridToastBox" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;"></div>
+    <div id="gridToastBox" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;"></div>
 
     <script>
         let currentStep = 'YEARS';
@@ -526,14 +573,12 @@
                     currentScopes = data;
                     renderYearsStep();
 
-                    // Populate Assessments
                     const selType = document.getElementById('gridAssessmentType');
                     selType.innerHTML = '';
                     data.assessment_types.forEach((at, i) => {
                         selType.innerHTML += `<option value="${at.id}" ${i === 0 ? 'selected' : ''}>${at.name} (${at.weight_percent}%)</option>`;
                     });
 
-                    // Populate Subjects
                     const selSub = document.getElementById('gridSubjectSelect');
                     selSub.innerHTML = '';
                     data.subjects.forEach(s => {
@@ -590,7 +635,6 @@
             }
         }
 
-        // STEP 1: RENDER YEARS (Simple 2 Columns)
         function renderYearsStep() {
             if (!currentScopes) return;
             const container = document.getElementById('yearsGridContainer');
@@ -626,7 +670,6 @@
             }
         }
 
-        // STEP 2: RENDER ALL EDUCATION LEVELS (Simple 2 Columns)
         function setTermSelection(term) {
             selectedTerm = term;
             document.querySelectorAll('.term-pill-btn').forEach(btn => {
@@ -658,7 +701,6 @@
             });
         }
 
-        // STEP 3: RENDER ALL GRADES (Simple 2 Columns)
         function renderGradesStep() {
             if (!currentScopes) return;
             document.getElementById('step3LevelBadge').textContent = selectedLevel;
@@ -681,7 +723,7 @@
 
                 let streamsHtml = '';
                 if (streams.length > 0) {
-                    streamsHtml = `<div style="margin-left: 18px; display: flex; flex-direction: column; gap: 2px;">`;
+                    streamsHtml = `<div style="margin-left: 14px; display: flex; flex-direction: column; gap: 1px;">`;
                     streams.forEach(st => {
                         streamsHtml += `
                             <a href="javascript:void(0)" onclick="openClassStream(${st.id}, '${st.classroom_name}')" class="sub-stream-link">
@@ -719,7 +761,6 @@
             goToStep('WORKSPACE');
         }
 
-        // STEP 4: WORKSPACE DATA ENTRY
         function switchEntryMode(mode) {
             currentMode = mode;
             if (mode === 'all') {
@@ -791,25 +832,25 @@
 
             targetSubjects.forEach(sub => {
                 thHtml += `
-                    <th style="min-width: 75px; text-align: center;" title="${sub.name}">
+                    <th style="min-width: 62px; text-align: center;" title="${sub.name}">
                         <div>${sub.code}</div>
-                        <div style="font-size: 10px; font-weight: 600; opacity: 0.85;">(${maxAssessmentWeight}%)</div>
+                        <div style="font-size: 9.5px; font-weight: 600; opacity: 0.85;">(${maxAssessmentWeight}%)</div>
                     </th>
                 `;
             });
 
             thHtml += `
-                    <th class="summary-col" style="min-width: 65px; background: #047857; color: white;">Total</th>
-                    <th class="summary-col" style="min-width: 60px; background: #065f46; color: white;">Points</th>
-                    <th class="summary-col" style="min-width: 75px; background: #065f46; color: white;">Division</th>
-                    <th class="summary-col" style="min-width: 50px; background: #064e3b; color: white;">Pos</th>
+                    <th class="summary-col" style="min-width: 52px; background: #047857; color: white;">Total</th>
+                    <th class="summary-col" style="min-width: 48px; background: #065f46; color: white;">Pts</th>
+                    <th class="summary-col" style="min-width: 52px; background: #065f46; color: white;">Div</th>
+                    <th class="summary-col" style="min-width: 42px; background: #064e3b; color: white;">Pos</th>
                 </tr>
             `;
             thead.innerHTML = thHtml;
 
             tbody.innerHTML = '';
             if (!sheetData.roster || sheetData.roster.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="${targetSubjects.length + 7}" style="text-align:center; padding:30px; color:#64748b;">No students found in this roster.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="${targetSubjects.length + 7}" style="text-align:center; padding:20px; color:#64748b;">No students found in this roster.</td></tr>`;
                 return;
             }
 
@@ -875,7 +916,7 @@
 
             if (numVal !== null && numVal > maxAssessmentWeight) {
                 input.value = maxAssessmentWeight;
-                showToast(`Max weight for this assessment is ${maxAssessmentWeight}%`, 'warning');
+                showToast(`Max weight is ${maxAssessmentWeight}%`, 'warning');
             }
 
             if (rawVal === '') {
@@ -951,7 +992,7 @@
             else if (label === 'III') { bg = '#fef3c7'; color = '#92400e'; }
             else if (label === 'IV') { bg = '#ffedd5'; color = '#9a3412'; }
             else if (label === '0') { bg = '#fee2e2'; color = '#991b1b'; }
-            return `<span class="badge" style="background:${bg}; color:${color}; font-weight:800; font-size:10.5px; padding:2px 6px; border-radius:4px;">${label || '-'}</span>`;
+            return `<span class="badge" style="background:${bg}; color:${color}; font-weight:800; font-size:10px; padding:1px 5px; border-radius:3px;">${label || '-'}</span>`;
         }
 
         function recalculateGridStats() {
@@ -989,7 +1030,7 @@
             if (fillVal === '') return;
             const num = parseFloat(fillVal);
             if (isNaN(num) || num < 0 || num > maxAssessmentWeight) {
-                showToast(`Enter valid mark between 0 and ${maxAssessmentWeight}`, 'warning');
+                showToast(`Enter mark between 0 and ${maxAssessmentWeight}`, 'warning');
                 return;
             }
 
@@ -999,7 +1040,7 @@
                     inp.dispatchEvent(new Event('input'));
                 }
             });
-            showToast(`Applied default score ${num} to grid.`, 'info');
+            showToast(`Applied default score ${num}`, 'info');
         }
 
         async function saveGridMarks() {
@@ -1060,16 +1101,16 @@
 
                 const data = await res.json();
                 if (res.ok && data.success) {
-                    showToast(data.message || 'All marks saved successfully!', 'success');
+                    showToast(data.message || 'Saved successfully!', 'success');
                     setTimeout(autoLoadSheet, 400);
                 } else {
                     showToast(data.message || 'Error saving marks.', 'error');
                 }
             } catch(e) {
-                showToast('Network error while saving.', 'error');
+                showToast('Network error.', 'error');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<span>💾</span> Save All Marks';
+                btn.innerHTML = '<span>💾</span> Save Marks';
             }
         }
 
@@ -1077,14 +1118,14 @@
             const box = document.getElementById('gridToastBox');
             const toast = document.createElement('div');
             let bg = type === 'success' ? '#064e3b' : (type === 'error' ? '#991b1b' : (type === 'warning' ? '#d97706' : '#1e40af'));
-            toast.style.cssText = `background:${bg}; color:white; padding:10px 18px; border-radius:8px; font-weight:700; font-size:12.5px; margin-top:8px; box-shadow:0 4px 12px rgba(0,0,0,0.18); display:flex; align-items:center; gap:8px; animation: fadeIn 0.2s ease;`;
+            toast.style.cssText = `background:${bg}; color:white; padding:8px 14px; border-radius:6px; font-weight:700; font-size:12px; margin-top:6px; box-shadow:0 3px 10px rgba(0,0,0,0.16); display:flex; align-items:center; gap:6px;`;
             toast.innerHTML = `<span>${type === 'success' ? '✅' : (type === 'error' ? '⚠️' : 'ℹ️')}</span> <span>${msg}</span>`;
             box.appendChild(toast);
             setTimeout(() => {
                 toast.style.opacity = '0';
                 toast.style.transition = 'opacity 0.3s ease';
                 setTimeout(() => toast.remove(), 300);
-            }, 3500);
+            }, 3000);
         }
     </script>
 </body>
