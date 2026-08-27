@@ -1,10 +1,5 @@
 <?php
-// 🚀 High-Performance Output Compression for High Concurrency
-if (!headers_sent() && !ob_get_level() && extension_loaded('zlib') && !ini_get('zlib.output_compression')) {
-    if (!ob_start("ob_gzhandler")) {
-        ob_start();
-    }
-}
+
 
 require_once __DIR__ . '/auth_guard.php';
 

@@ -15,13 +15,16 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
-$data = json_decode(file_get_contents("php://input"));
+$raw = getCachedRawInput();
+$data = !empty($raw) ? json_decode($raw) : null;
 
 // 🤖 Anti-Bot Protection 1: Scanner & Script Bot Detection
 detectBotUserAgent();
 
 // 🤖 Anti-Bot Protection 2: Honeypot Trap Inspection
-checkHoneypotTrap((array)$data);
+if (!empty($data)) {
+    checkHoneypotTrap((array)$data);
+}
 
 $identifier = !empty($data->email) ? trim($data->email) : (!empty($data->phone) ? trim($data->phone) : (!empty($data->username) ? trim($data->username) : (!empty($data->identifier) ? trim($data->identifier) : '')));
 $password = !empty($data->password) ? $data->password : '';

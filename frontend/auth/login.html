@@ -530,11 +530,22 @@
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Authenticating...';
 
+                // Determine dynamic API path
+                const currentPath = window.location.pathname;
+                const frontendIndex = currentPath.indexOf('/frontend/');
+                const apiPath = (frontendIndex !== -1)
+                    ? currentPath.substring(0, frontendIndex) + '/api/auth/login.php'
+                    : '/shule-cafe/api/auth/login.php';
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
+
                 try {
-                    const res = await fetch('/shule-cafe/api/auth/login.php', {
+                    const res = await fetch(apiPath, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         credentials: 'include',
+                        signal: controller.signal,
                         body: JSON.stringify({ 
                             email: identifier, 
                             phone: identifier, 
@@ -542,6 +553,7 @@
                             website_hp_check: document.getElementById('website_hp_check')?.value || '' 
                         })
                     });
+                    clearTimeout(timeoutId);
 
                     const data = await res.json();
 

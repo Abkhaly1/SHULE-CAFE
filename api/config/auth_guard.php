@@ -239,9 +239,11 @@ function requireAuth(array $allowedRoles = []) {
 }
 
 /**
- * Ensure login_attempts table exists
+ * Ensure login_attempts table exists (called lazily on failure)
  */
 function ensureLoginAttemptsTable($conn) {
+    static $checked = false;
+    if ($checked) return;
     try {
         $conn->exec("
             CREATE TABLE IF NOT EXISTS login_attempts (
@@ -255,6 +257,7 @@ function ensureLoginAttemptsTable($conn) {
                 INDEX (locked_until)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
         ");
+        $checked = true;
     } catch (Exception $e) {}
 }
 
@@ -262,7 +265,6 @@ function ensureLoginAttemptsTable($conn) {
  * Brute-Force Protection: Check if IP + Identifier combination is currently locked out
  */
 function isBruteForceLocked($conn, $ip, $identifier) {
-    ensureLoginAttemptsTable($conn);
     try {
         $stmt = $conn->prepare("
             SELECT locked_until, TIMESTAMPDIFF(SECOND, NOW(), locked_until) AS remaining_sec 
@@ -280,7 +282,9 @@ function isBruteForceLocked($conn, $ip, $identifier) {
                 "remaining_minutes" => ceil(intval($row['remaining_sec']) / 60)
             ];
         }
-    } catch (Exception $e) {}
+    } catch (Exception $e) {
+        ensureLoginAttemptsTable($conn);
+    }
 
     return ["locked" => false];
 }
@@ -289,7 +293,6 @@ function isBruteForceLocked($conn, $ip, $identifier) {
  * Record a failed login attempt for IP and Identifier
  */
 function recordFailedAttempt($conn, $ip, $identifier) {
-    ensureLoginAttemptsTable($conn);
     try {
         $stmt = $conn->prepare("SELECT id, attempts FROM login_attempts WHERE ip_address = ? AND identifier = ? LIMIT 1");
         $stmt->execute([$ip, $identifier]);
@@ -308,7 +311,9 @@ function recordFailedAttempt($conn, $ip, $identifier) {
             $ins = $conn->prepare("INSERT INTO login_attempts (ip_address, identifier, attempts) VALUES (?, ?, 1)");
             $ins->execute([$ip, $identifier]);
         }
-    } catch (Exception $e) {}
+    } catch (Exception $e) {
+        ensureLoginAttemptsTable($conn);
+    }
 }
 
 /**

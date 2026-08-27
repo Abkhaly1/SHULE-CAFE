@@ -13,6 +13,17 @@ if (!file_exists(__DIR__ . '/../../logs')) {
 }
 
 /**
+ * Helper to cache raw input stream to prevent blocking on repeated reads
+ */
+function getCachedRawInput() {
+    static $raw = null;
+    if ($raw === null) {
+        $raw = file_get_contents('php://input') ?: '';
+    }
+    return $raw;
+}
+
+/**
  * 🛡️ HACKER DEFENSE 1: SQL Injection Pattern Inspection
  */
 function detectSqlInjectionAttack($conn = null) {
@@ -20,7 +31,7 @@ function detectSqlInjectionAttack($conn = null) {
         return;
     }
 
-    $rawInput = file_get_contents('php://input');
+    $rawInput = getCachedRawInput();
     $queryStr = $_SERVER['QUERY_STRING'] ?? '';
     $inputString = strtolower($rawInput . ' ' . $queryStr . ' ' . json_encode($_POST) . ' ' . json_encode($_GET));
 
@@ -58,7 +69,7 @@ function detectXssPayloadAttack($conn = null) {
         return;
     }
 
-    $rawInput = file_get_contents('php://input');
+    $rawInput = getCachedRawInput();
     $queryStr = $_SERVER['QUERY_STRING'] ?? '';
     $inputString = strtolower($rawInput . ' ' . $queryStr . ' ' . json_encode($_POST) . ' ' . json_encode($_GET));
 
