@@ -553,11 +553,14 @@
                             website_hp_check: document.getElementById('website_hp_check')?.value || '' 
                         })
                     });
-                    clearTimeout(timeoutId);
+                    let data;
+                    try {
+                        data = await res.json();
+                    } catch (parseErr) {
+                        data = { success: false, message: 'Server communication error. Please try again.' };
+                    }
 
-                    const data = await res.json();
-
-                    if (res.ok && data.success) {
+                    if (data && data.success) {
                         const role = data.role || (data.user ? data.user.role : 'super_admin');
                         const token = data.token || 'db_session_token_' + Date.now();
                         
@@ -588,19 +591,20 @@
                         };
 
                         window.location.href = dashboardMap[role] || '../headmaster/dashboard.html';
+                    } else if (data && (data.account_needed || data.error_type === 'account_not_found')) {
+                        accountNeededText.textContent = data.message || `No account was found for '${identifier}'. If you are a new school owner or headmaster, you need to register your school first to create your portal.`;
+                        accountNeededCard.style.display = 'flex';
                     } else {
-                        // Check if account is not found / account needed
-                        if (data.account_needed || data.error_type === 'account_not_found' || res.status === 404) {
-                            accountNeededText.textContent = data.message || `No account was found for '${identifier}'. If you are a new school owner or headmaster, you need to register your school first to create your portal.`;
-                            accountNeededCard.style.display = 'flex';
-                        } else {
-                            errorMessage.textContent = data.message || 'Invalid username or password.';
-                            errorNotice.style.display = 'block';
-                        }
+                        errorMessage.textContent = (data && data.message) ? data.message : 'Invalid username or password.';
+                        errorNotice.style.display = 'block';
                     }
                 } catch (err) {
-                    console.error("Login failed", err);
-                    errorMessage.textContent = 'Network or server error. Please try again.';
+                    console.error("Login request failed", err);
+                    if (err.name === 'AbortError') {
+                        errorMessage.textContent = 'Request timed out. Please check your connection and try again.';
+                    } else {
+                        errorMessage.textContent = 'Unable to reach the server. Please check your network connection.';
+                    }
                     errorNotice.style.display = 'block';
                 } finally {
                     submitBtn.disabled = false;

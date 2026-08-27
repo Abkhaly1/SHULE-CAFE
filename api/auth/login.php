@@ -161,7 +161,7 @@ try {
             ]);
         } else {
             recordFailedAttempt($conn, $clientIp, $identifier);
-            http_response_code(401);
+            http_response_code(200);
             echo json_encode([
                 "success" => false, 
                 "error_type" => "invalid_password",
@@ -170,18 +170,18 @@ try {
         }
     } else {
         recordFailedAttempt($conn, $clientIp, $identifier);
-        http_response_code(404);
+        http_response_code(200);
         echo json_encode([
             "success" => false, 
             "error_type" => "account_not_found",
             "account_needed" => true,
-            "message" => "Account Needed: No registered account found matching '" . htmlspecialchars($identifier) . "'. If you are a new school, please register your school to create your portal.",
+            "message" => "Account Needed: No registered account found matching '" . htmlspecialchars($identifier) . "'. If you are a new school owner or headmaster, please register your school to create your portal.",
             "register_url" => "register-school.html"
         ]);
     }
 
 } catch (PDOException $e) {
-    http_response_code(500);
+    http_response_code(200);
     echo json_encode(["success" => false, "message" => "System error: " . $e->getMessage()]);
 }
 ?>
