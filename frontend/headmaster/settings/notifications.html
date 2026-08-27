@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications & SMS Alerts ‹ Headmaster ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+    
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="tenant_admin" active-path="/headmaster/settings/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Headmaster Portal"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content" style="padding: 0;">
+                    
+                    <app-workspace-layout back-url="index.html" back-label="Back to Settings">
+                        
+                        <div style="padding: 0 24px;">
+                            <app-breadcrumb path="Headmaster, Settings, Notifications & SMS"></app-breadcrumb>
+                        </div>
+
+                        <div style="padding: 0 24px 24px 24px;">
+                            <!-- Header Banner -->
+                            <div class="workspace-header-card" style="display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; background: var(--c-bg-surface); border: 1px solid var(--c-border-light); border-radius: 12px; margin-top: 12px; margin-bottom: 20px;">
+                                <div style="display: flex; align-items: center; gap: 16px;">
+                                    <div style="width: 52px; height: 52px; border-radius: 50%; background: #db2777; color: white; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800;">
+                                        🔔
+                                    </div>
+                                    <div>
+                                        <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: var(--c-text-primary);">
+                                            Notifications & Parent SMS Alert Gateway Workspace
+                                        </h2>
+                                        <div style="color: var(--c-text-muted); font-size: 13px; margin-top: 2px;">
+                                            Configure automated SMS sender ID, attendance alert dispatch, fee reminders, and report notifications.
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-primary" onclick="alert('SMS settings saved!')">Save Gateway Settings</button>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                                
+                                <div class="card" style="padding: 24px; border-radius: 12px;">
+                                    <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 16px; color: #0f172a; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
+                                        SMS Gateway Configuration
+                                    </h3>
+
+                                    <div class="form-group" style="margin-bottom: 16px;">
+                                        <label class="form-label">Official SMS Sender ID (Alphanumeric)</label>
+                                        <input type="text" class="form-control" value="SHULECAFE" maxlength="11" style="font-weight: 700;">
+                                        <div style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Registered TCRA Sender Name for institutional SMS broadcast.</div>
+                                    </div>
+
+                                    <div class="form-group" style="margin-bottom: 16px;">
+                                        <label class="form-label">SMS Balance Status</label>
+                                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #fdf2f8; border: 1px solid #fbcfe8; border-radius: 8px;">
+                                            <div>
+                                                <div style="font-size: 18px; font-weight: 800; color: #9d174d;">12,450 Units</div>
+                                                <div style="font-size: 11px; color: #be185d;">Active & Connected</div>
+                                            </div>
+                                            <button type="button" class="btn btn-outline btn-sm" onclick="alert('Top-up portal ready.')">Top-up SMS</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card" style="padding: 24px; border-radius: 12px;">
+                                    <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 16px; color: #0f172a; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
+                                        Automated Dispatch Triggers
+                                    </h3>
+
+                                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                                        <label style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: #1e293b; cursor: pointer;">
+                                            <span>📲 <strong>Student Absence SMS:</strong> Alert parent immediately when teacher marks student absent</span>
+                                            <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #059669;">
+                                        </label>
+                                        <label style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: #1e293b; cursor: pointer;">
+                                            <span>📝 <strong>Exam Results Published:</strong> Send instant SMS summary with student Division & Grade</span>
+                                            <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #059669;">
+                                        </label>
+                                        <label style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: #1e293b; cursor: pointer;">
+                                            <span>💳 <strong>Fee Invoice & Balance:</strong> Automated reminder for term tuition fees</span>
+                                            <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #059669;">
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </app-workspace-layout>
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

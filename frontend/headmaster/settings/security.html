@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security & Access Policy ‹ Headmaster ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+    
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="tenant_admin" active-path="/headmaster/settings/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Headmaster Portal"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content" style="padding: 0;">
+                    
+                    <app-workspace-layout back-url="index.html" back-label="Back to Settings">
+                        
+                        <div style="padding: 0 24px;">
+                            <app-breadcrumb path="Headmaster, Settings, Security & Access Policy"></app-breadcrumb>
+                        </div>
+
+                        <div style="padding: 0 24px 24px 24px;">
+                            <!-- Header Banner -->
+                            <div class="workspace-header-card" style="display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; background: var(--c-bg-surface); border: 1px solid var(--c-border-light); border-radius: 12px; margin-top: 12px; margin-bottom: 20px;">
+                                <div style="display: flex; align-items: center; gap: 16px;">
+                                    <div style="width: 52px; height: 52px; border-radius: 50%; background: #475569; color: white; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800;">
+                                        🔒
+                                    </div>
+                                    <div>
+                                        <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: var(--c-text-primary);">
+                                            Institutional Security & Access Policy Workspace
+                                        </h2>
+                                        <div style="color: var(--c-text-muted); font-size: 13px; margin-top: 2px;">
+                                            Enforce teacher authentication rules, session timeout, audit logs, and data backups.
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-primary" onclick="alert('Security policies updated!')">Save Security Rules</button>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                                
+                                <div class="card" style="padding: 24px; border-radius: 12px;">
+                                    <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 16px; color: #0f172a; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
+                                        Staff Authentication & Access Rules
+                                    </h3>
+
+                                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                                        <label style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: #1e293b; cursor: pointer;">
+                                            <span>🔑 <strong>Enforce First-Time Password Reset:</strong> Require newly registered teachers to set personal password on first login</span>
+                                            <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #059669;">
+                                        </label>
+                                        <label style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: #1e293b; cursor: pointer;">
+                                            <span>⏱️ <strong>Inactivity Auto-Logout:</strong> Expire active teacher portal session after 60 minutes of inactivity</span>
+                                            <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #059669;">
+                                        </label>
+                                        <label style="display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: #1e293b; cursor: pointer;">
+                                            <span>🚫 <strong>Anti-Brute Force Lockout:</strong> Temporarily lock account for 15 minutes after 5 consecutive failed passwords</span>
+                                            <input type="checkbox" checked style="width: 18px; height: 18px; accent-color: #059669;">
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="card" style="padding: 24px; border-radius: 12px;">
+                                    <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 16px; color: #0f172a; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
+                                        Data Integrity & Backup Actions
+                                    </h3>
+
+                                    <div style="margin-bottom: 16px;">
+                                        <div style="font-size: 13px; color: #475569; margin-bottom: 10px;">
+                                            Export a full encrypted snapshot of all student records, academic marks, and attendance registers.
+                                        </div>
+                                        <button type="button" class="btn btn-outline" onclick="alert('Generating full school database backup archive (.sql.gz)...')">
+                                            📦 Download Full School Backup (.SQL)
+                                        </button>
+                                    </div>
+
+                                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 14px; border-radius: 8px; font-size: 12px; color: #64748b;">
+                                        <strong>🔒 Proprietary License Active:</strong> Hardware signature verified for this institutional host.
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </app-workspace-layout>
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
