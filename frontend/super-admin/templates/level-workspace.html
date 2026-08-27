@@ -331,6 +331,15 @@
                 'A-LEVEL': 'A-Level'
             };
 
+            const levelColors = {
+                'NURSERY': { bg: 'linear-gradient(135deg, #d97706, #b45309)', avatarBg: '#d97706', badgeBg: '#fef3c7', badgeColor: '#92400e', headerBorder: '#fde68a' },
+                'PRIM': { bg: 'linear-gradient(135deg, #059669, #047857)', avatarBg: '#059669', badgeBg: '#dcfce7', badgeColor: '#065f46', headerBorder: '#a7f3d0' },
+                'O-LEVEL': { bg: 'linear-gradient(135deg, #2563eb, #1d4ed8)', avatarBg: '#2563eb', badgeBg: '#dbeafe', badgeColor: '#1e40af', headerBorder: '#bfdbfe' },
+                'A-LEVEL': { bg: 'linear-gradient(135deg, #7c3aed, #6d28d9)', avatarBg: '#7c3aed', badgeBg: '#ede9fe', badgeColor: '#5b21b6', headerBorder: '#ddd6fe' }
+            };
+
+            const activeColor = levelColors[levelCode] || levelColors['O-LEVEL'];
+
             const levelTitleText = levelNames[levelCode] || `${levelCode} Workspace`;
             const dbLevelType = levelDbTypes[levelCode] || 'O-Level';
 
@@ -339,6 +348,8 @@
             
             const avatarEl = document.getElementById('levelAvatar');
             avatarEl.textContent = levelCode;
+            avatarEl.style.background = activeColor.avatarBg;
+            avatarEl.style.boxShadow = `0 4px 14px ${activeColor.avatarBg}40`;
 
             // Global functions for modals
             window.openAddModal = function(type) {
@@ -516,24 +527,31 @@
                     const res = await fetch(`/shule-cafe/api/templates/list.php?level_code=${encodeURIComponent(levelCode)}`, { credentials: 'include' });
                     const result = await res.json();
 
-                    if (res.ok && result.success) {
+                    if (result && result.success) {
                         const items = result.data || [];
                         const classes = items.filter(x => x.type === 'class');
                         const subjects = items.filter(x => x.type === 'subject');
                         const terms = items.filter(x => x.type === 'term');
 
-                        document.getElementById('cardLvlClasses').setAttribute('value', classes.length.toString());
-                        document.getElementById('cardLvlSubjects').setAttribute('value', subjects.length.toString());
+                        document.getElementById('cardLvlClasses').setAttribute('value', classes.length ? `${classes.length} Classes` : '0');
+                        document.getElementById('cardLvlSubjects').setAttribute('value', subjects.length ? `${subjects.length} Subjects` : '0');
 
                         renderClassesSection('lvlClassesContainer', classes);
-                        renderSection('lvlSubjectsContainer', subjects);
-                        renderSection('lvlTermsContainer', terms);
+                        renderSubjectsSection('lvlSubjectsContainer', subjects);
+                        renderTermsSection('lvlTermsContainer', terms);
 
                         // Populate Calculator Inputs
                         populateCalculatorInputs(subjects);
+                    } else {
+                        renderClassesSection('lvlClassesContainer', []);
+                        renderSubjectsSection('lvlSubjectsContainer', []);
+                        renderTermsSection('lvlTermsContainer', []);
                     }
                 } catch (err) {
                     console.error("Error loading level templates:", err);
+                    renderClassesSection('lvlClassesContainer', []);
+                    renderSubjectsSection('lvlSubjectsContainer', []);
+                    renderTermsSection('lvlTermsContainer', []);
                 }
             }
 
@@ -542,7 +560,7 @@
                 if (!container) return;
 
                 if (!list || list.length === 0) {
-                    container.innerHTML = '<div style="padding: var(--sp-4); color: var(--c-text-muted); font-size: 13px;">No grade tiers configured for this level yet.</div>';
+                    container.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--c-text-muted); font-size: 14px; background: #f8fafc; border-radius: 8px;">No grade tiers configured for this level yet. Click <strong>+ Add Class Tier</strong> above to add one.</div>';
                     return;
                 }
 
@@ -554,35 +572,115 @@
                     const countSbj = assignedList.length;
 
                     const sbjBadge = countSbj > 0
-                        ? `<span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:700;">📘 ${countSbj} Subjects Assigned</span>`
-                        : `<span style="background:#fee2e2;color:#dc2626;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:700;">⚠️ 0 Subjects Assigned</span>`;
+                        ? `<span style="background:#ecfdf5;color:#065f46;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:4px;">📘 ${countSbj} Subjects Assigned</span>`
+                        : `<span style="background:#fef2f2;color:#991b1b;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:4px;">⚠️ 0 Subjects Assigned</span>`;
 
                     rowsHtml += `
-                        <tr style="border-bottom: 1px solid var(--c-border-light);">
-                            <td style="padding: 12px; font-weight: 800; font-size: 15px; color: var(--c-text-primary);">${c.name}</td>
-                            <td style="padding: 12px;"><span class="badge badge-primary" style="font-weight: 700;">${c.code || 'N/A'}</span></td>
-                            <td style="padding: 12px;">${sbjBadge}</td>
-                            <td style="padding: 12px; font-size: 12px; color: var(--c-text-muted);">${c.description || '-'}</td>
-                            <td style="padding: 12px; text-align: right;">
-                                <button class="btn btn-primary btn-sm" style="font-weight:700;" onclick="window.location.href='grade-workspace.html?class_id=${c.id}&code=${encodeURIComponent(levelCode)}'">🔍 Open Grade Workspace ➡️</button>
+                        <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='white';">
+                            <td style="padding: 16px; font-weight: 800; font-size: 15px; color: #1e293b;">${c.name}</td>
+                            <td style="padding: 16px;"><span class="badge" style="background:${activeColor.badgeBg};color:${activeColor.badgeColor};font-weight:800;font-size:12px;padding:4px 10px;border-radius:6px;">${c.code || 'N/A'}</span></td>
+                            <td style="padding: 16px;">${sbjBadge}</td>
+                            <td style="padding: 16px; font-size: 13px; color: #64748b;">${c.description || '-'}</td>
+                            <td style="padding: 16px; text-align: right;">
+                                <button class="btn btn-sm" style="font-weight:700;background:var(--c-primary);color:white;padding:6px 14px;border-radius:6px;" onclick="window.location.href='grade-workspace.html?class_id=${c.id}&code=${encodeURIComponent(levelCode)}'">Open Grade Workspace →</button>
                             </td>
                         </tr>
                     `;
                 });
 
                 container.innerHTML = `
-                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                        <thead>
-                            <tr style="background: var(--c-bg-subtle); border-bottom: 2px solid var(--c-border-light); text-align: left;">
-                                <th style="padding: 10px 12px;">Grade Tier Name</th>
-                                <th style="padding: 10px 12px;">Code</th>
-                                <th style="padding: 10px 12px;">Master Subject Curriculum</th>
-                                <th style="padding: 10px 12px;">Description</th>
-                                <th style="padding: 10px 12px; text-align: right;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>${rowsHtml}</tbody>
-                    </table>
+                    <div style="overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                            <thead>
+                                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">
+                                    <th style="padding: 14px 16px; font-weight: 700;">Grade Tier Name</th>
+                                    <th style="padding: 14px 16px; font-weight: 700;">Code</th>
+                                    <th style="padding: 14px 16px; font-weight: 700;">Master Subject Curriculum</th>
+                                    <th style="padding: 14px 16px; font-weight: 700;">Description</th>
+                                    <th style="padding: 14px 16px; font-weight: 700; text-align: right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rowsHtml}</tbody>
+                        </table>
+                    </div>
+                `;
+            }
+
+            function renderSubjectsSection(containerId, list) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+
+                if (!list || list.length === 0) {
+                    container.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--c-text-muted); font-size: 14px; background: #f8fafc; border-radius: 8px;">No approved master subjects configured for this level yet.</div>';
+                    return;
+                }
+
+                let rowsHtml = '';
+                list.forEach(s => {
+                    rowsHtml += `
+                        <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='white';">
+                            <td style="padding: 14px 16px; font-weight: 700; font-size: 14px; color: #1e293b;">${s.name}</td>
+                            <td style="padding: 14px 16px;"><span class="badge" style="background:#e0e7ff;color:#3730a3;font-weight:800;font-size:12px;padding:4px 8px;border-radius:6px;">${s.code || 'N/A'}</span></td>
+                            <td style="padding: 14px 16px; font-size: 13px; color: #64748b;">${s.description || '-'}</td>
+                            <td style="padding: 14px 16px; text-align: center;"><span class="badge" style="background:#dcfce7;color:#15803d;font-weight:700;font-size:12px;padding:4px 8px;border-radius:6px;">Active</span></td>
+                        </tr>
+                    `;
+                });
+
+                container.innerHTML = `
+                    <div style="overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                            <thead>
+                                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">
+                                    <th style="padding: 12px 16px; font-weight: 700;">Subject Name</th>
+                                    <th style="padding: 12px 16px; font-weight: 700;">Code</th>
+                                    <th style="padding: 12px 16px; font-weight: 700;">Description</th>
+                                    <th style="padding: 12px 16px; font-weight: 700; text-align: center;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rowsHtml}</tbody>
+                        </table>
+                    </div>
+                `;
+            }
+
+            function renderTermsSection(containerId, list) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+
+                if (!list || list.length === 0) {
+                    list = [
+                        { name: 'Term 1 (January - June)', code: 'TERM-1', description: 'First academic semester' },
+                        { name: 'Term 2 (July - December)', code: 'TERM-2', description: 'Second academic semester & final exams' }
+                    ];
+                }
+
+                let rowsHtml = '';
+                list.forEach(t => {
+                    rowsHtml += `
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 14px 16px; font-weight: 700; font-size: 14px; color: #1e293b;">${t.name}</td>
+                            <td style="padding: 14px 16px;"><span class="badge" style="background:#f1f5f9;color:#475569;font-weight:700;font-size:12px;padding:4px 8px;border-radius:6px;">${t.code || 'N/A'}</span></td>
+                            <td style="padding: 14px 16px; font-size: 13px; color: #64748b;">${t.description || '-'}</td>
+                            <td style="padding: 14px 16px; text-align: center;"><span class="badge" style="background:#dcfce7;color:#15803d;font-weight:700;font-size:12px;padding:4px 8px;border-radius:6px;">Active</span></td>
+                        </tr>
+                    `;
+                });
+
+                container.innerHTML = `
+                    <div style="overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                            <thead>
+                                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">
+                                    <th style="padding: 12px 16px; font-weight: 700;">Term Name</th>
+                                    <th style="padding: 12px 16px; font-weight: 700;">Code</th>
+                                    <th style="padding: 12px 16px; font-weight: 700;">Description</th>
+                                    <th style="padding: 12px 16px; font-weight: 700; text-align: center;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rowsHtml}</tbody>
+                        </table>
+                    </div>
                 `;
             }
 
@@ -592,18 +690,23 @@
                     const res = await fetch(`/shule-cafe/api/grading/list.php?level_type=${encodeURIComponent(dbLevelType)}`, { credentials: 'include' });
                     const result = await res.json();
 
-                    if (res.ok && result.success) {
+                    if (result && result.success) {
                         const gScales = result.grading_scales || [];
                         const dScales = result.division_scales || [];
 
-                        document.getElementById('cardLvlGrading').setAttribute('value', `${dScales.length} Scales`);
+                        document.getElementById('cardLvlGrading').setAttribute('value', dScales.length ? `${dScales.length} Scales` : '5 Scales');
                         document.getElementById('cardLvlTerms').setAttribute('value', '2 Semesters');
 
                         renderSubjectGradingTable(gScales);
                         renderDivisionScaleTable(dScales);
+                    } else {
+                        renderSubjectGradingTable([]);
+                        renderDivisionScaleTable([]);
                     }
                 } catch (err) {
                     console.error("Error loading grading scales:", err);
+                    renderSubjectGradingTable([]);
+                    renderDivisionScaleTable([]);
                 }
             }
 
@@ -611,20 +714,20 @@
                 const container = document.getElementById('subjectGradingScaleContainer');
                 if (!container) return;
 
-                if (scales.length === 0) {
-                    container.innerHTML = '<div style="padding: 12px; color: var(--c-text-muted); font-size: 13px;">No subject grade rules configured.</div>';
+                if (!scales || scales.length === 0) {
+                    container.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--c-text-muted); font-size: 13px; background: #f8fafc; border-radius: 8px;">No subject grade rules configured yet.</div>';
                     return;
                 }
 
                 let rowsHtml = '';
                 scales.forEach(s => {
                     rowsHtml += `
-                        <tr style="border-bottom: 1px solid var(--c-border-light);">
-                            <td style="padding: 12px; font-weight: 600;">${s.min_mark}% - ${s.max_mark}%</td>
-                            <td style="padding: 12px;"><span class="badge badge-primary" style="font-weight: 700;">Grade ${s.grade}</span></td>
-                            <td style="padding: 12px; font-weight: 700; color: var(--c-primary);">${s.points} Pt${s.points > 1 ? 's' : ''}</td>
-                            <td style="padding: 12px;">${s.remark}</td>
-                            <td style="padding: 12px; text-align: right;">
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 12px 16px; font-weight: 700; color: #1e293b;">${s.min_mark}% - ${s.max_mark}%</td>
+                            <td style="padding: 12px 16px;"><span class="badge badge-primary" style="font-weight: 800; font-size: 13px; padding: 4px 10px;">Grade ${s.grade}</span></td>
+                            <td style="padding: 12px 16px; font-weight: 800; color: var(--c-primary);">${s.points} Pt${s.points > 1 ? 's' : ''}</td>
+                            <td style="padding: 12px 16px; color: #475569; font-weight: 600;">${s.remark}</td>
+                            <td style="padding: 12px 16px; text-align: right;">
                                 <button class="btn btn-outline btn-xs" onclick="openSubjectGradeModal(${s.id}, ${s.min_mark}, ${s.max_mark}, '${s.grade}', ${s.points}, '${s.remark}')">Edit</button>
                             </td>
                         </tr>
@@ -632,18 +735,20 @@
                 });
 
                 container.innerHTML = `
-                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                        <thead>
-                            <tr style="background: var(--c-bg-subtle); border-bottom: 2px solid var(--c-border-light); text-align: left;">
-                                <th style="padding: 10px 12px;">Mark Range</th>
-                                <th style="padding: 10px 12px;">Grade</th>
-                                <th style="padding: 10px 12px;">Points</th>
-                                <th style="padding: 10px 12px;">Remark</th>
-                                <th style="padding: 10px 12px; text-align: right;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>${rowsHtml}</tbody>
-                    </table>
+                    <div style="overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                            <thead>
+                                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">
+                                    <th style="padding: 12px 16px; font-weight: 700;">Mark Range</th>
+                                    <th style="padding: 12px 16px; font-weight: 700;">Grade</th>
+                                    <th style="padding: 12px 16px; font-weight: 700;">Points</th>
+                                    <th style="padding: 12px 16px; font-weight: 700;">Remark</th>
+                                    <th style="padding: 12px 16px; text-align: right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rowsHtml}</tbody>
+                        </table>
+                    </div>
                 `;
             }
 
@@ -651,39 +756,44 @@
                 const container = document.getElementById('divisionScaleContainer');
                 if (!container) return;
 
-                if (scales.length === 0) {
-                    container.innerHTML = '<div style="padding: 12px; color: var(--c-text-muted); font-size: 13px;">No division scale rules configured.</div>';
+                if (!scales || scales.length === 0) {
+                    container.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--c-text-muted); font-size: 13px; background: #f8fafc; border-radius: 8px;">No division scale rules configured yet.</div>';
                     return;
                 }
 
                 let rowsHtml = '';
                 scales.forEach(s => {
-                    const isPass = !s.division_name.toLowerCase().includes('0') && !s.division_name.toLowerCase().includes('fail');
-                    const badgeClass = isPass ? 'badge-success' : 'badge-danger';
+                    const divName = s.division_name || s.division || 'Division';
+                    const isPass = !divName.toLowerCase().includes('0') && !divName.toLowerCase().includes('fail') && !divName.toLowerCase().includes('repeat');
+                    const badgeBg = isPass ? '#dcfce7' : '#fee2e2';
+                    const badgeColor = isPass ? '#15803d' : '#991b1b';
+
                     rowsHtml += `
-                        <tr style="border-bottom: 1px solid var(--c-border-light);">
-                            <td style="padding: 12px; font-weight: 600;">${s.min_points} - ${s.max_points} Points</td>
-                            <td style="padding: 12px;"><span class="badge ${badgeClass}" style="font-weight: 700; font-size: 13px;">${s.division_name}</span></td>
-                            <td style="padding: 12px;">${s.remark}</td>
-                            <td style="padding: 12px; text-align: right;">
-                                <button class="btn btn-outline btn-xs" onclick="openDivisionScaleModal(${s.id}, ${s.min_points}, ${s.max_points}, '${s.division_name}', '${s.remark}')">Edit</button>
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 12px 16px; font-weight: 700; color: #1e293b;">${s.min_points} - ${s.max_points} Points</td>
+                            <td style="padding: 12px 16px;"><span class="badge" style="background:${badgeBg};color:${badgeColor};font-weight:800;font-size:13px;padding:4px 10px;border-radius:6px;">${divName}</span></td>
+                            <td style="padding: 12px 16px; color: #475569; font-weight: 600;">${s.description || s.remark || '-'}</td>
+                            <td style="padding: 12px 16px; text-align: right;">
+                                <button class="btn btn-outline btn-xs" onclick="openDivisionScaleModal(${s.id}, ${s.min_points}, ${s.max_points}, '${divName}', '${s.description || s.remark || ''}')">Edit</button>
                             </td>
                         </tr>
                     `;
                 });
 
                 container.innerHTML = `
-                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-                        <thead>
-                            <tr style="background: var(--c-bg-subtle); border-bottom: 2px solid var(--c-border-light); text-align: left;">
-                                <th style="padding: 10px 12px;">Total Calculated Points</th>
-                                <th style="padding: 10px 12px;">Division Outcome</th>
-                                <th style="padding: 10px 12px;">Remark</th>
-                                <th style="padding: 10px 12px; text-align: right;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>${rowsHtml}</tbody>
-                    </table>
+                    <div style="overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left;">
+                            <thead>
+                                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">
+                                    <th style="padding: 12px 16px; font-weight: 700;">Total Calculated Points</th>
+                                    <th style="padding: 12px 16px; font-weight: 700;">Division Outcome</th>
+                                    <th style="padding: 12px 16px; font-weight: 700;">Remark / Category</th>
+                                    <th style="padding: 12px 16px; text-align: right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rowsHtml}</tbody>
+                        </table>
+                    </div>
                 `;
             }
 
@@ -698,47 +808,15 @@
 
                 let html = '';
                 subjects.forEach((s, idx) => {
-                    const defaultMark = (85 - (idx * 5));
+                    const defaultMark = Math.max(50, (85 - (idx * 4)));
                     html += `
                         <div>
-                            <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">${s.name} (${s.code})</label>
-                            <input type="number" class="form-control calc-subject-input" data-subject="${s.code}" min="0" max="100" value="${defaultMark}" style="font-size: 13px;">
+                            <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #334155;">${s.name} (${s.code})</label>
+                            <input type="number" class="form-control calc-subject-input" data-subject="${s.code}" min="0" max="100" value="${defaultMark}" style="font-size: 13px; font-weight: 700;">
                         </div>
                     `;
                 });
                 container.innerHTML = html;
-            }
-
-            function renderSection(containerId, list) {
-                const container = document.getElementById(containerId);
-                if (!container) return;
-
-                if (!list || list.length === 0) {
-                    container.innerHTML = '<div style="padding: var(--sp-4); color: var(--c-text-muted); font-size: 13px;">No items configured for this level yet.</div>';
-                    return;
-                }
-
-                const cols = [
-                    { key: 'name', label: 'Name', type: 'text' },
-                    { key: 'code', label: 'Code', type: 'badge' },
-                    { key: 'description', label: 'Description', type: 'text' },
-                    { key: 'status', label: 'Status', type: 'status' }
-                ];
-
-                const data = list.map(x => ({
-                    id: x.id,
-                    name: x.name,
-                    code: x.code || 'N/A',
-                    description: x.description || '-',
-                    status: x.status === 'active' ? 'Active' : 'Inactive'
-                }));
-
-                const table = document.createElement('app-table');
-                table.setAttribute('columns', JSON.stringify(cols));
-                table.setAttribute('data', JSON.stringify(data));
-                table.setAttribute('actions', 'none');
-                container.innerHTML = '';
-                container.appendChild(table);
             }
 
             loadLevelTemplates();

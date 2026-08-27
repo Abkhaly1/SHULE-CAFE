@@ -203,6 +203,13 @@
             window.location.href = `level-workspace.html?code=${encodeURIComponent(currentLevelCode)}`;
         }
 
+        const tierStyles = {
+            'NURSERY': { color: '#d97706', bg: '#fef3c7', text: '#92400e', headerGrad: 'linear-gradient(135deg, #78350f 0%, #b45309 100%)' },
+            'PRIM': { color: '#059669', bg: '#dcfce7', text: '#065f46', headerGrad: 'linear-gradient(135deg, #064e3b 0%, #059669 100%)' },
+            'O-LEVEL': { color: '#2563eb', bg: '#dbeafe', text: '#1e40af', headerGrad: 'linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%)' },
+            'A-LEVEL': { color: '#7c3aed', bg: '#ede9fe', text: '#5b21b6', headerGrad: 'linear-gradient(135deg, #4c1d95 0%, #7c3aed 100%)' }
+        };
+
         async function loadGradeWorkspace(classId) {
             try {
                 const res = await fetch(`/shule-cafe/api/templates/grade_subjects.php?class_id=${encodeURIComponent(classId)}`, { credentials: 'include' });
@@ -215,12 +222,25 @@
 
                 gradeData = data;
                 const cTpl = data.class_template;
+                const lvl = cTpl.level_code || currentLevelCode;
+                const style = tierStyles[lvl] || tierStyles['O-LEVEL'];
 
-                // Render Header
+                // Render Header with painted gradients & vibrant badges
+                const headerEl = document.querySelector('.workspace-header');
+                if (headerEl) headerEl.style.background = style.headerGrad;
+
                 document.getElementById('gradeTitle').textContent = `${cTpl.name} (${cTpl.code}) Curriculum Workspace`;
-                document.getElementById('gradeSubtitle').textContent = cTpl.description || `Master subject curriculum template for ${cTpl.name} (${cTpl.level_code}).`;
-                document.getElementById('gradeAvatar').textContent = cTpl.code || 'GRD';
-                document.getElementById('gradeLevelBadge').textContent = cTpl.level_code;
+                document.getElementById('gradeSubtitle').textContent = cTpl.description || `Master subject curriculum template for ${cTpl.name} (${lvl}).`;
+                
+                const avatar = document.getElementById('gradeAvatar');
+                avatar.textContent = cTpl.code || 'GRD';
+                avatar.style.background = style.color;
+
+                const badge = document.getElementById('gradeLevelBadge');
+                badge.textContent = lvl;
+                badge.style.background = style.bg;
+                badge.style.color = style.text;
+                badge.style.border = `1px solid ${style.color}`;
 
                 renderSubjectsTable(data.subject_checklist || []);
 
