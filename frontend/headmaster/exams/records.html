@@ -13,85 +13,103 @@
     <script type="module" src="../../js/auth/auth-guard.js"></script>
 
     <style>
-        /* Directory Listing Styling */
-        .year-heading {
-            font-size: 16px;
+        /* 2-Column Selection Cards Grid */
+        .step-grid-2col {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .step-grid-2col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .step-card {
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: #0f172a;
+            font-weight: 700;
+            transition: all 0.15s ease;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .step-card:hover {
+            border-color: #059669;
+            background: #f0fdf4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.12);
+        }
+
+        .step-card .card-title {
+            font-size: 15px;
             font-weight: 800;
             color: #0f172a;
-            letter-spacing: 0.03em;
-            text-transform: uppercase;
-            margin: 20px 0 12px;
-            padding-bottom: 6px;
-            border-bottom: 2px solid #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .term-group-title {
-            font-size: 13px;
-            font-weight: 800;
+        .step-card:hover .card-title {
             color: #064e3b;
+        }
+
+        .step-card .card-arrow {
+            font-size: 18px;
+            font-weight: 900;
+            color: #059669;
+            transition: transform 0.15s ease;
+        }
+
+        .step-card:hover .card-arrow {
+            transform: translateX(4px);
+        }
+
+        .step-section-heading {
+            font-size: 15px;
+            font-weight: 800;
+            color: #0f172a;
             text-transform: uppercase;
             letter-spacing: 0.03em;
-            margin: 14px 0 10px 6px;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
-        .level-group-box {
-            margin-left: 12px;
-            margin-bottom: 14px;
-            padding-left: 10px;
-            border-left: 2px solid #e2e8f0;
-        }
-
-        .level-group-title {
-            font-size: 12.5px;
-            font-weight: 800;
-            color: #334155;
-            text-transform: uppercase;
-            letter-spacing: 0.02em;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .grade-group-box {
-            margin-left: 14px;
-            margin-bottom: 10px;
-        }
-
-        .grade-group-title {
-            font-size: 12px;
-            font-weight: 700;
-            color: #64748b;
-            margin-bottom: 4px;
-        }
-
-        .class-result-link {
+        .term-pill-bar {
             display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            text-decoration: none;
-            color: #0284c7;
+            background: #f1f5f9;
+            padding: 3px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            gap: 4px;
+        }
+
+        .term-pill-btn {
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 12.5px;
             font-weight: 700;
-            font-size: 14px;
-            padding: 3px 8px;
-            border-radius: 4px;
-            transition: all 0.12s ease;
+            border: none;
+            background: transparent;
+            color: #475569;
             cursor: pointer;
+            transition: all 0.15s ease;
         }
 
-        .class-result-link:hover {
-            color: #0369a1;
-            background: #f0f9ff;
-            transform: translateX(3px);
-        }
-
-        .class-result-link .bullet {
-            font-weight: 900;
-            color: #0284c7;
-            font-size: 15px;
+        .term-pill-btn.active {
+            background: #064e3b;
+            color: #ffffff;
+            box-shadow: 0 2px 5px rgba(6, 78, 59, 0.2);
         }
 
         /* Broadsheet Table Styling */
@@ -199,22 +217,22 @@
                 <div class="app-content">
                     <app-breadcrumb id="resultsBreadcrumb" path="Headmaster, Examinations, Results Records"></app-breadcrumb>
 
-                    <!-- Top Action Bar -->
+                    <!-- Top Subheader Bar -->
                     <div class="card no-print" style="margin-top: 14px; margin-bottom: 16px; padding: 14px 20px; background: white; border-radius: 10px; border: 1px solid var(--c-primary-border);">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                             <div style="display: flex; align-items: center; gap: 14px;">
-                                <a id="btnBackAction" href="index.html" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none; font-weight: 700;">
+                                <button id="btnDynamicBack" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700;">
                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                                    <span id="btnBackText">Back to Exams</span>
-                                </a>
+                                    <span id="btnBackLabel">Back to Exams</span>
+                                </button>
                                 <div>
-                                    <h1 id="pageTitle" style="margin: 0; font-size: 18px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 6px;">
+                                    <h1 id="pageHeading" style="margin: 0; font-size: 18px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 6px;">
                                         <span>📊 Results Records & Broadsheets</span>
                                     </h1>
                                 </div>
                             </div>
 
-                            <!-- Action Buttons for Broadsheet View -->
+                            <!-- Right Controls: Action Buttons for Broadsheet View -->
                             <div id="broadsheetActionButtons" style="display: none; align-items: center; gap: 8px;">
                                 <button id="btnPrintBroadsheet" class="btn btn-outline btn-sm" style="font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
                                     <span>🖨️</span> Print Broadsheet
@@ -226,16 +244,19 @@
                         </div>
                     </div>
 
-                    <!-- 1. DIRECTORY LISTING VIEW (Default View) -->
-                    <div id="resultsDirectoryView">
-                        <div class="card" style="padding: 24px 32px; background: white; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 24px; min-height: 400px;">
-                            <div id="directoryListContainer">
-                                <div style="text-align: center; padding: 40px; color: #64748b;">
-                                    <span>⏳ Loading Results Directory...</span>
-                                </div>
+                    <!-- STEP CONTAINER WRAPPER -->
+                    <div class="card" style="padding: 24px 28px; background: white; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 24px; min-height: 420px;">
+                        
+                        <!-- STEP 1: SELECT ACADEMIC YEAR (2 Columns) -->
+                        <div id="stepYearsView" style="display: block;">
+                            <div class="step-section-heading">
+                                <span>📅 Select Academic Year</span>
+                            </div>
+                            <div id="yearsGridContainer" class="step-grid-2col">
+                                <!-- Dynamic 2-column Year Cards -->
                             </div>
 
-                            <!-- 10 Years Pagination Bar -->
+                            <!-- 10 Years Pagination -->
                             <div id="yearsPaginationBar" style="display: none; justify-content: space-between; align-items: center; padding-top: 18px; border-top: 1px solid #e2e8f0; margin-top: 24px; flex-wrap: wrap; gap: 10px;">
                                 <button id="btnPrevYears" class="btn btn-outline btn-sm" style="font-size: 12px; font-weight: 700; padding: 5px 14px;">
                                     ← Newer Years
@@ -248,42 +269,66 @@
                                 </button>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- 2. ACTIVE BROADSHEET RECORDS VIEW (Shown when a class result is clicked) -->
-                    <div id="broadsheetWrapper" style="display: none;">
-                        
-                        <!-- National Examination Board Style Division Summary Matrix -->
-                        <div class="card" style="margin-bottom: 16px; padding: 0; overflow-x: auto; border: 1.5px solid #cbd5e1; border-radius: 8px; background: white;">
-                            <table class="summary-matrix-table">
-                                <thead>
-                                    <tr>
-                                        <th style="min-width: 60px;">I</th>
-                                        <th style="min-width: 60px;">II</th>
-                                        <th style="min-width: 60px;">III</th>
-                                        <th style="min-width: 60px;">IV</th>
-                                        <th style="min-width: 60px;">0</th>
-                                        <th style="min-width: 80px; background: #043d2e;">Total</th>
-                                        <th style="min-width: 90px; background: #043d2e;">Pass Rate</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr style="font-size: 15px; font-weight: 800; color: #0f172a;">
-                                        <td id="topSumDiv1" style="color: #15803d; background: #f0fdf4;">0</td>
-                                        <td id="topSumDiv2" style="color: #1d4ed8; background: #eff6ff;">0</td>
-                                        <td id="topSumDiv3" style="color: #b45309; background: #fffbeb;">0</td>
-                                        <td id="topSumDiv4" style="color: #c2410c; background: #fff7ed;">0</td>
-                                        <td id="topSumDiv0" style="color: #dc2626; background: #fef2f2;">0</td>
-                                        <td id="topSumTotal" style="background: #f8fafc;">0</td>
-                                        <td id="topSumPassRate" style="background: #ecfdf5; color: #059669; font-weight: 900;">0%</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <!-- STEP 2: SELECT EDUCATION LEVEL (2 Columns) -->
+                        <div id="stepLevelsView" style="display: none;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
+                                <div class="step-section-heading" style="margin-bottom: 0;">
+                                    <span>🏛️ Select Education Level &bull; <strong id="step2YearBadge" style="color: #059669;">2026</strong></span>
+                                </div>
+                                <div class="term-pill-bar" id="termSwitcherBar">
+                                    <button class="term-pill-btn active" onclick="setTermSelection('Term 1')">Term 1</button>
+                                    <button class="term-pill-btn" onclick="setTermSelection('Term 2')">Term 2</button>
+                                </div>
+                            </div>
+                            <div id="levelsGridContainer" class="step-grid-2col">
+                                <!-- Dynamic 2-column Education Level Cards -->
+                            </div>
                         </div>
 
-                        <!-- Class & Framework Header -->
-                        <div class="card" style="padding: 12px 18px; margin-bottom: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <!-- STEP 3: SELECT GRADE / CLASSROOM (2 Columns) -->
+                        <div id="stepGradesView" style="display: none;">
+                            <div class="step-section-heading">
+                                <span>📚 Select Grade / Classroom Stream &bull; <strong id="step3LevelBadge" style="color: #059669;">O-Level</strong></span>
+                            </div>
+                            <div id="gradesGridContainer" class="step-grid-2col">
+                                <!-- Dynamic 2-column Grade/Classroom Cards -->
+                            </div>
+                        </div>
+
+                        <!-- STEP 4: BROADSHEET WORKSPACE VIEW -->
+                        <div id="stepWorkspaceView" style="display: none;">
+                            
+                            <!-- National Examination Board Style Division Summary Matrix -->
+                            <div class="card" style="margin-bottom: 16px; padding: 0; overflow-x: auto; border: 1.5px solid #cbd5e1; border-radius: 8px; background: white;">
+                                <table class="summary-matrix-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="min-width: 60px;">I</th>
+                                            <th style="min-width: 60px;">II</th>
+                                            <th style="min-width: 60px;">III</th>
+                                            <th style="min-width: 60px;">IV</th>
+                                            <th style="min-width: 60px;">0</th>
+                                            <th style="min-width: 80px; background: #043d2e;">Total</th>
+                                            <th style="min-width: 90px; background: #043d2e;">Pass Rate</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr style="font-size: 15px; font-weight: 800; color: #0f172a;">
+                                            <td id="topSumDiv1" style="color: #15803d; background: #f0fdf4;">0</td>
+                                            <td id="topSumDiv2" style="color: #1d4ed8; background: #eff6ff;">0</td>
+                                            <td id="topSumDiv3" style="color: #b45309; background: #fffbeb;">0</td>
+                                            <td id="topSumDiv4" style="color: #c2410c; background: #fff7ed;">0</td>
+                                            <td id="topSumDiv0" style="color: #dc2626; background: #fef2f2;">0</td>
+                                            <td id="topSumTotal" style="background: #f8fafc;">0</td>
+                                            <td id="topSumPassRate" style="background: #ecfdf5; color: #059669; font-weight: 900;">0%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Class & Framework Header -->
+                            <div style="padding: 12px 18px; margin-bottom: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                                 <div>
                                     <strong id="broadsheetHeaderTitle" style="font-size: 15px; color: #064e3b;">Classroom Broadsheet</strong>
                                     <div id="broadsheetHeaderSub" style="font-size: 11.5px; color: #64748b; margin-top: 1px;">Adaptive Division Grading Framework</div>
@@ -292,47 +337,48 @@
                                     🏆 Best Subject: Loading...
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Student Results Master Table Card -->
-                        <div class="card" style="padding: 0; overflow-x: auto; border-radius: 8px; background: white; margin-bottom: 24px; border: 1.5px solid #cbd5e1;">
-                            <table id="broadsheetTable" class="broadsheet-table">
-                                <thead id="broadsheetThead">
-                                    <!-- Dynamic Columns -->
-                                </thead>
-                                <tbody id="broadsheetTbody">
-                                    <!-- Dynamic Student Broadsheet Rows -->
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Subject Examinations Summary Matrix -->
-                        <div class="card" style="padding: 16px 20px; border-radius: 8px; background: white; margin-bottom: 30px; border: 1.5px solid #cbd5e1;">
-                            <h3 style="margin: 0 0 12px; font-size: 14px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.03em; display: flex; align-items: center; gap: 6px;">
-                                <span>📋 Subject Examinations Summary</span>
-                            </h3>
-                            <div style="overflow-x: auto;">
-                                <table class="subj-summary-table" id="subjSummaryTable">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 45px;">S/N</th>
-                                            <th style="width: 70px;">Code</th>
-                                            <th style="text-align: left; min-width: 150px;">Subject Name</th>
-                                            <th style="width: 60px;">REG</th>
-                                            <th style="width: 60px;">SAT</th>
-                                            <th style="width: 50px; background: #15803d;">A</th>
-                                            <th style="width: 50px; background: #1d4ed8;">B</th>
-                                            <th style="width: 50px; background: #b45309;">C</th>
-                                            <th style="width: 50px; background: #c2410c;">D</th>
-                                            <th style="width: 50px; background: #dc2626;">F</th>
-                                            <th style="width: 80px; background: #064e3b;">Pass %</th>
-                                        </tr>
+                            <!-- Student Results Master Table Card -->
+                            <div style="padding: 0; overflow-x: auto; border-radius: 8px; background: white; margin-bottom: 24px; border: 1.5px solid #cbd5e1;">
+                                <table id="broadsheetTable" class="broadsheet-table">
+                                    <thead id="broadsheetThead">
+                                        <!-- Dynamic Columns -->
                                     </thead>
-                                    <tbody id="subjSummaryTbody">
-                                        <!-- Dynamic Subject Summary Rows -->
+                                    <tbody id="broadsheetTbody">
+                                        <!-- Dynamic Student Rows -->
                                     </tbody>
                                 </table>
                             </div>
+
+                            <!-- Subject Examinations Summary Matrix -->
+                            <div style="padding: 16px 20px; border-radius: 8px; background: white; margin-bottom: 20px; border: 1.5px solid #cbd5e1;">
+                                <h3 style="margin: 0 0 12px; font-size: 14px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.03em; display: flex; align-items: center; gap: 6px;">
+                                    <span>📋 Subject Examinations Summary</span>
+                                </h3>
+                                <div style="overflow-x: auto;">
+                                    <table class="subj-summary-table" id="subjSummaryTable">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 45px;">S/N</th>
+                                                <th style="width: 70px;">Code</th>
+                                                <th style="text-align: left; min-width: 150px;">Subject Name</th>
+                                                <th style="width: 60px;">REG</th>
+                                                <th style="width: 60px;">SAT</th>
+                                                <th style="width: 50px; background: #15803d;">A</th>
+                                                <th style="width: 50px; background: #1d4ed8;">B</th>
+                                                <th style="width: 50px; background: #b45309;">C</th>
+                                                <th style="width: 50px; background: #c2410c;">D</th>
+                                                <th style="width: 50px; background: #dc2626;">F</th>
+                                                <th style="width: 80px; background: #064e3b;">Pass %</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="subjSummaryTbody">
+                                            <!-- Dynamic Subject Summary Rows -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
                         </div>
 
                     </div>
@@ -343,6 +389,14 @@
     </div>
 
     <script>
+        // Progressive Step State: 'YEARS' | 'LEVELS' | 'GRADES' | 'WORKSPACE'
+        let currentStep = 'YEARS';
+        let selectedYear = '2026';
+        let selectedTerm = 'Term 1';
+        let selectedLevel = null;
+        let selectedClassroomId = null;
+        let selectedClassName = '';
+
         let currentScopes = null;
         let activeBroadsheetData = null;
         let currentYearPage = 0;
@@ -354,10 +408,12 @@
             document.getElementById('btnPrintBroadsheet').addEventListener('click', () => window.print());
             document.getElementById('btnExportCSV').addEventListener('click', exportToCSV);
 
+            document.getElementById('btnDynamicBack').addEventListener('click', handleBackNavigation);
+
             document.getElementById('btnPrevYears').addEventListener('click', () => {
                 if (currentYearPage > 0) {
                     currentYearPage--;
-                    renderDirectoryList(currentScopes);
+                    renderYearsStep();
                 }
             });
 
@@ -365,25 +421,19 @@
                 const totalPages = Math.ceil((currentScopes.years || []).length / YEARS_PER_PAGE);
                 if (currentYearPage < totalPages - 1) {
                     currentYearPage++;
-                    renderDirectoryList(currentScopes);
+                    renderYearsStep();
                 }
             });
 
-            // Handle back button action
-            document.getElementById('btnBackAction').addEventListener('click', (e) => {
-                if (document.getElementById('broadsheetWrapper').style.display === 'block') {
-                    e.preventDefault();
-                    showDirectoryView();
-                }
-            });
-
-            // Check URL parameters for direct link to a class
+            // Check URL parameters
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('classroom_id')) {
-                const cid = urlParams.get('classroom_id');
-                const yr = urlParams.get('year') || '2026';
-                const term = urlParams.get('term') || 'Term 1';
-                openBroadsheet(cid, yr, term);
+                selectedClassroomId = urlParams.get('classroom_id');
+                selectedYear = urlParams.get('year') || '2026';
+                selectedTerm = urlParams.get('term') || 'Term 1';
+                goToStep('WORKSPACE');
+            } else {
+                goToStep('YEARS');
             }
         });
 
@@ -393,101 +443,89 @@
                 const data = await res.json();
                 if (data.success) {
                     currentScopes = data;
-                    renderDirectoryList(data);
+                    renderYearsStep();
                 }
             } catch(e) {
                 console.error(e);
             }
         }
 
-        function renderDirectoryList(data) {
-            const container = document.getElementById('directoryListContainer');
+        // ────────────────────────────────────────────────────────────────────────
+        // STEP TRANSITION CONTROLLER
+        // ────────────────────────────────────────────────────────────────────────
+        function goToStep(step) {
+            currentStep = step;
+            document.getElementById('stepYearsView').style.display = (step === 'YEARS') ? 'block' : 'none';
+            document.getElementById('stepLevelsView').style.display = (step === 'LEVELS') ? 'block' : 'none';
+            document.getElementById('stepGradesView').style.display = (step === 'GRADES') ? 'block' : 'none';
+            document.getElementById('stepWorkspaceView').style.display = (step === 'WORKSPACE') ? 'block' : 'none';
+            document.getElementById('broadsheetActionButtons').style.display = (step === 'WORKSPACE') ? 'flex' : 'none';
+
+            const backLabel = document.getElementById('btnBackLabel');
+            const pageHeading = document.getElementById('pageHeading');
+
+            if (step === 'YEARS') {
+                backLabel.textContent = 'Back to Exams';
+                pageHeading.innerHTML = '<span>📊 Results Records & Broadsheets</span>';
+                window.history.pushState({}, '', 'records.html');
+            } else if (step === 'LEVELS') {
+                backLabel.textContent = 'Back to Years';
+                pageHeading.innerHTML = `<span>📊 Results Records ‹ Year ${selectedYear}</span>`;
+                renderLevelsStep();
+            } else if (step === 'GRADES') {
+                backLabel.textContent = 'Back to Levels';
+                pageHeading.innerHTML = `<span>📊 Results Records ‹ ${selectedLevel} (${selectedYear})</span>`;
+                renderGradesStep();
+            } else if (step === 'WORKSPACE') {
+                backLabel.textContent = 'Back to Grades';
+                pageHeading.innerHTML = `<span>📊 ${selectedClassName || 'Classroom Results'} ‹ ${selectedTerm} ${selectedYear}</span>`;
+                window.history.pushState({}, '', `records.html?classroom_id=${selectedClassroomId}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}`);
+                openBroadsheet(selectedClassroomId, selectedYear, selectedTerm);
+            }
+        }
+
+        function handleBackNavigation() {
+            if (currentStep === 'WORKSPACE') {
+                goToStep('GRADES');
+            } else if (currentStep === 'GRADES') {
+                goToStep('LEVELS');
+            } else if (currentStep === 'LEVELS') {
+                goToStep('YEARS');
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // ────────────────────────────────────────────────────────────────────────
+        // STEP 1: RENDER YEARS (2 Columns)
+        // ────────────────────────────────────────────────────────────────────────
+        function renderYearsStep() {
+            if (!currentScopes) return;
+            const container = document.getElementById('yearsGridContainer');
             container.innerHTML = '';
 
-            const allYears = data.years || ['2026', '2025', '2024'];
-            const terms = data.terms || ['Term 1', 'Term 2'];
-            const classrooms = data.classrooms || [];
-
-            if (classrooms.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding:30px; color:#64748b;">No active classrooms found for this school.</div>`;
-                return;
-            }
-
-            // Pagination slice
+            const allYears = currentScopes.years || ['2026', '2025', '2024'];
             const totalPages = Math.ceil(allYears.length / YEARS_PER_PAGE);
             const startIdx = currentYearPage * YEARS_PER_PAGE;
             const pageYears = allYears.slice(startIdx, startIdx + YEARS_PER_PAGE);
 
-            // Group Classrooms by Education Level -> Grade -> Classrooms
-            const hierarchy = {};
-            classrooms.forEach(cls => {
-                const lvl = cls.level_name || 'School Classes';
-                const grd = cls.grade_name || 'General Grade';
-                if (!hierarchy[lvl]) hierarchy[lvl] = {};
-                if (!hierarchy[lvl][grd]) hierarchy[lvl][grd] = [];
-                hierarchy[lvl][grd].push(cls);
-            });
-
-            pageYears.forEach((yr) => {
-                const yearDiv = document.createElement('div');
-                yearDiv.style.marginBottom = '28px';
-
-                let yearHtml = `
-                    <div class="year-heading">RESULTS OF THE YEAR ${yr}</div>
+            pageYears.forEach(yr => {
+                const card = document.createElement('div');
+                card.className = 'step-card';
+                card.innerHTML = `
+                    <div class="card-title">
+                        <span style="font-size: 20px;">📅</span>
+                        <span>Results of the Year ${yr}</span>
+                    </div>
+                    <span class="card-arrow">›</span>
                 `;
-
-                terms.forEach(trm => {
-                    yearHtml += `
-                        <div style="margin-bottom: 18px;">
-                            <div class="term-group-title">
-                                <span style="display:inline-block; width:8px; height:8px; background:#059669; border-radius:50%;"></span>
-                                <span>${trm}</span>
-                            </div>
-                    `;
-
-                    // Render Education Levels Hierarchy
-                    for (const [lvlName, gradeGroup] of Object.entries(hierarchy)) {
-                        yearHtml += `
-                            <div class="level-group-box">
-                                <div class="level-group-title">🏛️ ${lvlName}</div>
-                        `;
-
-                        for (const [grdName, clsList] of Object.entries(gradeGroup)) {
-                            yearHtml += `
-                                <div class="grade-group-box">
-                                    <div class="grade-group-title">📚 ${grdName}</div>
-                                    <div style="display: flex; flex-direction: column; gap: 4px; padding-left: 8px;">
-                            `;
-
-                            clsList.forEach(cls => {
-                                const labelName = `${cls.classroom_name} Results`;
-                                yearHtml += `
-                                    <div>
-                                        <a href="javascript:void(0)" onclick="openBroadsheet(${cls.id}, '${yr}', '${trm}', '${cls.classroom_name}')" class="class-result-link">
-                                            <span class="bullet">›</span>
-                                            <span>${labelName}</span>
-                                        </a>
-                                    </div>
-                                `;
-                            });
-
-                            yearHtml += `
-                                    </div>
-                                </div>
-                            `;
-                        }
-
-                        yearHtml += `</div>`;
-                    }
-
-                    yearHtml += `</div>`;
-                });
-
-                yearDiv.innerHTML = yearHtml;
-                container.appendChild(yearDiv);
+                card.onclick = () => {
+                    selectedYear = yr;
+                    goToStep('LEVELS');
+                };
+                container.appendChild(card);
             });
 
-            // Update Pagination Bar
             const pagBar = document.getElementById('yearsPaginationBar');
             if (totalPages > 1) {
                 pagBar.style.display = 'flex';
@@ -499,18 +537,100 @@
             }
         }
 
-        function showDirectoryView() {
-            document.getElementById('resultsDirectoryView').style.display = 'block';
-            document.getElementById('broadsheetWrapper').style.display = 'none';
-            document.getElementById('broadsheetActionButtons').style.display = 'none';
-            document.getElementById('btnBackText').textContent = 'Back to Exams';
-            document.getElementById('pageTitle').innerHTML = '<span>📊 Results Records & Broadsheets</span>';
-            
-            // Clean URL
-            window.history.pushState({}, '', 'records.html');
+        // ────────────────────────────────────────────────────────────────────────
+        // STEP 2: RENDER EDUCATION LEVELS (2 Columns)
+        // ────────────────────────────────────────────────────────────────────────
+        function setTermSelection(term) {
+            selectedTerm = term;
+            document.querySelectorAll('.term-pill-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent === term);
+            });
         }
 
-        async function openBroadsheet(classroomId, year, term, className = '') {
+        function renderLevelsStep() {
+            if (!currentScopes) return;
+            document.getElementById('step2YearBadge').textContent = selectedYear;
+            const container = document.getElementById('levelsGridContainer');
+            container.innerHTML = '';
+
+            const distinctLevels = {};
+            (currentScopes.classrooms || []).forEach(cls => {
+                const lvlName = cls.level_name || 'General Education';
+                if (!distinctLevels[lvlName]) {
+                    distinctLevels[lvlName] = { name: lvlName, count: 0 };
+                }
+                distinctLevels[lvlName].count++;
+            });
+
+            const levelKeys = Object.keys(distinctLevels);
+            if (levelKeys.length === 0) {
+                levelKeys.push('Secondary Education (O-Level)');
+            }
+
+            levelKeys.forEach(lvl => {
+                const count = distinctLevels[lvl]?.count || 0;
+                const card = document.createElement('div');
+                card.className = 'step-card';
+                card.innerHTML = `
+                    <div>
+                        <div class="card-title">
+                            <span style="font-size: 20px;">🏛️</span>
+                            <span>${lvl}</span>
+                        </div>
+                        <div style="font-size: 12px; color: #64748b; font-weight: 600; margin-top: 4px; margin-left: 30px;">
+                            ${count} Classroom Broadsheets Available
+                        </div>
+                    </div>
+                    <span class="card-arrow">›</span>
+                `;
+                card.onclick = () => {
+                    selectedLevel = lvl;
+                    goToStep('GRADES');
+                };
+                container.appendChild(card);
+            });
+        }
+
+        // ────────────────────────────────────────────────────────────────────────
+        // STEP 3: RENDER GRADES & CLASSROOMS (2 Columns)
+        // ────────────────────────────────────────────────────────────────────────
+        function renderGradesStep() {
+            if (!currentScopes) return;
+            document.getElementById('step3LevelBadge').textContent = selectedLevel;
+            const container = document.getElementById('gradesGridContainer');
+            container.innerHTML = '';
+
+            const matchingClasses = (currentScopes.classrooms || []).filter(c => (c.level_name || 'General Education') === selectedLevel);
+            const classesToRender = matchingClasses.length > 0 ? matchingClasses : currentScopes.classrooms;
+
+            classesToRender.forEach(cls => {
+                const card = document.createElement('div');
+                card.className = 'step-card';
+                card.innerHTML = `
+                    <div>
+                        <div class="card-title">
+                            <span style="font-size: 20px;">📚</span>
+                            <span>${cls.classroom_name} Results</span>
+                        </div>
+                        <div style="font-size: 12px; color: #059669; font-weight: 700; margin-top: 4px; margin-left: 30px;">
+                            Grade: ${cls.grade_name || 'Active Stream'} &bull; ${selectedTerm} ${selectedYear}
+                        </div>
+                    </div>
+                    <span class="card-arrow">›</span>
+                `;
+                card.onclick = () => {
+                    selectedClassroomId = cls.id;
+                    selectedClassName = cls.classroom_name;
+                    goToStep('WORKSPACE');
+                };
+                container.appendChild(card);
+            });
+        }
+
+        // ────────────────────────────────────────────────────────────────────────
+        // STEP 4: WORKSPACE BROADSHEET DATA RENDERING
+        // ────────────────────────────────────────────────────────────────────────
+        async function openBroadsheet(classroomId, year, term) {
             try {
                 const url = `/shule-cafe/api/headmaster/exams/exams_api.php?action=get_broadsheet_records&classroom_id=${classroomId}&year=${year}&term=${encodeURIComponent(term)}&exam_type_id=all`;
                 const res = await fetch(url, { credentials: 'include' });
@@ -518,18 +638,7 @@
 
                 if (res.ok && data.success) {
                     activeBroadsheetData = data;
-
-                    // Switch view to Broadsheet
-                    document.getElementById('resultsDirectoryView').style.display = 'none';
-                    document.getElementById('broadsheetWrapper').style.display = 'block';
-                    document.getElementById('broadsheetActionButtons').style.display = 'flex';
-                    document.getElementById('btnBackText').textContent = 'Back to Results List';
-                    document.getElementById('pageTitle').innerHTML = `<span>📊 ${data.class_info.classroom_name} (${term} ${year})</span>`;
-
                     renderBroadsheetUI(data);
-
-                    // Update URL
-                    window.history.pushState({}, '', `records.html?classroom_id=${classroomId}&year=${year}&term=${encodeURIComponent(term)}`);
                 } else {
                     alert(data.message || 'Error loading broadsheet.');
                 }
