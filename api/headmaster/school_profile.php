@@ -41,10 +41,12 @@ if ($method === 'GET') {
                 type,
                 necta_no,
                 ownership_type,
+                motto,
                 gender_classification,
                 region,
                 district,
                 ward_address,
+                postal_address,
                 school_email,
                 school_phone,
                 status,
@@ -100,9 +102,11 @@ if ($method === 'GET') {
     $necta_no = trim($input['necta_no'] ?? '');
     $type = trim($input['type'] ?? 'Secondary');
     $ownership_type = trim($input['ownership_type'] ?? 'Government');
+    $motto = trim($input['motto'] ?? '');
     $region = trim($input['region'] ?? '');
     $district = trim($input['district'] ?? '');
     $ward_address = trim($input['ward_address'] ?? '');
+    $postal_address = trim($input['postal_address'] ?? '');
     $school_email = trim($input['school_email'] ?? '');
     $school_phone = trim($input['school_phone'] ?? '');
 
@@ -126,9 +130,11 @@ if ($method === 'GET') {
                 necta_no = ?,
                 type = ?,
                 ownership_type = ?,
+                motto = ?,
                 region = ?,
                 district = ?,
                 ward_address = ?,
+                postal_address = ?,
                 school_email = ?,
                 school_phone = ?,
                 updated_at = CURRENT_TIMESTAMP
@@ -140,9 +146,11 @@ if ($method === 'GET') {
             $necta_no,
             $type,
             $ownership_type,
+            $motto,
             $region,
             $district,
             $ward_address,
+            $postal_address,
             $school_email,
             $school_phone,
             $school_id
