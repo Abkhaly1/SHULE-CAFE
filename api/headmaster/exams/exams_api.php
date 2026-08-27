@@ -83,43 +83,22 @@ try {
     // 1. GET SCOPES (Levels, Grades, Classrooms, Subjects, Years, Terms, Types)
     // ────────────────────────────────────────────────────────────────────────
     if ($action === 'get_scopes') {
-        // Education Levels for this school
-        $stmtLevels = $conn->prepare("
-            SELECT DISTINCT el.id, el.name, el.code
-            FROM education_levels el
-            JOIN grades g ON g.level_id = el.id
-            JOIN classrooms c ON c.grade_id = g.id
-            WHERE c.school_id = ?
-            ORDER BY el.id ASC
-        ");
-        $stmtLevels->execute([$schoolId]);
+        // All Education Levels configured in the system
+        $stmtLevels = $conn->query("SELECT id, name, code FROM education_levels ORDER BY id ASC");
         $levels = $stmtLevels->fetchAll(PDO::FETCH_ASSOC);
 
-        if (empty($levels)) {
-            $stmtAllLevels = $conn->query("SELECT id, name, code FROM education_levels ORDER BY id ASC");
-            $levels = $stmtAllLevels->fetchAll(PDO::FETCH_ASSOC);
-        }
-
-        // Grades
-        $stmtGrades = $conn->prepare("
-            SELECT DISTINCT g.id, g.name, g.level_id, el.name AS level_name, el.code AS level_code
-            FROM grades g
-            JOIN education_levels el ON g.level_id = el.id
-            JOIN classrooms c ON c.grade_id = g.id
-            WHERE c.school_id = ?
-            ORDER BY g.id ASC
+        // All Grades mapped to Education Levels
+        $stmtGrades = $conn->query("
+            SELECT g.id, g.name, g.level_id, el.name AS level_name, el.code AS level_code 
+            FROM grades g 
+            JOIN education_levels el ON g.level_id = el.id 
+            ORDER BY el.id ASC, g.order_seq ASC, g.id ASC
         ");
-        $stmtGrades->execute([$schoolId]);
         $grades = $stmtGrades->fetchAll(PDO::FETCH_ASSOC);
 
-        if (empty($grades)) {
-            $stmtAllGrades = $conn->query("SELECT g.id, g.name, g.level_id, el.name AS level_name, el.code AS level_code FROM grades g JOIN education_levels el ON g.level_id = el.id ORDER BY g.id ASC");
-            $grades = $stmtAllGrades->fetchAll(PDO::FETCH_ASSOC);
-        }
-
-        // Classrooms / Streams
+        // Classrooms / Streams configured for this school
         $stmtClassrooms = $conn->prepare("
-            SELECT c.id, c.classroom_name, c.grade_id, g.name AS grade_name, g.level_id, el.name AS level_name
+            SELECT c.id, c.classroom_name, c.grade_id, g.name AS grade_name, g.level_id, el.name AS level_name, el.code AS level_code
             FROM classrooms c
             JOIN grades g ON c.grade_id = g.id
             JOIN education_levels el ON g.level_id = el.id
@@ -212,29 +191,52 @@ try {
     // ────────────────────────────────────────────────────────────────────────
     if ($action === 'get_entry_sheet') {
         $classroomId = intval($_GET['classroom_id'] ?? 0);
+        $gradeId = intval($_GET['grade_id'] ?? 0);
         $subjectCode = trim($_GET['subject_code'] ?? 'all');
         $year = trim($_GET['year'] ?? date('Y'));
         $term = trim($_GET['term'] ?? 'Term 1');
         $assessmentTypeId = trim($_GET['assessment_type_id'] ?? '');
 
-        if (!$classroomId) {
-            echo json_encode(['success' => false, 'message' => 'Classroom ID is required.']);
+        if (!$classroomId && !$gradeId) {
+            echo json_encode(['success' => false, 'message' => 'Classroom ID or Grade ID is required.']);
             exit();
         }
 
-        // Fetch classroom and education level details
-        $stmtC = $conn->prepare("
-            SELECT c.id, c.classroom_name, c.grade_id, g.name AS grade_name, el.name AS level_name, el.code AS level_code
-            FROM classrooms c
-            JOIN grades g ON c.grade_id = g.id
-            JOIN education_levels el ON g.level_id = el.id
-            WHERE c.id = ? AND c.school_id = ? LIMIT 1
-        ");
-        $stmtC->execute([$classroomId, $schoolId]);
-        $classroom = $stmtC->fetch(PDO::FETCH_ASSOC);
+        // Fetch classroom or grade details
+        $classroom = null;
+        if ($classroomId > 0) {
+            $stmtC = $conn->prepare("
+                SELECT c.id, c.classroom_name, c.grade_id, g.name AS grade_name, el.name AS level_name, el.code AS level_code
+                FROM classrooms c
+                JOIN grades g ON c.grade_id = g.id
+                JOIN education_levels el ON g.level_id = el.id
+                WHERE c.id = ? AND c.school_id = ? LIMIT 1
+            ");
+            $stmtC->execute([$classroomId, $schoolId]);
+            $classroom = $stmtC->fetch(PDO::FETCH_ASSOC);
+        } else {
+            $stmtG = $conn->prepare("
+                SELECT g.id AS grade_id, g.name AS grade_name, el.name AS level_name, el.code AS level_code
+                FROM grades g
+                JOIN education_levels el ON g.level_id = el.id
+                WHERE g.id = ? LIMIT 1
+            ");
+            $stmtG->execute([$gradeId]);
+            $gRow = $stmtG->fetch(PDO::FETCH_ASSOC);
+            if ($gRow) {
+                $classroom = [
+                    'id' => 0,
+                    'classroom_name' => $gRow['grade_name'] . ' (All Students)',
+                    'grade_id' => $gRow['grade_id'],
+                    'grade_name' => $gRow['grade_name'],
+                    'level_name' => $gRow['level_name'],
+                    'level_code' => $gRow['level_code']
+                ];
+            }
+        }
 
         if (!$classroom) {
-            echo json_encode(['success' => false, 'message' => 'Classroom not found.']);
+            echo json_encode(['success' => false, 'message' => 'Classroom or Grade not found.']);
             exit();
         }
 
@@ -321,16 +323,40 @@ try {
         $isSingleSubject = (!empty($subjectCode) && $subjectCode !== 'all');
         $isLocked = $isSingleSubject ? isset($locksMap[$subjectCode]) : false;
 
-        // Student Roster for this classroom
-        $stmtRoster = $conn->prepare("
-            SELECT u.id AS student_id, u.full_name, u.user_code, u.gender
-            FROM student_classroom_allocations sca
-            JOIN users u ON sca.student_id = u.id
-            WHERE sca.classroom_id = ? AND sca.school_id = ? AND sca.status = 'Active'
-            ORDER BY u.full_name ASC
-        ");
-        $stmtRoster->execute([$classroomId, $schoolId]);
-        $students = $stmtRoster->fetchAll(PDO::FETCH_ASSOC);
+        // Student Roster
+        if ($classroomId > 0) {
+            $stmtRoster = $conn->prepare("
+                SELECT u.id AS student_id, u.full_name, u.user_code, u.gender
+                FROM student_classroom_allocations sca
+                JOIN users u ON sca.student_id = u.id
+                WHERE sca.classroom_id = ? AND sca.school_id = ? AND sca.status = 'Active'
+                ORDER BY u.full_name ASC
+            ");
+            $stmtRoster->execute([$classroomId, $schoolId]);
+            $students = $stmtRoster->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+            $stmtRoster = $conn->prepare("
+                SELECT DISTINCT u.id AS student_id, u.full_name, u.user_code, u.gender
+                FROM users u
+                LEFT JOIN student_classroom_allocations sca ON sca.student_id = u.id AND sca.status = 'Active'
+                LEFT JOIN classrooms c ON sca.classroom_id = c.id
+                WHERE u.school_id = ? AND (c.grade_id = ? OR u.grade_id = ?)
+                ORDER BY u.full_name ASC
+            ");
+            $stmtRoster->execute([$schoolId, $classroom['grade_id'], $classroom['grade_id']]);
+            $students = $stmtRoster->fetchAll(PDO::FETCH_ASSOC);
+
+            if (empty($students)) {
+                $stmtAllStu = $conn->prepare("
+                    SELECT u.id AS student_id, u.full_name, u.user_code, u.gender
+                    FROM users u
+                    WHERE u.school_id = ? AND u.role = 'student'
+                    ORDER BY u.full_name ASC
+                ");
+                $stmtAllStu->execute([$schoolId]);
+                $students = $stmtAllStu->fetchAll(PDO::FETCH_ASSOC);
+            }
+        }
 
         // Fetch dynamic marks entered for these students in this year/term
         $stmtMarks = $conn->prepare("
@@ -442,6 +468,7 @@ try {
     // ────────────────────────────────────────────────────────────────────────
     if ($action === 'save_marks_batch') {
         $classroomId = intval($input['classroom_id'] ?? 0);
+        $gradeId = intval($input['grade_id'] ?? 0);
         $subjectCode = trim($input['subject_code'] ?? 'all');
         $year = trim($input['year'] ?? date('Y'));
         $term = trim($input['term'] ?? 'Term 1');
@@ -449,8 +476,8 @@ try {
         $marksList = $input['marks'] ?? [];
         $isMultiSubject = !empty($input['is_multi_subject']) || ($subjectCode === 'all');
 
-        if (!$classroomId || empty($assessmentTypeId) || !is_array($marksList)) {
-            echo json_encode(['success' => false, 'message' => 'Classroom, Assessment Type, and Marks entries are required.']);
+        if ((!$classroomId && !$gradeId) || empty($assessmentTypeId) || !is_array($marksList)) {
+            echo json_encode(['success' => false, 'message' => 'Classroom or Grade, Assessment Type, and Marks entries are required.']);
             exit();
         }
 
@@ -568,19 +595,39 @@ try {
         }
 
         // Classroom & Level information
-        $whereClass = $classroomId ? "c.id = :cid" : "c.grade_id = :gid";
-        $paramsClass = $classroomId ? [':cid' => $classroomId, ':sch' => $schoolId] : [':gid' => $gradeId, ':sch' => $schoolId];
-
-        $stmtInfo = $conn->prepare("
-            SELECT c.id AS classroom_id, c.classroom_name, g.id AS grade_id, g.name AS grade_name, el.name AS level_name, el.code AS level_code
-            FROM classrooms c
-            JOIN grades g ON c.grade_id = g.id
-            JOIN education_levels el ON g.level_id = el.id
-            WHERE $whereClass AND c.school_id = :sch
-            LIMIT 1
-        ");
-        $stmtInfo->execute($paramsClass);
-        $classInfo = $stmtInfo->fetch(PDO::FETCH_ASSOC);
+        $classInfo = null;
+        if ($classroomId > 0) {
+            $stmtInfo = $conn->prepare("
+                SELECT c.id AS classroom_id, c.classroom_name, g.id AS grade_id, g.name AS grade_name, el.name AS level_name, el.code AS level_code
+                FROM classrooms c
+                JOIN grades g ON c.grade_id = g.id
+                JOIN education_levels el ON g.level_id = el.id
+                WHERE c.id = ? AND c.school_id = ?
+                LIMIT 1
+            ");
+            $stmtInfo->execute([$classroomId, $schoolId]);
+            $classInfo = $stmtInfo->fetch(PDO::FETCH_ASSOC);
+        } else {
+            $stmtInfo = $conn->prepare("
+                SELECT g.id AS grade_id, g.name AS grade_name, el.name AS level_name, el.code AS level_code
+                FROM grades g
+                JOIN education_levels el ON g.level_id = el.id
+                WHERE g.id = ?
+                LIMIT 1
+            ");
+            $stmtInfo->execute([$gradeId]);
+            $gradeRow = $stmtInfo->fetch(PDO::FETCH_ASSOC);
+            if ($gradeRow) {
+                $classInfo = [
+                    'classroom_id' => 0,
+                    'classroom_name' => $gradeRow['grade_name'] . ' (All Students)',
+                    'grade_id' => $gradeRow['grade_id'],
+                    'grade_name' => $gradeRow['grade_name'],
+                    'level_name' => $gradeRow['level_name'],
+                    'level_code' => $gradeRow['level_code']
+                ];
+            }
+        }
 
         if (!$classInfo) {
             echo json_encode(['success' => false, 'message' => 'Classroom/Grade records not found.']);
@@ -594,7 +641,7 @@ try {
             $levelTypeKey = 'A-Level';
         }
 
-        // Fetch subjects assigned in this classroom or grade
+        // Fetch subjects
         $stmtSubjs = $conn->prepare("
             SELECT DISTINCT s.code, s.name 
             FROM subjects s
@@ -618,28 +665,48 @@ try {
         }
 
         // Fetch students in this class/grade
-        $whereStudents = $classroomId ? "sca.classroom_id = :cid" : "c.grade_id = :gid";
-        $stmtStudents = $conn->prepare("
-            SELECT u.id AS student_id, u.full_name, u.user_code, u.gender, c.id AS classroom_id, c.classroom_name
-            FROM student_classroom_allocations sca
-            JOIN users u ON sca.student_id = u.id
-            JOIN classrooms c ON sca.classroom_id = c.id
-            WHERE $whereStudents AND sca.school_id = :sch AND sca.status = 'Active'
-            ORDER BY c.classroom_name ASC, u.full_name ASC
-        ");
-        $stmtStudents->execute($paramsClass);
-        $students = $stmtStudents->fetchAll(PDO::FETCH_ASSOC);
+        if ($classroomId > 0) {
+            $stmtStudents = $conn->prepare("
+                SELECT u.id AS student_id, u.full_name, u.user_code, u.gender, c.id AS classroom_id, c.classroom_name
+                FROM student_classroom_allocations sca
+                JOIN users u ON sca.student_id = u.id
+                JOIN classrooms c ON sca.classroom_id = c.id
+                WHERE sca.classroom_id = ? AND sca.school_id = ? AND sca.status = 'Active'
+                ORDER BY u.full_name ASC
+            ");
+            $stmtStudents->execute([$classroomId, $schoolId]);
+            $students = $stmtStudents->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+            $stmtStudents = $conn->prepare("
+                SELECT DISTINCT u.id AS student_id, u.full_name, u.user_code, u.gender, COALESCE(c.classroom_name, '') as classroom_name
+                FROM users u
+                LEFT JOIN student_classroom_allocations sca ON (sca.student_id = u.id AND sca.status = 'Active')
+                LEFT JOIN classrooms c ON sca.classroom_id = c.id
+                WHERE u.school_id = ? AND (c.grade_id = ? OR u.grade_id = ?)
+                ORDER BY u.full_name ASC
+            ");
+            $stmtStudents->execute([$schoolId, $classInfo['grade_id'], $classInfo['grade_id']]);
+            $students = $stmtStudents->fetchAll(PDO::FETCH_ASSOC);
+
+            if (empty($students)) {
+                $stmtAllStu = $conn->prepare("
+                    SELECT u.id AS student_id, u.full_name, u.user_code, u.gender, '' as classroom_name
+                    FROM users u
+                    WHERE u.school_id = ? AND u.role = 'student'
+                    ORDER BY u.full_name ASC
+                ");
+                $stmtAllStu->execute([$schoolId]);
+                $students = $stmtAllStu->fetchAll(PDO::FETCH_ASSOC);
+            }
+        }
 
         // Fetch all marks for these students in this year/term
         $stmtMarks = $conn->prepare("
             SELECT m.student_id, m.subject_code, m.assessment_type_id, m.score
             FROM marks_entry_dynamic m
-            JOIN student_classroom_allocations sca ON (m.student_id = sca.student_id AND sca.school_id = m.school_id)
-            JOIN classrooms c ON sca.classroom_id = c.id
-            WHERE $whereStudents AND m.school_id = :sch AND m.academic_year = :yr AND m.term = :trm
+            WHERE m.school_id = ? AND m.academic_year = ? AND m.term = ?
         ");
-        $paramsMarks = array_merge($paramsClass, [':yr' => $year, ':trm' => $term]);
-        $stmtMarks->execute($paramsMarks);
+        $stmtMarks->execute([$schoolId, $year, $term]);
         $marksRows = $stmtMarks->fetchAll(PDO::FETCH_ASSOC);
 
         // Aggregate marks per student per subject
@@ -804,56 +871,169 @@ try {
     // ────────────────────────────────────────────────────────────────────────
     if ($action === 'get_class_analytics') {
         $classroomId = intval($_GET['classroom_id'] ?? 0);
+        $gradeId = intval($_GET['grade_id'] ?? 0);
         $year = trim($_GET['year'] ?? date('Y'));
         $term = trim($_GET['term'] ?? 'Term 1');
 
-        if (!$classroomId) {
-            echo json_encode(['success' => false, 'message' => 'Classroom ID is required.']);
+        if (!$classroomId && !$gradeId) {
+            echo json_encode(['success' => false, 'message' => 'Classroom ID or Grade ID is required.']);
             exit();
         }
 
         // Fetch classroom details
-        $stmtC = $conn->prepare("
-            SELECT c.id, c.classroom_name, g.name AS grade_name, el.name AS level_name
-            FROM classrooms c
-            JOIN grades g ON c.grade_id = g.id
-            JOIN education_levels el ON g.level_id = el.id
-            WHERE c.id = ? AND c.school_id = ? LIMIT 1
-        ");
-        $stmtC->execute([$classroomId, $schoolId]);
-        $classDetails = $stmtC->fetch(PDO::FETCH_ASSOC);
+        $classDetails = null;
+        if ($classroomId > 0) {
+            $stmtC = $conn->prepare("
+                SELECT c.id, c.classroom_name, g.id AS grade_id, g.name AS grade_name, el.name AS level_name
+                FROM classrooms c
+                JOIN grades g ON c.grade_id = g.id
+                JOIN education_levels el ON g.level_id = el.id
+                WHERE c.id = ? AND c.school_id = ? LIMIT 1
+            ");
+            $stmtC->execute([$classroomId, $schoolId]);
+            $classDetails = $stmtC->fetch(PDO::FETCH_ASSOC);
+        } else {
+            $stmtG = $conn->prepare("
+                SELECT g.id AS grade_id, g.name AS grade_name, el.name AS level_name
+                FROM grades g
+                JOIN education_levels el ON g.level_id = el.id
+                WHERE g.id = ? LIMIT 1
+            ");
+            $stmtG->execute([$gradeId]);
+            $gRow = $stmtG->fetch(PDO::FETCH_ASSOC);
+            if ($gRow) {
+                $classDetails = [
+                    'id' => 0,
+                    'classroom_name' => $gRow['grade_name'] . ' (All Students)',
+                    'grade_id' => $gRow['grade_id'],
+                    'grade_name' => $gRow['grade_name'],
+                    'level_name' => $gRow['level_name']
+                ];
+            }
+        }
 
         if (!$classDetails) {
-            echo json_encode(['success' => false, 'message' => 'Classroom not found.']);
+            echo json_encode(['success' => false, 'message' => 'Classroom or Grade not found.']);
             exit();
         }
 
         $levelTypeKey = (stripos($classDetails['level_name'], 'Primary') !== false) ? 'Primary' : ((stripos($classDetails['level_name'], 'A-Level') !== false) ? 'A-Level' : 'O-Level');
 
-        // Fetch student gender cohorts
-        $stmtGenders = $conn->prepare("
-            SELECT u.gender, COUNT(*) as count
-            FROM student_classroom_allocations sca
-            JOIN users u ON sca.student_id = u.id
-            WHERE sca.classroom_id = ? AND sca.school_id = ? AND sca.status = 'Active'
-            GROUP BY u.gender
-        ");
-        $stmtGenders->execute([$classroomId, $schoolId]);
-        $genders = $stmtGenders->fetchAll(PDO::FETCH_KEY_PAIR);
+        if ($classroomId > 0) {
+            $stmtGenders = $conn->prepare("
+                SELECT u.gender, COUNT(*) as count
+                FROM student_classroom_allocations sca
+                JOIN users u ON sca.student_id = u.id
+                WHERE sca.classroom_id = ? AND sca.school_id = ? AND sca.status = 'Active'
+                GROUP BY u.gender
+            ");
+            $stmtGenders->execute([$classroomId, $schoolId]);
+            $genders = $stmtGenders->fetchAll(PDO::FETCH_KEY_PAIR);
 
-        // Fetch scores breakdown by gender
-        $stmtGenderPerf = $conn->prepare("
-            SELECT u.gender, COALESCE(SUM(m.score),0) as total_marks, COUNT(DISTINCT u.id) as students_evaluated,
-                   SUM(CASE WHEN m.score >= 45 THEN 1 ELSE 0 END) as passed_entries,
-                   COUNT(m.id) as total_entries
-            FROM student_classroom_allocations sca
-            JOIN users u ON sca.student_id = u.id
-            LEFT JOIN marks_entry_dynamic m ON (m.student_id = u.id AND m.academic_year = ? AND m.term = ? AND m.school_id = sca.school_id)
-            WHERE sca.classroom_id = ? AND sca.school_id = ? AND sca.status = 'Active'
-            GROUP BY u.gender
-        ");
-        $stmtGenderPerf->execute([$year, $term, $classroomId, $schoolId]);
-        $genderPerf = $stmtGenderPerf->fetchAll(PDO::FETCH_ASSOC);
+            $stmtGenderPerf = $conn->prepare("
+                SELECT u.gender, COALESCE(SUM(m.score),0) as total_marks, COUNT(DISTINCT u.id) as students_evaluated,
+                       SUM(CASE WHEN m.score >= 45 THEN 1 ELSE 0 END) as passed_entries,
+                       COUNT(m.id) as total_entries
+                FROM student_classroom_allocations sca
+                JOIN users u ON sca.student_id = u.id
+                LEFT JOIN marks_entry_dynamic m ON (m.student_id = u.id AND m.academic_year = ? AND m.term = ? AND m.school_id = sca.school_id)
+                WHERE sca.classroom_id = ? AND sca.school_id = ? AND sca.status = 'Active'
+                GROUP BY u.gender
+            ");
+            $stmtGenderPerf->execute([$year, $term, $classroomId, $schoolId]);
+            $genderPerf = $stmtGenderPerf->fetchAll(PDO::FETCH_ASSOC);
+
+            // Fetch top performers leaderboard
+            $stmtTop = $conn->prepare("
+                SELECT u.id, u.full_name, u.user_code, u.gender, COALESCE(SUM(m.score), 0) AS total_score, COUNT(DISTINCT m.subject_code) as subjects_count
+                FROM student_classroom_allocations sca
+                JOIN users u ON sca.student_id = u.id
+                LEFT JOIN marks_entry_dynamic m ON (m.student_id = u.id AND m.academic_year = ? AND m.term = ? AND m.school_id = sca.school_id)
+                WHERE sca.classroom_id = ? AND sca.school_id = ? AND sca.status = 'Active'
+                GROUP BY u.id
+                HAVING total_score > 0
+                ORDER BY total_score DESC
+                LIMIT 10
+            ");
+            $stmtTop->execute([$year, $term, $classroomId, $schoolId]);
+            $topLeaders = $stmtTop->fetchAll(PDO::FETCH_ASSOC);
+
+            // Subject performance list
+            $stmtSubjPerf = $conn->prepare("
+                SELECT m.subject_code, s.name as subject_name,
+                       AVG(m.score) as average_score,
+                       COUNT(m.id) as total_entries,
+                       SUM(CASE WHEN m.score >= 45 THEN 1 ELSE 0 END) as pass_entries,
+                       MAX(m.score) as highest_score,
+                       MIN(m.score) as lowest_score
+                FROM marks_entry_dynamic m
+                JOIN student_classroom_allocations sca ON (m.student_id = sca.student_id AND sca.school_id = m.school_id)
+                LEFT JOIN subjects s ON m.subject_code = s.code
+                WHERE sca.classroom_id = ? AND m.school_id = ? AND m.academic_year = ? AND m.term = ?
+                GROUP BY m.subject_code
+                ORDER BY average_score DESC
+            ");
+            $stmtSubjPerf->execute([$classroomId, $schoolId, $year, $term]);
+            $subjMetrics = $stmtSubjPerf->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+            $stmtGenders = $conn->prepare("
+                SELECT u.gender, COUNT(*) as count
+                FROM users u
+                LEFT JOIN student_classroom_allocations sca ON (sca.student_id = u.id AND sca.status = 'Active')
+                LEFT JOIN classrooms c ON sca.classroom_id = c.id
+                WHERE u.school_id = ? AND (c.grade_id = ? OR u.grade_id = ?)
+                GROUP BY u.gender
+            ");
+            $stmtGenders->execute([$schoolId, $classDetails['grade_id'], $classDetails['grade_id']]);
+            $genders = $stmtGenders->fetchAll(PDO::FETCH_KEY_PAIR);
+
+            $stmtGenderPerf = $conn->prepare("
+                SELECT u.gender, COALESCE(SUM(m.score),0) as total_marks, COUNT(DISTINCT u.id) as students_evaluated,
+                       SUM(CASE WHEN m.score >= 45 THEN 1 ELSE 0 END) as passed_entries,
+                       COUNT(m.id) as total_entries
+                FROM users u
+                LEFT JOIN student_classroom_allocations sca ON (sca.student_id = u.id AND sca.status = 'Active')
+                LEFT JOIN classrooms c ON sca.classroom_id = c.id
+                LEFT JOIN marks_entry_dynamic m ON (m.student_id = u.id AND m.academic_year = ? AND m.term = ? AND m.school_id = u.school_id)
+                WHERE u.school_id = ? AND (c.grade_id = ? OR u.grade_id = ?)
+                GROUP BY u.gender
+            ");
+            $stmtGenderPerf->execute([$year, $term, $schoolId, $classDetails['grade_id'], $classDetails['grade_id']]);
+            $genderPerf = $stmtGenderPerf->fetchAll(PDO::FETCH_ASSOC);
+
+            // Fetch top performers leaderboard
+            $stmtTop = $conn->prepare("
+                SELECT u.id, u.full_name, u.user_code, u.gender, COALESCE(SUM(m.score), 0) AS total_score, COUNT(DISTINCT m.subject_code) as subjects_count
+                FROM users u
+                LEFT JOIN student_classroom_allocations sca ON (sca.student_id = u.id AND sca.status = 'Active')
+                LEFT JOIN classrooms c ON sca.classroom_id = c.id
+                LEFT JOIN marks_entry_dynamic m ON (m.student_id = u.id AND m.academic_year = ? AND m.term = ? AND m.school_id = u.school_id)
+                WHERE u.school_id = ? AND (c.grade_id = ? OR u.grade_id = ?)
+                GROUP BY u.id
+                HAVING total_score > 0
+                ORDER BY total_score DESC
+                LIMIT 10
+            ");
+            $stmtTop->execute([$year, $term, $schoolId, $classDetails['grade_id'], $classDetails['grade_id']]);
+            $topLeaders = $stmtTop->fetchAll(PDO::FETCH_ASSOC);
+
+            // Subject performance list
+            $stmtSubjPerf = $conn->prepare("
+                SELECT m.subject_code, s.name as subject_name,
+                       AVG(m.score) as average_score,
+                       COUNT(m.id) as total_entries,
+                       SUM(CASE WHEN m.score >= 45 THEN 1 ELSE 0 END) as pass_entries,
+                       MAX(m.score) as highest_score,
+                       MIN(m.score) as lowest_score
+                FROM marks_entry_dynamic m
+                LEFT JOIN subjects s ON m.subject_code = s.code
+                WHERE m.school_id = ? AND m.academic_year = ? AND m.term = ?
+                GROUP BY m.subject_code
+                ORDER BY average_score DESC
+            ");
+            $stmtSubjPerf->execute([$schoolId, $year, $term]);
+            $subjMetrics = $stmtSubjPerf->fetchAll(PDO::FETCH_ASSOC);
+        }
 
         $genderAnalytics = [];
         foreach ($genderPerf as $gp) {
@@ -872,21 +1052,6 @@ try {
                 'average_score' => $avgScore
             ];
         }
-
-        // Fetch top performers leaderboard
-        $stmtTop = $conn->prepare("
-            SELECT u.id, u.full_name, u.user_code, u.gender, COALESCE(SUM(m.score), 0) AS total_score, COUNT(DISTINCT m.subject_code) as subjects_count
-            FROM student_classroom_allocations sca
-            JOIN users u ON sca.student_id = u.id
-            LEFT JOIN marks_entry_dynamic m ON (m.student_id = u.id AND m.academic_year = ? AND m.term = ? AND m.school_id = sca.school_id)
-            WHERE sca.classroom_id = ? AND sca.school_id = ? AND sca.status = 'Active'
-            GROUP BY u.id
-            HAVING total_score > 0
-            ORDER BY total_score DESC
-            LIMIT 10
-        ");
-        $stmtTop->execute([$year, $term, $classroomId, $schoolId]);
-        $topLeaders = $stmtTop->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($topLeaders as $rankIdx => &$leader) {
             $leader['position'] = $rankIdx + 1;

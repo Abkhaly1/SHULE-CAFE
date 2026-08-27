@@ -32,7 +32,7 @@
             border-radius: 10px;
             padding: 16px 20px;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: space-between;
             text-decoration: none;
             color: #0f172a;
@@ -47,6 +47,13 @@
             background: #f0fdf4;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(5, 150, 105, 0.12);
+        }
+
+        .step-card .card-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
         }
 
         .step-card .card-title {
@@ -73,7 +80,28 @@
             transform: translateX(4px);
         }
 
-        /* Step Heading */
+        .stream-link-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 11.5px;
+            color: #0284c7;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.12s ease;
+            margin-top: 6px;
+        }
+
+        .stream-link-badge:hover {
+            background: #e0f2fe;
+            border-color: #0284c7;
+            color: #0369a1;
+        }
+
         .step-section-heading {
             font-size: 15px;
             font-weight: 800;
@@ -86,7 +114,6 @@
             gap: 8px;
         }
 
-        /* Term Switcher Pills in Step 2 */
         .term-pill-bar {
             display: inline-flex;
             background: #f1f5f9;
@@ -355,10 +382,10 @@
                         <!-- STEP 3: SELECT GRADE / CLASSROOM (2 Columns) -->
                         <div id="stepGradesView" style="display: none;">
                             <div class="step-section-heading">
-                                <span>📚 Select Grade / Classroom Stream &bull; <strong id="step3LevelBadge" style="color: #059669;">O-Level</strong></span>
+                                <span>📚 Select Grade &bull; <strong id="step3LevelBadge" style="color: #059669;">O-Level</strong></span>
                             </div>
                             <div id="gradesGridContainer" class="step-grid-2col">
-                                <!-- Dynamic 2-column Grade/Classroom Cards -->
+                                <!-- Dynamic 2-column Grade Cards -->
                             </div>
                         </div>
 
@@ -452,8 +479,10 @@
         let selectedYear = '2026';
         let selectedTerm = 'Term 1';
         let selectedLevel = null;
+        let selectedLevelId = null;
+        let selectedGradeId = null;
         let selectedClassroomId = null;
-        let selectedClassName = '';
+        let selectedEntityName = '';
 
         let currentMode = 'all';
         let currentScopes = null;
@@ -501,6 +530,11 @@
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('classroom_id')) {
                 selectedClassroomId = urlParams.get('classroom_id');
+                selectedYear = urlParams.get('year') || '2026';
+                selectedTerm = urlParams.get('term') || 'Term 1';
+                goToStep('WORKSPACE');
+            } else if (urlParams.get('grade_id')) {
+                selectedGradeId = urlParams.get('grade_id');
                 selectedYear = urlParams.get('year') || '2026';
                 selectedTerm = urlParams.get('term') || 'Term 1';
                 goToStep('WORKSPACE');
@@ -564,8 +598,10 @@
                 renderGradesStep();
             } else if (step === 'WORKSPACE') {
                 backLabel.textContent = 'Back to Grades';
-                pageHeading.innerHTML = `<span>✍️ ${selectedClassName || 'Classroom'} ‹ ${selectedTerm} ${selectedYear}</span>`;
-                window.history.pushState({}, '', `entry.html?classroom_id=${selectedClassroomId}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}`);
+                pageHeading.innerHTML = `<span>✍️ ${selectedEntityName || 'Marks Entry'} ‹ ${selectedTerm} ${selectedYear}</span>`;
+                
+                const qs = selectedClassroomId ? `classroom_id=${selectedClassroomId}` : `grade_id=${selectedGradeId}`;
+                window.history.pushState({}, '', `entry.html?${qs}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}`);
                 autoLoadSheet();
             }
         }
@@ -599,11 +635,13 @@
                 const card = document.createElement('div');
                 card.className = 'step-card';
                 card.innerHTML = `
-                    <div class="card-title">
-                        <span style="font-size: 20px;">📅</span>
-                        <span>Academic Year ${yr}</span>
+                    <div class="card-header-row">
+                        <div class="card-title">
+                            <span style="font-size: 20px;">📅</span>
+                            <span>Academic Year ${yr}</span>
+                        </div>
+                        <span class="card-arrow">›</span>
                     </div>
-                    <span class="card-arrow">›</span>
                 `;
                 card.onclick = () => {
                     selectedYear = yr;
@@ -612,7 +650,6 @@
                 container.appendChild(card);
             });
 
-            // Pagination bar
             const pagBar = document.getElementById('yearsPaginationBar');
             if (totalPages > 1) {
                 pagBar.style.display = 'flex';
@@ -625,7 +662,7 @@
         }
 
         // ────────────────────────────────────────────────────────────────────────
-        // STEP 2: RENDER EDUCATION LEVELS (2 Columns)
+        // STEP 2: RENDER ALL EDUCATION LEVELS (2 Columns)
         // ────────────────────────────────────────────────────────────────────────
         function setTermSelection(term) {
             selectedTerm = term;
@@ -640,39 +677,32 @@
             const container = document.getElementById('levelsGridContainer');
             container.innerHTML = '';
 
-            // Extract distinct Education Levels from classrooms
-            const distinctLevels = {};
-            (currentScopes.classrooms || []).forEach(cls => {
-                const lvlName = cls.level_name || 'General Education';
-                if (!distinctLevels[lvlName]) {
-                    distinctLevels[lvlName] = { name: lvlName, count: 0 };
-                }
-                distinctLevels[lvlName].count++;
-            });
+            // Show ALL configured education levels from API
+            const allLevels = currentScopes.levels || [];
+            const allGrades = currentScopes.grades || [];
 
-            const levelKeys = Object.keys(distinctLevels);
-            if (levelKeys.length === 0) {
-                levelKeys.push('Secondary Education (O-Level)');
-            }
+            allLevels.forEach(lvl => {
+                // Count grades in this level
+                const levelGrades = allGrades.filter(g => String(g.level_id) === String(lvl.id));
+                const gradeCount = levelGrades.length;
 
-            levelKeys.forEach(lvl => {
-                const count = distinctLevels[lvl]?.count || 0;
                 const card = document.createElement('div');
                 card.className = 'step-card';
                 card.innerHTML = `
-                    <div>
+                    <div class="card-header-row">
                         <div class="card-title">
                             <span style="font-size: 20px;">🏛️</span>
-                            <span>${lvl}</span>
+                            <span>${lvl.name}</span>
                         </div>
-                        <div style="font-size: 12px; color: #64748b; font-weight: 600; margin-top: 4px; margin-left: 30px;">
-                            ${count} Classroom Streams Available
-                        </div>
+                        <span class="card-arrow">›</span>
                     </div>
-                    <span class="card-arrow">›</span>
+                    <div style="font-size: 12px; color: #64748b; font-weight: 600; margin-top: 6px; margin-left: 30px;">
+                        ${gradeCount} Grades Configured &bull; Grade-Wise & Stream Entry
+                    </div>
                 `;
                 card.onclick = () => {
-                    selectedLevel = lvl;
+                    selectedLevel = lvl.name;
+                    selectedLevelId = lvl.id;
                     goToStep('GRADES');
                 };
                 container.appendChild(card);
@@ -680,7 +710,7 @@
         }
 
         // ────────────────────────────────────────────────────────────────────────
-        // STEP 3: RENDER GRADES & CLASSROOMS (2 Columns)
+        // STEP 3: RENDER ALL GRADES (2 Columns) - Grade-Wise & Classroom Streams
         // ────────────────────────────────────────────────────────────────────────
         function renderGradesStep() {
             if (!currentScopes) return;
@@ -688,32 +718,63 @@
             const container = document.getElementById('gradesGridContainer');
             container.innerHTML = '';
 
-            // Filter classrooms belonging to selectedLevel
-            const matchingClasses = (currentScopes.classrooms || []).filter(c => (c.level_name || 'General Education') === selectedLevel);
-            const classesToRender = matchingClasses.length > 0 ? matchingClasses : currentScopes.classrooms;
+            const allGrades = currentScopes.grades || [];
+            const matchingGrades = allGrades.filter(g => String(g.level_id) === String(selectedLevelId));
+            const gradesToRender = matchingGrades.length > 0 ? matchingGrades : allGrades;
 
-            classesToRender.forEach(cls => {
+            const allClassrooms = currentScopes.classrooms || [];
+
+            gradesToRender.forEach(grd => {
+                // Find any classroom streams belonging to this grade
+                const streams = allClassrooms.filter(c => String(c.grade_id) === String(grd.id));
+
                 const card = document.createElement('div');
                 card.className = 'step-card';
+
+                let streamsHtml = '';
+                if (streams.length > 0) {
+                    streamsHtml = `<div style="margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; padding-left: 30px;">`;
+                    streams.forEach(st => {
+                        streamsHtml += `
+                            <a href="javascript:void(0)" onclick="event.stopPropagation(); openClassStream(${st.id}, '${st.classroom_name}')" class="stream-link-badge">
+                                <span>› Stream: ${st.classroom_name}</span>
+                            </a>
+                        `;
+                    });
+                    streamsHtml += `</div>`;
+                }
+
                 card.innerHTML = `
-                    <div>
+                    <div class="card-header-row">
                         <div class="card-title">
                             <span style="font-size: 20px;">📚</span>
-                            <span>${cls.classroom_name}</span>
+                            <span>${grd.name} (Grade-Wise)</span>
                         </div>
-                        <div style="font-size: 12px; color: #059669; font-weight: 700; margin-top: 4px; margin-left: 30px;">
-                            Grade: ${cls.grade_name || 'Active Stream'} &bull; ${selectedTerm} ${selectedYear}
-                        </div>
+                        <span class="card-arrow">›</span>
                     </div>
-                    <span class="card-arrow">›</span>
+                    <div style="font-size: 12px; color: #059669; font-weight: 700; margin-top: 4px; margin-left: 30px;">
+                        Record for All ${grd.name} Students &bull; ${selectedTerm} ${selectedYear}
+                    </div>
+                    ${streamsHtml}
                 `;
+
+                // Main card click records Grade-Wise (All Students in that Grade)
                 card.onclick = () => {
-                    selectedClassroomId = cls.id;
-                    selectedClassName = cls.classroom_name;
+                    selectedGradeId = grd.id;
+                    selectedClassroomId = 0;
+                    selectedEntityName = `${grd.name} (Grade-Wide)`;
                     goToStep('WORKSPACE');
                 };
+
                 container.appendChild(card);
             });
+        }
+
+        function openClassStream(classroomId, className) {
+            selectedClassroomId = classroomId;
+            selectedGradeId = null;
+            selectedEntityName = className;
+            goToStep('WORKSPACE');
         }
 
         // ────────────────────────────────────────────────────────────────────────
@@ -734,19 +795,23 @@
         }
 
         async function autoLoadSheet() {
-            if (!selectedClassroomId) return;
+            if (!selectedClassroomId && !selectedGradeId) return;
 
             const assessmentTypeId = document.getElementById('gridAssessmentType').value;
             const subjectCode = (currentMode === 'single') ? document.getElementById('gridSubjectSelect').value : 'all';
 
+            const scopeParam = selectedClassroomId ? `classroom_id=${selectedClassroomId}` : `grade_id=${selectedGradeId}`;
+
             try {
-                const url = `/shule-cafe/api/headmaster/exams/exams_api.php?action=get_entry_sheet&classroom_id=${selectedClassroomId}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}&assessment_type_id=${assessmentTypeId}&subject_code=${encodeURIComponent(subjectCode)}`;
+                const url = `/shule-cafe/api/headmaster/exams/exams_api.php?action=get_entry_sheet&${scopeParam}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}&assessment_type_id=${assessmentTypeId}&subject_code=${encodeURIComponent(subjectCode)}`;
                 const res = await fetch(url, { credentials: 'include' });
                 const data = await res.json();
 
                 if (res.ok && data.success) {
                     sheetData = data;
                     activeSubjects = data.subjects || [];
+
+                    document.getElementById('pageHeading').innerHTML = `<span>✍️ ${data.classroom.classroom_name} ‹ ${selectedTerm} ${selectedYear}</span>`;
 
                     const activeTypeObj = (data.assessment_types || []).find(t => String(t.id) === String(assessmentTypeId));
                     maxAssessmentWeight = activeTypeObj ? parseFloat(activeTypeObj.weight_percent) : 100;
@@ -808,7 +873,7 @@
             // 2. Render Tbody
             tbody.innerHTML = '';
             if (!sheetData.roster || sheetData.roster.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="${targetSubjects.length + 7}" style="text-align:center; padding:30px; color:#64748b;">No students found in this classroom.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="${targetSubjects.length + 7}" style="text-align:center; padding:30px; color:#64748b;">No students found in this roster.</td></tr>`;
                 return;
             }
 
@@ -878,7 +943,6 @@
                 showToast(`Max weight for this assessment is ${maxAssessmentWeight}%`, 'warning');
             }
 
-            // Update styling
             if (rawVal === '') {
                 input.className = 'grid-score-input';
             } else if (parseFloat(input.value) < 30) {
@@ -1004,7 +1068,7 @@
         }
 
         async function saveGridMarks() {
-            if (!selectedClassroomId) return;
+            if (!selectedClassroomId && !selectedGradeId) return;
 
             const assessmentTypeId = document.getElementById('gridAssessmentType').value;
             const subjectCode = (currentMode === 'single') ? document.getElementById('gridSubjectSelect').value : 'all';
@@ -1048,7 +1112,8 @@
                     credentials: 'include',
                     body: JSON.stringify({
                         action: 'save_marks_batch',
-                        classroom_id: selectedClassroomId,
+                        classroom_id: selectedClassroomId || 0,
+                        grade_id: selectedGradeId || 0,
                         subject_code: subjectCode,
                         year: selectedYear,
                         term: selectedTerm,
