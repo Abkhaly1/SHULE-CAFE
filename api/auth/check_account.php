@@ -45,23 +45,19 @@ try {
         FROM users u
         LEFT JOIN schools s ON u.school_id = s.id
         WHERE u.email = ? 
-           OR u.phone = ? 
-           OR u.phone = ? 
-           OR u.user_code = ? 
-           OR s.school_code = ?
            OR s.school_email = ?
-           OR LOWER(u.full_name) = LOWER(?)
+           OR s.school_code = ?
+           OR u.user_code = ?
         ORDER BY 
-            (u.user_code = ?) DESC,
-            (u.email = ?) DESC,
-            (u.phone = ? OR u.phone = ?) DESC,
+            (s.school_code = ? OR u.user_code = ?) DESC,
+            (u.email = ? OR s.school_email = ?) DESC,
             (u.role IN ('tenant_admin', 'school_admin')) DESC,
             u.created_at ASC
         LIMIT 1
     ");
     $stmt->execute([
-        $identifier, $identifier, $phoneAlt, $identifier, $identifier, $identifier, $identifier,
-        $identifier, $identifier, $identifier, $phoneAlt
+        $identifier, $identifier, $identifier, $identifier,
+        $identifier, $identifier, $identifier, $identifier
     ]);
 
     $user = $stmt->fetch(PDO::FETCH_ASSOC);

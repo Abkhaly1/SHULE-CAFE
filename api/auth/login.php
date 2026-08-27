@@ -26,12 +26,23 @@ if (!empty($data)) {
     checkHoneypotTrap((array)$data);
 }
 
-$identifier = !empty($data->email) ? trim($data->email) : (!empty($data->phone) ? trim($data->phone) : (!empty($data->username) ? trim($data->username) : (!empty($data->identifier) ? trim($data->identifier) : '')));
+$identifier = !empty($data->email) ? trim($data->email) : (!empty($data->username) ? trim($data->username) : (!empty($data->identifier) ? trim($data->identifier) : (!empty($data->school_code) ? trim($data->school_code) : '')));
 $password = !empty($data->password) ? $data->password : '';
 
 if (empty($identifier) || empty($password)) {
-    http_response_code(400);
-    echo json_encode(["success" => false, "message" => "School Email / ShuleCafe ID and Password are required."]);
+    http_response_code(200);
+    echo json_encode(["success" => false, "message" => "School Email or ShuleCafe School ID and Password are required."]);
+    exit();
+}
+
+// Enforce strict Email / ShuleCafe ID only directive (disallow phone numbers)
+$cleanId = str_replace(' ', '', $identifier);
+if (preg_match('/^(\+?255|0)[67]\d{7,8}$/', $cleanId) || (preg_match('/^\+?\d{7,15}$/', $cleanId) && !str_contains($identifier, '@') && !stripos($identifier, 'S/CAFE'))) {
+    http_response_code(200);
+    echo json_encode([
+        "success" => false,
+        "message" => "Phone number sign-in is not permitted. Please sign in using your School Email or official ShuleCafe School ID (e.g. S/CAFE-2026-0001)."
+    ]);
     exit();
 }
 
@@ -48,14 +59,6 @@ if ($lockStatus['locked']) {
     exit();
 }
 
-// Phone normalization (e.g. 0700000000 -> +255700000000)
-$phoneAlt = $identifier;
-if (strpos($identifier, '0') === 0) {
-    $phoneAlt = '+255' . substr($identifier, 1);
-} else if (strpos($identifier, '+255') === 0) {
-    $phoneAlt = '0' . substr($identifier, 4);
-}
-
 try {
     $stmt = $conn->prepare("
         SELECT u.id, u.user_code, u.full_name, u.email, u.phone, u.gender, u.password_hash, 
@@ -63,23 +66,19 @@ try {
         FROM users u
         LEFT JOIN schools s ON u.school_id = s.id
         WHERE u.email = ? 
-           OR u.phone = ? 
-           OR u.phone = ? 
-           OR u.user_code = ? 
-           OR s.school_code = ?
            OR s.school_email = ?
-           OR LOWER(u.full_name) = LOWER(?)
+           OR s.school_code = ?
+           OR u.user_code = ?
         ORDER BY 
-            (u.user_code = ?) DESC,
-            (u.email = ?) DESC,
-            (u.phone = ? OR u.phone = ?) DESC,
+            (s.school_code = ? OR u.user_code = ?) DESC,
+            (u.email = ? OR s.school_email = ?) DESC,
             (u.role IN ('tenant_admin', 'school_admin')) DESC,
             u.created_at ASC
         LIMIT 1
     ");
     $stmt->execute([
-        $identifier, $identifier, $phoneAlt, $identifier, $identifier, $identifier, $identifier,
-        $identifier, $identifier, $identifier, $phoneAlt
+        $identifier, $identifier, $identifier, $identifier,
+        $identifier, $identifier, $identifier, $identifier
     ]);
 
     $user = $stmt->fetch(PDO::FETCH_ASSOC);

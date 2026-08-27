@@ -425,7 +425,7 @@
         <!-- Right Sign In Form Panel -->
         <div class="form-panel">
             <h2 class="form-title">Sign In to Portal</h2>
-            <p class="form-subtitle">Enter your School Email, ShuleCafe ID, Phone, or Staff/Student ID</p>
+            <p class="form-subtitle">Enter your School Email or official ShuleCafe School ID to sign in</p>
 
             <!-- Prominent Account Needed Card -->
             <div id="accountNeededCard" class="account-needed-card" style="display: none;">
@@ -451,7 +451,7 @@
 
                 <!-- Identifier Field -->
                 <div style="text-align: left;">
-                    <label class="form-label-custom" for="username">School Email, ShuleCafe ID, or Phone <span style="color:#ef4444;">*</span></label>
+                    <label class="form-label-custom" for="username">School Email or ShuleCafe School ID <span style="color:#ef4444;">*</span></label>
                     <div class="input-wrapper" style="margin-bottom: 18px;">
                         <input type="text" id="username" class="form-control-custom" required autofocus autocomplete="username">
                         <span class="input-icon">✉️</span>
@@ -527,6 +527,15 @@
 
                 errorNotice.style.display = 'none';
                 accountNeededCard.style.display = 'none';
+
+                // Disallow phone numbers on portal login
+                const cleanId = identifier.replace(/\s+/g, '');
+                if (/^(\+?255|0)[67]\d{7,8}$/.test(cleanId) || (/^\+?\d{7,15}$/.test(cleanId) && !identifier.includes('@') && !identifier.toUpperCase().includes('S/CAFE'))) {
+                    errorMessage.textContent = 'Phone numbers are not permitted for sign-in. Please enter your School Email or official ShuleCafe School ID (e.g. S/CAFE-2026-0001).';
+                    errorNotice.style.display = 'block';
+                    return;
+                }
+
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Authenticating...';
 
@@ -544,7 +553,8 @@
                         credentials: 'include',
                         body: JSON.stringify({ 
                             email: identifier, 
-                            phone: identifier, 
+                            school_code: identifier,
+                            username: identifier,
                             password: password, 
                             website_hp_check: document.getElementById('website_hp_check')?.value || '' 
                         })
