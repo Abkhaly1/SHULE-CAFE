@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Education Level Workspace ‹ Super Admin ‹ SHULE CAFE</title>
-    
+
     <link rel="stylesheet" href="../../css/design-system.css">
     <link rel="stylesheet" href="../../css/layout.css">
-    
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="module" src="../../layouts/global-layout.js"></script>
     <script type="module" src="../../js/auth/auth-guard.js"></script>
@@ -18,89 +19,118 @@
             padding: 16px 24px !important;
             margin-bottom: 16px !important;
         }
+
         .workspace-header-card h2 {
             font-size: 20px !important;
             font-weight: 800 !important;
         }
+
         #levelAvatar {
             width: 52px !important;
             height: 52px !important;
             font-size: 18px !important;
         }
+
         .workspace-summary {
             gap: 16px !important;
             margin-bottom: 16px !important;
         }
+
         app-workspace-summary-card .card {
             padding: 14px 20px !important;
             border-radius: 10px !important;
         }
+
         app-workspace-summary-card .card div:last-child {
             font-size: 22px !important;
             font-weight: 800 !important;
         }
+
         .workspace-tabs {
             margin-bottom: 16px !important;
         }
+
         .card {
             padding: 20px 24px !important;
             border-radius: 12px !important;
         }
-        .table th, .table td {
+
+        .table th,
+        .table td {
             padding: 14px 18px !important;
             font-size: 13px !important;
         }
 
         /* Modal custom overlay */
         .custom-modal-overlay {
-            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
-            display: none; align-items: center; justify-content: center; z-index: 9999;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
         }
+
         .custom-modal-content {
-            background: white; border-radius: 12px; width: 100%; max-width: 680px;
-            padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 680px;
+            padding: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
+
 <body>
     <div class="app-layout">
         <app-sidebar role="super_admin" active-path="/super-admin/templates/index.html"></app-sidebar>
-        
+
         <div class="app-main">
             <app-topbar username="System Administrator"></app-topbar>
-            
+
             <main class="app-content-wrapper">
                 <div class="app-content" style="padding: 0;">
-                    
+
                     <app-workspace-layout back-url="index.html">
-                        
+
                         <!-- Header Banner -->
-                        <div class="workspace-header-card" style="display: flex; align-items: flex-start; justify-content: space-between; padding: 16px 24px; background: var(--c-bg-surface); border: 1px solid var(--c-border-light); border-radius: var(--radius-lg); margin-bottom: 16px;">
+                        <div class="workspace-header-card"
+                            style="display: flex; align-items: flex-start; justify-content: space-between; padding: 16px 24px; background: var(--c-bg-surface); border: 1px solid var(--c-border-light); border-radius: var(--radius-lg); margin-bottom: 16px;">
                             <div style="display: flex; align-items: center; gap: 16px;">
-                                <div id="levelAvatar" style="width: 52px; height: 52px; border-radius: 50%; background: var(--c-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800;">
+                                <div id="levelAvatar"
+                                    style="width: 52px; height: 52px; border-radius: 50%; background: var(--c-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800;">
                                     EDU
                                 </div>
                                 <div>
-                                    <h2 id="levelTitle" style="margin: 0; font-size: 20px; font-weight: 800; color: var(--c-text-primary);">
+                                    <h2 id="levelTitle"
+                                        style="margin: 0; font-size: 20px; font-weight: 800; color: var(--c-text-primary);">
                                         Education Level Workspace
                                     </h2>
-                                    <div id="levelSubtitle" style="color: var(--c-text-muted); font-size: 13px; margin-top: 2px;">
+                                    <div id="levelSubtitle"
+                                        style="color: var(--c-text-muted); font-size: 13px; margin-top: 2px;">
                                         Loading curriculum structure...
                                     </div>
                                 </div>
                             </div>
                             <div>
-                                <button id="openAddLevelItemBtn" class="btn btn-primary" style="font-weight: 600;">+ Add Template Item</button>
+                                <button id="openAddLevelItemBtn" class="btn btn-primary" style="font-weight: 600;">+ Add
+                                    Template Item</button>
                             </div>
                         </div>
-                        
+
                         <!-- Summary Cards -->
                         <div id="levelSummaryContainer">
                             <app-workspace-summary>
-                                <app-workspace-summary-card id="cardLvlClasses" label="Assigned Classes" value="-"></app-workspace-summary-card>
-                                <app-workspace-summary-card id="cardLvlSubjects" label="Assigned Subjects" value="-"></app-workspace-summary-card>
-                                <app-workspace-summary-card id="cardLvlGrading" label="Grading Benchmark" value="-"></app-workspace-summary-card>
-                                <app-workspace-summary-card id="cardLvlTerms" label="Academic Terms" value="-"></app-workspace-summary-card>
+                                <app-workspace-summary-card id="cardLvlClasses" label="Assigned Classes"
+                                    value="-"></app-workspace-summary-card>
+                                <app-workspace-summary-card id="cardLvlSubjects" label="Assigned Subjects"
+                                    value="-"></app-workspace-summary-card>
+                                <app-workspace-summary-card id="cardLvlGrading" label="Grading Benchmark"
+                                    value="-"></app-workspace-summary-card>
+                                <app-workspace-summary-card id="cardLvlTerms" label="Academic Terms"
+                                    value="-"></app-workspace-summary-card>
                             </app-workspace-summary>
                         </div>
 
@@ -111,30 +141,38 @@
                             <button class="workspace-tab" data-target="grading">📊 Grading & Division System</button>
                             <button class="workspace-tab" data-target="terms">📅 Terms & Academic Years</button>
                         </app-workspace-tabs>
-                        
+
                         <!-- Tab 1: Classes -->
                         <app-workspace-content tab-id="classes" active="true">
                             <div class="card" style="padding: var(--sp-6);">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                                     <div>
                                         <h3 style="margin: 0;">Assigned Grade Tiers & Curriculum Workspace</h3>
-                                        <p style="color: var(--c-text-secondary); margin: 4px 0 0 0; font-size: 13px;">Standard system grades configured for this level. Click "Open Grade Workspace" to manage subjects assigned to each Grade.</p>
+                                        <p style="color: var(--c-text-secondary); margin: 4px 0 0 0; font-size: 13px;">
+                                            Standard system grades configured for this level. Click "Open Grade
+                                            Workspace" to manage subjects assigned to each Grade.</p>
                                     </div>
-                                    <button class="btn btn-outline btn-sm" onclick="openAddModal('class')">+ Add Class Tier</button>
+                                    <button class="btn btn-outline btn-sm" onclick="openAddModal('class')">+ Add Class
+                                        Tier</button>
                                 </div>
                                 <div id="lvlClassesContainer"></div>
                             </div>
                         </app-workspace-content>
-                        
+
                         <!-- Tab 2: Subjects -->
                         <app-workspace-content tab-id="subjects">
                             <div class="card" style="padding: var(--sp-6);">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                                     <div>
                                         <h3 style="margin: 0;">Approved Master Subject Library</h3>
-                                        <p style="color: var(--c-text-secondary); margin: 4px 0 0 0; font-size: 13px;">Tanzanian national curriculum subjects available for this education level.</p>
+                                        <p style="color: var(--c-text-secondary); margin: 4px 0 0 0; font-size: 13px;">
+                                            Tanzanian national curriculum subjects available for this education level.
+                                        </p>
                                     </div>
-                                    <button class="btn btn-outline btn-sm" onclick="openAddModal('subject')">+ Add Approved Subject</button>
+                                    <button class="btn btn-outline btn-sm" onclick="openAddModal('subject')">+ Add
+                                        Approved Subject</button>
                                 </div>
                                 <div id="lvlSubjectsContainer"></div>
                             </div>
@@ -143,27 +181,37 @@
                         <!-- Tab 3: Grading & Division System -->
                         <app-workspace-content tab-id="grading">
                             <div style="display: flex; flex-direction: column; gap: 24px;">
-                                
+
                                 <!-- 1. Subject Grading Scale Card -->
                                 <div class="card" style="padding: var(--sp-6);">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                    <div
+                                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                                         <div>
                                             <h3 style="margin: 0;">1. Subject Grade Scale (Grading Scale Rules)</h3>
-                                            <p style="color: var(--c-text-secondary); margin: 4px 0 0 0; font-size: 13px;">Configurable mark ranges, letter grades, points, and remarks.</p>
+                                            <p
+                                                style="color: var(--c-text-secondary); margin: 4px 0 0 0; font-size: 13px;">
+                                                Configurable mark ranges, letter grades, points, and remarks.</p>
                                         </div>
-                                        <button class="btn btn-outline btn-sm" onclick="openSubjectGradeModal()">+ Add Subject Grade Scale</button>
+                                        <button class="btn btn-outline btn-sm" onclick="openSubjectGradeModal()">+ Add
+                                            Subject Grade Scale</button>
                                     </div>
                                     <div id="subjectGradingScaleContainer"></div>
                                 </div>
 
                                 <!-- 2. Division Scale Card -->
                                 <div class="card" style="padding: var(--sp-6);">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                    <div
+                                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                                         <div>
-                                            <h3 style="margin: 0;">2. Division Scales (Overall Division Points Range)</h3>
-                                            <p style="color: var(--c-text-secondary); margin: 4px 0 0 0; font-size: 13px;">Configurable Division points thresholds (e.g., Division I: 7-17 pts).</p>
+                                            <h3 style="margin: 0;">2. Division Scales (Overall Division Points Range)
+                                            </h3>
+                                            <p
+                                                style="color: var(--c-text-secondary); margin: 4px 0 0 0; font-size: 13px;">
+                                                Configurable Division points thresholds (e.g., Division I: 7-17 pts).
+                                            </p>
                                         </div>
-                                        <button class="btn btn-outline btn-sm" onclick="openDivisionScaleModal()">+ Add Division Scale</button>
+                                        <button class="btn btn-outline btn-sm" onclick="openDivisionScaleModal()">+ Add
+                                            Division Scale</button>
                                     </div>
                                     <div id="divisionScaleContainer"></div>
                                 </div>
@@ -174,12 +222,15 @@
                         <!-- Tab 4: Terms & Academic Years -->
                         <app-workspace-content tab-id="terms">
                             <div class="card" style="padding: var(--sp-6);">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                                     <div>
                                         <h3 style="margin: 0;">Terms & Academic Divisions</h3>
-                                        <p style="color: var(--c-text-secondary); margin: 4px 0 0 0; font-size: 13px;">Annual academic term calendar structures.</p>
+                                        <p style="color: var(--c-text-secondary); margin: 4px 0 0 0; font-size: 13px;">
+                                            Annual academic term calendar structures.</p>
                                     </div>
-                                    <button class="btn btn-outline btn-sm" onclick="openAddModal('term')">+ Add Term</button>
+                                    <button class="btn btn-outline btn-sm" onclick="openAddModal('term')">+ Add
+                                        Term</button>
                                 </div>
                                 <div id="lvlTermsContainer"></div>
                             </div>
@@ -195,25 +246,33 @@
     <!-- 🎓 DEDICATED GRADE WORKSPACE MODAL OVERLAY -->
     <div class="custom-modal-overlay" id="gradeWorkspaceModal">
         <div class="custom-modal-content">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #e2e8f0;">
+            <div
+                style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #e2e8f0;">
                 <div>
-                    <h3 style="margin:0;font-size:18px;font-weight:800;color:var(--c-text-primary);" id="gwModalTitle">Grade Curriculum Workspace</h3>
-                    <div style="font-size:12px;color:var(--c-text-muted);" id="gwModalSubtitle">Configure master subject curriculum for this Grade.</div>
+                    <h3 style="margin:0;font-size:18px;font-weight:800;color:var(--c-text-primary);" id="gwModalTitle">
+                        Grade Curriculum Workspace</h3>
+                    <div style="font-size:12px;color:var(--c-text-muted);" id="gwModalSubtitle">Configure master subject
+                        curriculum for this Grade.</div>
                 </div>
-                <button style="background:none;border:none;font-size:22px;cursor:pointer;" onclick="closeGradeWorkspaceModal()">✕</button>
+                <button style="background:none;border:none;font-size:22px;cursor:pointer;"
+                    onclick="closeGradeWorkspaceModal()">✕</button>
             </div>
 
             <form id="gradeWorkspaceForm">
                 <input type="hidden" id="gw_class_id">
-                <div id="gwSubjectChecklistContainer" style="max-height:340px;overflow-y:auto;margin-bottom:20px;border:1px solid #e2e8f0;border-radius:8px;padding:12px;">
+                <div id="gwSubjectChecklistContainer"
+                    style="max-height:340px;overflow-y:auto;margin-bottom:20px;border:1px solid #e2e8f0;border-radius:8px;padding:12px;">
                     <div style="color:var(--c-text-muted);">Loading Grade template curriculum…</div>
                 </div>
 
                 <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <span style="font-size:12px;color:var(--c-text-muted);" id="gwSelectedCount">0 subject(s) assigned to Grade.</span>
+                    <span style="font-size:12px;color:var(--c-text-muted);" id="gwSelectedCount">0 subject(s) assigned
+                        to Grade.</span>
                     <div style="display:flex;gap:10px;">
-                        <button type="button" class="btn btn-outline btn-sm" onclick="closeGradeWorkspaceModal()">Cancel</button>
-                        <button type="submit" class="btn btn-primary btn-sm" style="font-weight:700;">Save Grade Curriculum</button>
+                        <button type="button" class="btn btn-outline btn-sm"
+                            onclick="closeGradeWorkspaceModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm" style="font-weight:700;">Save Grade
+                            Curriculum</button>
                     </div>
                 </div>
             </form>
@@ -221,7 +280,8 @@
     </div>
 
     <!-- Modal for Adding Class/Subject/Term -->
-    <div id="addItemModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+    <div id="addItemModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
         <div class="card" style="width: 100%; max-width: 480px; padding: var(--sp-6); background: white;">
             <h3 style="margin-top: 0; margin-bottom: var(--sp-4);" id="addItemModalTitle">Add Item</h3>
             <div id="addItemAlert" class="alert alert-danger" style="display: none; margin-bottom: var(--sp-4);"></div>
@@ -237,7 +297,8 @@
                 </div>
                 <div class="form-group" style="margin-bottom: var(--sp-6);">
                     <label class="form-label">Description</label>
-                    <textarea id="add_desc" class="form-control" rows="3" placeholder="Details or scoring criteria..."></textarea>
+                    <textarea id="add_desc" class="form-control" rows="3"
+                        placeholder="Details or scoring criteria..."></textarea>
                 </div>
                 <div style="display: flex; gap: var(--sp-2); justify-content: flex-end;">
                     <button type="button" id="closeAddModalBtn" class="btn btn-outline">Cancel</button>
@@ -248,10 +309,13 @@
     </div>
 
     <!-- Modal for Adding/Editing Subject Grade Scale (grading_scales) -->
-    <div id="subjectGradeModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+    <div id="subjectGradeModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
         <div class="card" style="width: 100%; max-width: 480px; padding: var(--sp-6); background: white;">
-            <h3 style="margin-top: 0; margin-bottom: var(--sp-4);" id="subjectGradeModalTitle">Subject Grade Scale Rule</h3>
-            <div id="subjectGradeAlert" class="alert alert-danger" style="display: none; margin-bottom: var(--sp-4);"></div>
+            <h3 style="margin-top: 0; margin-bottom: var(--sp-4);" id="subjectGradeModalTitle">Subject Grade Scale Rule
+            </h3>
+            <div id="subjectGradeAlert" class="alert alert-danger" style="display: none; margin-bottom: var(--sp-4);">
+            </div>
             <form id="subjectGradeForm">
                 <input type="hidden" id="sg_id">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: var(--sp-4);">
@@ -266,12 +330,15 @@
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: var(--sp-4);">
                     <div class="form-group">
-                        <label class="form-label">Grade (e.g. A, B, C) <span style="color:var(--c-danger);">*</span></label>
+                        <label class="form-label">Grade (e.g. A, B, C) <span
+                                style="color:var(--c-danger);">*</span></label>
                         <input type="text" id="sg_grade" class="form-control" required placeholder="A">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Points (e.g. 1, 2, 3) <span style="color:var(--c-danger);">*</span></label>
-                        <input type="number" id="sg_points" class="form-control" min="1" max="10" required placeholder="1">
+                        <label class="form-label">Points (e.g. 1, 2, 3) <span
+                                style="color:var(--c-danger);">*</span></label>
+                        <input type="number" id="sg_points" class="form-control" min="1" max="10" required
+                            placeholder="1">
                     </div>
                 </div>
                 <div class="form-group" style="margin-bottom: var(--sp-6);">
@@ -287,24 +354,29 @@
     </div>
 
     <!-- Modal for Adding/Editing Division Scale (division_scales) -->
-    <div id="divisionScaleModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+    <div id="divisionScaleModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
         <div class="card" style="width: 100%; max-width: 480px; padding: var(--sp-6); background: white;">
             <h3 style="margin-top: 0; margin-bottom: var(--sp-4);" id="divisionScaleModalTitle">Division Scale Rule</h3>
-            <div id="divisionScaleAlert" class="alert alert-danger" style="display: none; margin-bottom: var(--sp-4);"></div>
+            <div id="divisionScaleAlert" class="alert alert-danger" style="display: none; margin-bottom: var(--sp-4);">
+            </div>
             <form id="divisionScaleForm">
                 <input type="hidden" id="ds_id">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: var(--sp-4);">
                     <div class="form-group">
                         <label class="form-label">Min Points <span style="color:var(--c-danger);">*</span></label>
-                        <input type="number" id="ds_min_points" class="form-control" min="1" max="50" required placeholder="7">
+                        <input type="number" id="ds_min_points" class="form-control" min="1" max="50" required
+                            placeholder="7">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Max Points <span style="color:var(--c-danger);">*</span></label>
-                        <input type="number" id="ds_max_points" class="form-control" min="1" max="50" required placeholder="17">
+                        <input type="number" id="ds_max_points" class="form-control" min="1" max="50" required
+                            placeholder="17">
                     </div>
                 </div>
                 <div class="form-group" style="margin-bottom: var(--sp-4);">
-                    <label class="form-label">Division Outcome Name <span style="color:var(--c-danger);">*</span></label>
+                    <label class="form-label">Division Outcome Name <span
+                            style="color:var(--c-danger);">*</span></label>
                     <input type="text" id="ds_division_name" class="form-control" required placeholder="Division I">
                 </div>
                 <div class="form-group" style="margin-bottom: var(--sp-6);">
@@ -352,14 +424,14 @@
 
             document.getElementById('levelTitle').textContent = levelTitleText;
             document.getElementById('levelSubtitle').textContent = `Manage template classes, subjects, grading benchmarks, and terms for ${levelCode}.`;
-            
+
             const avatarEl = document.getElementById('levelAvatar');
             avatarEl.textContent = levelCode;
             avatarEl.style.background = activeColor.avatarBg;
             avatarEl.style.boxShadow = `0 4px 14px ${activeColor.avatarBg}40`;
 
             // Global functions for modals
-            window.openAddModal = function(type) {
+            window.openAddModal = function (type) {
                 document.getElementById('add_type').value = type;
                 document.getElementById('addItemModalTitle').textContent = `Add New ${type.toUpperCase()} Template`;
                 document.getElementById('add_name').value = '';
@@ -369,7 +441,7 @@
                 document.getElementById('addItemModal').style.display = 'flex';
             };
 
-            window.openSubjectGradeModal = function(id = null, minMark = '', maxMark = '', grade = '', points = '', remark = '') {
+            window.openSubjectGradeModal = function (id = null, minMark = '', maxMark = '', grade = '', points = '', remark = '') {
                 document.getElementById('sg_id').value = id || '';
                 document.getElementById('sg_min_mark').value = minMark;
                 document.getElementById('sg_max_mark').value = maxMark;
@@ -381,7 +453,7 @@
                 document.getElementById('subjectGradeModal').style.display = 'flex';
             };
 
-            window.openDivisionScaleModal = function(id = null, minPts = '', maxPts = '', name = '', remark = '') {
+            window.openDivisionScaleModal = function (id = null, minPts = '', maxPts = '', name = '', remark = '') {
                 document.getElementById('ds_id').value = id || '';
                 document.getElementById('ds_min_points').value = minPts;
                 document.getElementById('ds_max_points').value = maxPts;
@@ -392,11 +464,11 @@
                 document.getElementById('divisionScaleModal').style.display = 'flex';
             };
 
-            window.closeGradeWorkspaceModal = function() {
+            window.closeGradeWorkspaceModal = function () {
                 document.getElementById('gradeWorkspaceModal').style.display = 'none';
             };
 
-            window.openGradeWorkspaceModal = async function(classId, className, classCode) {
+            window.openGradeWorkspaceModal = async function (classId, className, classCode) {
                 document.getElementById('gw_class_id').value = classId;
                 document.getElementById('gwModalTitle').textContent = `Grade Curriculum Workspace — ${className} (${classCode})`;
                 document.getElementById('gwModalSubtitle').textContent = `Select and configure master template subjects assigned to ${className} (${levelCode}).`;
@@ -410,7 +482,7 @@
                     const data = await res.json();
 
                     if (!res.ok || !data.success) {
-                        container.innerHTML = `<div style="color:#dc2626;padding:12px;">Error loading grade template subjects: ${data.message||'Failed'}</div>`;
+                        container.innerHTML = `<div style="color:#dc2626;padding:12px;">Error loading grade template subjects: ${data.message || 'Failed'}</div>`;
                         return;
                     }
 
@@ -574,7 +646,7 @@
                 let rowsHtml = '';
                 list.forEach(c => {
                     let details = {};
-                    try { details = JSON.parse(c.details || '{}'); } catch(e){}
+                    try { details = JSON.parse(c.details || '{}'); } catch (e) { }
                     const assignedList = details.assigned_subjects || [];
                     const countSbj = assignedList.length;
 
@@ -804,31 +876,10 @@
                 `;
             }
 
-            function populateCalculatorInputs(subjects) {
-                const container = document.getElementById('calcMarksInputs');
-                if (!container) return;
-
-                if (!subjects || subjects.length === 0) {
-                    container.innerHTML = '<div style="color: var(--c-text-muted); font-size: 13px;">No subjects available for calculator.</div>';
-                    return;
-                }
-
-                let html = '';
-                subjects.forEach((s, idx) => {
-                    const defaultMark = Math.max(50, (85 - (idx * 4)));
-                    html += `
-                        <div>
-                            <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #334155;">${s.name} (${s.code})</label>
-                            <input type="number" class="form-control calc-subject-input" data-subject="${s.code}" min="0" max="100" value="${defaultMark}" style="font-size: 13px; font-weight: 700;">
-                        </div>
-                    `;
-                });
-                container.innerHTML = html;
-            }
-
             loadLevelTemplates();
             loadGradingAndDivisionScales();
         });
     </script>
 </body>
+
 </html>
