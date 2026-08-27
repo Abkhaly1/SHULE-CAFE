@@ -176,9 +176,23 @@ try {
             ];
         }
 
-        // Academic Years list
+        // Academic Years list (Current year down to past 15+ years)
         $currentYear = intval(date('Y'));
-        $years = [strval($currentYear), strval($currentYear - 1), strval($currentYear - 2)];
+        $years = [];
+        for ($y = $currentYear; $y >= ($currentYear - 15); $y--) {
+            $years[] = strval($y);
+        }
+
+        // Merge any distinct years recorded in marks table
+        $stmtExYears = $conn->prepare("SELECT DISTINCT academic_year FROM marks_entry_dynamic WHERE school_id = ? ORDER BY academic_year DESC");
+        $stmtExYears->execute([$schoolId]);
+        $dbYears = $stmtExYears->fetchAll(PDO::FETCH_COLUMN);
+        foreach ($dbYears as $dy) {
+            if (!empty($dy) && !in_array($dy, $years)) {
+                $years[] = strval($dy);
+            }
+        }
+        rsort($years);
 
         echo json_encode([
             'success' => true,

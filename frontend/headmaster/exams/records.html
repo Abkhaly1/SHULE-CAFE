@@ -20,10 +20,9 @@
             color: #0f172a;
             letter-spacing: 0.03em;
             text-transform: uppercase;
-            margin: 24px 0 12px;
+            margin: 20px 0 12px;
             padding-bottom: 6px;
-            border-bottom: 1.5px solid #cbd5e1;
-            font-family: inherit;
+            border-bottom: 2px solid #cbd5e1;
         }
 
         .term-group-title {
@@ -31,8 +30,42 @@
             font-weight: 800;
             color: #064e3b;
             text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin: 14px 0 10px 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .level-group-box {
+            margin-left: 12px;
+            margin-bottom: 14px;
+            padding-left: 10px;
+            border-left: 2px solid #e2e8f0;
+        }
+
+        .level-group-title {
+            font-size: 12.5px;
+            font-weight: 800;
+            color: #334155;
+            text-transform: uppercase;
             letter-spacing: 0.02em;
-            margin: 12px 0 8px 8px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .grade-group-box {
+            margin-left: 14px;
+            margin-bottom: 10px;
+        }
+
+        .grade-group-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #64748b;
+            margin-bottom: 4px;
         }
 
         .class-result-link {
@@ -42,10 +75,10 @@
             text-decoration: none;
             color: #0284c7;
             font-weight: 700;
-            font-size: 14.5px;
-            padding: 4px 8px;
+            font-size: 14px;
+            padding: 3px 8px;
             border-radius: 4px;
-            transition: all 0.15s ease;
+            transition: all 0.12s ease;
             cursor: pointer;
         }
 
@@ -201,6 +234,19 @@
                                     <span>⏳ Loading Results Directory...</span>
                                 </div>
                             </div>
+
+                            <!-- 10 Years Pagination Bar -->
+                            <div id="yearsPaginationBar" style="display: none; justify-content: space-between; align-items: center; padding-top: 18px; border-top: 1px solid #e2e8f0; margin-top: 24px; flex-wrap: wrap; gap: 10px;">
+                                <button id="btnPrevYears" class="btn btn-outline btn-sm" style="font-size: 12px; font-weight: 700; padding: 5px 14px;">
+                                    ← Newer Years
+                                </button>
+                                <span id="yearsPaginationInfo" style="font-size: 12.5px; font-weight: 700; color: #475569;">
+                                    Showing Page 1
+                                </span>
+                                <button id="btnNextYears" class="btn btn-outline btn-sm" style="font-size: 12px; font-weight: 700; padding: 5px 14px;">
+                                    Older Years (Load More) →
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -299,12 +345,29 @@
     <script>
         let currentScopes = null;
         let activeBroadsheetData = null;
+        let currentYearPage = 0;
+        const YEARS_PER_PAGE = 10;
 
         document.addEventListener('DOMContentLoaded', async () => {
             await loadScopes();
 
             document.getElementById('btnPrintBroadsheet').addEventListener('click', () => window.print());
             document.getElementById('btnExportCSV').addEventListener('click', exportToCSV);
+
+            document.getElementById('btnPrevYears').addEventListener('click', () => {
+                if (currentYearPage > 0) {
+                    currentYearPage--;
+                    renderDirectoryList(currentScopes);
+                }
+            });
+
+            document.getElementById('btnNextYears').addEventListener('click', () => {
+                const totalPages = Math.ceil((currentScopes.years || []).length / YEARS_PER_PAGE);
+                if (currentYearPage < totalPages - 1) {
+                    currentYearPage++;
+                    renderDirectoryList(currentScopes);
+                }
+            });
 
             // Handle back button action
             document.getElementById('btnBackAction').addEventListener('click', (e) => {
@@ -341,7 +404,7 @@
             const container = document.getElementById('directoryListContainer');
             container.innerHTML = '';
 
-            const years = data.years || ['2026', '2025', '2024'];
+            const allYears = data.years || ['2026', '2025', '2024'];
             const terms = data.terms || ['Term 1', 'Term 2'];
             const classrooms = data.classrooms || [];
 
@@ -350,7 +413,22 @@
                 return;
             }
 
-            years.forEach((yr, yIdx) => {
+            // Pagination slice
+            const totalPages = Math.ceil(allYears.length / YEARS_PER_PAGE);
+            const startIdx = currentYearPage * YEARS_PER_PAGE;
+            const pageYears = allYears.slice(startIdx, startIdx + YEARS_PER_PAGE);
+
+            // Group Classrooms by Education Level -> Grade -> Classrooms
+            const hierarchy = {};
+            classrooms.forEach(cls => {
+                const lvl = cls.level_name || 'School Classes';
+                const grd = cls.grade_name || 'General Grade';
+                if (!hierarchy[lvl]) hierarchy[lvl] = {};
+                if (!hierarchy[lvl][grd]) hierarchy[lvl][grd] = [];
+                hierarchy[lvl][grd].push(cls);
+            });
+
+            pageYears.forEach((yr) => {
                 const yearDiv = document.createElement('div');
                 yearDiv.style.marginBottom = '28px';
 
@@ -360,32 +438,65 @@
 
                 terms.forEach(trm => {
                     yearHtml += `
-                        <div style="margin-bottom: 16px;">
-                            <div class="term-group-title">${trm}</div>
-                            <div style="display: flex; flex-direction: column; gap: 8px; padding-left: 12px;">
+                        <div style="margin-bottom: 18px;">
+                            <div class="term-group-title">
+                                <span style="display:inline-block; width:8px; height:8px; background:#059669; border-radius:50%;"></span>
+                                <span>${trm}</span>
+                            </div>
                     `;
 
-                    classrooms.forEach(cls => {
-                        const labelName = `${cls.classroom_name} Results`;
+                    // Render Education Levels Hierarchy
+                    for (const [lvlName, gradeGroup] of Object.entries(hierarchy)) {
                         yearHtml += `
-                            <div>
-                                <a href="javascript:void(0)" onclick="openBroadsheet(${cls.id}, '${yr}', '${trm}', '${cls.classroom_name}')" class="class-result-link">
-                                    <span class="bullet">›</span>
-                                    <span>${labelName}</span>
-                                </a>
-                            </div>
+                            <div class="level-group-box">
+                                <div class="level-group-title">🏛️ ${lvlName}</div>
                         `;
-                    });
 
-                    yearHtml += `
-                            </div>
-                        </div>
-                    `;
+                        for (const [grdName, clsList] of Object.entries(gradeGroup)) {
+                            yearHtml += `
+                                <div class="grade-group-box">
+                                    <div class="grade-group-title">📚 ${grdName}</div>
+                                    <div style="display: flex; flex-direction: column; gap: 4px; padding-left: 8px;">
+                            `;
+
+                            clsList.forEach(cls => {
+                                const labelName = `${cls.classroom_name} Results`;
+                                yearHtml += `
+                                    <div>
+                                        <a href="javascript:void(0)" onclick="openBroadsheet(${cls.id}, '${yr}', '${trm}', '${cls.classroom_name}')" class="class-result-link">
+                                            <span class="bullet">›</span>
+                                            <span>${labelName}</span>
+                                        </a>
+                                    </div>
+                                `;
+                            });
+
+                            yearHtml += `
+                                    </div>
+                                </div>
+                            `;
+                        }
+
+                        yearHtml += `</div>`;
+                    }
+
+                    yearHtml += `</div>`;
                 });
 
                 yearDiv.innerHTML = yearHtml;
                 container.appendChild(yearDiv);
             });
+
+            // Update Pagination Bar
+            const pagBar = document.getElementById('yearsPaginationBar');
+            if (totalPages > 1) {
+                pagBar.style.display = 'flex';
+                document.getElementById('yearsPaginationInfo').textContent = `Showing Years ${pageYears[0]} – ${pageYears[pageYears.length - 1]} (Page ${currentYearPage + 1} of ${totalPages})`;
+                document.getElementById('btnPrevYears').disabled = (currentYearPage === 0);
+                document.getElementById('btnNextYears').disabled = (currentYearPage >= totalPages - 1);
+            } else {
+                pagBar.style.display = 'none';
+            }
         }
 
         function showDirectoryView() {
