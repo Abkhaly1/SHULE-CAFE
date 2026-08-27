@@ -14,31 +14,41 @@
     <script type="module" src="../../js/auth/auth-guard.js"></script>
 
     <style>
+        .app-content-wrapper {
+            zoom: 0.88;
+        }
+        @supports not (zoom: 0.88) {
+            .app-content {
+                transform: scale(0.88);
+                transform-origin: top left;
+                width: 113.6%;
+            }
+        }
         .workspace-header {
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             color: white;
-            padding: 24px 30px;
-            border-radius: 12px;
-            margin-bottom: 24px;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.3);
+            box-shadow: 0 4px 15px -3px rgba(15, 23, 42, 0.2);
         }
         .summary-card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
         }
         .summary-card {
             background: #ffffff;
             border: 1px solid var(--c-border-light);
-            border-radius: 10px;
-            padding: 16px 20px;
+            border-radius: 8px;
+            padding: 10px 16px;
             text-align: center;
         }
-        .summary-card .val { font-size: 26px; font-weight: 800; color: var(--c-text-primary); }
+        .summary-card .val { font-size: 20px; font-weight: 800; color: var(--c-text-primary); }
         .summary-card .lbl { font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--c-text-muted); margin-top: 2px; }
 
         /* Custom Modal Overlay */
