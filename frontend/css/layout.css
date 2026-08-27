@@ -56,25 +56,31 @@ app-topbar {
 /* Role-Based Sidebar Color Themes */
 
 /* Headmaster Emerald Theme */
-.app-sidebar.sidebar-tenant_admin {
+.app-sidebar.sidebar-tenant_admin,
+.app-sidebar.sidebar-headmaster {
     background-color: #064e3b !important;
     border-right: 1px solid #022c22 !important;
 }
-.app-sidebar.sidebar-tenant_admin .sidebar-brand {
+.app-sidebar.sidebar-tenant_admin .sidebar-brand,
+.app-sidebar.sidebar-headmaster .sidebar-brand {
     background-color: #022c22 !important;
     border-bottom: 1px solid #064e3b !important;
 }
-.app-sidebar.sidebar-tenant_admin .sidebar-brand span {
+.app-sidebar.sidebar-tenant_admin .sidebar-brand span,
+.app-sidebar.sidebar-headmaster .sidebar-brand span {
     color: #34d399 !important;
 }
-.app-sidebar.sidebar-tenant_admin .sidebar-nav a {
+.app-sidebar.sidebar-tenant_admin .sidebar-nav a,
+.app-sidebar.sidebar-headmaster .sidebar-nav a {
     color: #ecfdf5 !important;
 }
-.app-sidebar.sidebar-tenant_admin .sidebar-nav a:hover {
+.app-sidebar.sidebar-tenant_admin .sidebar-nav a:hover,
+.app-sidebar.sidebar-headmaster .sidebar-nav a:hover {
     background-color: #047857 !important;
     color: #ffffff !important;
 }
-.app-sidebar.sidebar-tenant_admin .sidebar-nav a.active {
+.app-sidebar.sidebar-tenant_admin .sidebar-nav a.active,
+.app-sidebar.sidebar-headmaster .sidebar-nav a.active {
     background-color: #059669 !important;
     color: #ffffff !important;
     border-left: 4px solid #34d399 !important;

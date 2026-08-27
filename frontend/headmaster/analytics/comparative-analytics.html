@@ -3,24 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comparative Grade-Wide Analytics Board ‹ SHULE CAFE</title>
+    <title>Comparative Grade-Wide Analytics Board ‹ Headmaster ‹ SHULE CAFE</title>
     
     <link rel="stylesheet" href="../../css/design-system.css">
     <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
     
     <script type="module" src="../../layouts/global-layout.js"></script>
     <script type="module" src="../../js/auth/auth-guard.js"></script>
 </head>
 <body>
     <div class="app-layout">
-        <app-sidebar role="headmaster" active-path="/headmaster/analytics/comparative-analytics.html"></app-sidebar>
+        <app-sidebar role="tenant_admin" active-path="/headmaster/analytics/comparative-analytics.html"></app-sidebar>
         
         <div class="app-main">
             <app-topbar username="Headmaster Portal"></app-topbar>
             
             <main class="app-content-wrapper">
                 <div class="app-content">
-                    <app-breadcrumb path="Analytics, Comparative Grade-Wide Board"></app-breadcrumb>
+                    <app-breadcrumb path="Headmaster, Comparative Analytics"></app-breadcrumb>
 
                     <div class="card" style="margin-top: 14px; padding: 24px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 24px;">
@@ -47,17 +48,17 @@
                         </div>
 
                         <!-- Gender Performance Cards (Task 4.3) -->
-                        <h2 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 14px;">👫 Gender Cohort Pass Rate Comparison</h2>
+                        <h2 style="font-size: 16px; font-weight: 800; color: #064e3b; margin-bottom: 14px;">👫 Gender Cohort Pass Rate Comparison</h2>
                         <div id="genderContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 30px;">
                             <!-- Gender Cards -->
                         </div>
 
                         <!-- Stream Comparison Table (Task 4.3) -->
-                        <h2 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 14px;">🏫 Classroom Stream Comparison Matrix</h2>
+                        <h2 style="font-size: 16px; font-weight: 800; color: #064e3b; margin-bottom: 14px;">🏫 Classroom Stream Comparison Matrix</h2>
                         <div style="border: 1px solid var(--c-border-light); border-radius: 10px; overflow: hidden;">
                             <table class="table" style="width: 100%; margin: 0; font-size: 13px; border-collapse: collapse;">
                                 <thead>
-                                    <tr style="background: #0f172a; color: white;">
+                                    <tr style="background: #064e3b; color: white;">
                                         <th style="padding: 12px 16px;">Classroom Stream</th>
                                         <th style="padding: 12px 16px;">Grade Level Tier</th>
                                         <th style="padding: 12px 16px; text-align: center;">Total Evaluated Marks</th>
