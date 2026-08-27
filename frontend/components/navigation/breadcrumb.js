@@ -18,39 +18,50 @@ class AppBreadcrumb extends HTMLElement {
     }
 
     get path() {
-        // Expected format: "Dashboard, Students, View All"
-        return this.getAttribute('path') || 'Dashboard';
+        // Expected format: "Headmaster, Settings, Assessment Config"
+        return this.getAttribute('path') || 'Headmaster';
     }
 
     render() {
         const parts = this.path.split(',').map(p => p.trim());
         
+        const currentPath = window.location.pathname;
+        const frontendIndex = currentPath.indexOf('/frontend/');
+        const basePath = (frontendIndex !== -1) ? currentPath.substring(0, frontendIndex + '/frontend/'.length) : '/frontend/';
+        
         const routeMap = {
-            'Headmaster': '/shule-cafe/frontend/headmaster/dashboard.html',
-            'Super Admin': '/shule-cafe/frontend/super-admin/dashboard.html',
-            'Teacher': '/shule-cafe/frontend/teacher/dashboard.html',
-            'Regional': '/shule-cafe/frontend/regional/dashboard.html',
-            'Settings': '/shule-cafe/frontend/headmaster/settings/index.html',
-            'Templates': '/shule-cafe/frontend/super-admin/templates/index.html',
-            'Schools': '/shule-cafe/frontend/super-admin/schools/index.html',
-            'Regions': '/shule-cafe/frontend/super-admin/regions/index.html',
-            'Students': '/shule-cafe/frontend/headmaster/people/students.html',
-            'Students Directory': '/shule-cafe/frontend/headmaster/people/students.html',
-            'Teachers': '/shule-cafe/frontend/headmaster/people/teachers.html',
-            'Teachers/Staffs': '/shule-cafe/frontend/headmaster/people/teachers.html',
-            'Teachers & Staffs': '/shule-cafe/frontend/headmaster/people/teachers.html',
-            'Academics': '/shule-cafe/frontend/headmaster/academics/index.html',
-            'Classrooms': '/shule-cafe/frontend/headmaster/classrooms/index.html',
-            'Timetables': '/shule-cafe/frontend/headmaster/timetable/index.html',
-            'Reports': '/shule-cafe/frontend/headmaster/reports/index.html',
-            'School Reports': '/shule-cafe/frontend/headmaster/reports/index.html',
-            'Class Guiders': '/shule-cafe/frontend/headmaster/allocations/class-guiders.html',
-            'Subject Allocations': '/shule-cafe/frontend/headmaster/allocations/subject-allocations.html',
-            'Assessment Config': '/shule-cafe/frontend/headmaster/academics/assessment-config.html'
+            'Headmaster': basePath + 'headmaster/dashboard.html',
+            'Dashboard': basePath + 'headmaster/dashboard.html',
+            'Super Admin': basePath + 'super-admin/dashboard.html',
+            'Teacher': basePath + 'teacher/dashboard.html',
+            'Regional': basePath + 'regional/dashboard.html',
+            'Settings': basePath + 'headmaster/settings/index.html',
+            'School Setup': basePath + 'headmaster/settings/index.html',
+            'Setup': basePath + 'headmaster/settings/index.html',
+            'School Profile': basePath + 'headmaster/settings/school-profile.html',
+            'Templates': basePath + 'super-admin/templates/index.html',
+            'Schools': basePath + 'super-admin/schools/index.html',
+            'Regions': basePath + 'super-admin/regions/index.html',
+            'Students': basePath + 'headmaster/people/students.html',
+            'Students Directory': basePath + 'headmaster/people/students.html',
+            'Teachers': basePath + 'headmaster/people/teachers.html',
+            'Teachers/Staffs': basePath + 'headmaster/people/teachers.html',
+            'Teachers & Staffs': basePath + 'headmaster/people/teachers.html',
+            'Academics': basePath + 'headmaster/academics/index.html',
+            'Academics Management': basePath + 'headmaster/academics/index.html',
+            'Classrooms': basePath + 'headmaster/classrooms/index.html',
+            'Timetables': basePath + 'headmaster/timetable/index.html',
+            'Reports': basePath + 'headmaster/reports/index.html',
+            'School Reports': basePath + 'headmaster/reports/index.html',
+            'Class Guiders': basePath + 'headmaster/allocations/class-guiders.html',
+            'Subject Allocations': basePath + 'headmaster/allocations/subject-allocations.html',
+            'Assessment Config': basePath + 'headmaster/academics/assessment-config.html'
         };
 
-        const homeUrl = window.location.pathname.includes('/headmaster/') ? '/shule-cafe/frontend/headmaster/dashboard.html' :
-                        (window.location.pathname.includes('/super-admin/') ? '/shule-cafe/frontend/super-admin/dashboard.html' : '#');
+        const homeUrl = currentPath.includes('/headmaster/') ? (basePath + 'headmaster/dashboard.html') :
+                        (currentPath.includes('/super-admin/') ? (basePath + 'super-admin/dashboard.html') :
+                        (currentPath.includes('/teacher/') ? (basePath + 'teacher/dashboard.html') :
+                        (currentPath.includes('/regional/') ? (basePath + 'regional/dashboard.html') : (basePath + 'dashboard.html'))));
         
         let breadcrumbHtml = `<nav class="breadcrumb-ribbon" aria-label="Breadcrumb">`;
         
