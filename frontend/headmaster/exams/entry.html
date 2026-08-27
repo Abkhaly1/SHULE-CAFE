@@ -961,6 +961,7 @@
                                 data-col="${cIdx}"
                                 value="${val}"
                                 placeholder="-"
+                                onwheel="event.preventDefault()"
                                 ${sheetData.is_locked ? 'disabled' : ''}>
                         </td>
                     `;
@@ -980,6 +981,9 @@
             document.querySelectorAll('.grid-score-input').forEach(input => {
                 input.addEventListener('input', handleCellScoreChange);
                 input.addEventListener('keydown', handleGridKeyboardNav);
+                input.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                }, { passive: false });
             });
         }
 
