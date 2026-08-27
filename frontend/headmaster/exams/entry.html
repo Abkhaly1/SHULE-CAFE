@@ -13,74 +13,51 @@
     <script type="module" src="../../js/auth/auth-guard.js"></script>
 
     <style>
-        /* Tiny Scope Bar Styling */
-        .tiny-scope-bar {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 10px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        /* Directory Listing Styling */
+        .year-heading {
+            font-size: 16px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            margin: 24px 0 12px;
+            padding-bottom: 6px;
+            border-bottom: 1.5px solid #cbd5e1;
         }
 
-        .tiny-group {
+        .term-group-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: #064e3b;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            margin: 12px 0 8px 8px;
+        }
+
+        .class-entry-link {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-        }
-
-        .tiny-label {
-            font-size: 11px;
+            text-decoration: none;
+            color: #0284c7;
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            color: #64748b;
-        }
-
-        .tiny-select {
-            padding: 5px 10px;
-            border-radius: 6px;
-            border: 1.5px solid #cbd5e1;
-            font-size: 12.5px;
-            font-weight: 700;
-            color: #0f172a;
-            background: #f8fafc;
-            outline: none;
-            cursor: pointer;
+            font-size: 14.5px;
+            padding: 4px 8px;
+            border-radius: 4px;
             transition: all 0.15s ease;
-        }
-
-        .tiny-select:focus {
-            border-color: #059669;
-            background: #ffffff;
-            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15);
-        }
-
-        .mode-toggle-btn {
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 700;
-            border: 1.5px solid #cbd5e1;
-            background: #ffffff;
-            color: #475569;
             cursor: pointer;
-            transition: all 0.15s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
         }
 
-        .mode-toggle-btn.active {
-            background: #064e3b;
-            color: #ffffff;
-            border-color: #064e3b;
-            box-shadow: 0 2px 5px rgba(6, 78, 59, 0.2);
+        .class-entry-link:hover {
+            color: #0369a1;
+            background: #f0f9ff;
+            transform: translateX(3px);
+        }
+
+        .class-entry-link .bullet {
+            font-weight: 900;
+            color: #0284c7;
+            font-size: 15px;
         }
 
         /* Fast Data Entry Grid */
@@ -207,11 +184,31 @@
             cursor: not-allowed;
         }
 
-        /* Sticky Summary Columns on Right */
         .summary-col {
             background: #f8fafc;
             text-align: center;
             font-weight: 800;
+        }
+
+        .mode-toggle-btn {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 11.5px;
+            font-weight: 700;
+            border: 1.5px solid #cbd5e1;
+            background: #ffffff;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .mode-toggle-btn.active {
+            background: #064e3b;
+            color: #ffffff;
+            border-color: #064e3b;
         }
     </style>
 </head>
@@ -224,103 +221,89 @@
             
             <main class="app-content-wrapper">
                 <div class="app-content">
-                    <app-breadcrumb path="Headmaster, Examinations, Marks Entry"></app-breadcrumb>
+                    <app-breadcrumb id="entryBreadcrumb" path="Headmaster, Examinations, Marks Entry"></app-breadcrumb>
 
                     <!-- Top Subheader Bar -->
                     <div class="card" style="margin-top: 14px; margin-bottom: 14px; padding: 14px 20px; background: white; border-radius: 10px; border: 1px solid var(--c-primary-border);">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                             <div style="display: flex; align-items: center; gap: 14px;">
-                                <a href="index.html" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none; font-weight: 700;">
+                                <a id="btnBackAction" href="index.html" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none; font-weight: 700;">
                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                                    Back to Exams
+                                    <span id="btnBackText">Back to Exams</span>
                                 </a>
                                 <div>
-                                    <h1 style="margin: 0; font-size: 18px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 6px;">
-                                        <span>✍️ Marks Entry</span>
+                                    <h1 id="pageTitle" style="margin: 0; font-size: 18px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 6px;">
+                                        <span>✍️ Examinations Marks Entry</span>
                                     </h1>
                                 </div>
                             </div>
 
-                            <!-- Right Controls: Quick Save & Mode Switcher -->
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div class="tiny-group" style="background: #f1f5f9; padding: 3px; border-radius: 8px;">
+                            <!-- Right Controls: Active inside Grid Mode -->
+                            <div id="gridControlHeader" style="display: none; align-items: center; gap: 10px;">
+                                <div style="background: #f1f5f9; padding: 3px; border-radius: 8px; display: inline-flex; gap: 4px;">
                                     <button id="btnModeAll" class="mode-toggle-btn active" onclick="switchEntryMode('all')">
-                                        <span>⚡ All Subjects Grid</span>
+                                        <span>⚡ All Subjects</span>
                                     </button>
                                     <button id="btnModeSingle" class="mode-toggle-btn" onclick="switchEntryMode('single')">
                                         <span>🎯 Single Subject</span>
                                     </button>
                                 </div>
 
-                                <button id="btnSaveMarks" class="btn btn-primary" style="font-weight: 800; display: inline-flex; align-items: center; gap: 6px; padding: 6px 18px; height: 36px; box-shadow: 0 2px 6px rgba(5,150,105,0.25);">
+                                <button id="btnSaveMarks" class="btn btn-primary" style="font-weight: 800; display: inline-flex; align-items: center; gap: 6px; padding: 6px 18px; height: 34px;">
                                     <span>💾</span> Save All Marks
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Tiny List Way: Compact Scope Selection Strip -->
-                    <div class="tiny-scope-bar">
-                        <!-- Tiny selectors: Year, Term, Classroom Stream, Assessment Type -->
-                        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 14px;">
-                            <div class="tiny-group">
-                                <span class="tiny-label">Year:</span>
-                                <select id="tinyYear" class="tiny-select">
-                                    <option value="2026" selected>2026</option>
-                                    <option value="2025">2025</option>
-                                    <option value="2024">2024</option>
-                                </select>
-                            </div>
-
-                            <div class="tiny-group">
-                                <span class="tiny-label">Term:</span>
-                                <select id="tinyTerm" class="tiny-select">
-                                    <option value="Term 1" selected>Term 1</option>
-                                    <option value="Term 2">Term 2</option>
-                                </select>
-                            </div>
-
-                            <div class="tiny-group">
-                                <span class="tiny-label">Classroom:</span>
-                                <select id="tinyClassroom" class="tiny-select" style="min-width: 220px; font-weight: 800; color: #064e3b; border-color: #a7f3d0; background: #ecfdf5;">
-                                    <option value="">Select Classroom...</option>
-                                </select>
-                            </div>
-
-                            <div class="tiny-group">
-                                <span class="tiny-label">Exam:</span>
-                                <select id="tinyAssessmentType" class="tiny-select" style="min-width: 170px;">
-                                    <!-- Dynamic Assessments -->
-                                </select>
-                            </div>
-
-                            <!-- Single Subject Picker (Shown when in Single Subject mode) -->
-                            <div id="singleSubGroup" class="tiny-group" style="display: none;">
-                                <span class="tiny-label">Subject:</span>
-                                <select id="tinySubject" class="tiny-select" style="min-width: 140px; background: #eff6ff; border-color: #bfdbfe; color: #1e40af;">
-                                    <!-- Dynamic Subjects -->
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Quick Action Tool: Fill Column / Lock Notice -->
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div id="tinyLockIndicator" style="display: none;">
-                                <span class="badge" style="background:#fee2e2; color:#991b1b; font-weight:800; font-size:11px; padding:4px 8px;">
-                                    🔒 Locked (Read Only)
-                                </span>
-                            </div>
-
-                            <div style="display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: #64748b;">
-                                <span>Default:</span>
-                                <input type="number" id="quickFillVal" placeholder="Mark" style="width: 50px; height: 26px; border: 1px solid #cbd5e1; border-radius: 4px; text-align: center; font-weight: 800;">
-                                <button id="btnQuickFill" class="btn btn-outline btn-sm" style="padding: 2px 6px; font-size: 11px; height: 26px;">Apply</button>
+                    <!-- 1. DIRECTORY LISTING VIEW (Default View) -->
+                    <div id="entryDirectoryView">
+                        <div class="card" style="padding: 24px 32px; background: white; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 24px; min-height: 400px;">
+                            <div id="entryDirectoryContainer">
+                                <div style="text-align: center; padding: 40px; color: #64748b;">
+                                    <span>⏳ Loading Marks Entry Directory...</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Fast Data Entry Grid Workspace -->
+                    <!-- 2. ACTIVE MARKS ENTRY GRID (Shown when a class is selected) -->
                     <div id="gridWorkspace" style="display: none;">
+                        
+                        <!-- Mini Toolbar inside Grid: Exam Type Selector & Quick Fill -->
+                        <div class="card" style="padding: 10px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                                <div style="display: inline-flex; align-items: center; gap: 6px;">
+                                    <span style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Exam Assessment:</span>
+                                    <select id="gridAssessmentType" class="form-control" style="padding: 3px 8px; height: 30px; font-weight: 700; font-size: 12px; min-width: 190px;">
+                                        <!-- Dynamic assessments -->
+                                    </select>
+                                </div>
+
+                                <div id="singleSubPickGroup" style="display: none; align-items: center; gap: 6px;">
+                                    <span style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Subject:</span>
+                                    <select id="gridSubjectSelect" class="form-control" style="padding: 3px 8px; height: 30px; font-weight: 700; font-size: 12px; min-width: 140px; background: #eff6ff; color: #1e40af;">
+                                        <!-- Dynamic subjects -->
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div id="lockNotice" style="display: none;">
+                                    <span class="badge" style="background:#fee2e2; color:#991b1b; font-weight:800; font-size:11px; padding:3px 8px;">
+                                        🔒 Locked Scoresheet
+                                    </span>
+                                </div>
+
+                                <div style="display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: #64748b;">
+                                    <span>Default Score:</span>
+                                    <input type="number" id="quickFillVal" placeholder="Mark" style="width: 50px; height: 26px; border: 1px solid #cbd5e1; border-radius: 4px; text-align: center; font-weight: 800;">
+                                    <button id="btnQuickFill" class="btn btn-outline btn-sm" style="padding: 2px 6px; font-size: 11px; height: 26px;">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Data Entry Grid Container -->
                         <div class="entry-grid-container">
                             <table class="entry-grid" id="marksEntryGrid">
                                 <thead id="gridThead">
@@ -333,37 +316,29 @@
                         </div>
 
                         <!-- Live Summary Bar -->
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; background: #ffffff; padding: 14px 18px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; background: #ffffff; padding: 12px 18px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
                             <div>
                                 <span style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Total Students:</span>
-                                <div id="statGridTotalStudents" style="font-size: 18px; font-weight: 900; color: #0f172a;">0</div>
+                                <div id="statGridTotalStudents" style="font-size: 17px; font-weight: 900; color: #0f172a;">0</div>
                             </div>
                             <div>
                                 <span style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Marks Filled:</span>
-                                <div id="statGridFilledCount" style="font-size: 18px; font-weight: 900; color: #059669;">0</div>
+                                <div id="statGridFilledCount" style="font-size: 17px; font-weight: 900; color: #059669;">0</div>
                             </div>
                             <div>
                                 <span style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Class Average:</span>
-                                <div id="statGridAverage" style="font-size: 18px; font-weight: 900; color: #2563eb;">0.0</div>
+                                <div id="statGridAverage" style="font-size: 17px; font-weight: 900; color: #2563eb;">0.0</div>
                             </div>
                             <div>
                                 <span style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Pass Rate (>=45%):</span>
-                                <div id="statGridPassRate" style="font-size: 18px; font-weight: 900; color: #10b981;">0%</div>
+                                <div id="statGridPassRate" style="font-size: 17px; font-weight: 900; color: #10b981;">0%</div>
                             </div>
                             <div>
                                 <span style="font-size: 11px; color: #64748b; font-weight: 700; text-transform: uppercase;">Max Weight:</span>
-                                <div id="statGridMaxWeight" style="font-size: 18px; font-weight: 900; color: #7c3aed;">100%</div>
+                                <div id="statGridMaxWeight" style="font-size: 17px; font-weight: 900; color: #7c3aed;">100%</div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Initial Prompt State -->
-                    <div id="gridEmptyPrompt" class="card" style="padding: 50px 20px; text-align: center; border-radius: 10px; background: #ffffff;">
-                        <div style="font-size: 40px; margin-bottom: 10px;">✍️</div>
-                        <h3 style="margin: 0 0 6px; font-size: 16px; font-weight: 800; color: #0f172a;">Select a Classroom Stream</h3>
-                        <p style="margin: 0 auto; max-width: 400px; font-size: 13px; color: var(--c-text-muted);">
-                            Use the compact list above to choose a classroom. The student score sheet will instantly populate.
-                        </p>
                     </div>
 
                 </div>
@@ -375,22 +350,31 @@
     <div id="gridToastBox" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;"></div>
 
     <script>
-        let currentMode = 'all'; // 'all' (multi-subject grid) or 'single' (focused subject)
+        let currentMode = 'all'; // 'all' or 'single'
+        let currentScopes = null;
         let sheetData = null;
+        let activeClassroomId = null;
+        let activeYear = '2026';
+        let activeTerm = 'Term 1';
         let activeSubjects = [];
         let maxAssessmentWeight = 100;
 
         document.addEventListener('DOMContentLoaded', async () => {
-            await loadTinyScopes();
+            await loadScopes();
 
-            document.getElementById('tinyYear').addEventListener('change', autoLoadSheet);
-            document.getElementById('tinyTerm').addEventListener('change', autoLoadSheet);
-            document.getElementById('tinyClassroom').addEventListener('change', autoLoadSheet);
-            document.getElementById('tinyAssessmentType').addEventListener('change', autoLoadSheet);
-            document.getElementById('tinySubject').addEventListener('change', autoLoadSheet);
+            document.getElementById('gridAssessmentType').addEventListener('change', autoLoadSheet);
+            document.getElementById('gridSubjectSelect').addEventListener('change', autoLoadSheet);
 
             document.getElementById('btnSaveMarks').addEventListener('click', saveGridMarks);
             document.getElementById('btnQuickFill').addEventListener('click', applyQuickFill);
+
+            // Handle back button action
+            document.getElementById('btnBackAction').addEventListener('click', (e) => {
+                if (document.getElementById('gridWorkspace').style.display === 'block') {
+                    e.preventDefault();
+                    showDirectoryView();
+                }
+            });
 
             // Shortcut: Ctrl+S to save marks
             window.addEventListener('keydown', (e) => {
@@ -400,55 +384,119 @@
                 }
             });
 
-            // Auto-load if URL parameters passed
+            // Check URL parameters
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('classroom_id')) {
-                setTimeout(() => {
-                    document.getElementById('tinyClassroom').value = urlParams.get('classroom_id');
-                    if (urlParams.get('subject_code')) {
-                        document.getElementById('tinySubject').value = urlParams.get('subject_code');
-                        switchEntryMode('single');
-                    }
-                    autoLoadSheet();
-                }, 400);
+                const cid = urlParams.get('classroom_id');
+                const yr = urlParams.get('year') || '2026';
+                const term = urlParams.get('term') || 'Term 1';
+                openMarksEntry(cid, yr, term);
             }
         });
 
-        async function loadTinyScopes() {
+        async function loadScopes() {
             try {
                 const res = await fetch('/shule-cafe/api/headmaster/exams/exams_api.php?action=get_scopes', { credentials: 'include' });
                 const data = await res.json();
                 if (data.success) {
-                    // Populate Classroom tiny dropdown grouped by Grade
-                    const selClass = document.getElementById('tinyClassroom');
-                    selClass.innerHTML = '<option value="">Select Classroom...</option>';
-                    data.classrooms.forEach(cls => {
-                        selClass.innerHTML += `<option value="${cls.id}">${cls.classroom_name} (${cls.grade_name || cls.level_name || 'Class'})</option>`;
-                    });
+                    currentScopes = data;
+                    renderDirectoryList(data);
 
-                    // Populate Assessment Types
-                    const selType = document.getElementById('tinyAssessmentType');
+                    // Populate Assessments
+                    const selType = document.getElementById('gridAssessmentType');
                     selType.innerHTML = '';
                     data.assessment_types.forEach((at, i) => {
                         selType.innerHTML += `<option value="${at.id}" ${i === 0 ? 'selected' : ''}>${at.name} (${at.weight_percent}%)</option>`;
                     });
 
                     // Populate Subjects
-                    const selSub = document.getElementById('tinySubject');
+                    const selSub = document.getElementById('gridSubjectSelect');
                     selSub.innerHTML = '';
                     data.subjects.forEach(s => {
                         selSub.innerHTML += `<option value="${s.code}">${s.name} (${s.code})</option>`;
                     });
-
-                    // Auto-select first classroom if available
-                    if (data.classrooms && data.classrooms.length > 0) {
-                        selClass.value = data.classrooms[0].id;
-                        autoLoadSheet();
-                    }
                 }
             } catch(e) {
                 console.error(e);
             }
+        }
+
+        function renderDirectoryList(data) {
+            const container = document.getElementById('entryDirectoryContainer');
+            container.innerHTML = '';
+
+            const years = data.years || ['2026', '2025', '2024'];
+            const terms = data.terms || ['Term 1', 'Term 2'];
+            const classrooms = data.classrooms || [];
+
+            if (classrooms.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:30px; color:#64748b;">No active classrooms found for this school.</div>`;
+                return;
+            }
+
+            years.forEach((yr) => {
+                const yearDiv = document.createElement('div');
+                yearDiv.style.marginBottom = '28px';
+
+                let yearHtml = `
+                    <div class="year-heading">MARKS ENTRY FOR THE YEAR ${yr}</div>
+                `;
+
+                terms.forEach(trm => {
+                    yearHtml += `
+                        <div style="margin-bottom: 16px;">
+                            <div class="term-group-title">${trm}</div>
+                            <div style="display: flex; flex-direction: column; gap: 8px; padding-left: 12px;">
+                    `;
+
+                    classrooms.forEach(cls => {
+                        const labelName = `${cls.classroom_name} Marks Entry`;
+                        yearHtml += `
+                            <div>
+                                <a href="javascript:void(0)" onclick="openMarksEntry(${cls.id}, '${yr}', '${trm}', '${cls.classroom_name}')" class="class-entry-link">
+                                    <span class="bullet">›</span>
+                                    <span>${labelName}</span>
+                                </a>
+                            </div>
+                        `;
+                    });
+
+                    yearHtml += `
+                            </div>
+                        </div>
+                    `;
+                });
+
+                yearDiv.innerHTML = yearHtml;
+                container.appendChild(yearDiv);
+            });
+        }
+
+        function showDirectoryView() {
+            document.getElementById('entryDirectoryView').style.display = 'block';
+            document.getElementById('gridWorkspace').style.display = 'none';
+            document.getElementById('gridControlHeader').style.display = 'none';
+            document.getElementById('btnBackText').textContent = 'Back to Exams';
+            document.getElementById('pageTitle').innerHTML = '<span>✍️ Examinations Marks Entry</span>';
+            
+            // Clean URL
+            window.history.pushState({}, '', 'entry.html');
+        }
+
+        async function openMarksEntry(classroomId, year, term, className = '') {
+            activeClassroomId = classroomId;
+            activeYear = year;
+            activeTerm = term;
+
+            document.getElementById('entryDirectoryView').style.display = 'none';
+            document.getElementById('gridWorkspace').style.display = 'block';
+            document.getElementById('gridControlHeader').style.display = 'flex';
+            document.getElementById('btnBackText').textContent = 'Back to Classes List';
+
+            // Update URL
+            window.history.pushState({}, '', `entry.html?classroom_id=${classroomId}&year=${year}&term=${encodeURIComponent(term)}`);
+
+            await autoLoadSheet();
         }
 
         function switchEntryMode(mode) {
@@ -456,30 +504,23 @@
             if (mode === 'all') {
                 document.getElementById('btnModeAll').classList.add('active');
                 document.getElementById('btnModeSingle').classList.remove('active');
-                document.getElementById('singleSubGroup').style.display = 'none';
+                document.getElementById('singleSubPickGroup').style.display = 'none';
             } else {
                 document.getElementById('btnModeSingle').classList.add('active');
                 document.getElementById('btnModeAll').classList.remove('active');
-                document.getElementById('singleSubGroup').style.display = 'inline-flex';
+                document.getElementById('singleSubPickGroup').style.display = 'inline-flex';
             }
             autoLoadSheet();
         }
 
         async function autoLoadSheet() {
-            const classroomId = document.getElementById('tinyClassroom').value;
-            const year = document.getElementById('tinyYear').value;
-            const term = document.getElementById('tinyTerm').value;
-            const assessmentTypeId = document.getElementById('tinyAssessmentType').value;
-            const subjectCode = (currentMode === 'single') ? document.getElementById('tinySubject').value : 'all';
+            if (!activeClassroomId) return;
 
-            if (!classroomId) {
-                document.getElementById('gridEmptyPrompt').style.display = 'block';
-                document.getElementById('gridWorkspace').style.display = 'none';
-                return;
-            }
+            const assessmentTypeId = document.getElementById('gridAssessmentType').value;
+            const subjectCode = (currentMode === 'single') ? document.getElementById('gridSubjectSelect').value : 'all';
 
             try {
-                const url = `/shule-cafe/api/headmaster/exams/exams_api.php?action=get_entry_sheet&classroom_id=${classroomId}&year=${year}&term=${encodeURIComponent(term)}&assessment_type_id=${assessmentTypeId}&subject_code=${encodeURIComponent(subjectCode)}`;
+                const url = `/shule-cafe/api/headmaster/exams/exams_api.php?action=get_entry_sheet&classroom_id=${activeClassroomId}&year=${activeYear}&term=${encodeURIComponent(activeTerm)}&assessment_type_id=${assessmentTypeId}&subject_code=${encodeURIComponent(subjectCode)}`;
                 const res = await fetch(url, { credentials: 'include' });
                 const data = await res.json();
 
@@ -487,12 +528,14 @@
                     sheetData = data;
                     activeSubjects = data.subjects || [];
 
+                    document.getElementById('pageTitle').innerHTML = `<span>✍️ ${data.classroom.classroom_name} ‹ ${activeTerm} ${activeYear}</span>`;
+
                     const activeTypeObj = (data.assessment_types || []).find(t => String(t.id) === String(assessmentTypeId));
                     maxAssessmentWeight = activeTypeObj ? parseFloat(activeTypeObj.weight_percent) : 100;
                     document.getElementById('statGridMaxWeight').textContent = `${maxAssessmentWeight}%`;
 
                     // Lock indicator
-                    const lockNotice = document.getElementById('tinyLockIndicator');
+                    const lockNotice = document.getElementById('lockNotice');
                     if (data.is_locked) {
                         lockNotice.style.display = 'block';
                         document.getElementById('btnSaveMarks').disabled = true;
@@ -501,13 +544,10 @@
                         document.getElementById('btnSaveMarks').disabled = false;
                     }
 
-                    document.getElementById('gridEmptyPrompt').style.display = 'none';
-                    document.getElementById('gridWorkspace').style.display = 'block';
-
                     renderGridTable();
                     recalculateGridStats();
                 } else {
-                    showToast(data.message || 'Error loading roster.', 'error');
+                    showToast(data.message || 'Error loading student roster.', 'error');
                 }
             } catch(e) {
                 showToast('Network communication error.', 'error');
@@ -519,9 +559,9 @@
             const tbody = document.getElementById('gridTbody');
 
             const isMulti = (currentMode === 'all');
-            const targetSubjects = isMulti ? activeSubjects : activeSubjects.filter(s => s.code === document.getElementById('tinySubject').value);
+            const targetSubjects = isMulti ? activeSubjects : activeSubjects.filter(s => s.code === document.getElementById('gridSubjectSelect').value);
 
-            // 1. Render Thead
+            // 1. Render Thead (S/N, Reg No, Full Name, Subjects, Total, Points, Division, Pos)
             let thHtml = `
                 <tr>
                     <th class="sticky-col-idx">S/N</th>
@@ -601,7 +641,7 @@
                 tbody.appendChild(tr);
             });
 
-            // Bind grid input keyboard navigation and live computation
+            // Bind inputs
             document.querySelectorAll('.grid-score-input').forEach(input => {
                 input.addEventListener('input', handleCellScoreChange);
                 input.addEventListener('keydown', handleGridKeyboardNav);
@@ -637,12 +677,10 @@
                 if (!stu.subject_scores) stu.subject_scores = {};
                 stu.subject_scores[subCode] = rawVal !== '' ? parseFloat(input.value) : null;
 
-                // Live total across subjects
-                let sum = 0, count = 0;
+                let sum = 0;
                 for (let k in stu.subject_scores) {
                     if (stu.subject_scores[k] !== null && stu.subject_scores[k] !== undefined) {
                         sum += parseFloat(stu.subject_scores[k]);
-                        count++;
                     }
                 }
                 stu.total_score = Math.round(sum * 10) / 10;
@@ -669,10 +707,8 @@
                 e.preventDefault();
                 targetRow--;
             } else if (e.key === 'ArrowRight' && (e.target.selectionEnd === e.target.value.length || e.key === 'Tab')) {
-                // Navigate right
                 targetCol++;
             } else if (e.key === 'ArrowLeft' && e.target.selectionStart === 0) {
-                // Navigate left
                 targetCol--;
             } else {
                 return;
@@ -686,13 +722,20 @@
         }
 
         function renderDivBadge(div) {
+            let label = div;
+            if (div === 'Division I') label = 'I';
+            else if (div === 'Division II') label = 'II';
+            else if (div === 'Division III') label = 'III';
+            else if (div === 'Division IV') label = 'IV';
+            else if (div === 'Division 0' || div === 'Fail') label = '0';
+
             let bg = '#f1f5f9', color = '#475569';
-            if (div === 'Division I') { bg = '#dcfce7'; color = '#15803d'; }
-            else if (div === 'Division II') { bg = '#dbeafe'; color = '#1e40af'; }
-            else if (div === 'Division III') { bg = '#fef3c7'; color = '#92400e'; }
-            else if (div === 'Division IV') { bg = '#ffedd5'; color = '#9a3412'; }
-            else if (div === 'Division 0' || div === 'Fail') { bg = '#fee2e2'; color = '#991b1b'; }
-            return `<span class="badge" style="background:${bg}; color:${color}; font-weight:800; font-size:10.5px; padding:2px 6px; border-radius:4px;">${div || '-'}</span>`;
+            if (label === 'I') { bg = '#dcfce7'; color = '#15803d'; }
+            else if (label === 'II') { bg = '#dbeafe'; color = '#1e40af'; }
+            else if (label === 'III') { bg = '#fef3c7'; color = '#92400e'; }
+            else if (label === 'IV') { bg = '#ffedd5'; color = '#9a3412'; }
+            else if (label === '0') { bg = '#fee2e2'; color = '#991b1b'; }
+            return `<span class="badge" style="background:${bg}; color:${color}; font-weight:800; font-size:10.5px; padding:2px 6px; border-radius:4px;">${label || '-'}</span>`;
         }
 
         function recalculateGridStats() {
@@ -705,9 +748,7 @@
 
             document.querySelectorAll('.grid-score-input').forEach(inp => {
                 const v = inp.value.trim();
-                if (v !== '') {
-                    filled++;
-                }
+                if (v !== '') filled++;
             });
 
             sheetData.roster.forEach(stu => {
@@ -746,16 +787,10 @@
         }
 
         async function saveGridMarks() {
-            const classroomId = document.getElementById('tinyClassroom').value;
-            const year = document.getElementById('tinyYear').value;
-            const term = document.getElementById('tinyTerm').value;
-            const assessmentTypeId = document.getElementById('tinyAssessmentType').value;
-            const subjectCode = (currentMode === 'single') ? document.getElementById('tinySubject').value : 'all';
+            if (!activeClassroomId) return;
 
-            if (!classroomId || !assessmentTypeId) {
-                showToast('Please select a Classroom and Assessment Type.', 'warning');
-                return;
-            }
+            const assessmentTypeId = document.getElementById('gridAssessmentType').value;
+            const subjectCode = (currentMode === 'single') ? document.getElementById('gridSubjectSelect').value : 'all';
 
             const btn = document.getElementById('btnSaveMarks');
             btn.disabled = true;
@@ -764,7 +799,6 @@
             const payloadMarks = [];
 
             if (currentMode === 'all') {
-                // Multi-subject payload
                 sheetData.roster.forEach(stu => {
                     const stuScores = {};
                     document.querySelectorAll(`.grid-score-input[data-student-id="${stu.student_id}"]`).forEach(inp => {
@@ -779,7 +813,6 @@
                     });
                 });
             } else {
-                // Single subject payload
                 document.querySelectorAll('.grid-score-input').forEach(inp => {
                     const sid = inp.getAttribute('data-student-id');
                     const val = inp.value.trim();
@@ -798,10 +831,10 @@
                     credentials: 'include',
                     body: JSON.stringify({
                         action: 'save_marks_batch',
-                        classroom_id: classroomId,
+                        classroom_id: activeClassroomId,
                         subject_code: subjectCode,
-                        year: year,
-                        term: term,
+                        year: activeYear,
+                        term: activeTerm,
                         assessment_type_id: assessmentTypeId,
                         is_multi_subject: (currentMode === 'all'),
                         marks: payloadMarks

@@ -13,6 +13,55 @@
     <script type="module" src="../../js/auth/auth-guard.js"></script>
 
     <style>
+        /* Directory Listing Styling */
+        .year-heading {
+            font-size: 16px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            margin: 24px 0 12px;
+            padding-bottom: 6px;
+            border-bottom: 1.5px solid #cbd5e1;
+            font-family: inherit;
+        }
+
+        .term-group-title {
+            font-size: 13px;
+            font-weight: 800;
+            color: #064e3b;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            margin: 12px 0 8px 8px;
+        }
+
+        .class-result-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: #0284c7;
+            font-weight: 700;
+            font-size: 14.5px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+
+        .class-result-link:hover {
+            color: #0369a1;
+            background: #f0f9ff;
+            transform: translateX(3px);
+        }
+
+        .class-result-link .bullet {
+            font-weight: 900;
+            color: #0284c7;
+            font-size: 15px;
+        }
+
+        /* Broadsheet Table Styling */
         .broadsheet-table {
             width: 100%;
             border-collapse: collapse;
@@ -115,24 +164,25 @@
             
             <main class="app-content-wrapper">
                 <div class="app-content">
-                    <app-breadcrumb path="Headmaster, Examinations, Results Records"></app-breadcrumb>
+                    <app-breadcrumb id="resultsBreadcrumb" path="Headmaster, Examinations, Results Records"></app-breadcrumb>
 
-                    <!-- Top Header Box -->
-                    <div class="card no-print" style="margin-top: 14px; margin-bottom: 14px; padding: 14px 20px; background: white; border-radius: 10px; border: 1px solid var(--c-primary-border);">
+                    <!-- Top Action Bar -->
+                    <div class="card no-print" style="margin-top: 14px; margin-bottom: 16px; padding: 14px 20px; background: white; border-radius: 10px; border: 1px solid var(--c-primary-border);">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                             <div style="display: flex; align-items: center; gap: 14px;">
-                                <a href="index.html" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none; font-weight: 700;">
+                                <a id="btnBackAction" href="index.html" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none; font-weight: 700;">
                                     <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                                    Back to Exams
+                                    <span id="btnBackText">Back to Exams</span>
                                 </a>
                                 <div>
-                                    <h1 style="margin: 0; font-size: 18px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 6px;">
+                                    <h1 id="pageTitle" style="margin: 0; font-size: 18px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 6px;">
                                         <span>📊 Results Records & Broadsheets</span>
                                     </h1>
                                 </div>
                             </div>
 
-                            <div style="display: flex; align-items: center; gap: 8px;">
+                            <!-- Action Buttons for Broadsheet View -->
+                            <div id="broadsheetActionButtons" style="display: none; align-items: center; gap: 8px;">
                                 <button id="btnPrintBroadsheet" class="btn btn-outline btn-sm" style="font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
                                     <span>🖨️</span> Print Broadsheet
                                 </button>
@@ -143,49 +193,18 @@
                         </div>
                     </div>
 
-                    <!-- Tiny Scope Bar (Years, Terms, Classrooms, Exam Types) -->
-                    <div class="card no-print" style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:10px 16px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
-                        <div style="display:flex; align-items:center; flex-wrap:wrap; gap:14px;">
-                            <div style="display:inline-flex; align-items:center; gap:6px;">
-                                <span style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase;">Year:</span>
-                                <select id="recSelYear" class="form-control" style="padding:4px 8px; height:32px; border-radius:6px; border:1.5px solid #cbd5e1; font-weight:700; font-size:12.5px;">
-                                    <option value="2026" selected>2026</option>
-                                    <option value="2025">2025</option>
-                                    <option value="2024">2024</option>
-                                </select>
+                    <!-- 1. DIRECTORY LISTING VIEW (Default View) -->
+                    <div id="resultsDirectoryView">
+                        <div class="card" style="padding: 24px 32px; background: white; border-radius: 10px; border: 1px solid #e2e8f0; margin-bottom: 24px; min-height: 400px;">
+                            <div id="directoryListContainer">
+                                <div style="text-align: center; padding: 40px; color: #64748b;">
+                                    <span>⏳ Loading Results Directory...</span>
+                                </div>
                             </div>
-
-                            <div style="display:inline-flex; align-items:center; gap:6px;">
-                                <span style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase;">Term:</span>
-                                <select id="recSelTerm" class="form-control" style="padding:4px 8px; height:32px; border-radius:6px; border:1.5px solid #cbd5e1; font-weight:700; font-size:12.5px;">
-                                    <option value="Term 1" selected>Term 1</option>
-                                    <option value="Term 2">Term 2</option>
-                                </select>
-                            </div>
-
-                            <div style="display:inline-flex; align-items:center; gap:6px;">
-                                <span style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase;">Classroom:</span>
-                                <select id="recSelClassroom" class="form-control" style="min-width:220px; padding:4px 8px; height:32px; border-radius:6px; border:1.5px solid #a7f3d0; background:#ecfdf5; color:#064e3b; font-weight:800; font-size:12.5px;">
-                                    <option value="">Select Classroom...</option>
-                                </select>
-                            </div>
-
-                            <div style="display:inline-flex; align-items:center; gap:6px;">
-                                <span style="font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase;">Exam:</span>
-                                <select id="recSelExamType" class="form-control" style="min-width:180px; padding:4px 8px; height:32px; border-radius:6px; border:1.5px solid #cbd5e1; font-weight:700; font-size:12.5px;">
-                                    <option value="all" selected>All Assessments (Aggregate Final)</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div>
-                            <button id="btnFetchRecords" class="btn btn-primary" style="height:32px; font-weight:700; font-size:12px; display:inline-flex; align-items:center; gap:6px; padding:4px 14px;">
-                                <span>🔎</span> View Broadsheet
-                            </button>
                         </div>
                     </div>
 
-                    <!-- Broadsheet Records Content Area -->
+                    <!-- 2. ACTIVE BROADSHEET RECORDS VIEW (Shown when a class result is clicked) -->
                     <div id="broadsheetWrapper" style="display: none;">
                         
                         <!-- National Examination Board Style Division Summary Matrix -->
@@ -220,7 +239,7 @@
                         <div class="card" style="padding: 12px 18px; margin-bottom: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
                             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                                 <div>
-                                    <strong id="broadsheetHeaderTitle" style="font-size: 14px; color: #064e3b;">Classroom Broadsheet</strong>
+                                    <strong id="broadsheetHeaderTitle" style="font-size: 15px; color: #064e3b;">Classroom Broadsheet</strong>
                                     <div id="broadsheetHeaderSub" style="font-size: 11.5px; color: #64748b; margin-top: 1px;">Adaptive Division Grading Framework</div>
                                 </div>
                                 <div id="bestSubjectBadge" class="badge" style="background: white; color: #065f46; border: 1.5px solid #059669; padding: 4px 10px; font-size: 11.5px; font-weight: 800;">
@@ -241,7 +260,7 @@
                             </table>
                         </div>
 
-                        <!-- Subject Examinations Summary Matrix (National Board Pattern) -->
+                        <!-- Subject Examinations Summary Matrix -->
                         <div class="card" style="padding: 16px 20px; border-radius: 8px; background: white; margin-bottom: 30px; border: 1.5px solid #cbd5e1;">
                             <h3 style="margin: 0 0 12px; font-size: 14px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.03em; display: flex; align-items: center; gap: 6px;">
                                 <span>📋 Subject Examinations Summary</span>
@@ -272,15 +291,6 @@
 
                     </div>
 
-                    <!-- Initial State Box -->
-                    <div id="recordsEmptyState" class="card" style="padding: 60px 20px; text-align: center; border-radius: 10px; background: #ffffff;">
-                        <div style="font-size: 44px; margin-bottom: 12px;">📊</div>
-                        <h3 style="margin: 0 0 6px; font-size: 17px; font-weight: 800; color: #0f172a;">Select a Classroom to View Broadsheet</h3>
-                        <p style="margin: 0 auto; max-width: 440px; font-size: 13px; color: var(--c-text-muted);">
-                            Choose your target Academic Year, Term, and Classroom above to view the student results and subject summary.
-                        </p>
-                    </div>
-
                 </div>
             </main>
         </div>
@@ -293,21 +303,24 @@
         document.addEventListener('DOMContentLoaded', async () => {
             await loadScopes();
 
-            document.getElementById('btnFetchRecords').addEventListener('click', fetchBroadsheet);
-            document.getElementById('recSelClassroom').addEventListener('change', fetchBroadsheet);
-            document.getElementById('recSelYear').addEventListener('change', fetchBroadsheet);
-            document.getElementById('recSelTerm').addEventListener('change', fetchBroadsheet);
-            document.getElementById('recSelExamType').addEventListener('change', fetchBroadsheet);
-
             document.getElementById('btnPrintBroadsheet').addEventListener('click', () => window.print());
             document.getElementById('btnExportCSV').addEventListener('click', exportToCSV);
 
+            // Handle back button action
+            document.getElementById('btnBackAction').addEventListener('click', (e) => {
+                if (document.getElementById('broadsheetWrapper').style.display === 'block') {
+                    e.preventDefault();
+                    showDirectoryView();
+                }
+            });
+
+            // Check URL parameters for direct link to a class
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('classroom_id')) {
-                setTimeout(() => {
-                    document.getElementById('recSelClassroom').value = urlParams.get('classroom_id');
-                    fetchBroadsheet();
-                }, 400);
+                const cid = urlParams.get('classroom_id');
+                const yr = urlParams.get('year') || '2026';
+                const term = urlParams.get('term') || 'Term 1';
+                openBroadsheet(cid, yr, term);
             }
         });
 
@@ -317,59 +330,101 @@
                 const data = await res.json();
                 if (data.success) {
                     currentScopes = data;
-
-                    // Classrooms
-                    const selClass = document.getElementById('recSelClassroom');
-                    selClass.innerHTML = '<option value="">Select Classroom...</option>';
-                    data.classrooms.forEach(cls => {
-                        selClass.innerHTML += `<option value="${cls.id}">${cls.classroom_name} (${cls.grade_name || cls.level_name || 'Class'})</option>`;
-                    });
-
-                    // Assessment Types
-                    const selType = document.getElementById('recSelExamType');
-                    selType.innerHTML = '<option value="all" selected>All Assessments (Aggregate Final)</option>';
-                    data.assessment_types.forEach(at => {
-                        selType.innerHTML += `<option value="${at.id}">${at.name} (${at.weight_percent}%)</option>`;
-                    });
-
-                    if (data.classrooms && data.classrooms.length > 0) {
-                        selClass.value = data.classrooms[0].id;
-                        fetchBroadsheet();
-                    }
+                    renderDirectoryList(data);
                 }
             } catch(e) {
                 console.error(e);
             }
         }
 
-        async function fetchBroadsheet() {
-            const classroomId = document.getElementById('recSelClassroom').value;
-            const year = document.getElementById('recSelYear').value;
-            const term = document.getElementById('recSelTerm').value;
-            const examType = document.getElementById('recSelExamType').value;
+        function renderDirectoryList(data) {
+            const container = document.getElementById('directoryListContainer');
+            container.innerHTML = '';
 
-            if (!classroomId) {
-                document.getElementById('recordsEmptyState').style.display = 'block';
-                document.getElementById('broadsheetWrapper').style.display = 'none';
+            const years = data.years || ['2026', '2025', '2024'];
+            const terms = data.terms || ['Term 1', 'Term 2'];
+            const classrooms = data.classrooms || [];
+
+            if (classrooms.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:30px; color:#64748b;">No active classrooms found for this school.</div>`;
                 return;
             }
 
+            years.forEach((yr, yIdx) => {
+                const yearDiv = document.createElement('div');
+                yearDiv.style.marginBottom = '28px';
+
+                let yearHtml = `
+                    <div class="year-heading">RESULTS OF THE YEAR ${yr}</div>
+                `;
+
+                terms.forEach(trm => {
+                    yearHtml += `
+                        <div style="margin-bottom: 16px;">
+                            <div class="term-group-title">${trm}</div>
+                            <div style="display: flex; flex-direction: column; gap: 8px; padding-left: 12px;">
+                    `;
+
+                    classrooms.forEach(cls => {
+                        const labelName = `${cls.classroom_name} Results`;
+                        yearHtml += `
+                            <div>
+                                <a href="javascript:void(0)" onclick="openBroadsheet(${cls.id}, '${yr}', '${trm}', '${cls.classroom_name}')" class="class-result-link">
+                                    <span class="bullet">›</span>
+                                    <span>${labelName}</span>
+                                </a>
+                            </div>
+                        `;
+                    });
+
+                    yearHtml += `
+                            </div>
+                        </div>
+                    `;
+                });
+
+                yearDiv.innerHTML = yearHtml;
+                container.appendChild(yearDiv);
+            });
+        }
+
+        function showDirectoryView() {
+            document.getElementById('resultsDirectoryView').style.display = 'block';
+            document.getElementById('broadsheetWrapper').style.display = 'none';
+            document.getElementById('broadsheetActionButtons').style.display = 'none';
+            document.getElementById('btnBackText').textContent = 'Back to Exams';
+            document.getElementById('pageTitle').innerHTML = '<span>📊 Results Records & Broadsheets</span>';
+            
+            // Clean URL
+            window.history.pushState({}, '', 'records.html');
+        }
+
+        async function openBroadsheet(classroomId, year, term, className = '') {
             try {
-                const url = `/shule-cafe/api/headmaster/exams/exams_api.php?action=get_broadsheet_records&classroom_id=${classroomId}&year=${year}&term=${encodeURIComponent(term)}&exam_type_id=${examType}`;
+                const url = `/shule-cafe/api/headmaster/exams/exams_api.php?action=get_broadsheet_records&classroom_id=${classroomId}&year=${year}&term=${encodeURIComponent(term)}&exam_type_id=all`;
                 const res = await fetch(url, { credentials: 'include' });
                 const data = await res.json();
 
                 if (res.ok && data.success) {
                     activeBroadsheetData = data;
-                    document.getElementById('recordsEmptyState').style.display = 'none';
+
+                    // Switch view to Broadsheet
+                    document.getElementById('resultsDirectoryView').style.display = 'none';
                     document.getElementById('broadsheetWrapper').style.display = 'block';
+                    document.getElementById('broadsheetActionButtons').style.display = 'flex';
+                    document.getElementById('btnBackText').textContent = 'Back to Results List';
+                    document.getElementById('pageTitle').innerHTML = `<span>📊 ${data.class_info.classroom_name} (${term} ${year})</span>`;
 
                     renderBroadsheetUI(data);
+
+                    // Update URL
+                    window.history.pushState({}, '', `records.html?classroom_id=${classroomId}&year=${year}&term=${encodeURIComponent(term)}`);
                 } else {
-                    console.error(data.message);
+                    alert(data.message || 'Error loading broadsheet.');
                 }
             } catch(e) {
                 console.error(e);
+                alert('Network connection error.');
             }
         }
 
