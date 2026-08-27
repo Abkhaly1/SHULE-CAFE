@@ -137,6 +137,7 @@ try {
         }
 
         // Active Assessment Types
+        // Active Assessment Types - Standard National Format
         $stmtTypes = $conn->prepare("
             SELECT id, name, weight_percent, is_terminal, term, academic_year 
             FROM assessment_types 
@@ -148,10 +149,10 @@ try {
 
         if (empty($allTypes)) {
             $allTypes = [
-                ['id' => 'ca', 'name' => 'Continuous Assessment (CA)', 'weight_percent' => 30.00, 'is_terminal' => 0, 'term' => 'Term 1'],
-                ['id' => 'terminal', 'name' => 'Terminal Examination', 'weight_percent' => 70.00, 'is_terminal' => 1, 'term' => 'Term 1'],
-                ['id' => 'test1', 'name' => 'Monthly Test 1', 'weight_percent' => 15.00, 'is_terminal' => 0, 'term' => 'Term 1'],
-                ['id' => 'midterm', 'name' => 'Midterm Assessment', 'weight_percent' => 15.00, 'is_terminal' => 0, 'term' => 'Term 1']
+                ['id' => 'ca_t1', 'name' => 'Continuous Assessment (CA)', 'weight_percent' => 30.00, 'is_terminal' => 0, 'term' => 'Term 1'],
+                ['id' => 'exam_t1', 'name' => 'First Term Exam', 'weight_percent' => 70.00, 'is_terminal' => 1, 'term' => 'Term 1'],
+                ['id' => 'ca_t2', 'name' => 'Continuous Assessment (CA)', 'weight_percent' => 30.00, 'is_terminal' => 0, 'term' => 'Term 2'],
+                ['id' => 'exam_t2', 'name' => 'Second Term Exam', 'weight_percent' => 70.00, 'is_terminal' => 1, 'term' => 'Term 2']
             ];
         }
 
@@ -702,32 +703,59 @@ try {
 
         // Fetch all marks for these students in this year/term
         $stmtMarks = $conn->prepare("
-            SELECT m.student_id, m.subject_code, m.assessment_type_id, m.score
+            SELECT m.student_id, m.subject_code, m.assessment_type_id, m.score, COALESCE(at.name, '') as assessment_name, COALESCE(at.weight_percent, 100) as weight_percent, COALESCE(at.is_terminal, 0) as is_terminal
             FROM marks_entry_dynamic m
+            LEFT JOIN assessment_types at ON m.assessment_type_id = at.id
             WHERE m.school_id = ? AND m.academic_year = ? AND m.term = ?
         ");
         $stmtMarks->execute([$schoolId, $year, $term]);
         $marksRows = $stmtMarks->fetchAll(PDO::FETCH_ASSOC);
 
         // Aggregate marks per student per subject
-        $marksMatrix = [];
+        // Supports Average Assessment (30% CA + 70% Terminal Exam) or Single Assessment filtering
+        $studentSubjectRawScores = [];
         $activeSubjectsPresent = [];
 
         foreach ($marksRows as $mr) {
             $sid = $mr['student_id'];
             $scode = $mr['subject_code'];
-            $atid = $mr['assessment_type_id'];
+            $atid = strval($mr['assessment_type_id']);
             $score = floatval($mr['score']);
+            $isTerminal = intval($mr['is_terminal']);
+            $name = strtolower($mr['assessment_name']);
 
-            if ($examTypeId !== 'all' && strval($atid) !== strval($examTypeId)) {
-                continue;
-            }
+            $typeKey = ($isTerminal == 1 || stripos($name, 'exam') !== false || stripos($name, 'terminal') !== false) ? 'term_exam' : 'ca';
 
-            if (!isset($marksMatrix[$sid][$scode])) {
-                $marksMatrix[$sid][$scode] = 0.0;
-            }
-            $marksMatrix[$sid][$scode] += $score;
+            $studentSubjectRawScores[$sid][$scode][$atid] = $score;
+            $studentSubjectRawScores[$sid][$scode][$typeKey] = $score;
             $activeSubjectsPresent[$scode] = true;
+        }
+
+        $marksMatrix = [];
+        foreach ($studentSubjectRawScores as $sid => $subjData) {
+            foreach ($subjData as $scode => $scores) {
+                if ($examTypeId === 'all' || $examTypeId === 'average') {
+                    // Average / Total Assessment rule: 30% CA + 70% Terminal Exam
+                    $caScore = $scores['ca'] ?? null;
+                    $termScore = $scores['term_exam'] ?? null;
+
+                    if ($caScore !== null && $termScore !== null) {
+                        if ($caScore <= 30.01 && $termScore <= 70.01) {
+                            $marksMatrix[$sid][$scode] = round($caScore + $termScore, 1);
+                        } else {
+                            $marksMatrix[$sid][$scode] = round(($caScore * 0.30) + ($termScore * 0.70), 1);
+                        }
+                    } elseif ($termScore !== null) {
+                        $marksMatrix[$sid][$scode] = round($termScore, 1);
+                    } elseif ($caScore !== null) {
+                        $marksMatrix[$sid][$scode] = round($caScore, 1);
+                    }
+                } else {
+                    if (isset($scores[$examTypeId])) {
+                        $marksMatrix[$sid][$scode] = round($scores[$examTypeId], 1);
+                    }
+                }
+            }
         }
 
         // Filter subject list to only subjects that have evaluated marks or are core

@@ -510,16 +510,33 @@
                 if (data.success) {
                     currentScopes = data;
                     renderYearsStep();
-
-                    // Populate Assessment Filter Dropdown
-                    const selAssess = document.getElementById('gridAssessmentFilter');
-                    selAssess.innerHTML = '<option value="all">✓ All Assessments</option>';
-                    (data.assessment_types || []).forEach(at => {
-                        selAssess.innerHTML += `<option value="${at.id}">✓ ${at.name} (${at.weight_percent}%)</option>`;
-                    });
+                    populateAssessmentFilterDropdown();
                 }
             } catch(e) {
                 console.error(e);
+            }
+        }
+
+        function populateAssessmentFilterDropdown() {
+            const selAssess = document.getElementById('gridAssessmentFilter');
+            if (!selAssess) return;
+            selAssess.innerHTML = '';
+
+            const isTerm2 = (selectedTerm === 'Term 2');
+            const examName = isTerm2 ? 'Second Term Exam' : 'First Term Exam';
+
+            selAssess.innerHTML += `<option value="all" ${selectedAssessmentType === 'all' ? 'selected' : ''}>✓ Average Assessment (30% CA + 70% Exam)</option>`;
+
+            const allAssess = (currentScopes && currentScopes.assessment_types) ? currentScopes.assessment_types : [];
+            const termTypes = allAssess.filter(at => !at.term || at.term === selectedTerm);
+
+            if (termTypes.length > 0) {
+                termTypes.forEach(at => {
+                    selAssess.innerHTML += `<option value="${at.id}" ${selectedAssessmentType === String(at.id) ? 'selected' : ''}>✓ ${at.name} (${at.weight_percent}%)</option>`;
+                });
+            } else {
+                selAssess.innerHTML += `<option value="ca" ${selectedAssessmentType === 'ca' ? 'selected' : ''}>✓ Continuous Assessment (CA) (30%)</option>`;
+                selAssess.innerHTML += `<option value="term_exam" ${selectedAssessmentType === 'term_exam' ? 'selected' : ''}>✓ ${examName} (70%)</option>`;
             }
         }
 
@@ -590,6 +607,7 @@
                 renderGradesStep();
             } else if (step === 'WORKSPACE') {
                 backLabel.textContent = 'Back to Grades';
+                populateAssessmentFilterDropdown();
                 populateClassFilterDropdown();
                 
                 const qs = selectedClassroomId ? `classroom_id=${selectedClassroomId}` : `grade_id=${selectedGradeId}`;

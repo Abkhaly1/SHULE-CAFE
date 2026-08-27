@@ -609,20 +609,37 @@
                     currentScopes = data;
                     renderYearsStep();
 
-                    const selType = document.getElementById('gridAssessmentType');
-                    selType.innerHTML = '';
-                    data.assessment_types.forEach((at, i) => {
-                        selType.innerHTML += `<option value="${at.id}" ${i === 0 ? 'selected' : ''}>${at.name} (${at.weight_percent}%)</option>`;
-                    });
+                    populateAssessmentTypeDropdown();
 
                     const selSub = document.getElementById('gridSubjectSelect');
                     selSub.innerHTML = '';
-                    data.subjects.forEach(s => {
+                    (data.subjects || []).forEach(s => {
                         selSub.innerHTML += `<option value="${s.code}">${s.name} (${s.code})</option>`;
                     });
                 }
             } catch(e) {
                 console.error(e);
+            }
+        }
+
+        function populateAssessmentTypeDropdown() {
+            const selType = document.getElementById('gridAssessmentType');
+            if (!selType) return;
+            selType.innerHTML = '';
+
+            const isTerm2 = (selectedTerm === 'Term 2');
+            const examName = isTerm2 ? 'Second Term Exam' : 'First Term Exam';
+
+            const allAssess = (currentScopes && currentScopes.assessment_types) ? currentScopes.assessment_types : [];
+            const termTypes = allAssess.filter(at => !at.term || at.term === selectedTerm);
+
+            if (termTypes.length > 0) {
+                termTypes.forEach((at, i) => {
+                    selType.innerHTML += `<option value="${at.id}" ${i === 0 ? 'selected' : ''}>${at.name} (${at.weight_percent}%)</option>`;
+                });
+            } else {
+                selType.innerHTML += `<option value="ca">Continuous Assessment (CA) (30%)</option>`;
+                selType.innerHTML += `<option value="term_exam">${examName} (70%)</option>`;
             }
         }
 

@@ -83,11 +83,12 @@ try {
             $totalWeight += floatval($t['weight_percent']);
         }
 
-        // Default profile if empty
+        // Default profile if empty - Standard First / Second Term Exam + Continuous Assessment
         if (empty($types)) {
+            $examName = ($term === 'Term 2') ? 'Second Term Exam' : 'First Term Exam';
             $types = [
                 ['id' => null, 'name' => 'Continuous Assessment (CA)', 'weight_percent' => 30.00, 'is_terminal' => 0],
-                ['id' => null, 'name' => 'Terminal Exam', 'weight_percent' => 70.00, 'is_terminal' => 1]
+                ['id' => null, 'name' => $examName, 'weight_percent' => 70.00, 'is_terminal' => 1]
             ];
             $totalWeight = 100.00;
         }

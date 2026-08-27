@@ -97,9 +97,7 @@
                                     <span style="font-size: 12px; color: #64748b; font-weight: 600;">Click a preset below to populate standard NECTA evaluation structures:</span>
                                 </div>
                                 <div style="display: flex; gap: 8px; flex-wrap: wrap;" id="presetButtonsGroup">
-                                    <button class="btn btn-preset" data-preset="standard" onclick="applyPreset('standard')" style="background: #eff6ff; color: #1d4ed8; border: 1.5px solid #bfdbfe;">📊 30% CA + 70% Terminal</button>
-                                    <button class="btn btn-preset" data-preset="single" onclick="applyPreset('single')" style="background: #fffbeb; color: #b45309; border: 1.5px solid #fde68a;">🎯 100% Single Terminal Exam</button>
-                                    <button class="btn btn-preset" data-preset="multi" onclick="applyPreset('multi')" style="background: #ecfdf5; color: #047857; border: 1.5px solid #a7f3d0;">📝 20% Quiz + 30% Mid-Term + 50% Terminal</button>
+                                    <button class="btn btn-preset" data-preset="standard" onclick="applyPreset('standard')" style="background: #eff6ff; color: #1d4ed8; border: 1.5px solid #bfdbfe;">📊 Standard Policy: 30% Continuous Assessment (CA) + 70% Term Exam</button>
                                 </div>
                             </div>
                         </div>
@@ -427,21 +425,13 @@
         function applyPreset(type) {
             if (isPolicyLocked) return;
             updatePresetActiveVisuals(type);
+            const currentTerm = document.getElementById('selTerm').value;
+            const examName = (currentTerm === 'Term 2') ? 'Second Term Exam' : 'First Term Exam';
 
             if (type === 'standard') {
                 renderRows([
                     { name: 'Continuous Assessment (CA)', weight_percent: 30.00, is_terminal: 0 },
-                    { name: 'Terminal Exam', weight_percent: 70.00, is_terminal: 1 }
-                ], false);
-            } else if (type === 'single') {
-                renderRows([
-                    { name: 'Terminal Exam', weight_percent: 100.00, is_terminal: 1 }
-                ], false);
-            } else if (type === 'multi') {
-                renderRows([
-                    { name: 'Weekly Test / Quiz', weight_percent: 20.00, is_terminal: 0 },
-                    { name: 'Mid-Term Exam', weight_percent: 30.00, is_terminal: 0 },
-                    { name: 'Terminal Exam', weight_percent: 50.00, is_terminal: 1 }
+                    { name: examName, weight_percent: 70.00, is_terminal: 1 }
                 ], false);
             }
         }
