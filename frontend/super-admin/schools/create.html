@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create School ‹ Super Admin ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="super_admin" active-path="/super-admin/schools/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="System Administrator"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <app-breadcrumb path="Super Admin, Schools, Register School"></app-breadcrumb>
+                    
+                    <app-page-header 
+                        title="Register New School" 
+                        subtitle="Provision a new tenant, configure education levels, and create the headmaster account.">
+                    </app-page-header>
+
+                    <div id="formAlert" class="alert alert-danger" style="display: none; margin-top: var(--sp-4);">
+                        <strong id="formAlertTitle">Error!</strong> <span id="formAlertMsg">Something went wrong.</span>
+                    </div>
+
+                    <form id="createSchoolForm">
+                        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--sp-6); margin-top: var(--sp-6);">
+                            
+                            <!-- Left Column: Form -->
+                            <div style="display: flex; flex-direction: column; gap: var(--sp-6);">
+                                
+                                <!-- School Profile -->
+                                <div class="card" style="padding: var(--sp-6);">
+                                    <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">School Profile</h3>
+                                    
+                                    <div class="form-group" style="margin-bottom: var(--sp-4);">
+                                        <label class="form-label">School Name <span style="color:var(--c-danger);">*</span></label>
+                                        <input type="text" id="school_name" class="form-control" placeholder="e.g. Mlimani Secondary School" required>
+                                    </div>
+                                    
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); margin-bottom: var(--sp-4);">
+                                        <div class="form-group">
+                                            <label class="form-label">School Category / Type <span style="color:var(--c-danger);">*</span></label>
+                                            <select id="school_type" class="form-select" required>
+                                                <option value="Secondary">Secondary School</option>
+                                                <option value="Primary">Primary School</option>
+                                                <option value="Combined">Comprehensive (Primary & Secondary)</option>
+                                                <option value="College">College / Academy</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Region <span style="color:var(--c-danger);">*</span></label>
+                                            <input type="text" id="region" class="form-control" placeholder="e.g. Dar es Salaam" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Education Levels & Auto-Provisioning -->
+                                <div class="card" style="padding: var(--sp-6);">
+                                    <h3 style="margin-top: 0; margin-bottom: 6px;">School Education Levels & Curriculum Provisioning</h3>
+                                    <p style="font-size: 13px; color: var(--c-text-secondary); margin-bottom: 16px;">
+                                        Select the education levels operating in this school. The system will automatically provision approved subjects, grade tiers, and academic curriculum.
+                                    </p>
+
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                                        <label style="display: flex; align-items: center; gap: 10px; padding: 14px; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 10px; cursor: pointer;">
+                                            <input type="checkbox" name="edu_level" value="O-LEVEL" checked style="width: 18px; height: 18px;">
+                                            <div>
+                                                <div style="font-weight: 800; font-size: 14px; color: var(--c-text-primary);">Ordinary Level (O-LEVEL)</div>
+                                                <div style="font-size: 12px; color: var(--c-text-muted);">Form 1 - Form 4 (22 Core & Elective Subjects)</div>
+                                            </div>
+                                        </label>
+
+                                        <label style="display: flex; align-items: center; gap: 10px; padding: 14px; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 10px; cursor: pointer;">
+                                            <input type="checkbox" name="edu_level" value="A-LEVEL" checked style="width: 18px; height: 18px;">
+                                            <div>
+                                                <div style="font-weight: 800; font-size: 14px; color: var(--c-text-primary);">Advanced Level (A-LEVEL)</div>
+                                                <div style="font-size: 12px; color: var(--c-text-muted);">Form 5 - Form 6 (15 Combination Subjects)</div>
+                                            </div>
+                                        </label>
+
+                                        <label style="display: flex; align-items: center; gap: 10px; padding: 14px; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 10px; cursor: pointer;">
+                                            <input type="checkbox" name="edu_level" value="PRIM" style="width: 18px; height: 18px;">
+                                            <div>
+                                                <div style="font-weight: 800; font-size: 14px; color: var(--c-text-primary);">Primary Education (PRIM)</div>
+                                                <div style="font-size: 12px; color: var(--c-text-muted);">Standard 1 - Standard 7 (8 Subjects)</div>
+                                            </div>
+                                        </label>
+
+                                        <label style="display: flex; align-items: center; gap: 10px; padding: 14px; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 10px; cursor: pointer;">
+                                            <input type="checkbox" name="edu_level" value="NURSERY" style="width: 18px; height: 18px;">
+                                            <div>
+                                                <div style="font-weight: 800; font-size: 14px; color: var(--c-text-primary);">Nursery & Pre-School (NURSERY)</div>
+                                                <div style="font-size: 12px; color: var(--c-text-muted);">Baby Class - Pre-Unit (5 Subjects)</div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Headmaster Account -->
+                                <div class="card" style="padding: var(--sp-6);">
+                                    <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">Headmaster Account Credentials</h3>
+                                    <p style="font-size: var(--text-sm); color: var(--c-text-secondary); margin-bottom: var(--sp-4);">
+                                        Create administrator login details for this tenant school. Email address will be used as the primary login username.
+                                    </p>
+                                    
+                                    <div class="form-group" style="margin-bottom: var(--sp-4);">
+                                        <label class="form-label">Headmaster Full Name <span style="color:var(--c-danger);">*</span></label>
+                                        <input type="text" id="headmaster_name" class="form-control" placeholder="e.g. Dr. Jane Doe" required>
+                                    </div>
+
+                                    <div class="form-group" style="margin-bottom: var(--sp-4);">
+                                        <label class="form-label">Headmaster Email Address (Primary Username) <span style="color:var(--c-danger);">*</span></label>
+                                        <input type="email" id="headmaster_email" class="form-control" placeholder="e.g. headmaster@mlimani.ac.tz" required>
+                                    </div>
+                                    
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); margin-bottom: var(--sp-4);">
+                                        <div class="form-group">
+                                            <label class="form-label">Phone Number <span style="color:var(--c-danger);">*</span></label>
+                                            <input type="text" id="headmaster_phone" class="form-control" placeholder="e.g. +255711000111" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Temporary Password <span style="color:var(--c-danger);">*</span></label>
+                                            <input type="text" id="headmaster_password" class="form-control" value="Shule#202X@" placeholder="Set password" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Right Column: Settings & Submit -->
+                            <div style="display: flex; flex-direction: column; gap: var(--sp-6);">
+                                <div class="card" style="padding: var(--sp-6);">
+                                    <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">Action</h3>
+                                    <button type="submit" id="submitBtn" class="btn btn-primary" style="width: 100%; justify-content: center; font-weight: 700; padding: 12px 20px;">
+                                        ⚡ Save & Auto-Provision School
+                                    </button>
+                                </div>
+                                
+                                <!-- Information -->
+                                <div class="card" style="padding: var(--sp-6); background: var(--c-bg-page);">
+                                    <h4 style="margin-top: 0; font-size: var(--text-sm); display: flex; align-items: center; gap: 8px; color: var(--c-text-secondary);">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                                        Credentials Instructions
+                                    </h4>
+                                    <p style="font-size: var(--text-sm); color: var(--c-text-muted); margin: 0; line-height: 1.5;">
+                                        Upon provisioning, the Headmaster can log into SHULE CAFE using their <strong>Email Address</strong> and initial Password set above.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('createSchoolForm');
+            const alertBox = document.getElementById('formAlert');
+            const alertTitle = document.getElementById('formAlertTitle');
+            const alertMsg = document.getElementById('formAlertMsg');
+            const submitBtn = document.getElementById('submitBtn');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                alertBox.style.display = 'none';
+
+                const educationLevels = [];
+                $('input[name="edu_level"]:checked').each(function() {
+                    educationLevels.push($(this).val());
+                });
+
+                if (educationLevels.length === 0) {
+                    alertBox.className = 'alert alert-danger';
+                    alertTitle.textContent = 'Validation Error!';
+                    alertMsg.textContent = 'Please select at least one education level for the school.';
+                    alertBox.style.display = 'block';
+                    return;
+                }
+
+                const data = {
+                    school_name: document.getElementById('school_name').value,
+                    school_type: document.getElementById('school_type').value,
+                    region: document.getElementById('region').value,
+                    headmaster_name: document.getElementById('headmaster_name').value,
+                    headmaster_email: document.getElementById('headmaster_email').value,
+                    headmaster_phone: document.getElementById('headmaster_phone').value,
+                    headmaster_password: document.getElementById('headmaster_password').value,
+                    education_levels: educationLevels
+                };
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Provisioning School & Curriculum...';
+
+                try {
+                    const res = await fetch('/shule-cafe/api/schools/create.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(data)
+                    });
+                    
+                    const result = await res.json();
+                    
+                    if (res.ok && result.success) {
+                        alertBox.className = 'alert alert-success';
+                        alertTitle.textContent = 'Success!';
+                        alertMsg.textContent = `${result.message} Headmaster login email: ${data.headmaster_email}`;
+                        alertBox.style.display = 'block';
+                        
+                        form.reset();
+                        
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 2000);
+                    } else {
+                        alertBox.className = 'alert alert-danger';
+                        alertTitle.textContent = 'Error!';
+                        alertMsg.textContent = result.message || 'Failed to create school.';
+                        alertBox.style.display = 'block';
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = '⚡ Save & Auto-Provision School';
+                    }
+                } catch (err) {
+                    alertBox.className = 'alert alert-danger';
+                    alertTitle.textContent = 'Error!';
+                    alertMsg.textContent = 'Network or server error. Please try again.';
+                    alertBox.style.display = 'block';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '⚡ Save & Auto-Provision School';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

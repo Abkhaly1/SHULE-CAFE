@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Education Level Workspace ‹ Super Admin ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+
+    <style>
+        /* Modal custom overlay */
+        .custom-modal-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
+            display: none; align-items: center; justify-content: center; z-index: 9999;
+        }
+        .custom-modal-content {
+            background: white; border-radius: 12px; width: 100%; max-width: 680px;
+            padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="super_admin" active-path="/super-admin/templates/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="System Administrator"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content" style="padding: 0;">
+                    
+                    <app-workspace-layout back-url="index.html">
+                        
+                        <!-- Header Banner -->
+                        <div class="workspace-header-card" style="display: flex; align-items: flex-start; justify-content: space-between; padding: var(--sp-6); background: var(--c-bg-surface); border: 1px solid var(--c-border-light); border-radius: var(--radius-lg); margin-bottom: var(--sp-4);">
+                            <div style="display: flex; align-items: center; gap: var(--sp-4);">
+                                <div id="levelAvatar" style="width: 64px; height: 64px; border-radius: 50%; background: var(--c-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800;">
+                                    EDU
+                                </div>
+                                <div>
+                                    <h2 id="levelTitle" style="margin: 0; font-size: 24px; font-weight: 700; color: var(--c-text-primary);">
+                                        Education Level Workspace
+                                    </h2>
+                                    <div id="levelSubtitle" style="color: var(--c-text-muted); font-size: var(--text-sm); margin-top: 4px;">
+                                        Loading curriculum structure...
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <button id="openAddLevelItemBtn" class="btn btn-primary" style="font-weight: 600;">+ Add Template Item</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Summary Cards -->
+                        <div id="levelSummaryContainer">
+                            <app-workspace-summary>
+                                <app-workspace-summary-card id="cardLvlClasses" label="Assigned Classes" value="-"></app-workspace-summary-card>
+                                <app-workspace-summary-card id="cardLvlSubjects" label="Assigned Subjects" value="-"></app-workspace-summary-card>
+                                <app-workspace-summary-card id="cardLvlGrading" label="Grading Benchmark" value="-"></app-workspace-summary-card>
+                                <app-workspace-summary-card id="cardLvlTerms" label="Academic Terms" value="-"></app-workspace-summary-card>
+                            </app-workspace-summary>
+                        </div>
+
+                        <!-- Embedded Tabs inside Education Level Workspace -->
+                        <app-workspace-tabs active-tab="classes">
+                            <button class="workspace-tab" data-target="classes">📚 Classes & Grade Curriculum</button>
+                            <button class="workspace-tab" data-target="subjects">📖 Approved Master Subjects</button>
+                            <button class="workspace-tab" data-target="grading">📊 Grading & Division System</button>
+                            <button class="workspace-tab" data-target="terms">📅 Terms & Academic Years</button>
+                        </app-workspace-tabs>
+                        
+                        <!-- Tab 1: Classes -->
+                        <app-workspace-content tab-id="classes" active="true">
+                            <div class="card" style="padding: var(--sp-6);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                    <div>
+                                        <h3 style="margin: 0;">Assigned Grade Tiers & Curriculum Workspace</h3>
+                                        <p style="color: var(--c-text-secondary); margin: 4px 0 0 0; font-size: 13px;">Standard system grades configured for this level. Click "Open Grade Workspace" to manage subjects assigned to each Grade.</p>
+                                    </div>
+                                    <button class="btn btn-outline btn-sm" onclick="openAddModal('class')">+ Add Class Tier</button>
+                                </div>
+                                <div id="lvlClassesContainer">
+                                    <app-table-skeleton rows="4" cols="3"></app-table-skeleton>
+                                </div>
+                            </div>
+                        </app-workspace-content>
+                        
+                        <!-- Tab 2: Subjects -->
+                        <app-workspace-content tab-id="subjects">
+                            <div class="card" style="padding: var(--sp-6);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                    <div>
+                                        <h3 style="margin: 0;">Approved Master Subject Library</h3>
+                                        <p style="color: var(--c-text-secondary); margin: 4px 0 0 0; font-size: 13px;">Tanzanian national curriculum subjects available for this education level.</p>
+                                    </div>
+                                    <button class="btn btn-outline btn-sm" onclick="openAddModal('subject')">+ Add Approved Subject</button>
+                                </div>
+                                <div id="lvlSubjectsContainer">
+                                    <app-table-skeleton rows="5" cols="3"></app-table-skeleton>
+                                </div>
+                            </div>
+                        </app-workspace-content>
+
+                        <!-- Tab 3: Grading & Division System -->
+                        <app-workspace-content tab-id="grading">
+                            <div style="display: flex; flex-direction: column; gap: 24px;">
+                                
+                                <!-- 1. Subject Grading Scale Card -->
+                                <div class="card" style="padding: var(--sp-6);">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                        <div>
+                                            <h3 style="margin: 0;">1. Subject Grade Scale (Grading Scale Rules)</h3>
+                                            <p style="color: var(--c-text-secondary); margin: 4px 0 0 0; font-size: 13px;">Configurable mark ranges, letter grades, points, and remarks.</p>
+                                        </div>
+                                        <button class="btn btn-outline btn-sm" onclick="openSubjectGradeModal()">+ Add Subject Grade Scale</button>
+                                    </div>
+                                    <div id="subjectGradingScaleContainer">
+                                        <app-table-skeleton rows="5" cols="5"></app-table-skeleton>
+                                    </div>
+                                </div>
+
+                                <!-- 2. Division Scale Card -->
+                                <div class="card" style="padding: var(--sp-6);">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                        <div>
+                                            <h3 style="margin: 0;">2. Division Scales (Overall Division Points Range)</h3>
+                                            <p style="color: var(--c-text-secondary); margin: 4px 0 0 0; font-size: 13px;">Configurable Division points thresholds (e.g., Division I: 7-17 pts).</p>
+                                        </div>
+                                        <button class="btn btn-outline btn-sm" onclick="openDivisionScaleModal()">+ Add Division Scale</button>
+                                    </div>
+                                    <div id="divisionScaleContainer">
+                                        <app-table-skeleton rows="5" cols="4"></app-table-skeleton>
+                                    </div>
+                                </div>
+
+                                <!-- 3. Live Division Calculator Test Console -->
+                                <div class="card" style="padding: var(--sp-6); background: #f8fafc; border: 1px solid #cbd5e1;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                        <div>
+                                            <h3 style="margin: 0; color: #1e293b;">⚡ Live Division Calculator Test Console</h3>
+                                            <p style="color: #64748b; margin: 4px 0 0 0; font-size: 13px;">Test subject marks and calculate Division in real-time according to configured rules.</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="calculatorFormContainer">
+                                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;" id="calcMarksInputs">
+                                            <!-- Dynamically populated subject inputs -->
+                                        </div>
+                                        <div style="display: flex; gap: 12px; align-items: center;">
+                                            <button type="button" id="runCalcBtn" class="btn btn-primary">Calculate Division Now</button>
+                                            <div id="calcResultBadge" style="display: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 16px;"></div>
+                                        </div>
+                                        <div id="calcResultDetails" style="margin-top: 16px; display: none;"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </app-workspace-content>
+
+                        <!-- Tab 4: Terms & Academic Years -->
+                        <app-workspace-content tab-id="terms">
+                            <div class="card" style="padding: var(--sp-6);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                    <div>
+                                        <h3 style="margin: 0;">Terms & Academic Divisions</h3>
+                                        <p style="color: var(--c-text-secondary); margin: 4px 0 0 0; font-size: 13px;">Annual academic term calendar structures.</p>
+                                    </div>
+                                    <button class="btn btn-outline btn-sm" onclick="openAddModal('term')">+ Add Term</button>
+                                </div>
+                                <div id="lvlTermsContainer">
+                                    <app-table-skeleton rows="2" cols="3"></app-table-skeleton>
+                                </div>
+                            </div>
+                        </app-workspace-content>
+
+                    </app-workspace-layout>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 🎓 DEDICATED GRADE WORKSPACE MODAL OVERLAY -->
+    <div class="custom-modal-overlay" id="gradeWorkspaceModal">
+        <div class="custom-modal-content">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #e2e8f0;">
+                <div>
+                    <h3 style="margin:0;font-size:18px;font-weight:800;color:var(--c-text-primary);" id="gwModalTitle">Grade Curriculum Workspace</h3>
+                    <div style="font-size:12px;color:var(--c-text-muted);" id="gwModalSubtitle">Configure master subject curriculum for this Grade.</div>
+                </div>
+                <button style="background:none;border:none;font-size:22px;cursor:pointer;" onclick="closeGradeWorkspaceModal()">✕</button>
+            </div>
+
+            <form id="gradeWorkspaceForm">
+                <input type="hidden" id="gw_class_id">
+                <div id="gwSubjectChecklistContainer" style="max-height:340px;overflow-y:auto;margin-bottom:20px;border:1px solid #e2e8f0;border-radius:8px;padding:12px;">
+                    <div style="color:var(--c-text-muted);">Loading Grade template curriculum…</div>
+                </div>
+
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-size:12px;color:var(--c-text-muted);" id="gwSelectedCount">0 subject(s) assigned to Grade.</span>
+                    <div style="display:flex;gap:10px;">
+                        <button type="button" class="btn btn-outline btn-sm" onclick="closeGradeWorkspaceModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary btn-sm" style="font-weight:700;">Save Grade Curriculum</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Adding Class/Subject/Term -->
+    <div id="addItemModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 480px; padding: var(--sp-6); background: white;">
+            <h3 style="margin-top: 0; margin-bottom: var(--sp-4);" id="addItemModalTitle">Add Item</h3>
+            <div id="addItemAlert" class="alert alert-danger" style="display: none; margin-bottom: var(--sp-4);"></div>
+            <form id="addItemForm">
+                <input type="hidden" id="add_type" value="class">
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">Item Name <span style="color:var(--c-danger);">*</span></label>
+                    <input type="text" id="add_name" class="form-control" placeholder="e.g. Form 1 or Physics" required>
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">Code / Abbreviation</label>
+                    <input type="text" id="add_code" class="form-control" placeholder="e.g. F1 or PHY">
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-6);">
+                    <label class="form-label">Description</label>
+                    <textarea id="add_desc" class="form-control" rows="3" placeholder="Details or scoring criteria..."></textarea>
+                </div>
+                <div style="display: flex; gap: var(--sp-2); justify-content: flex-end;">
+                    <button type="button" id="closeAddModalBtn" class="btn btn-outline">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Adding/Editing Subject Grade Scale (grading_scales) -->
+    <div id="subjectGradeModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 480px; padding: var(--sp-6); background: white;">
+            <h3 style="margin-top: 0; margin-bottom: var(--sp-4);" id="subjectGradeModalTitle">Subject Grade Scale Rule</h3>
+            <div id="subjectGradeAlert" class="alert alert-danger" style="display: none; margin-bottom: var(--sp-4);"></div>
+            <form id="subjectGradeForm">
+                <input type="hidden" id="sg_id">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: var(--sp-4);">
+                    <div class="form-group">
+                        <label class="form-label">Min Mark (%) <span style="color:var(--c-danger);">*</span></label>
+                        <input type="number" id="sg_min_mark" class="form-control" min="0" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Max Mark (%) <span style="color:var(--c-danger);">*</span></label>
+                        <input type="number" id="sg_max_mark" class="form-control" min="0" max="100" required>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: var(--sp-4);">
+                    <div class="form-group">
+                        <label class="form-label">Grade (e.g. A, B, C) <span style="color:var(--c-danger);">*</span></label>
+                        <input type="text" id="sg_grade" class="form-control" required placeholder="A">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Points (e.g. 1, 2, 3) <span style="color:var(--c-danger);">*</span></label>
+                        <input type="number" id="sg_points" class="form-control" min="1" max="10" required placeholder="1">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-6);">
+                    <label class="form-label">Remark</label>
+                    <input type="text" id="sg_remark" class="form-control" placeholder="e.g. Excellent">
+                </div>
+                <div style="display: flex; gap: var(--sp-2); justify-content: flex-end;">
+                    <button type="button" id="closeSgModalBtn" class="btn btn-outline">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Scale Rule</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Adding/Editing Division Scale (division_scales) -->
+    <div id="divisionScaleModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 480px; padding: var(--sp-6); background: white;">
+            <h3 style="margin-top: 0; margin-bottom: var(--sp-4);" id="divisionScaleModalTitle">Division Scale Rule</h3>
+            <div id="divisionScaleAlert" class="alert alert-danger" style="display: none; margin-bottom: var(--sp-4);"></div>
+            <form id="divisionScaleForm">
+                <input type="hidden" id="ds_id">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: var(--sp-4);">
+                    <div class="form-group">
+                        <label class="form-label">Min Points <span style="color:var(--c-danger);">*</span></label>
+                        <input type="number" id="ds_min_points" class="form-control" min="1" max="50" required placeholder="7">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Max Points <span style="color:var(--c-danger);">*</span></label>
+                        <input type="number" id="ds_max_points" class="form-control" min="1" max="50" required placeholder="17">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">Division Outcome Name <span style="color:var(--c-danger);">*</span></label>
+                    <input type="text" id="ds_division_name" class="form-control" required placeholder="Division I">
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-6);">
+                    <label class="form-label">Remark</label>
+                    <input type="text" id="ds_remark" class="form-control" placeholder="e.g. First Class Honours">
+                </div>
+                <div style="display: flex; gap: var(--sp-2); justify-content: flex-end;">
+                    <button type="button" id="closeDsModalBtn" class="btn btn-outline">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Division Rule</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const levelCode = urlParams.get('code') || 'O-LEVEL';
+
+            const levelNames = {
+                'NURSERY': 'Early Childhood & Nursery Education',
+                'PRIM': 'Primary Education (Standard 1 - Standard 7)',
+                'O-LEVEL': 'Ordinary Level Secondary Education (Form 1 - Form 4)',
+                'A-LEVEL': 'Advanced Level Secondary Education (Form 5 - Form 6)'
+            };
+
+            const levelDbTypes = {
+                'NURSERY': 'Nursery',
+                'PRIM': 'Primary',
+                'O-LEVEL': 'O-Level',
+                'A-LEVEL': 'A-Level'
+            };
+
+            const levelTitleText = levelNames[levelCode] || `${levelCode} Workspace`;
+            const dbLevelType = levelDbTypes[levelCode] || 'O-Level';
+
+            document.getElementById('levelTitle').textContent = levelTitleText;
+            document.getElementById('levelSubtitle').textContent = `Manage template classes, subjects, grading benchmarks, and terms for ${levelCode}.`;
+            
+            const avatarEl = document.getElementById('levelAvatar');
+            avatarEl.textContent = levelCode;
+
+            // Global functions for modals
+            window.openAddModal = function(type) {
+                document.getElementById('add_type').value = type;
+                document.getElementById('addItemModalTitle').textContent = `Add New ${type.toUpperCase()} Template`;
+                document.getElementById('add_name').value = '';
+                document.getElementById('add_code').value = '';
+                document.getElementById('add_desc').value = '';
+                document.getElementById('addItemAlert').style.display = 'none';
+                document.getElementById('addItemModal').style.display = 'flex';
+            };
+
+            window.openSubjectGradeModal = function(id = null, minMark = '', maxMark = '', grade = '', points = '', remark = '') {
+                document.getElementById('sg_id').value = id || '';
+                document.getElementById('sg_min_mark').value = minMark;
+                document.getElementById('sg_max_mark').value = maxMark;
+                document.getElementById('sg_grade').value = grade;
+                document.getElementById('sg_points').value = points;
+                document.getElementById('sg_remark').value = remark;
+                document.getElementById('subjectGradeModalTitle').textContent = id ? 'Edit Subject Grade Rule' : 'Add Subject Grade Rule';
+                document.getElementById('subjectGradeAlert').style.display = 'none';
+                document.getElementById('subjectGradeModal').style.display = 'flex';
+            };
+
+            window.openDivisionScaleModal = function(id = null, minPts = '', maxPts = '', name = '', remark = '') {
+                document.getElementById('ds_id').value = id || '';
+                document.getElementById('ds_min_points').value = minPts;
+                document.getElementById('ds_max_points').value = maxPts;
+                document.getElementById('ds_division_name').value = name;
+                document.getElementById('ds_remark').value = remark;
+                document.getElementById('divisionScaleModalTitle').textContent = id ? 'Edit Division Scale Rule' : 'Add Division Scale Rule';
+                document.getElementById('divisionScaleAlert').style.display = 'none';
+                document.getElementById('divisionScaleModal').style.display = 'flex';
+            };
+
+            window.closeGradeWorkspaceModal = function() {
+                document.getElementById('gradeWorkspaceModal').style.display = 'none';
+            };
+
+            window.openGradeWorkspaceModal = async function(classId, className, classCode) {
+                document.getElementById('gw_class_id').value = classId;
+                document.getElementById('gwModalTitle').textContent = `Grade Curriculum Workspace — ${className} (${classCode})`;
+                document.getElementById('gwModalSubtitle').textContent = `Select and configure master template subjects assigned to ${className} (${levelCode}).`;
+
+                const container = document.getElementById('gwSubjectChecklistContainer');
+                container.innerHTML = '<div style="color:var(--c-text-muted);font-size:13px;padding:12px;">Loading subjects checklist from template…</div>';
+                document.getElementById('gradeWorkspaceModal').style.display = 'flex';
+
+                try {
+                    const res = await fetch(`/shule-cafe/api/templates/grade_subjects.php?class_id=${classId}`, { credentials: 'include' });
+                    const data = await res.json();
+
+                    if (!res.ok || !data.success) {
+                        container.innerHTML = `<div style="color:#dc2626;padding:12px;">Error loading grade template subjects: ${data.message||'Failed'}</div>`;
+                        return;
+                    }
+
+                    const checklist = data.subject_checklist || [];
+                    const assignedCount = checklist.filter(c => c.is_assigned).length;
+                    document.getElementById('gwSelectedCount').textContent = `${assignedCount} of ${checklist.length} subject(s) assigned to ${className}.`;
+
+                    if (checklist.length === 0) {
+                        container.innerHTML = '<div style="color:var(--c-text-muted);padding:12px;">No approved subject templates for this level yet. Add subjects in Tab 2.</div>';
+                        return;
+                    }
+
+                    let rowsHtml = '';
+                    checklist.forEach(sbj => {
+                        const checked = sbj.is_assigned ? 'checked' : '';
+                        const isCoreChecked = sbj.is_core ? 'checked' : '';
+
+                        rowsHtml += `
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 8px;border-bottom:1px solid #f1f5f9;">
+                                <label style="display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;cursor:pointer;">
+                                    <input type="checkbox" class="chk-gw-subject" data-code="${sbj.subject_code}" data-name="${sbj.subject_name}" ${checked} style="width:18px;height:18px;">
+                                    <span>${sbj.subject_name} (${sbj.subject_code})</span>
+                                </label>
+                                <label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;cursor:pointer;">
+                                    <input type="checkbox" class="chk-gw-is-core" id="gw_core_${sbj.subject_code}" ${isCoreChecked} style="width:16px;height:16px;">
+                                    <span>Core Mandatory</span>
+                                </label>
+                            </div>
+                        `;
+                    });
+
+                    container.innerHTML = rowsHtml;
+                } catch (err) {
+                    container.innerHTML = '<div style="color:#dc2626;padding:12px;">Network error loading grade template.</div>';
+                }
+            };
+
+            // Submit Grade Template Form
+            document.getElementById('gradeWorkspaceForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const classId = document.getElementById('gw_class_id').value;
+
+                const assignedSubjects = [];
+                $('.chk-gw-subject:checked').each(function () {
+                    const code = $(this).attr('data-code');
+                    const isCore = $('#gw_core_' + code).is(':checked') ? 1 : 0;
+                    assignedSubjects.push({ subject_code: code, is_core: isCore });
+                });
+
+                try {
+                    const res = await fetch('/shule-cafe/api/templates/grade_subjects.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            action: 'save_grade_template',
+                            class_id: classId,
+                            assigned_subjects: assignedSubjects
+                        })
+                    });
+                    const result = await res.json();
+                    if (res.ok && result.success) {
+                        alert('✅ Grade template curriculum saved successfully!');
+                        closeGradeWorkspaceModal();
+                        loadLevelTemplates();
+                    } else {
+                        alert(result.message || 'Failed to save grade template.');
+                    }
+                } catch (err) {
+                    alert('Network error saving grade template.');
+                }
+            });
+
+            document.getElementById('closeSgModalBtn').addEventListener('click', () => document.getElementById('subjectGradeModal').style.display = 'none');
+            document.getElementById('closeDsModalBtn').addEventListener('click', () => document.getElementById('divisionScaleModal').style.display = 'none');
+            document.getElementById('closeAddModalBtn').addEventListener('click', () => document.getElementById('addItemModal').style.display = 'none');
+            document.getElementById('openAddLevelItemBtn').addEventListener('click', () => openAddModal('class'));
+
+            // Submit Class/Subject/Term Add Form
+            document.getElementById('addItemForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const alertBox = document.getElementById('addItemAlert');
+                alertBox.style.display = 'none';
+
+                const type = document.getElementById('add_type').value;
+                const name = document.getElementById('add_name').value;
+                const code = document.getElementById('add_code').value;
+                const desc = document.getElementById('add_desc').value;
+
+                try {
+                    const res = await fetch('/shule-cafe/api/templates/create.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            type: type,
+                            name: name,
+                            code: code,
+                            level_code: levelCode,
+                            description: desc
+                        })
+                    });
+                    const result = await res.json();
+
+                    if (res.ok && result.success) {
+                        document.getElementById('addItemModal').style.display = 'none';
+                        loadLevelTemplates();
+                    } else {
+                        alertBox.textContent = result.message || 'Failed to add item.';
+                        alertBox.style.display = 'block';
+                    }
+                } catch (err) {
+                    alertBox.textContent = 'Network error creating item.';
+                    alertBox.style.display = 'block';
+                }
+            });
+
+            // Fetch and render template items (Classes, Subjects, Terms)
+            async function loadLevelTemplates() {
+                try {
+                    const res = await fetch(`/shule-cafe/api/templates/list.php?level_code=${encodeURIComponent(levelCode)}`, { credentials: 'include' });
+                    const result = await res.json();
+
+                    if (res.ok && result.success) {
+                        const items = result.data || [];
+                        const classes = items.filter(x => x.type === 'class');
+                        const subjects = items.filter(x => x.type === 'subject');
+                        const terms = items.filter(x => x.type === 'term');
+
+                        document.getElementById('cardLvlClasses').setAttribute('value', classes.length.toString());
+                        document.getElementById('cardLvlSubjects').setAttribute('value', subjects.length.toString());
+
+                        renderClassesSection('lvlClassesContainer', classes);
+                        renderSection('lvlSubjectsContainer', subjects);
+                        renderSection('lvlTermsContainer', terms);
+
+                        // Populate Calculator Inputs
+                        populateCalculatorInputs(subjects);
+                    }
+                } catch (err) {
+                    console.error("Error loading level templates:", err);
+                }
+            }
+
+            function renderClassesSection(containerId, list) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+
+                if (!list || list.length === 0) {
+                    container.innerHTML = '<div style="padding: var(--sp-4); color: var(--c-text-muted); font-size: 13px;">No grade tiers configured for this level yet.</div>';
+                    return;
+                }
+
+                let rowsHtml = '';
+                list.forEach(c => {
+                    let details = {};
+                    try { details = JSON.parse(c.details || '{}'); } catch(e){}
+                    const assignedList = details.assigned_subjects || [];
+                    const countSbj = assignedList.length;
+
+                    const sbjBadge = countSbj > 0
+                        ? `<span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:700;">📘 ${countSbj} Subjects Assigned</span>`
+                        : `<span style="background:#fee2e2;color:#dc2626;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:700;">⚠️ 0 Subjects Assigned</span>`;
+
+                    rowsHtml += `
+                        <tr style="border-bottom: 1px solid var(--c-border-light);">
+                            <td style="padding: 12px; font-weight: 800; font-size: 15px; color: var(--c-text-primary);">${c.name}</td>
+                            <td style="padding: 12px;"><span class="badge badge-primary" style="font-weight: 700;">${c.code || 'N/A'}</span></td>
+                            <td style="padding: 12px;">${sbjBadge}</td>
+                            <td style="padding: 12px; font-size: 12px; color: var(--c-text-muted);">${c.description || '-'}</td>
+                            <td style="padding: 12px; text-align: right;">
+                                <button class="btn btn-primary btn-sm" style="font-weight:700;" onclick="window.location.href='grade-workspace.html?class_id=${c.id}&code=${encodeURIComponent(levelCode)}'">🔍 Open Grade Workspace ➡️</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                container.innerHTML = `
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                        <thead>
+                            <tr style="background: var(--c-bg-subtle); border-bottom: 2px solid var(--c-border-light); text-align: left;">
+                                <th style="padding: 10px 12px;">Grade Tier Name</th>
+                                <th style="padding: 10px 12px;">Code</th>
+                                <th style="padding: 10px 12px;">Master Subject Curriculum</th>
+                                <th style="padding: 10px 12px;">Description</th>
+                                <th style="padding: 10px 12px; text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rowsHtml}</tbody>
+                    </table>
+                `;
+            }
+
+            // Fetch and render grading_scales and division_scales
+            async function loadGradingAndDivisionScales() {
+                try {
+                    const res = await fetch(`/shule-cafe/api/grading/list.php?level_type=${encodeURIComponent(dbLevelType)}`, { credentials: 'include' });
+                    const result = await res.json();
+
+                    if (res.ok && result.success) {
+                        const gScales = result.grading_scales || [];
+                        const dScales = result.division_scales || [];
+
+                        document.getElementById('cardLvlGrading').setAttribute('value', `${dScales.length} Scales`);
+                        document.getElementById('cardLvlTerms').setAttribute('value', '2 Semesters');
+
+                        renderSubjectGradingTable(gScales);
+                        renderDivisionScaleTable(dScales);
+                    }
+                } catch (err) {
+                    console.error("Error loading grading scales:", err);
+                }
+            }
+
+            function renderSubjectGradingTable(scales) {
+                const container = document.getElementById('subjectGradingScaleContainer');
+                if (!container) return;
+
+                if (scales.length === 0) {
+                    container.innerHTML = '<div style="padding: 12px; color: var(--c-text-muted); font-size: 13px;">No subject grade rules configured.</div>';
+                    return;
+                }
+
+                let rowsHtml = '';
+                scales.forEach(s => {
+                    rowsHtml += `
+                        <tr style="border-bottom: 1px solid var(--c-border-light);">
+                            <td style="padding: 12px; font-weight: 600;">${s.min_mark}% - ${s.max_mark}%</td>
+                            <td style="padding: 12px;"><span class="badge badge-primary" style="font-weight: 700;">Grade ${s.grade}</span></td>
+                            <td style="padding: 12px; font-weight: 700; color: var(--c-primary);">${s.points} Pt${s.points > 1 ? 's' : ''}</td>
+                            <td style="padding: 12px;">${s.remark}</td>
+                            <td style="padding: 12px; text-align: right;">
+                                <button class="btn btn-outline btn-xs" onclick="openSubjectGradeModal(${s.id}, ${s.min_mark}, ${s.max_mark}, '${s.grade}', ${s.points}, '${s.remark}')">Edit</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                container.innerHTML = `
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                        <thead>
+                            <tr style="background: var(--c-bg-subtle); border-bottom: 2px solid var(--c-border-light); text-align: left;">
+                                <th style="padding: 10px 12px;">Mark Range</th>
+                                <th style="padding: 10px 12px;">Grade</th>
+                                <th style="padding: 10px 12px;">Points</th>
+                                <th style="padding: 10px 12px;">Remark</th>
+                                <th style="padding: 10px 12px; text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rowsHtml}</tbody>
+                    </table>
+                `;
+            }
+
+            function renderDivisionScaleTable(scales) {
+                const container = document.getElementById('divisionScaleContainer');
+                if (!container) return;
+
+                if (scales.length === 0) {
+                    container.innerHTML = '<div style="padding: 12px; color: var(--c-text-muted); font-size: 13px;">No division scale rules configured.</div>';
+                    return;
+                }
+
+                let rowsHtml = '';
+                scales.forEach(s => {
+                    const isPass = !s.division_name.toLowerCase().includes('0') && !s.division_name.toLowerCase().includes('fail');
+                    const badgeClass = isPass ? 'badge-success' : 'badge-danger';
+                    rowsHtml += `
+                        <tr style="border-bottom: 1px solid var(--c-border-light);">
+                            <td style="padding: 12px; font-weight: 600;">${s.min_points} - ${s.max_points} Points</td>
+                            <td style="padding: 12px;"><span class="badge ${badgeClass}" style="font-weight: 700; font-size: 13px;">${s.division_name}</span></td>
+                            <td style="padding: 12px;">${s.remark}</td>
+                            <td style="padding: 12px; text-align: right;">
+                                <button class="btn btn-outline btn-xs" onclick="openDivisionScaleModal(${s.id}, ${s.min_points}, ${s.max_points}, '${s.division_name}', '${s.remark}')">Edit</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                container.innerHTML = `
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                        <thead>
+                            <tr style="background: var(--c-bg-subtle); border-bottom: 2px solid var(--c-border-light); text-align: left;">
+                                <th style="padding: 10px 12px;">Total Calculated Points</th>
+                                <th style="padding: 10px 12px;">Division Outcome</th>
+                                <th style="padding: 10px 12px;">Remark</th>
+                                <th style="padding: 10px 12px; text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rowsHtml}</tbody>
+                    </table>
+                `;
+            }
+
+            function populateCalculatorInputs(subjects) {
+                const container = document.getElementById('calcMarksInputs');
+                if (!container) return;
+
+                if (!subjects || subjects.length === 0) {
+                    container.innerHTML = '<div style="color: var(--c-text-muted); font-size: 13px;">No subjects available for calculator.</div>';
+                    return;
+                }
+
+                let html = '';
+                subjects.forEach((s, idx) => {
+                    const defaultMark = (85 - (idx * 5));
+                    html += `
+                        <div>
+                            <label style="display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px;">${s.name} (${s.code})</label>
+                            <input type="number" class="form-control calc-subject-input" data-subject="${s.code}" min="0" max="100" value="${defaultMark}" style="font-size: 13px;">
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }
+
+            function renderSection(containerId, list) {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+
+                if (!list || list.length === 0) {
+                    container.innerHTML = '<div style="padding: var(--sp-4); color: var(--c-text-muted); font-size: 13px;">No items configured for this level yet.</div>';
+                    return;
+                }
+
+                const cols = [
+                    { key: 'name', label: 'Name', type: 'text' },
+                    { key: 'code', label: 'Code', type: 'badge' },
+                    { key: 'description', label: 'Description', type: 'text' },
+                    { key: 'status', label: 'Status', type: 'status' }
+                ];
+
+                const data = list.map(x => ({
+                    id: x.id,
+                    name: x.name,
+                    code: x.code || 'N/A',
+                    description: x.description || '-',
+                    status: x.status === 'active' ? 'Active' : 'Inactive'
+                }));
+
+                const table = document.createElement('app-table');
+                table.setAttribute('columns', JSON.stringify(cols));
+                table.setAttribute('data', JSON.stringify(data));
+                table.setAttribute('actions', 'none');
+                container.innerHTML = '';
+                container.appendChild(table);
+            }
+
+            loadLevelTemplates();
+            loadGradingAndDivisionScales();
+        });
+    </script>
+</body>
+</html>

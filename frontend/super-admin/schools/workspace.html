@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Workspace ‹ Super Admin ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+
+    <style>
+        .level-provision-card {
+            background: #ffffff;
+            border: 1px solid var(--c-border-light);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            transition: all 0.2s ease;
+        }
+        .level-provision-card.active {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+        .level-provision-card.inactive {
+            border-color: #e2e8f0;
+            background: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="super_admin" active-path="/super-admin/schools/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="System Administrator"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content" style="padding: 0;">
+                    
+                    <app-workspace-layout back-url="index.html">
+                        
+                        <!-- Header Banner -->
+                        <app-workspace-header 
+                            title="Loading School Workspace..." 
+                            subtitle="Fetching school tenant details..."
+                            initials="SCH"
+                            status="active"
+                            id="wsHeader">
+                        </app-workspace-header>
+                        
+                        <app-workspace-stats>
+                            <app-workspace-stat label="Enrolled Students" value="-" id="cardStudents"></app-workspace-stat>
+                            <app-workspace-stat label="Active Teachers" value="-" id="cardTeachers"></app-workspace-stat>
+                            <app-workspace-stat label="Classes & Streams" value="-" id="cardClasses"></app-workspace-stat>
+                            <app-workspace-stat label="Region" value="-" id="cardRegion"></app-workspace-stat>
+                        </app-workspace-stats>
+                        
+                        <app-workspace-tabs active-tab="overview">
+                            <button class="workspace-tab" data-target="overview">Overview</button>
+                            <button class="workspace-tab" data-target="levels">🏫 Education Levels & Curriculum</button>
+                            <button class="workspace-tab" data-target="headmaster">Headmaster Account</button>
+                            <button class="workspace-tab" data-target="teachers">Teachers Directory</button>
+                            <button class="workspace-tab" data-target="students">Students Roster</button>
+                            <button class="workspace-tab" data-target="settings">Danger Zone</button>
+                        </app-workspace-tabs>
+                        
+                        <!-- TAB 1: OVERVIEW -->
+                        <app-workspace-content tab-id="overview" active="true">
+                            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--sp-6); margin: var(--sp-6);">
+                                
+                                <div class="card" style="padding: var(--sp-6);">
+                                    <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">School Information</h3>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); font-size: var(--text-sm);">
+                                        <div><strong>School Name:</strong> <span id="infoName">Loading...</span></div>
+                                        <div><strong>Education Level Type:</strong> <span id="infoType">Loading...</span></div>
+                                        <div><strong>Region:</strong> <span id="infoRegion">Loading...</span></div>
+                                        <div><strong>Registration Date:</strong> <span id="infoCreated">Loading...</span></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card" style="padding: var(--sp-6);">
+                                    <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">Headmaster Contact</h3>
+                                    <div style="font-size: var(--text-sm); display: flex; flex-direction: column; gap: 8px;">
+                                        <div><strong>Name:</strong> <span id="infoHmName">Loading...</span></div>
+                                        <div><strong>Email:</strong> <span id="infoHmEmail">Loading...</span></div>
+                                        <div><strong>Phone:</strong> <span id="infoHmPhone">Loading...</span></div>
+                                        <div style="margin-top: 4px;"><strong>Password Status:</strong> <span id="infoHmPwdBadge">Loading...</span></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </app-workspace-content>
+                        
+                        <!-- TAB 2: EDUCATION LEVELS & CURRICULUM PROVISIONING -->
+                        <app-workspace-content tab-id="levels">
+                            <div class="card" style="padding: var(--sp-6); margin: var(--sp-6);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--sp-6); border-bottom: 1px solid var(--c-border-light); padding-bottom: 16px;">
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: var(--c-text-primary);">
+                                            School Education Levels & Curriculum Provisioning
+                                        </h3>
+                                        <p style="color: var(--c-text-secondary); margin: 4px 0 0 0; font-size: 13px;">
+                                            Configure active education levels for this school. Enabling a level automatically provisions its master subjects, grade tiers, and academic settings.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px;" id="schLevelsContainer">
+                                    <div style="padding: 20px; color: var(--c-text-muted);">Loading education levels...</div>
+                                </div>
+                            </div>
+                        </app-workspace-content>
+                        
+                        <app-workspace-content tab-id="headmaster">
+                            <div class="card" style="padding: var(--sp-6); margin: var(--sp-6);">
+                                <h3>Headmaster Administrator & Login Credentials</h3>
+                                <p style="color: var(--c-text-secondary); margin-bottom: var(--sp-4);">Manage and review administrator credentials for this school tenant.</p>
+                                <div id="hmDetails">Loading administrator credentials...</div>
+                            </div>
+                        </app-workspace-content>
+                        
+                        <!-- TAB 4: TEACHERS DIRECTORY (Read-Only View Access for Super Admin) -->
+                        <app-workspace-content tab-id="teachers">
+                            <div class="card" style="padding: var(--sp-6); margin: var(--sp-6);">
+                                <h3>Teachers Directory</h3>
+                                <p style="color: var(--c-text-secondary); margin-bottom: var(--sp-4);">Registered teachers provisioned by the school. Super Admins have view-only access to teacher workspaces.</p>
+                                <div id="teachersListContainer">No teachers registered yet.</div>
+                            </div>
+                        </app-workspace-content>
+                        
+                        <!-- TAB 5: STUDENTS ROSTER (Read-Only View Access for Super Admin) -->
+                        <app-workspace-content tab-id="students">
+                            <div class="card" style="padding: var(--sp-6); margin: var(--sp-6);">
+                                <h3>Students Roster</h3>
+                                <p style="color: var(--c-text-secondary); margin-bottom: var(--sp-4);">Enrolled students provisioned by the school. Super Admins have view-only access to student workspaces.</p>
+                                <div id="studentsListContainer">No students registered yet.</div>
+                            </div>
+                        </app-workspace-content>
+                        
+                        <!-- TAB 6: DANGER ZONE & TENANT STATUS CONTROLS -->
+                        <app-workspace-content tab-id="settings">
+                            <div style="display: flex; flex-direction: column; gap: 20px; margin: var(--sp-6);">
+                                
+                                <!-- Card 1: Tenant Suspension Control -->
+                                <div class="card" style="padding: var(--sp-6); border-color: #fde68a; background: #fffbeb;">
+                                    <h3 style="color: #b45309; margin-top: 0; display:flex; align-items:center; gap:8px;">
+                                        ⚠️ School Tenant Access & Suspension
+                                    </h3>
+                                    <p style="color: #92400e; margin-bottom: var(--sp-4); font-size: 13px; line-height: 1.5;">
+                                        Temporarily suspend or restore platform access for this school. When suspended, teachers, students, and headmasters associated with this tenant cannot access the platform until reactivated.
+                                    </p>
+                                    <div id="suspendBtnContainer">
+                                        <button type="button" class="btn btn-outline" id="btnToggleSuspendSchool" style="border-color:#f59e0b; color:#b45309; font-weight:700; background:#fffbeb;">⚠️ Suspend School Tenant</button>
+                                    </div>
+                                </div>
+
+                                <!-- Card 2: Permanent Tenant Deletion -->
+                                <div class="card" style="padding: var(--sp-6); border-color: #fca5a5; background: #fff5f5;">
+                                    <h3 style="color: #dc2626; margin-top: 0; display:flex; align-items:center; gap:8px;">
+                                        🚨 Danger Zone: Permanent Tenant Deletion
+                                    </h3>
+                                    <p style="color: #7f1d1d; margin-bottom: var(--sp-4); font-size: 13px; line-height: 1.5;">
+                                        Deleting a school tenant will permanently purge all associated classrooms, student allocations, teacher accounts, and headmaster credentials. This action cannot be reversed.
+                                    </p>
+                                    <button class="btn btn-danger" id="btnDeleteSchool" style="font-weight: 700;">🗑️ Permanent Delete School Tenant</button>
+                                </div>
+
+                            </div>
+                        </app-workspace-content>
+                        
+                    </app-workspace-layout>
+                    
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- SAFETY MODAL 1: High-Risk Disable Education Level -->
+    <div id="disableLevelModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 520px; padding: var(--sp-6); background: white; border-top: 6px solid #dc2626;">
+            <h3 style="margin-top: 0; color: #dc2626; display: flex; align-items: center; gap: 8px;">
+                ⚠️ High-Risk Action: Disable Education Level
+            </h3>
+            <div id="disableLevelModalBody" style="font-size: 13px; color: #334155; margin-bottom: 16px; line-height: 1.5;">
+                <!-- Populated dynamically -->
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label class="form-label" style="font-weight: 700;">To confirm disabling, type exact code below: <span id="disableRequiredCodeText" style="color:#dc2626; font-family:monospace; font-size:14px;">DISABLE O-LEVEL</span></label>
+                <input type="text" id="disableConfirmInput" class="form-control" placeholder="Type here..." autocomplete="off">
+            </div>
+            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                <button type="button" id="cancelDisableLevelBtn" class="btn btn-outline">Cancel</button>
+                <button type="button" id="submitDisableLevelBtn" class="btn btn-danger" disabled>🔴 Confirm Disable Education Level</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SAFETY MODAL 2: Permanent Delete School Tenant -->
+    <div id="deleteSchoolModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 540px; padding: var(--sp-6); background: white; border-top: 6px solid #b91c1c;">
+            <h3 style="margin-top: 0; color: #b91c1c; display: flex; align-items: center; gap: 8px;">
+                🚨 Danger Zone: Permanent Tenant Deletion
+            </h3>
+            <p style="font-size: 13px; color: #475569; margin-bottom: 12px; line-height: 1.5;">
+                You are about to permanently delete <strong id="delSchoolNameDisplay" style="color:#0f172a;">-</strong>. This will purge all associated classrooms, student allocations, teacher accounts, and headmaster credentials.
+            </p>
+            <div style="background: #fef2f2; border: 1px solid #fca5a5; padding: 12px; border-radius: 8px; font-size: 12px; color: #991b1b; margin-bottom: 16px;">
+                <strong>⚠️ Permanent Data Loss Warning:</strong> This operation cannot be reversed. All tenant academic records will be permanently erased.
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label class="form-label" style="font-weight: 700;">To confirm deletion, type exact school name: <span id="delRequiredNameText" style="color:#b91c1c; font-family:monospace; font-size:13px;">-</span></label>
+                <input type="text" id="deleteSchoolConfirmInput" class="form-control" placeholder="Type exact school name here..." autocomplete="off">
+            </div>
+            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                <button type="button" id="cancelDeleteSchoolBtn" class="btn btn-outline">Cancel</button>
+                <button type="button" id="submitDeleteSchoolBtn" class="btn btn-danger" style="background:#b91c1c; border-color:#b91c1c;" disabled>🗑️ Permanently Delete School Tenant</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSchoolId = '';
+        let currentSchoolName = '';
+        let currentSchoolStatus = 'active';
+        let pendingDisableCode = '';
+        let pendingDisableTargetText = '';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            let schoolId = urlParams.get('id');
+
+            // Fallback: If no school ID parameter, fetch first school from database
+            if (!schoolId) {
+                try {
+                    const listRes = await fetch('/shule-cafe/api/schools/list.php', { credentials: 'include' });
+                    const listResult = await listRes.json();
+                    if (listResult.success && listResult.data && listResult.data.length > 0) {
+                        schoolId = listResult.data[0].id;
+                    }
+                } catch (e) {}
+            }
+
+            if (!schoolId) {
+                alert('No school tenants registered on platform.');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            currentSchoolId = schoolId;
+
+            // Safety Modals Elements
+            const disableModal = document.getElementById('disableLevelModal');
+            const disableInput = document.getElementById('disableConfirmInput');
+            const cancelDisableBtn = document.getElementById('cancelDisableLevelBtn');
+            const submitDisableBtn = document.getElementById('submitDisableLevelBtn');
+
+            const deleteModal = document.getElementById('deleteSchoolModal');
+            const deleteInput = document.getElementById('deleteSchoolConfirmInput');
+            const cancelDeleteBtn = document.getElementById('cancelDeleteSchoolBtn');
+            const submitDeleteBtn = document.getElementById('submitDeleteSchoolBtn');
+
+            // Global Click Delegation for Danger Zone Actions
+            document.addEventListener('click', (e) => {
+                if (e.target && (e.target.id === 'btnDeleteSchool' || e.target.closest('#btnDeleteSchool'))) {
+                    triggerDeleteSchoolModal();
+                }
+                if (e.target && (e.target.id === 'btnToggleSuspendSchool' || e.target.closest('#btnToggleSuspendSchool'))) {
+                    handleSchoolSuspendToggle();
+                }
+            });
+
+            // Suspend / Activate School Function
+            async function handleSchoolSuspendToggle() {
+                const isCurrentlyActive = (currentSchoolStatus === 'active');
+                const targetStatus = isCurrentlyActive ? 'suspended' : 'active';
+                const actionLabel = isCurrentlyActive ? 'SUSPEND' : 'ACTIVATE';
+
+                if (!confirm(`Are you sure you want to ${actionLabel} access for '${currentSchoolName}'?`)) {
+                    return;
+                }
+
+                try {
+                    const res = await fetch('/shule-cafe/api/schools/update.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            id: currentSchoolId,
+                            status: targetStatus
+                        })
+                    });
+                    const result = await res.json();
+
+                    if (res.ok && result.success) {
+                        alert(result.message);
+                        loadSchoolWorkspace();
+                    } else {
+                        alert(result.message || `Failed to ${actionLabel.toLowerCase()} school tenant.`);
+                    }
+                } catch (err) {
+                    alert(`Network error updating school status.`);
+                }
+            }
+
+            // Toggle School Level Function
+            window.toggleSchoolEducationLevel = async function(levelCode, targetStatus, activeStudentCount = 0) {
+                if (targetStatus === 'inactive' && activeStudentCount > 0) {
+                    // Trigger High-Risk Safety Modal
+                    pendingDisableCode = levelCode;
+                    pendingDisableTargetText = `DISABLE ${levelCode.toUpperCase()}`;
+                    
+                    document.getElementById('disableLevelModalBody').innerHTML = `
+                        <div style="background:#fff7ed; border:1px solid #ffedd5; padding:12px; border-radius:8px; margin-bottom:12px; color:#c2410c;">
+                            <strong>🛡️ Safety Shield Alert:</strong> This school currently has <strong>${activeStudentCount} active student(s)</strong> enrolled in <strong>${levelCode}</strong> grades.
+                        </div>
+                        Disabling this level will restrict student access and remove curriculum mappings. Please confirm that you intend to perform this action.
+                    `;
+                    document.getElementById('disableRequiredCodeText').textContent = pendingDisableTargetText;
+                    disableInput.value = '';
+                    submitDisableBtn.disabled = true;
+                    disableModal.style.display = 'flex';
+                    return;
+                }
+
+                // Normal Toggle or Confirmed Disable
+                executeLevelToggle(levelCode, targetStatus, '');
+            };
+
+            disableInput.addEventListener('input', () => {
+                const typed = disableInput.value.trim().toUpperCase();
+                submitDisableBtn.disabled = (typed !== pendingDisableTargetText);
+            });
+
+            cancelDisableBtn.addEventListener('click', () => { disableModal.style.display = 'none'; });
+            submitDisableBtn.addEventListener('click', () => {
+                disableModal.style.display = 'none';
+                executeLevelToggle(pendingDisableCode, 'inactive', disableInput.value.trim());
+            });
+
+            async function executeLevelToggle(levelCode, targetStatus, confirmCode) {
+                try {
+                    const res = await fetch('/shule-cafe/api/schools/education_levels.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            action: 'toggle_level',
+                            school_id: currentSchoolId,
+                            level_code: levelCode,
+                            status: targetStatus,
+                            confirm_code: confirmCode
+                        })
+                    });
+                    const result = await res.json();
+
+                    if (res.ok && result.success) {
+                        alert(result.message);
+                        loadSchoolEducationLevels();
+                    } else {
+                        alert(result.message || 'Failed to update education level.');
+                    }
+                } catch (err) {
+                    alert('Network error updating education level.');
+                }
+            }
+
+            // Delete School Tenant Safety Flow
+            function triggerDeleteSchoolModal() {
+                const targetName = currentSchoolName || document.getElementById('infoName').textContent || 'School Tenant';
+                currentSchoolName = targetName;
+
+                document.getElementById('delSchoolNameDisplay').textContent = targetName;
+                document.getElementById('delRequiredNameText').textContent = targetName;
+                deleteInput.value = '';
+                submitDeleteBtn.disabled = true;
+                deleteModal.style.display = 'flex';
+            }
+
+            deleteInput.addEventListener('input', () => {
+                const typed = deleteInput.value.trim().toLowerCase();
+                const expected = currentSchoolName.trim().toLowerCase();
+                submitDeleteBtn.disabled = (typed !== expected);
+            });
+
+            cancelDeleteBtn.addEventListener('click', () => { deleteModal.style.display = 'none'; });
+            
+            submitDeleteBtn.addEventListener('click', async () => {
+                submitDeleteBtn.disabled = true;
+                submitDeleteBtn.textContent = 'Deleting School...';
+
+                try {
+                    const res = await fetch('/shule-cafe/api/schools/delete.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            school_id: currentSchoolId,
+                            confirm_school_name: deleteInput.value.trim()
+                        })
+                    });
+                    const result = await res.json();
+
+                    if (res.ok && result.success) {
+                        alert(result.message);
+                        window.location.href = 'index.html';
+                    } else {
+                        alert(result.message || 'Failed to delete school tenant.');
+                        submitDeleteBtn.disabled = false;
+                        submitDeleteBtn.textContent = '🗑️ Permanently Delete School Tenant';
+                    }
+                } catch (err) {
+                    alert('Network error deleting school tenant.');
+                    submitDeleteBtn.disabled = false;
+                    submitDeleteBtn.textContent = '🗑️ Permanently Delete School Tenant';
+                }
+            });
+
+            // Function to load Education Levels status
+            async function loadSchoolEducationLevels() {
+                const container = document.getElementById('schLevelsContainer');
+                if (!container) return;
+
+                try {
+                    const res = await fetch(`/shule-cafe/api/schools/education_levels.php?school_id=${encodeURIComponent(currentSchoolId)}`, { credentials: 'include' });
+                    const result = await res.json();
+
+                    if (!res.ok || !result.success) {
+                        container.innerHTML = '<div style="color:var(--c-danger);">Failed to load education levels.</div>';
+                        return;
+                    }
+
+                    const levels = result.levels || [];
+                    let html = '';
+
+                    levels.forEach(lvl => {
+                        const isActive = lvl.is_active;
+                        const cardClass = isActive ? 'level-provision-card active' : 'level-provision-card inactive';
+
+                        const statusBadge = isActive
+                            ? '<span class="badge badge-success" style="font-weight:700;">🟢 Active & Provisioned</span>'
+                            : '<span class="badge badge-secondary" style="font-weight:700;">⚪ Not Enabled</span>';
+
+                        const studentShieldBadge = (lvl.active_student_count > 0)
+                            ? `<div style="margin-top:6px;"><span class="badge badge-warning" style="background:#fef3c7; color:#b45309; border:1px solid #fde68a; font-weight:700;">🛡️ ${lvl.active_student_count} Active Student(s) Enrolled</span></div>`
+                            : '';
+
+                        const statsBadge = isActive
+                            ? `<span style="background:#d1fae5;color:#065f46;padding:4px 12px;border-radius:12px;font-size:12px;font-weight:700;">📘 ${lvl.approved_subjects} Master Subjects Active</span>`
+                            : `<span style="color:var(--c-text-muted);font-size:12px;">Curriculum Not Provisioned</span>`;
+
+                        const btnHtml = isActive
+                            ? `<button class="btn btn-outline btn-block" style="color:#dc2626;border-color:#fca5a5;font-weight:700;margin-top:16px;" onclick="toggleSchoolEducationLevel('${lvl.level_code}', 'inactive', ${lvl.active_student_count})">🔴 Disable Education Level</button>`
+                            : `<button class="btn btn-primary btn-block" style="font-weight:700;margin-top:16px;background:#059669;" onclick="toggleSchoolEducationLevel('${lvl.level_code}', 'active', 0)">⚡ Enable & Auto-Provision Curriculum ➡️</button>`;
+
+                        html += `
+                            <div class="${cardClass}">
+                                <div>
+                                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+                                        <div style="width:44px;height:44px;border-radius:50%;background:${isActive?'#059669':'#94a3b8'};color:white;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;">
+                                            🏫
+                                        </div>
+                                        <div>${statusBadge}${studentShieldBadge}</div>
+                                    </div>
+                                    <h4 style="margin:0 0 6px 0;font-size:18px;font-weight:800;color:var(--c-text-primary);">${lvl.level_name}</h4>
+                                    <div style="font-size:13px;color:var(--c-text-muted);margin-bottom:8px;">Code: <strong>${lvl.level_code}</strong> • Range: ${lvl.range_text}</div>
+                                    <div style="margin-bottom:12px;">${statsBadge}</div>
+                                    <p style="font-size:12px;color:var(--c-text-secondary);margin:0;">${lvl.description}</p>
+                                </div>
+                                ${btnHtml}
+                            </div>
+                        `;
+                    });
+
+                    container.innerHTML = html;
+                } catch (err) {
+                    container.innerHTML = '<div style="color:var(--c-danger);">Network error loading education levels.</div>';
+                }
+            }
+
+            // Function to load teachers (Super Admin View-Only Mode)
+            async function loadTeachers() {
+                try {
+                    const tRes = await fetch(`/shule-cafe/api/teachers/list.php?school_id=${encodeURIComponent(currentSchoolId)}`, { credentials: 'include' });
+                    const tResult = await tRes.json();
+                    if (tRes.ok && tResult.success && tResult.data.length > 0) {
+                        const columns = [
+                            { key: 'code', label: 'Staff ID', type: 'text' },
+                            { key: 'name', label: 'Teacher Name', type: 'avatar' },
+                            { key: 'department', label: 'Department', type: 'text' },
+                            { key: 'phone', label: 'Phone Number', type: 'text' },
+                            { key: 'email', label: 'Email (Username)', type: 'text' },
+                            { key: 'status', label: 'Status', type: 'status' }
+                        ];
+                        const tData = tResult.data.map(item => ({
+                            id: item.id,
+                            code: item.user_code || `TCH/${new Date().getFullYear()}/001`,
+                            raw_name: item.full_name,
+                            department: item.department || 'Mathematics',
+                            name: { initials: item.full_name ? item.full_name.charAt(0).toUpperCase() : 'T', name: item.full_name },
+                            phone: item.phone || 'N/A',
+                            email: item.email || 'N/A',
+                            status: item.status === 'active' ? 'Active' : 'Suspended'
+                        }));
+                        const tTable = document.createElement('app-table');
+                        tTable.setAttribute('columns', JSON.stringify(columns));
+                        tTable.setAttribute('data', JSON.stringify(tData));
+                        tTable.setAttribute('actions', 'view');
+                        tTable.setAttribute('entity-url', `/shule-cafe/frontend/super-admin/users/workspace.html?school_id=${encodeURIComponent(currentSchoolId)}`);
+
+                        document.getElementById('teachersListContainer').innerHTML = '';
+                        document.getElementById('teachersListContainer').appendChild(tTable);
+                    } else {
+                        document.getElementById('teachersListContainer').innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-text-muted);">No teachers registered yet for this tenant.</div>';
+                    }
+                } catch (e) {}
+            }
+
+            // Function to load students (Super Admin View-Only Mode)
+            async function loadStudents() {
+                try {
+                    const sRes = await fetch(`/shule-cafe/api/students/list.php?school_id=${encodeURIComponent(currentSchoolId)}`, { credentials: 'include' });
+                    const sResult = await sRes.json();
+                    if (sRes.ok && sResult.success && sResult.data.length > 0) {
+                        const columns = [
+                            { key: 'code', label: 'Student ID', type: 'text' },
+                            { key: 'name', label: 'Student Name', type: 'avatar' },
+                            { key: 'phone', label: 'Guardian Phone', type: 'text' },
+                            { key: 'email', label: 'Email Address', type: 'text' },
+                            { key: 'class_name', label: 'Class', type: 'text' },
+                            { key: 'status', label: 'Status', type: 'status' }
+                        ];
+                        const sData = sResult.data.map(item => ({
+                            id: item.id,
+                            code: item.user_code || 'STD/${new Date().getFullYear()}/001',
+                            raw_name: item.full_name,
+                            name: { initials: item.full_name ? item.full_name.charAt(0).toUpperCase() : 'S', name: item.full_name },
+                            phone: item.phone || 'N/A',
+                            email: item.email || 'N/A',
+                            class_name: item.class_name || 'Standard Level',
+                            status: item.status === 'active' ? 'Active' : 'Suspended'
+                        }));
+                        const sTable = document.createElement('app-table');
+                        sTable.setAttribute('columns', JSON.stringify(columns));
+                        sTable.setAttribute('data', JSON.stringify(sData));
+                        sTable.setAttribute('actions', 'view');
+                        sTable.setAttribute('entity-url', `/shule-cafe/frontend/super-admin/users/workspace.html?school_id=${encodeURIComponent(currentSchoolId)}`);
+
+                        document.getElementById('studentsListContainer').innerHTML = '';
+                        document.getElementById('studentsListContainer').appendChild(sTable);
+                    } else {
+                        document.getElementById('studentsListContainer').innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-text-muted);">No students registered yet for this tenant.</div>';
+                    }
+                } catch (e) {}
+            }
+
+            // Master Function to load School Workspace
+            async function loadSchoolWorkspace() {
+                try {
+                    const res = await fetch(`/shule-cafe/api/schools/get.php?id=${encodeURIComponent(currentSchoolId)}`, { credentials: 'include' });
+                    const result = await res.json();
+
+                    if (res.ok && result.success) {
+                        const data = result.data;
+                        currentSchoolName = data.name;
+                        currentSchoolStatus = data.status || 'active';
+
+                        // Update Header Attributes
+                        const header = document.getElementById('wsHeader');
+                        header.setAttribute('title', data.name);
+                        header.setAttribute('subtitle', `${data.region || 'Unknown Region'} • ${data.type || 'Secondary School'}`);
+                        header.setAttribute('initials', data.name ? data.name.charAt(0).toUpperCase() : 'S');
+                        header.setAttribute('status', data.status === 'active' ? 'Active' : 'Suspended');
+                        header.setAttribute('status-color', data.status === 'active' ? 'success' : 'warning');
+
+                        // Update Summary Cards
+                        document.getElementById('cardStudents').setAttribute('value', (data.total_students || 0).toLocaleString());
+                        document.getElementById('cardTeachers').setAttribute('value', (data.total_teachers || 0).toLocaleString());
+                        document.getElementById('cardClasses').setAttribute('value', (data.total_classes || 0).toLocaleString());
+                        document.getElementById('cardRegion').setAttribute('value', data.region || 'N/A');
+
+                        const isPwdChanged = (data.headmaster_is_password_changed == 1 || data.headmaster_is_password_changed === true);
+                        const pwdStatusBadge = isPwdChanged 
+                            ? `<span class="badge badge-success" style="background:#dcfce7; color:#15803d; padding:4px 8px; border-radius:4px; font-weight:600;">✅ Password Changed & Secured by User</span>` 
+                            : `<span class="badge badge-warning" style="background:#fef3c7; color:#b45309; padding:4px 8px; border-radius:4px; font-weight:600;">⚠️ Temporary Password (Unchanged - One Time Use)</span>`;
+
+                        // Update Overview
+                        document.getElementById('infoName').textContent = data.name;
+                        document.getElementById('infoType').textContent = data.type || 'Secondary';
+                        document.getElementById('infoRegion').textContent = data.region || 'N/A';
+                        document.getElementById('infoCreated').textContent = data.created_at ? new Date(data.created_at).toLocaleDateString() : 'N/A';
+                        document.getElementById('infoHmName').textContent = data.headmaster_name || 'Not assigned';
+                        document.getElementById('infoHmEmail').textContent = data.headmaster_email || 'N/A';
+                        document.getElementById('infoHmPhone').textContent = data.headmaster_phone || 'N/A';
+                        document.getElementById('infoHmPwdBadge').innerHTML = pwdStatusBadge;
+
+                        // Update Headmaster tab
+                        const pwdDisplay = isPwdChanged 
+                            ? `<div style="background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #e2e8f0; font-family:monospace; color:#64748b;">•••••••• (Secured by Headmaster)</div>` 
+                            : `<div style="display:flex; align-items:center; gap:12px; background:#fffbeb; padding:12px; border-radius:6px; border:1px solid #fde68a;">
+                                <code style="font-size:16px; font-weight:bold; color:#b45309;">${data.headmaster_temp_password || 'Shule#202X@Hk8'}</code>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="navigator.clipboard.writeText('${data.headmaster_temp_password || 'Shule#202X@Hk8'}'); alert('Credentials copied to clipboard!');">📋 Copy Password</button>
+                               </div>`;
+
+                        document.getElementById('hmDetails').innerHTML = `
+                            <div style="font-size: var(--text-sm); display:flex; flex-direction:column; gap:12px; max-width:600px;">
+                                <div style="padding:12px; background:var(--c-bg-neutral); border-radius:6px;">
+                                    <strong>Headmaster Name:</strong> ${data.headmaster_name || 'N/A'}<br>
+                                    <strong>Login Email (Username):</strong> <code style="color:var(--c-primary-500);">${data.headmaster_email || 'N/A'}</code><br>
+                                    <strong>Phone Number:</strong> ${data.headmaster_phone || 'N/A'}
+                                </div>
+
+                                <div style="padding:12px; border:1px solid var(--c-border-light); border-radius:6px;">
+                                    <label style="font-weight:600; display:block; margin-bottom:6px;">Current Password Status:</label>
+                                    <div style="margin-bottom:10px;">${pwdStatusBadge}</div>
+                                    <label style="font-weight:600; display:block; margin-bottom:6px;">Password Credential:</label>
+                                    ${pwdDisplay}
+                                </div>
+                            </div>
+                        `;
+
+                        // Update Suspend Button UI & Alert Banner
+                        const suspendBtnContainer = document.getElementById('suspendBtnContainer');
+                        if (suspendBtnContainer) {
+                            if (currentSchoolStatus === 'active') {
+                                suspendBtnContainer.innerHTML = `<button type="button" class="btn btn-outline" id="btnToggleSuspendSchool" style="border-color:#f59e0b; color:#b45309; font-weight:700; background:#fffbeb;">⚠️ Suspend School Tenant</button>`;
+                            } else {
+                                suspendBtnContainer.innerHTML = `<button type="button" class="btn btn-primary" id="btnToggleSuspendSchool" style="background:#059669; border-color:#059669; font-weight:700;">🟢 Activate School Tenant</button>`;
+                            }
+                        }
+
+                        // Render Suspension Banner at top of layout
+                        let banner = document.getElementById('suspensionBanner');
+                        if (currentSchoolStatus === 'suspended') {
+                            if (!banner) {
+                                const alertHtml = `
+                                    <div id="suspensionBanner" style="margin: var(--sp-6) var(--sp-6) 0 var(--sp-6); padding: 16px; background: #fff7ed; border: 1px solid #ffedd5; border-left: 6px solid #f59e0b; border-radius: 8px; color: #c2410c; display: flex; align-items: center; justify-content: space-between;">
+                                        <div>
+                                            <strong style="font-size: 15px;">⚠️ THIS SCHOOL TENANT IS CURRENTLY SUSPENDED</strong><br>
+                                            <span style="font-size: 13px; color: #9a3412;">Platform access for all headmasters, teachers, and students in this school is currently locked. Data remains 100% safe.</span>
+                                        </div>
+                                        <button type="button" class="btn btn-primary" style="background:#059669; border-color:#059669; font-weight:700;" onclick="handleSchoolSuspendToggle()">🟢 Reactivate School Tenant Now</button>
+                                    </div>
+                                `;
+                                document.querySelector('app-workspace-layout').insertAdjacentHTML('afterbegin', alertHtml);
+                            }
+                        } else if (banner) {
+                            banner.remove();
+                        }
+
+                        loadSchoolEducationLevels();
+                        loadTeachers();
+                        loadStudents();
+
+                    } else {
+                        document.getElementById('wsHeader').setAttribute('title', 'School Not Found');
+                        document.getElementById('wsHeader').setAttribute('subtitle', result.message || 'Error fetching school details');
+                    }
+                } catch (err) {
+                    console.error("Failed to load school workspace:", err);
+                }
+            }
+
+            loadSchoolWorkspace();
+        });
+    </script>
+</body>
+</html>

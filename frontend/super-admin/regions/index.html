@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regional Offices ‹ Super Admin ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="super_admin" active-path="/super-admin/regions/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="System Administrator"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <app-breadcrumb path="Super Admin, Regional Offices"></app-breadcrumb>
+                    
+                    <app-page-header 
+                        title="Regional Offices" 
+                        subtitle="Manage regional education offices and their officers."
+                        primary-action="Add Regional Officer"
+                        id="pageHeader">
+                    </app-page-header>
+                    
+                    <div class="card" style="margin-top: var(--sp-4);">
+                        <app-table-toolbar search-placeholder="Search regions or officers..."></app-table-toolbar>
+                        
+                        <div id="tableContainer">
+                            <app-table-skeleton rows="5" cols="4"></app-table-skeleton>
+                        </div>
+                    </div>
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add Officer Modal -->
+    <div id="addOfficerModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 450px; padding: var(--sp-6); background: white;">
+            <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">Add Regional Education Officer</h3>
+            
+            <div id="modalAlert" class="alert alert-danger" style="display: none; margin-bottom: var(--sp-4);"></div>
+
+            <form id="addOfficerForm">
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">Full Name <span style="color:var(--c-danger);">*</span></label>
+                    <input type="text" id="off_name" class="form-control" placeholder="e.g. Hon. Juma Ali" required>
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">Phone Number (Username) <span style="color:var(--c-danger);">*</span></label>
+                    <input type="text" id="off_phone" class="form-control" placeholder="e.g. +255755000111" required>
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-6);">
+                    <label class="form-label">Password <span style="color:var(--c-danger);">*</span></label>
+                    <input type="password" id="off_password" class="form-control" placeholder="Set password" required>
+                </div>
+                <div style="display: flex; gap: var(--sp-2); justify-content: flex-end;">
+                    <button type="button" id="closeModalBtn" class="btn btn-outline">Cancel</button>
+                    <button type="submit" id="saveOfficerBtn" class="btn btn-primary">Save Officer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const tableContainer = document.getElementById('tableContainer');
+            const modal = document.getElementById('addOfficerModal');
+            const form = document.getElementById('addOfficerForm');
+            const modalAlert = document.getElementById('modalAlert');
+            const saveBtn = document.getElementById('saveOfficerBtn');
+            const closeBtn = document.getElementById('closeModalBtn');
+            
+            // Listen for primary action button click from page header
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('#pageHeader button') || e.target.closest('[primary-action]')) {
+                    modal.style.display = 'flex';
+                }
+            });
+
+            closeBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                modalAlert.style.display = 'none';
+
+                const data = {
+                    full_name: document.getElementById('off_name').value,
+                    phone: document.getElementById('off_phone').value,
+                    password: document.getElementById('off_password').value
+                };
+
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Saving...';
+
+                try {
+                    const res = await fetch('/shule-cafe/api/regional/create.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await res.json();
+                    if (res.ok && result.success) {
+                        modal.style.display = 'none';
+                        form.reset();
+                        window.location.reload();
+                    } else {
+                        modalAlert.textContent = result.message || 'Error creating officer.';
+                        modalAlert.style.display = 'block';
+                        saveBtn.disabled = false;
+                        saveBtn.textContent = 'Save Officer';
+                    }
+                } catch (err) {
+                    modalAlert.textContent = 'Network error saving officer.';
+                    modalAlert.style.display = 'block';
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Save Officer';
+                }
+            });
+
+            const columns = [
+                { key: 'user', label: 'Regional Officer Name', type: 'avatar' },
+                { key: 'phone', label: 'Phone Number', type: 'text' },
+                { key: 'status', label: 'Status', type: 'status' }
+            ];
+
+            try {
+                const res = await fetch('/shule-cafe/api/regional/list.php', { credentials: 'include' });
+                const result = await res.json();
+
+                if (res.ok && result.success) {
+                    const regionsData = result.data.map(item => ({
+                        id: item.id,
+                        user: { initials: item.full_name ? item.full_name.charAt(0).toUpperCase() : 'O', name: item.full_name },
+                        phone: item.phone || 'N/A',
+                        status: item.status === 'active' ? 'Active' : 'Suspended'
+                    }));
+
+                    const appTable = document.createElement('app-table');
+                    appTable.setAttribute('columns', JSON.stringify(columns));
+                    appTable.setAttribute('data', JSON.stringify(regionsData));
+                    appTable.setAttribute('entity-url', 'workspace.html');
+                    appTable.setAttribute('actions', 'view');
+                    
+                    tableContainer.innerHTML = '';
+                    tableContainer.appendChild(appTable);
+                } else {
+                    tableContainer.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-text-muted);">No regional officers registered.</div>';
+                }
+            } catch (err) {
+                tableContainer.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-danger);">Failed to load regional offices.</div>';
+            }
+        });
+    </script>
+</body>
+</html>

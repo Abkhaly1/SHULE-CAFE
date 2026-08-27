@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Stream Performance Ledger ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/teacher-theme.css">
+    
+    <script type="module" src="../layouts/global-layout.js"></script>
+    <script type="module" src="../js/auth/auth-guard.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="teacher" active-path="/teacher/class-ledger.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Teacher Portal"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <app-breadcrumb path="Teacher, Classroom Performance Ledger"></app-breadcrumb>
+
+                    <div class="card" style="margin-top: 14px; padding: 24px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 20px;">
+                            <div>
+                                <h1 style="margin: 0 0 6px; font-size: 22px; font-weight: 800; color: var(--c-text-primary);">📊 Form Master Classroom Performance Ledger Matrix</h1>
+                                <p style="margin: 0; font-size: 13px; color: var(--c-text-muted);">
+                                    Master matrix view displaying student scores across all evaluated subjects to identify multi-course pass/fail trends.
+                                </p>
+                            </div>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <select id="selClassroom" class="form-control" style="width: 200px; font-weight: 700;"><option value="">Select Classroom...</option></select>
+                                <select id="selTerm" class="form-control" style="width: 130px; font-weight: 700;">
+                                    <option value="Term 1" selected>Term 1</option>
+                                    <option value="Term 2">Term 2</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="ledgerMatrixContainer">
+                            <div style="padding: 40px; text-align: center; color: var(--c-text-muted); background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 10px;">
+                                💡 Select a classroom stream above to load the master performance ledger matrix.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const selRoom = document.getElementById('selClassroom');
+            const selTerm = document.getElementById('selTerm');
+
+            try {
+                const res = await fetch('/shule-cafe/api/teacher/teacher_portal_api.php?action=dashboard', { credentials: 'include' });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    const allocs = data.allocations || [];
+                    const streams = [...new Set(allocs.map(a => a.classroom_name))];
+
+                    // Also fetch form master assigned classrooms
+                    const resAtt = await fetch('/shule-cafe/api/teacher/teacher_portal_api.php?action=get_daily_attendance', { credentials: 'include' });
+                    const dataAtt = await resAtt.json();
+                    let fmRooms = [];
+                    if (dataAtt.success && dataAtt.managed_classrooms) {
+                        fmRooms = dataAtt.managed_classrooms.map(c => c.classroom_name);
+                    }
+
+                    const allRooms = [...new Set([...streams, ...fmRooms])];
+                    selRoom.innerHTML = '<option value="">Select Classroom...</option>' + allRooms.map(r => `<option value="${r}">${r}</option>`).join('');
+
+                    if (allRooms.length > 0) {
+                        selRoom.value = allRooms[0];
+                        loadLedger();
+                    }
+                }
+            } catch(e) {}
+
+            selRoom.addEventListener('change', loadLedger);
+            selTerm.addEventListener('change', loadLedger);
+        });
+
+        async function loadLedger() {
+            const stream = document.getElementById('selClassroom').value;
+            const term = document.getElementById('selTerm').value;
+            const container = document.getElementById('ledgerMatrixContainer');
+            if (!stream) return;
+
+            container.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--c-text-muted); font-weight: 700;">🔄 Loading classroom performance matrix...</div>';
+
+            try {
+                const res = await fetch(`/shule-cafe/api/headmaster/analytics/analytics_api.php?action=classroom_ledger&stream=${encodeURIComponent(stream)}&term=${encodeURIComponent(term)}`, { credentials: 'include' });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    const subjects = data.subjects || [];
+                    const students = data.students || [];
+
+                    if (students.length === 0) {
+                        container.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--c-text-muted);">No active students allocated in this classroom.</div>';
+                        return;
+                    }
+
+                    let html = `
+                        <div style="border: 1px solid var(--c-border-light); border-radius: 8px; overflow-x: auto;">
+                            <table class="table" style="width: 100%; font-size: 13px; margin: 0; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: #0f172a; color: white;">
+                                        <th style="padding: 10px 14px; width: 40px;">#</th>
+                                        <th style="padding: 10px 14px; width: 220px;">Student Name & ID</th>
+                    `;
+
+                    subjects.forEach(sub => {
+                        html += `<th style="padding: 10px 12px; text-align: center;">${sub.subject_code}</th>`;
+                    });
+
+                    html += `
+                                        <th style="padding: 10px 14px; text-align: center; background: #047857;">Total Agg.</th>
+                                        <th style="padding: 10px 14px; text-align: center; background: #991b1b;">Failing Courses</th>
+                                        <th style="padding: 10px 14px; text-align: center;">360° Report</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+
+                    students.forEach((s, idx) => {
+                        const isHighRisk = s.failing_count >= 2;
+                        const trBg = isHighRisk ? '#fff1f2' : (idx % 2 === 0 ? '#ffffff' : '#f8fafc');
+
+                        html += `
+                            <tr style="background: ${trBg}; border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 10px 14px; font-weight: 700; color: #64748b;">${idx + 1}</td>
+                                <td style="padding: 10px 14px;">
+                                    <strong style="color: #0f172a; font-size: 13px;">${s.full_name}</strong>
+                                    <div style="font-size: 11px; color: var(--c-text-muted);">${s.user_code || 'STD'}</div>
+                                </td>
+                        `;
+
+                        subjects.forEach(sub => {
+                            const score = s.scores[sub.subject_code];
+                            let cellHtml = '-';
+                            if (score !== undefined) {
+                                if (score >= 45) {
+                                    cellHtml = `<span style="font-weight: 800; color: #047857;">${score}</span>`;
+                                } else {
+                                    cellHtml = `<span style="font-weight: 800; color: crimson;">${score} ⚠️</span>`;
+                                }
+                            }
+                            html += `<td style="padding: 10px 12px; text-align: center;">${cellHtml}</td>`;
+                        });
+
+                        let failBadge = s.failing_count > 0
+                            ? `<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:800;">${s.failing_count} Course(s)</span>`
+                            : `<span class="badge badge-success" style="font-weight:800;">0 Failing</span>`;
+
+                        html += `
+                                <td style="padding: 10px 14px; text-align: center; font-weight: 900; color: #0f172a;">${s.total_aggregate}</td>
+                                <td style="padding: 10px 14px; text-align: center;">${failBadge}</td>
+                                <td style="padding: 10px 14px; text-align: center;">
+                                    <a href="../reports/student-report-card.html?student_id=${s.student_id}&term=${encodeURIComponent(term)}" class="btn btn-secondary" style="font-size: 11px; font-weight: 700; padding: 4px 10px;">📋 Report Card</a>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = `<div style="padding: 30px; text-align: center; color: crimson;">${data.message || 'Error loading ledger.'}</div>`;
+                }
+            } catch(e) {
+                container.innerHTML = '<div style="padding: 30px; text-align: center; color: crimson;">Network connection error.</div>';
+            }
+        }
+    </script>
+</body>
+</html>

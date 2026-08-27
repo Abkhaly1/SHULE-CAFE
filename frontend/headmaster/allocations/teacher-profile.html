@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Redirecting to Teacher Allocation Portfolio...</title>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const teacherId = urlParams.get('teacher_id');
+        if (teacherId) {
+            window.location.href = `subject-allocations.html?teacher_id=${encodeURIComponent(teacherId)}`;
+        } else {
+            window.location.href = 'subject-allocations.html';
+        }
+    </script>
+</head>
+<body>
+    <div style="font-family:sans-serif; padding:40px; text-align:center; color:#475569;">
+        Redirecting to Teacher Allocation Portfolio...
+    </div>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schools ‹ Super Admin ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="super_admin" active-path="/super-admin/schools/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="System Administrator"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <app-breadcrumb path="Super Admin, Schools"></app-breadcrumb>
+                    
+                    <app-page-header 
+                        title="Schools Management" 
+                        subtitle="Browse and manage all registered schools on the platform."
+                        primary-action="Register School"
+                        primary-url="create.html">
+                    </app-page-header>
+                    
+                    <div class="card" style="margin-top: var(--sp-4);">
+                        <app-table-toolbar entity-type="schools" search-placeholder="Search schools by name or region..."></app-table-toolbar>
+                        
+                        <div id="tableContainer">
+                            <app-table-skeleton rows="5" cols="4"></app-table-skeleton>
+                        </div>
+                    </div>
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- Edit School Modal -->
+    <div id="editSchoolModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 480px; padding: var(--sp-6); background: white;">
+            <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">Edit School Tenant</h3>
+            
+            <div id="editSchoolAlert" class="alert alert-danger" style="display: none; margin-bottom: var(--sp-4);"></div>
+
+            <form id="editSchoolForm">
+                <input type="hidden" id="edit_sch_id">
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">School Name <span style="color:var(--c-danger);">*</span></label>
+                    <input type="text" id="edit_sch_name" class="form-control" required>
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">School Type</label>
+                    <select id="edit_sch_type" class="form-control">
+                        <option value="Primary">Primary School</option>
+                        <option value="Secondary">Secondary School</option>
+                        <option value="Combined">Primary & Secondary</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">Region</label>
+                    <input type="text" id="edit_sch_region" class="form-control">
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-6);">
+                    <label class="form-label">Tenant Status</label>
+                    <select id="edit_sch_status" class="form-control">
+                        <option value="active">Active</option>
+                        <option value="suspended">Suspended</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: var(--sp-2); justify-content: flex-end;">
+                    <button type="button" id="closeEditSchoolModalBtn" class="btn btn-outline">Cancel</button>
+                    <button type="submit" id="updateSchoolBtn" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SAFETY MODAL: Permanent Delete School Tenant -->
+    <div id="deleteSchoolModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 540px; padding: var(--sp-6); background: white; border-top: 6px solid #b91c1c;">
+            <h3 style="margin-top: 0; color: #b91c1c; display: flex; align-items: center; gap: 8px;">
+                🚨 Danger Zone: Permanent Tenant Deletion
+            </h3>
+            <p style="font-size: 13px; color: #475569; margin-bottom: 12px; line-height: 1.5;">
+                You are about to permanently delete <strong id="delSchoolNameDisplay" style="color:#0f172a;">-</strong>. This will purge all associated classrooms, student allocations, teacher accounts, and headmaster credentials.
+            </p>
+            <div style="background: #fef2f2; border: 1px solid #fca5a5; padding: 12px; border-radius: 8px; font-size: 12px; color: #991b1b; margin-bottom: 16px;">
+                <strong>⚠️ Permanent Data Loss Warning:</strong> This operation cannot be reversed. All tenant academic records will be permanently erased.
+            </div>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label class="form-label" style="font-weight: 700;">To confirm deletion, type exact school name: <span id="delRequiredNameText" style="color:#b91c1c; font-family:monospace; font-size:13px;">-</span></label>
+                <input type="text" id="deleteSchoolConfirmInput" class="form-control" placeholder="Type exact school name here..." autocomplete="off">
+            </div>
+            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                <button type="button" id="cancelDeleteSchoolBtn" class="btn btn-outline">Cancel</button>
+                <button type="button" id="submitDeleteSchoolBtn" class="btn btn-danger" style="background:#b91c1c; border-color:#b91c1c;" disabled>🗑️ Permanently Delete School Tenant</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const tableContainer = document.getElementById('tableContainer');
+            const editModal = document.getElementById('editSchoolModal');
+            const closeEditBtn = document.getElementById('closeEditSchoolModalBtn');
+            const editForm = document.getElementById('editSchoolForm');
+            const editAlert = document.getElementById('editSchoolAlert');
+            
+            // Delete Modal elements
+            const deleteModal = document.getElementById('deleteSchoolModal');
+            const deleteInput = document.getElementById('deleteSchoolConfirmInput');
+            const cancelDeleteBtn = document.getElementById('cancelDeleteSchoolBtn');
+            const submitDeleteBtn = document.getElementById('submitDeleteSchoolBtn');
+
+            let rawSchoolsList = [];
+            let targetDeleteSchool = null;
+
+            if (closeEditBtn) closeEditBtn.addEventListener('click', () => editModal.style.display = 'none');
+
+            document.addEventListener('table-edit-action', (e) => {
+                const rowId = e.detail.id;
+                const school = rawSchoolsList.find(s => s.id === rowId);
+                if (!school) return;
+
+                document.getElementById('edit_sch_id').value = school.id;
+                document.getElementById('edit_sch_name').value = school.name;
+                document.getElementById('edit_sch_type').value = school.type || 'Secondary';
+                document.getElementById('edit_sch_region').value = school.region || '';
+                document.getElementById('edit_sch_status').value = school.status || 'active';
+
+                editAlert.style.display = 'none';
+                editModal.style.display = 'flex';
+            });
+
+            // Table Delete Action Event Listener
+            document.addEventListener('table-delete-action', (e) => {
+                const rowId = e.detail.id;
+                const school = rawSchoolsList.find(s => s.id === rowId);
+                if (!school) return;
+
+                targetDeleteSchool = school;
+                document.getElementById('delSchoolNameDisplay').textContent = school.name;
+                document.getElementById('delRequiredNameText').textContent = school.name;
+                deleteInput.value = '';
+                submitDeleteBtn.disabled = true;
+                deleteModal.style.display = 'flex';
+            });
+
+            deleteInput.addEventListener('input', () => {
+                if (!targetDeleteSchool) return;
+                const typed = deleteInput.value.trim().toLowerCase();
+                const expected = targetDeleteSchool.name.trim().toLowerCase();
+                submitDeleteBtn.disabled = (typed !== expected);
+            });
+
+            cancelDeleteBtn.addEventListener('click', () => { deleteModal.style.display = 'none'; });
+
+            submitDeleteBtn.addEventListener('click', async () => {
+                if (!targetDeleteSchool) return;
+
+                submitDeleteBtn.disabled = true;
+                submitDeleteBtn.textContent = 'Deleting School...';
+
+                try {
+                    const res = await fetch('/shule-cafe/api/schools/delete.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            school_id: targetDeleteSchool.id,
+                            confirm_school_name: deleteInput.value.trim()
+                        })
+                    });
+                    const result = await res.json();
+
+                    if (res.ok && result.success) {
+                        alert(result.message);
+                        deleteModal.style.display = 'none';
+                        loadSchools();
+                    } else {
+                        alert(result.message || 'Failed to delete school tenant.');
+                        submitDeleteBtn.disabled = false;
+                        submitDeleteBtn.textContent = '🗑️ Permanently Delete School Tenant';
+                    }
+                } catch (err) {
+                    alert('Network error deleting school tenant.');
+                    submitDeleteBtn.disabled = false;
+                    submitDeleteBtn.textContent = '🗑️ Permanently Delete School Tenant';
+                }
+            });
+
+            editForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                editAlert.style.display = 'none';
+
+                const data = {
+                    id: document.getElementById('edit_sch_id').value,
+                    name: document.getElementById('edit_sch_name').value,
+                    type: document.getElementById('edit_sch_type').value,
+                    region: document.getElementById('edit_sch_region').value,
+                    status: document.getElementById('edit_sch_status').value
+                };
+
+                try {
+                    const res = await fetch('/shule-cafe/api/schools/update.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(data)
+                    });
+                    const result = await res.json();
+                    if (res.ok && result.success) {
+                        editModal.style.display = 'none';
+                        loadSchools();
+                    } else {
+                        editAlert.textContent = result.message || 'Error updating school.';
+                        editAlert.style.display = 'block';
+                    }
+                } catch (err) {
+                    editAlert.textContent = 'Network error updating school.';
+                    editAlert.style.display = 'block';
+                }
+            });
+
+            const columns = [
+                { key: 'school', label: 'School Name', type: 'avatar' },
+                { key: 'headmaster', label: 'Headmaster / Contact', type: 'text' },
+                { key: 'region', label: 'Region', type: 'text' },
+                { key: 'status', label: 'Status', type: 'status' }
+            ];
+
+            async function loadSchools() {
+                try {
+                    const res = await fetch('/shule-cafe/api/schools/list.php', { credentials: 'include' });
+                    const result = await res.json();
+                    
+                    if (res.ok && result.success) {
+                        rawSchoolsList = result.data;
+                        const schoolsData = result.data.map(item => ({
+                            id: item.id,
+                            school: { initials: item.name ? item.name.charAt(0).toUpperCase() : 'S', name: item.name },
+                            headmaster: item.headmaster_name ? `${item.headmaster_name} (${item.headmaster_phone || ''})` : 'N/A',
+                            region: item.region || 'N/A',
+                            status: item.status === 'active' ? 'Active' : 'Suspended'
+                        }));
+
+                        const appTable = document.createElement('app-table');
+                        appTable.setAttribute('columns', JSON.stringify(columns));
+                        appTable.setAttribute('data', JSON.stringify(schoolsData));
+                        appTable.setAttribute('entity-url', 'workspace.html');
+                        appTable.setAttribute('actions', 'view');
+                        
+                        tableContainer.innerHTML = '';
+                        tableContainer.appendChild(appTable);
+                    } else {
+                        tableContainer.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-danger);">Failed to load schools list.</div>';
+                    }
+                } catch (err) {
+                    tableContainer.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-danger);">Network error loading schools.</div>';
+                }
+            }
+
+            loadSchools();
+        });
+    </script>
+</body>
+</html>

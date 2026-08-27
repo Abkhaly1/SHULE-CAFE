@@ -1,0 +1,169 @@
+/* SHULE CAFE - Teacher Portal Distinct Amber & Warm Gold Theme */
+
+:root {
+    --c-primary: #d97706;
+    --c-primary-hover: #b45309;
+    --c-primary-light: #fef3c7;
+    --c-primary-border: #fde68a;
+    
+    --c-accent: #f59e0b;
+    --c-accent-subtle: #fffbeb;
+    
+    --sidebar-bg: #451a03;
+    --sidebar-text: #ffffff;
+    --sidebar-hover-bg: #78350f;
+    --sidebar-active-bg: #d97706;
+    --sidebar-active-border: #fbbf24;
+}
+
+/* Sidebar Branding Override */
+.app-sidebar {
+    background: var(--sidebar-bg) !important;
+    border-right: 1px solid #290f02 !important;
+}
+
+.sidebar-brand {
+    background: #290f02 !important;
+    border-bottom: 1px solid #451a03 !important;
+}
+
+.sidebar-brand span {
+    color: #fbbf24 !important;
+    font-weight: 800 !important;
+}
+
+.sidebar-nav a {
+    font-weight: 600 !important;
+    color: #fef3c7 !important;
+    font-size: 14px !important;
+}
+
+.sidebar-nav a:hover {
+    background: var(--sidebar-hover-bg) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+.sidebar-nav a.active {
+    background: var(--sidebar-active-bg) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    border-left: 4px solid var(--sidebar-active-border) !important;
+}
+
+/* Primary Button Styling */
+.btn-primary {
+    background: var(--c-primary) !important;
+    border-color: var(--c-primary) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+.btn-primary:hover {
+    background: var(--c-primary-hover) !important;
+    border-color: var(--c-primary-hover) !important;
+}
+
+.btn-outline {
+    border-color: var(--c-primary) !important;
+    color: var(--c-primary) !important;
+    font-weight: 600 !important;
+}
+
+.btn-outline:hover {
+    background: var(--c-primary-light) !important;
+}
+
+/* Card & Frames Distinct Styling */
+.card {
+    border: 1px solid var(--c-primary-border) !important;
+    box-shadow: 0 1px 3px rgba(217, 119, 6, 0.08) !important;
+}
+
+.card-header, app-workspace-header {
+    border-bottom: 1px solid var(--c-primary-border) !important;
+}
+
+/* Workspace Tabs */
+.workspace-tab.active {
+    border-bottom-color: var(--c-primary) !important;
+    color: var(--c-primary) !important;
+    font-weight: 700 !important;
+}
+
+/* Badges */
+.badge-primary, .badge-warning {
+    background: var(--c-accent-subtle) !important;
+    color: #92400e !important;
+    border: 1px solid #fde68a !important;
+    font-weight: 600 !important;
+}
+
+/* Topbar Accent Line */
+.app-topbar {
+    border-bottom: 2px solid var(--c-primary) !important;
+}
+
+/* Quick Metrics Grid & Cards */
+.quick-metrics-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+    gap: 16px !important;
+    margin-bottom: 22px !important;
+}
+
+.metric-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-left: 4px solid var(--c-primary) !important;
+    border-radius: 12px !important;
+    padding: 16px 20px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 18px rgba(217, 119, 6, 0.12) !important;
+}
+
+.metric-lbl {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #475569 !important;
+    margin-bottom: 6px !important;
+}
+
+.metric-val {
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    margin-bottom: 4px !important;
+}
+
+.dashboard-actions {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+    gap: 16px !important;
+    margin-top: 16px !important;
+}
+
+.action-card {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    padding: 18px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    min-height: 130px !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+.action-card:hover {
+    border-color: var(--c-primary) !important;
+    box-shadow: 0 6px 16px rgba(217, 119, 6, 0.1) !important;
+}

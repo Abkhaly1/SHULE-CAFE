@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Attendance ‹ Headmaster ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+    
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+
+    <style>
+        .report-nav-tabs {
+            display: flex;
+            gap: 8px;
+            border-bottom: 2px solid #e2e8f0;
+            margin-top: 16px;
+            margin-bottom: 24px;
+        }
+        .report-tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #64748b;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .report-tab-btn:hover {
+            color: #047857;
+        }
+        .report-tab-btn.active {
+            color: #047857;
+            border-bottom-color: #047857;
+            background: #f0fdf4;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .analytics-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-widget {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            position: relative;
+        }
+        .stat-widget-lbl {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+        .stat-widget-val {
+            font-size: 26px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+        .progress-bar-bg {
+            background: #e2e8f0;
+            border-radius: 10px;
+            height: 8px;
+            width: 100%;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .progress-bar-fill {
+            background: #047857;
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+
+        .filter-bar {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .badge-status-present { background: #dcfce7; color: #15803d; font-weight: 700; padding: 4px 10px; border-radius: 20px; font-size: 11px; }
+        .badge-status-absent { background: #fee2e2; color: #b91c1c; font-weight: 700; padding: 4px 10px; border-radius: 20px; font-size: 11px; }
+        .badge-status-excused { background: #fef3c7; color: #b45309; font-weight: 700; padding: 4px 10px; border-radius: 20px; font-size: 11px; }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="tenant_admin" active-path="/headmaster/reports/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Headmaster Portal"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <app-breadcrumb path="Headmaster, Reports"></app-breadcrumb>
+                    
+                    <app-page-header 
+                        title="Attendance & School Reports" 
+                        subtitle="School attendance analytics, class rosters, and data exports.">
+                    </app-page-header>
+
+                    <!-- TAB NAVIGATION -->
+                    <div class="report-nav-tabs">
+                        <button type="button" class="report-tab-btn active" data-tab="tabAnalytics">
+                            📊 Attendance Analytics
+                        </button>
+                        <button type="button" class="report-tab-btn" data-tab="tabRoster">
+                            🏫 Classrooms & Rosters
+                        </button>
+                        <button type="button" class="report-tab-btn" data-tab="tabExports">
+                            📥 Data Exports
+                        </button>
+                    </div>
+
+                    <!-- TAB 1: ATTENDANCE ANALYTICS HUB -->
+                    <div id="tabAnalytics" class="report-tab-content">
+                        
+                        <!-- Top Overview Stat Widgets -->
+                        <div class="analytics-card-grid">
+                            <div class="stat-widget" style="border-left: 4px solid #047857;">
+                                <div class="stat-widget-lbl">School Attendance</div>
+                                <div class="stat-widget-val" id="overallRateVal">--%</div>
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-fill" id="overallRateFill" style="width: 0%;"></div>
+                                </div>
+                                <div style="font-size: 11px; color: #047857; font-weight: 600; margin-top: 6px;">🟢 School Average Rate</div>
+                            </div>
+
+                            <div class="stat-widget" style="border-left: 4px solid #3b82f6;">
+                                <div class="stat-widget-lbl">Total Sessions</div>
+                                <div class="stat-widget-val" id="totalSessionsVal">0</div>
+                                <div style="font-size: 11px; color: #3b82f6; font-weight: 600; margin-top: 6px;">📘 Recorded Roll Calls</div>
+                            </div>
+
+                            <div class="stat-widget" style="border-left: 4px solid #f59e0b;">
+                                <div class="stat-widget-lbl">Total Absences</div>
+                                <div class="stat-widget-val" id="totalAbsencesVal">0</div>
+                                <div style="font-size: 11px; color: #f59e0b; font-weight: 600; margin-top: 6px;">⚠️ Absent + Excused Days</div>
+                            </div>
+
+                            <div class="stat-widget" style="border-left: 4px solid #ef4444;">
+                                <div class="stat-widget-lbl">Truancy Watchlist</div>
+                                <div class="stat-widget-val" id="chronicCountVal">0</div>
+                                <div style="font-size: 11px; color: #ef4444; font-weight: 600; margin-top: 6px;">🚨 Frequent Absentees</div>
+                            </div>
+                        </div>
+
+                        <!-- Level & Grade Breakdown Grid -->
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px;">
+                            
+                            <div class="card" style="padding: 20px;">
+                                <h3 style="margin: 0 0 14px 0; font-size: 16px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+                                    <span>🏫</span> Education Levels
+                                </h3>
+                                <div id="levelBreakdownContainer" style="display: flex; flex-direction: column; gap: 12px;">
+                                    <div style="color: #64748b; font-size: 13px;">Loading level analytics...</div>
+                                </div>
+                            </div>
+
+                            <div class="card" style="padding: 20px;">
+                                <h3 style="margin: 0 0 14px 0; font-size: 16px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+                                    <span>📚</span> Grade Levels
+                                </h3>
+                                <div id="gradeBreakdownContainer" style="display: flex; flex-direction: column; gap: 12px;">
+                                    <div style="color: #64748b; font-size: 13px;">Loading grade analytics...</div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Chronic Truancy Alert Watchlist -->
+                        <div class="card" style="padding: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <div>
+                                    <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #b91c1c; display: flex; align-items: center; gap: 8px;">
+                                        <span>🚨</span> Truancy Watchlist
+                                    </h3>
+                                    <p style="margin: 4px 0 0 0; font-size: 12px; color: #64748b;">
+                                        Students with frequent unexcused absences requiring attention.
+                                    </p>
+                                </div>
+                                <span class="badge" style="background: #fee2e2; color: #991b1b; font-weight: 800;">Attention Needed</span>
+                            </div>
+
+                            <div style="overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                                    <thead>
+                                        <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left;">
+                                            <th style="padding: 10px 14px;">Student Name</th>
+                                            <th style="padding: 10px 14px;">Reg Code</th>
+                                            <th style="padding: 10px 14px;">Grade & Stream</th>
+                                            <th style="padding: 10px 14px;">Absences</th>
+                                            <th style="padding: 10px 14px;">Rate</th>
+                                            <th style="padding: 10px 14px; text-align: right;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="chronicTableBody">
+                                        <tr><td colspan="6" style="text-align: center; padding: 20px; color: #64748b;">Loading watchlist...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- TAB 2: CLASSROOMS & STUDENT DRILLDOWN -->
+                    <div id="tabRoster" class="report-tab-content" style="display: none;">
+                        
+                        <div class="filter-bar">
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                <label style="font-size: 12px; font-weight: 700; color: #475569;">Academic Year:</label>
+                                <select id="selYear" class="form-control" style="width: 130px; font-weight: 700;">
+                                    <script>
+                                        const _rYr = new Date().getFullYear();
+                                        document.write(`<option value="${_rYr}">${_rYr}</option>`);
+                                        document.write(`<option value="${_rYr-1}">${_rYr-1}</option>`);
+                                        document.write(`<option value="${_rYr-2}">${_rYr-2}</option>`);
+                                    </script>
+                                </select>
+                            </div>
+
+                            <div style="display: flex; flex-direction: column; gap: 4px; flex: 1; max-width: 260px;">
+                                <label style="font-size: 12px; font-weight: 700; color: #475569;">Select Classroom:</label>
+                                <select id="selClassroom" class="form-control" style="font-weight: 600;">
+                                    <option value="">-- Loading Classrooms --</option>
+                                </select>
+                            </div>
+
+                            <div style="display: flex; flex-direction: column; gap: 4px; flex: 1; max-width: 260px;">
+                                <label style="font-size: 12px; font-weight: 700; color: #475569;">Filter Student Roster:</label>
+                                <input type="text" id="rosterSearch" placeholder="🔍 Search name or reg code..." class="form-control" style="font-size: 13px;">
+                            </div>
+
+                            <div style="display: flex; flex-direction: column; gap: 4px;">
+                                <label style="font-size: 12px; font-weight: 700; color: #475569;">Per Page:</label>
+                                <select id="rosterLimit" class="form-control" style="width: 110px; font-weight: 700;">
+                                    <option value="25">25 / page</option>
+                                    <option value="50">50 / page</option>
+                                    <option value="100">100 / page</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Classroom Student Roster Table -->
+                        <div class="card" style="padding: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #0f172a;" id="rosterTitle">
+                                    Classroom Roster
+                                </h3>
+                                <span id="rosterCountBadge" class="badge" style="background: #e2e8f0; color: #334155; font-weight: 700;">0 Students</span>
+                            </div>
+
+                            <div style="overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                                    <thead>
+                                        <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left;">
+                                            <th style="padding: 10px 14px;">#</th>
+                                            <th style="padding: 10px 14px;">Student Name</th>
+                                            <th style="padding: 10px 14px;">Reg Code</th>
+                                            <th style="padding: 10px 14px;">Gender</th>
+                                            <th style="padding: 10px 14px;">Present</th>
+                                            <th style="padding: 10px 14px;">Absent</th>
+                                            <th style="padding: 10px 14px;">Excused</th>
+                                            <th style="padding: 10px 14px;">Rate</th>
+                                            <th style="padding: 10px 14px; text-align: right;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="rosterTableBody">
+                                        <tr><td colspan="9" style="text-align: center; padding: 24px; color: #64748b;">Select a classroom above to load attendance.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- PAGINATION CONTROLS -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid #e2e8f0; font-size: 13px;">
+                                <div id="rosterPaginationInfo" style="color: #64748b; font-weight: 600;">Showing 0 of 0 students</div>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <button type="button" id="btnPrevPage" class="btn btn-outline btn-sm" style="font-weight: 700;" disabled>&laquo; Previous</button>
+                                    <span id="currentPageSpan" style="padding: 6px 12px; background: #f1f5f9; border-radius: 6px; font-weight: 700; color: #0f172a;">Page 1 of 1</span>
+                                    <button type="button" id="btnNextPage" class="btn btn-outline btn-sm" style="font-weight: 700;" disabled>Next &raquo;</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- TAB 3: DATA EXPORTS (PRESERVED EXISTING UI) -->
+                    <div id="tabExports" class="report-tab-content" style="display: none;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--sp-6);">
+                            
+                            <div class="card" style="padding: var(--sp-6);">
+                                <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--c-primary)"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72l5 2.73 5-2.73v3.72z"/></svg>
+                                    Students Export
+                                </h3>
+                                <p style="color: var(--c-text-secondary); font-size: var(--text-sm); margin-bottom: var(--sp-4);">
+                                    Export student roster CSV.
+                                </p>
+                                <a href="/shule-cafe/api/export/users.php?role=student" class="btn btn-outline" style="width: 100%; justify-content: center; text-decoration: none;">Download Students CSV</a>
+                            </div>
+                            
+                            <div class="card" style="padding: var(--sp-6);">
+                                <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--c-primary)"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                                    Teachers Export
+                                </h3>
+                                <p style="color: var(--c-text-secondary); font-size: var(--text-sm); margin-bottom: var(--sp-4);">
+                                    Export teachers list CSV.
+                                </p>
+                                <a href="/shule-cafe/api/export/users.php?role=teacher" class="btn btn-outline" style="width: 100%; justify-content: center; text-decoration: none;">Download Teachers CSV</a>
+                            </div>
+
+                            <div class="card" style="padding: var(--sp-6);">
+                                <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--c-primary)"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                                    Parents Export
+                                </h3>
+                                <p style="color: var(--c-text-secondary); font-size: var(--text-sm); margin-bottom: var(--sp-4);">
+                                    Export parents directory CSV.
+                                </p>
+                                <a href="/shule-cafe/api/export/users.php?role=parent" class="btn btn-outline" style="width: 100%; justify-content: center; text-decoration: none;">Download Parents CSV</a>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- STUDENT ATTENDANCE LOG MODAL -->
+    <div id="studentTimelineModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.6); z-index: 99999; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 760px; padding: 24px; background: #ffffff; border-radius: 14px; max-height: 90vh; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #e2e8f0; padding-bottom: 14px; margin-bottom: 16px;">
+                <div>
+                    <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: #047857;" id="modalStudentName">Student Attendance Log</h3>
+                    <p style="margin: 4px 0 0 0; font-size: 12px; color: #64748b;" id="modalStudentMeta">Reg Code: -- • Grade: --</p>
+                </div>
+                <button type="button" id="btnCloseTimelineModalX" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b;">&times;</button>
+            </div>
+
+            <!-- Student Summary Stats Bar -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; background: #f8fafc; padding: 12px; border-radius: 10px; margin-bottom: 16px;">
+                <div style="text-align: center;">
+                    <div style="font-size: 11px; color: #64748b; font-weight: 600;">Overall Rate</div>
+                    <div style="font-size: 18px; font-weight: 800; color: #047857;" id="modalRate">--%</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 11px; color: #64748b; font-weight: 600;">Present</div>
+                    <div style="font-size: 18px; font-weight: 800; color: #15803d;" id="modalPresent">0</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 11px; color: #64748b; font-weight: 600;">Absent</div>
+                    <div style="font-size: 18px; font-weight: 800; color: #b91c1c;" id="modalAbsent">0</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 11px; color: #64748b; font-weight: 600;">Excused</div>
+                    <div style="font-size: 18px; font-weight: 800; color: #b45309;" id="modalExcused">0</div>
+                </div>
+            </div>
+
+            <!-- Timeline Table -->
+            <div style="flex: 1; overflow-y: auto; padding-right: 4px;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                    <thead>
+                        <tr style="background: #f1f5f9; border-bottom: 1px solid #cbd5e1; text-align: left; position: sticky; top: 0;">
+                            <th style="padding: 8px 12px;">Date</th>
+                            <th style="padding: 8px 12px;">Session</th>
+                            <th style="padding: 8px 12px;">Classroom</th>
+                            <th style="padding: 8px 12px;">Status</th>
+                            <th style="padding: 8px 12px;">Teacher</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalTimelineBody">
+                        <tr><td colspan="5" style="text-align: center; padding: 20px; color: #64748b;">Loading session log...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; border-top: 1px solid #e2e8f0; padding-top: 14px; margin-top: 14px;">
+                <button type="button" id="btnCloseTimelineModal" class="btn btn-outline" style="font-weight: 700;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let rosterState = {
+            classroomId: 0,
+            year: new Date().getFullYear().toString(),
+            page: 1,
+            limit: 25,
+            search: '',
+            totalPages: 1
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Tab switching logic
+            const tabBtns = document.querySelectorAll('.report-tab-btn');
+            const tabContents = document.querySelectorAll('.report-tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.style.display = 'none');
+
+                    btn.classList.add('active');
+                    const targetId = btn.getAttribute('data-tab');
+                    const targetContent = document.getElementById(targetId);
+                    if (targetContent) targetContent.style.display = 'block';
+
+                    if (targetId === 'tabRoster') {
+                        const yr = document.getElementById('selYear')?.value || new Date().getFullYear().toString();
+                        loadClassrooms(yr);
+                    }
+                });
+            });
+
+            // Initial Data Load
+            loadOverviewAnalytics();
+            loadYearsDropdown();
+
+            document.getElementById('selYear').addEventListener('change', (e) => {
+                const yr = e.target.value;
+                rosterState.year = yr;
+                rosterState.page = 1;
+                loadOverviewAnalytics(yr);
+                loadClassrooms(yr);
+            });
+
+            const triggerRosterLoad = () => {
+                rosterState.classroomId = document.getElementById('selClassroom').value;
+                rosterState.year = document.getElementById('selYear').value;
+                rosterState.page = 1;
+                if (rosterState.classroomId) loadClassroomRoster();
+            };
+
+            document.getElementById('selClassroom').addEventListener('change', triggerRosterLoad);
+            const btnLoad = document.getElementById('btnLoadRoster');
+            if (btnLoad) btnLoad.addEventListener('click', triggerRosterLoad);
+
+            // Search input filter listener
+            let searchTimeout;
+            document.getElementById('rosterSearch').addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    rosterState.search = e.target.value.trim();
+                    rosterState.page = 1;
+                    if (rosterState.classroomId) loadClassroomRoster();
+                }, 300);
+            });
+
+            // Page limit listener
+            document.getElementById('rosterLimit').addEventListener('change', (e) => {
+                rosterState.limit = parseInt(e.target.value, 10);
+                rosterState.page = 1;
+                if (rosterState.classroomId) loadClassroomRoster();
+            });
+
+            // Pagination Controls
+            document.getElementById('btnPrevPage').addEventListener('click', () => {
+                if (rosterState.page > 1) {
+                    rosterState.page--;
+                    loadClassroomRoster();
+                }
+            });
+
+            document.getElementById('btnNextPage').addEventListener('click', () => {
+                if (rosterState.page < rosterState.totalPages) {
+                    rosterState.page++;
+                    loadClassroomRoster();
+                }
+            });
+
+            // Modal listeners
+            document.getElementById('btnCloseTimelineModalX').addEventListener('click', closeTimelineModal);
+            document.getElementById('btnCloseTimelineModal').addEventListener('click', closeTimelineModal);
+        });
+
+        // 1. Fetch Overview Analytics
+        async function loadOverviewAnalytics(year = new Date().getFullYear().toString()) {
+            try {
+                const res = await fetch(`/shule-cafe/api/headmaster/reports/attendance_analytics_api.php?action=overview&year=${year}`, { credentials: 'include' });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    const ov = data.overall || {};
+                    const rate = ov.rate !== undefined ? ov.rate : 100.0;
+                    document.getElementById('overallRateVal').textContent = `${rate}%`;
+                    document.getElementById('overallRateFill').style.width = `${rate}%`;
+
+                    document.getElementById('totalSessionsVal').textContent = (ov.total_records || 0).toLocaleString();
+                    document.getElementById('totalAbsencesVal').textContent = ((ov.total_absent || 0) + (ov.total_excused || 0)).toLocaleString();
+
+                    const chronic = data.chronic_absentees || [];
+                    document.getElementById('chronicCountVal').textContent = chronic.length.toString();
+
+                    // Render Level Breakdown
+                    const lvlContainer = document.getElementById('levelBreakdownContainer');
+                    const levels = data.level_analytics || [];
+                    if (levels.length > 0) {
+                        let html = '';
+                        levels.forEach(l => {
+                            html += `
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #334155;">
+                                        <span>${l.level_name}</span>
+                                        <span style="color: #047857;">${l.rate}%</span>
+                                    </div>
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: ${l.rate}%;"></div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        lvlContainer.innerHTML = html;
+                    } else {
+                        lvlContainer.innerHTML = '<div style="color: #64748b; font-size: 13px;">No level data available.</div>';
+                    }
+
+                    // Render Grade Breakdown
+                    const grdContainer = document.getElementById('gradeBreakdownContainer');
+                    const grades = data.grade_analytics || [];
+                    if (grades.length > 0) {
+                        let html = '';
+                        grades.forEach(g => {
+                            html += `
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #334155;">
+                                        <span>${g.grade_name}</span>
+                                        <span style="color: #047857;">${g.rate}%</span>
+                                    </div>
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: ${g.rate}%;"></div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        grdContainer.innerHTML = html;
+                    } else {
+                        grdContainer.innerHTML = '<div style="color: #64748b; font-size: 13px;">No grade data available.</div>';
+                    }
+
+                    // Render Truancy Watchlist
+                    const chronicBody = document.getElementById('chronicTableBody');
+                    if (chronic.length > 0) {
+                        let html = '';
+                        chronic.forEach(c => {
+                            html += `
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 10px 14px; font-weight: 700; color: #0f172a;">${c.full_name}</td>
+                                    <td style="padding: 10px 14px; font-weight: 600; color: #64748b;">${c.user_code}</td>
+                                    <td style="padding: 10px 14px;">${c.grade_name} - ${c.classroom_name}</td>
+                                    <td style="padding: 10px 14px;"><span class="badge-status-absent">${c.absent_count} Absences</span></td>
+                                    <td style="padding: 10px 14px; font-weight: 700; color: #b91c1c;">${c.attendance_rate}%</td>
+                                    <td style="padding: 10px 14px; text-align: right;">
+                                        <button type="button" class="btn btn-outline btn-sm" onclick="openStudentTimeline('${c.student_id}')" style="font-size: 12px; font-weight: 700;">
+                                            🔍 View Log
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                        chronicBody.innerHTML = html;
+                    } else {
+                        chronicBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: #059669; font-weight: 700;">🎉 No truancy recorded.</td></tr>';
+                    }
+                }
+            } catch (err) {
+                console.error("Error loading overview analytics:", err);
+            }
+        }
+
+        // 2. Fetch Years Dropdown
+        async function loadYearsDropdown() {
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/reports/attendance_analytics_api.php?action=years', { credentials: 'include' });
+                const data = await res.json();
+                if (res.ok && data.success && data.years.length > 0) {
+                    const sel = document.getElementById('selYear');
+                    sel.innerHTML = data.years.map(y => `<option value="${y}">${y}</option>`).join('');
+                    rosterState.year = data.years[0];
+                    loadClassrooms(data.years[0]);
+                }
+            } catch (err) {
+                console.error("Error loading years:", err);
+            }
+        }
+
+        // 3. Fetch Classrooms Dropdown
+        async function loadClassrooms(year = new Date().getFullYear().toString()) {
+            try {
+                const res = await fetch(`/shule-cafe/api/headmaster/reports/attendance_analytics_api.php?action=classrooms&year=${year}`, { credentials: 'include' });
+                const data = await res.json();
+                const sel = document.getElementById('selClassroom');
+
+                if (res.ok && data.success && data.classrooms.length > 0) {
+                    sel.innerHTML = data.classrooms.map(c => `<option value="${c.id}">${c.grade_name} ${c.classroom_name} (${c.student_count} students)</option>`).join('');
+                    rosterState.classroomId = data.classrooms[0].id;
+                    rosterState.page = 1;
+                    loadClassroomRoster();
+                } else {
+                    sel.innerHTML = '<option value="">-- No Classrooms --</option>';
+                    document.getElementById('rosterTableBody').innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 24px; color: #64748b;">No classrooms available for this year.</td></tr>';
+                }
+            } catch (err) {
+                console.error("Error loading classrooms:", err);
+            }
+        }
+
+        // 4. Fetch Paginated Classroom Roster
+        async function loadClassroomRoster() {
+            const cid = rosterState.classroomId;
+            const yr = rosterState.year;
+            const page = rosterState.page;
+            const limit = rosterState.limit;
+            const search = encodeURIComponent(rosterState.search);
+
+            const rosterBody = document.getElementById('rosterTableBody');
+            rosterBody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 24px; color: #64748b;">Loading roster...</td></tr>';
+
+            try {
+                const res = await fetch(`/shule-cafe/api/headmaster/reports/attendance_analytics_api.php?action=classroom_roster&classroom_id=${cid}&year=${yr}&page=${page}&limit=${limit}&search=${search}`, { credentials: 'include' });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    const roster = data.roster || [];
+                    const pag = data.pagination || {};
+
+                    rosterState.totalPages = pag.total_pages || 1;
+                    document.getElementById('rosterCountBadge').textContent = `${pag.total || 0} Students`;
+
+                    // Update Pagination Controls
+                    const startIdx = pag.total > 0 ? (page - 1) * limit + 1 : 0;
+                    const endIdx = Math.min(pag.total, page * limit);
+                    document.getElementById('rosterPaginationInfo').textContent = `Showing ${startIdx} to ${endIdx} of ${pag.total} students`;
+                    document.getElementById('currentPageSpan').textContent = `Page ${page} of ${rosterState.totalPages}`;
+                    document.getElementById('btnPrevPage').disabled = page <= 1;
+                    document.getElementById('btnNextPage').disabled = page >= rosterState.totalPages;
+
+                    if (roster.length > 0) {
+                        let html = '';
+                        roster.forEach((s, idx) => {
+                            const rowNum = startIdx + idx;
+                            const rateColor = s.attendance_rate < 75 ? '#b91c1c' : (s.attendance_rate < 90 ? '#b45309' : '#15803d');
+                            html += `
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 10px 14px; font-weight: 700; color: #64748b;">${rowNum}</td>
+                                    <td style="padding: 10px 14px; font-weight: 700; color: #0f172a;">${s.full_name}</td>
+                                    <td style="padding: 10px 14px; font-weight: 600; color: #64748b;">${s.user_code}</td>
+                                    <td style="padding: 10px 14px;">${s.gender}</td>
+                                    <td style="padding: 10px 14px;"><span class="badge-status-present">${s.present_count} Present</span></td>
+                                    <td style="padding: 10px 14px;"><span class="badge-status-absent">${s.absent_count} Absent</span></td>
+                                    <td style="padding: 10px 14px;"><span class="badge-status-excused">${s.excused_count} Excused</span></td>
+                                    <td style="padding: 10px 14px; font-weight: 800; color: ${rateColor};">${s.attendance_rate}%</td>
+                                    <td style="padding: 10px 14px; text-align: right;">
+                                        <button type="button" class="btn btn-outline btn-sm" onclick="openStudentTimeline('${s.student_id}')" style="font-size: 12px; font-weight: 700;">
+                                            🔍 View Log
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                        rosterBody.innerHTML = html;
+                    } else {
+                        rosterBody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 24px; color: #64748b;">No students found matching search criteria.</td></tr>';
+                    }
+                }
+            } catch (err) {
+                console.error("Error loading roster:", err);
+            }
+        }
+
+        // 5. Open Student Attendance Log Modal
+        window.openStudentTimeline = async function(studentId) {
+            const modal = document.getElementById('studentTimelineModal');
+            modal.style.display = 'flex';
+
+            const yr = rosterState.year || new Date().getFullYear().toString();
+
+            document.getElementById('modalStudentName').textContent = 'Loading Profile...';
+            document.getElementById('modalStudentMeta').textContent = 'Reg Code: --';
+            document.getElementById('modalTimelineBody').innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 24px; color: #64748b;">Fetching session log...</td></tr>';
+
+            try {
+                const res = await fetch(`/shule-cafe/api/headmaster/reports/attendance_analytics_api.php?action=student_timeline&student_id=${studentId}&year=${yr}`, { credentials: 'include' });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    const prof = data.profile || {};
+                    const sum = data.summary || {};
+                    const logs = data.timeline || [];
+
+                    document.getElementById('modalStudentName').textContent = `${prof.full_name || 'Student'} Attendance Log`;
+                    document.getElementById('modalStudentMeta').textContent = `Reg Code: ${prof.user_code || 'N/A'} • Grade: ${prof.grade_name || ''} ${prof.classroom_name || ''}`;
+
+                    document.getElementById('modalRate').textContent = `${sum.attendance_rate || 100.0}%`;
+                    document.getElementById('modalPresent').textContent = (sum.present_count || 0).toString();
+                    document.getElementById('modalAbsent').textContent = (sum.absent_count || 0).toString();
+                    document.getElementById('modalExcused').textContent = (sum.excused_count || 0).toString();
+
+                    if (logs.length > 0) {
+                        let html = '';
+                        logs.forEach(l => {
+                            const badgeCls = l.status === 'Present' ? 'badge-status-present' : (l.status === 'Absent' ? 'badge-status-absent' : 'badge-status-excused');
+                            html += `
+                                <tr style="border-bottom: 1px solid #f1f5f9;">
+                                    <td style="padding: 8px 12px; font-weight: 700; color: #0f172a;">${l.date}</td>
+                                    <td style="padding: 8px 12px; color: #475569;">${l.session_type}</td>
+                                    <td style="padding: 8px 12px;">${l.classroom_name || 'General Stream'}</td>
+                                    <td style="padding: 8px 12px;"><span class="${badgeCls}">${l.status}</span></td>
+                                    <td style="padding: 8px 12px; color: #64748b;">${l.teacher_name || 'System'}</td>
+                                </tr>
+                            `;
+                        });
+                        document.getElementById('modalTimelineBody').innerHTML = html;
+                    } else {
+                        document.getElementById('modalTimelineBody').innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 24px; color: #64748b;">No attendance logs found for this student.</td></tr>';
+                    }
+                }
+            } catch (err) {
+                console.error("Error opening student timeline:", err);
+            }
+        };
+
+        function closeTimelineModal() {
+            document.getElementById('studentTimelineModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Layout Demo ‹ SHULE CAFE</title>
+    
+    <!-- Design System & Base Layout CSS -->
+    <link rel="stylesheet" href="css/design-system.css">
+    <link rel="stylesheet" href="css/layout.css">
+    
+    <!-- Global Layout Web Components -->
+    <script type="module" src="layouts/global-layout.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        
+        <!-- Sidebar Component (Role-based: e.g. super_admin, tenant_admin, teacher) -->
+        <app-sidebar role="tenant_admin" active-path="/headmaster/students.html"></app-sidebar>
+        
+        <!-- Main Area -->
+        <div class="app-main">
+            
+            <!-- Topbar Component -->
+            <app-topbar username="Headmaster Demo"></app-topbar>
+            
+            <!-- Content Area -->
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    
+                    <!-- Breadcrumb Component -->
+                    <app-breadcrumb path="Dashboard, Students, View All"></app-breadcrumb>
+                    
+                    <!-- Page Header Component -->
+                    <app-page-header 
+                        title="Student Management" 
+                        subtitle="Manage all active and inactive students in your school."
+                        primary-action="Add Student"
+                        secondary-action="Import CSV">
+                    </app-page-header>
+                    
+                    <!-- Toolbar Component -->
+                    <app-toolbar search-placeholder="Search students by name or ID..." show-filters="true" show-export="true"></app-toolbar>
+                    
+                    <!-- Page Content (Example Table) -->
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Class</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Ahmed Ali</td>
+                                        <td>Form 1A</td>
+                                        <td><span class="badge badge-success">Active</span></td>
+                                        <td><button class="btn btn-outline btn-sm">Edit</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Fatma Juma</td>
+                                        <td>Form 2B</td>
+                                        <td><span class="badge badge-success">Active</span></td>
+                                        <td><button class="btn btn-outline btn-sm">Edit</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>John Doe</td>
+                                        <td>Form 4C</td>
+                                        <td><span class="badge badge-warning">Suspended</span></td>
+                                        <td><button class="btn btn-outline btn-sm">Edit</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <!-- Footer Component -->
+                <app-footer></app-footer>
+                
+            </main>
+        </div>
+    </div>
+</body>
+</html>

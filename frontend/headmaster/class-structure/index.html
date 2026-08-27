@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Structure Management ‹ Headmaster ‹ SHULE CAFE</title>
+    <script>window.location.href = '/shule-cafe/frontend/headmaster/academics/index.html';</script>
+
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link  href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+
+    <style>
+        /* ── Drill-down breadcrumb ───────────────────────── */
+        .drill-crumb {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; font-weight: 600; color: var(--c-text-muted);
+            background: white; border: 1px solid var(--c-border-light);
+            border-radius: 8px; padding: 10px 16px; margin-bottom: 20px;
+        }
+        .drill-crumb a { color: var(--c-primary); cursor: pointer; text-decoration: none; }
+        .drill-crumb a:hover { text-decoration: underline; }
+        .drill-crumb .sep { color: #cbd5e1; }
+
+        /* ── Section card ────────────────────────────────── */
+        .section-card {
+            background: white; border: 1px solid var(--c-border-light);
+            border-radius: 10px; padding: 24px; margin-bottom: 20px;
+        }
+        .section-card h3 {
+            margin: 0 0 6px 0; font-size: 17px; font-weight: 800;
+            color: var(--c-text-primary);
+        }
+        .section-card .section-desc {
+            margin: 0 0 20px 0; font-size: 13px; color: var(--c-text-muted);
+        }
+
+        /* ── Level / Grade / Stream cards ───────────────── */
+        .choice-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 14px;
+        }
+        .choice-card {
+            border: 2px solid var(--c-border-light); border-radius: 10px;
+            padding: 18px; cursor: pointer; transition: all 0.18s;
+            background: #f8fafc; text-align: center;
+        }
+        .choice-card:hover {
+            border-color: var(--c-primary); background: #ecfdf5;
+            transform: translateY(-2px); box-shadow: 0 4px 16px rgba(5,150,105,.12);
+        }
+        .choice-card.active-card {
+            border-color: var(--c-primary); background: #ecfdf5;
+        }
+        .choice-icon { font-size: 28px; margin-bottom: 8px; }
+        .choice-name { font-weight: 700; font-size: 15px; color: var(--c-text-primary); }
+        .choice-meta { font-size: 11px; color: var(--c-text-muted); margin-top: 4px; }
+
+        /* ── Stream subject table ────────────────────────── */
+        .subject-badge { padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+        .core-badge    { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+        .elect-badge   { background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc; }
+
+        /* ── Toggle switch ───────────────────────────────── */
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; inset: 0;
+            background-color: #cbd5e1; transition: .3s; border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px;
+            left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #059669; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* ── Info banner ─────────────────────────────────── */
+        .info-banner {
+            display: flex; gap: 12px; align-items: flex-start;
+            background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px;
+            padding: 14px 16px; margin-bottom: 20px; font-size: 13px; color: #1e40af;
+        }
+        .info-banner strong { display: block; margin-bottom: 4px; font-size: 14px; }
+
+        /* ── Select2 custom ──────────────────────────────── */
+        .select2-container--default .select2-selection--multiple {
+            border: 1px solid #cbd5e1 !important; border-radius: 6px !important;
+            min-height: 38px !important; padding: 4px 8px !important;
+        }
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background: #e0f2fe !important; border: 1px solid #7dd3fc !important;
+            color: #0369a1 !important; font-size: 12px !important; font-weight: 600 !important;
+            border-radius: 4px !important;
+        }
+    </style>
+</head>
+<body>
+<div class="app-layout">
+    <app-sidebar role="tenant_admin" active-path="/headmaster/class-structure/index.html"></app-sidebar>
+    <div class="app-main">
+        <app-topbar username="Headmaster Portal"></app-topbar>
+        <main class="app-content-wrapper">
+            <div class="app-content">
+                <app-breadcrumb path="Headmaster, Class Structure Management"></app-breadcrumb>
+                <app-page-header
+                    title="Class Structure & Stream Configuration"
+                    subtitle="Drill down from Education Level → Grade → Stream to view elective-path subject mappings and teacher assignments dynamically filtered per stream room.">
+                </app-page-header>
+
+                <!-- ── Breadcrumb drill trail ──────────────── -->
+                <div class="drill-crumb" id="drillCrumb">
+                    <span>Class Structure</span>
+                    <span class="sep">›</span>
+                    <span style="color: var(--c-primary);">Step 1: Select Education Level</span>
+                </div>
+
+                <!-- ============================================================ -->
+                <!-- STEP 1: EDUCATION LEVELS                                     -->
+                <!-- ============================================================ -->
+                <div id="step1" class="section-card">
+                    <h3>Step 1 — Select Education Level</h3>
+                    <p class="section-desc">Choose the education level to drill into its grades and class streams.</p>
+                    <div class="choice-grid" id="levelGrid">
+                        <div style="color:var(--c-text-muted); padding: 12px;">Loading levels…</div>
+                    </div>
+                </div>
+
+                <!-- ============================================================ -->
+                <!-- STEP 2: GRADES                                               -->
+                <!-- ============================================================ -->
+                <div id="step2" class="section-card" style="display:none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <h3 id="step2Title">Step 2 — Select Grade</h3>
+                        <button class="btn btn-outline btn-sm" onclick="goStep(1)">⬅ Back</button>
+                    </div>
+                    <p class="section-desc">Select the specific grade cohort to see its stream subdivisions.</p>
+                    <div class="choice-grid" id="gradeGrid">
+                        <div style="color:var(--c-text-muted);">Loading grades…</div>
+                    </div>
+                </div>
+
+                <!-- ============================================================ -->
+                <!-- STEP 3: STREAMS                                              -->
+                <!-- ============================================================ -->
+                <div id="step3" class="section-card" style="display:none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <h3 id="step3Title">Step 3 — Select Stream / Subdivision</h3>
+                        <button class="btn btn-outline btn-sm" onclick="goStep(2)">⬅ Back</button>
+                    </div>
+                    <p class="section-desc">Each stream is an independent room. Science streams and Commerce streams carry different subjects.</p>
+                    <div class="choice-grid" id="streamGrid">
+                        <div style="color:var(--c-text-muted);">Loading streams…</div>
+                    </div>
+                </div>
+
+                <!-- ============================================================ -->
+                <!-- STEP 4: STREAM WORKSPACE (Subjects + Teacher Assignments)    -->
+                <!-- ============================================================ -->
+                <div id="step4" style="display:none;">
+                    <div class="section-card">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+                            <div>
+                                <h3 id="step4Title">Stream Workspace</h3>
+                                <p class="section-desc" style="margin:0;" id="step4Sub">Subjects and teacher assignments mapped to this specific stream room.</p>
+                            </div>
+                            <button class="btn btn-outline btn-sm" onclick="goStep(3)">⬅ Back to Streams</button>
+                        </div>
+
+                        <div class="info-banner">
+                            <span style="font-size:20px;">🔍</span>
+                            <div>
+                                <strong>Dynamic Subject Filter Active</strong>
+                                Only subjects mapped to this specific stream room are shown below.
+                                This prevents assigning a Science teacher to an Arts or Commerce stream by accident.
+                            </div>
+                        </div>
+
+                        <!-- Subject-Teacher Assignment Table -->
+                        <div style="overflow-x:auto;" id="step4SubjectsArea">
+                            <div style="color:var(--c-text-muted); padding:12px;">Loading stream subjects…</div>
+                        </div>
+
+                        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px; padding-top:16px; border-top:1px solid var(--c-border-light);">
+                            <button class="btn btn-primary" style="font-weight:700;" onclick="saveAllAssignments()">Save Teacher Assignments</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <app-footer></app-footer>
+        </main>
+    </div>
+</div>
+
+<script>
+    let state = { levelId:0, levelName:'', gradeId:0, gradeName:'', streamId:0, streamName:'' };
+    let apiData = null;   // cached response from last API call
+
+    // ─── Initial load ────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', async () => {
+        const res  = await fetch('/shule-cafe/api/headmaster/academics/get_class_structure.php', {credentials:'include'});
+        const data = await res.json();
+        if (data.success) {
+            apiData = data;
+            renderLevels(data.levels);
+        }
+    });
+
+    // ─── Step navigation ─────────────────────────────────────────
+    function goStep(n) {
+        [1,2,3,4].forEach(s => document.getElementById(`step${s}`).style.display = 'none');
+        document.getElementById(`step${n}`).style.display = 'block';
+        updateCrumb(n);
+    }
+
+    function updateCrumb(step) {
+        const bc = document.getElementById('drillCrumb');
+        let html = `<span>Class Structure</span><span class="sep">›</span>`;
+        if (step >= 2) html += `<a onclick="goStep(1)">Level: ${state.levelName}</a><span class="sep">›</span>`;
+        if (step >= 3) html += `<a onclick="goStep(2)">Grade: ${state.gradeName}</a><span class="sep">›</span>`;
+        if (step >= 4) html += `<a onclick="goStep(3)">Stream: ${state.streamName}</a><span class="sep">›</span>`;
+        const labels = ['','Select Level','Select Grade','Select Stream','Stream Workspace'];
+        html += `<span style="color:var(--c-primary);">Step ${step}: ${labels[step]}</span>`;
+        bc.innerHTML = html;
+    }
+
+    // ─── STEP 1: Render Level Cards ───────────────────────────────
+    function renderLevels(levels) {
+        const grid = document.getElementById('levelGrid');
+        const icons = { 'O-Level':'📗', 'A-Level':'📘', 'Primary':'📒', 'Nursery':'🌱' };
+        const colors = { 'O-Level':'#059669','A-Level':'#2563eb','Primary':'#d97706','Nursery':'#7c3aed' };
+        grid.innerHTML = levels.map(l => `
+            <div class="choice-card" onclick="selectLevel(${l.id},'${l.name}')">
+                <div class="choice-icon">${icons[l.name]||'🏫'}</div>
+                <div class="choice-name">${l.name}</div>
+                <div class="choice-meta">Code: ${l.code}</div>
+                <div style="margin-top:10px;">
+                    <span class="badge" style="background:${colors[l.name]||'#6b7280'}20;color:${colors[l.name]||'#6b7280'};border:1px solid ${colors[l.name]||'#6b7280'}40;font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;">
+                        Explore Grades ➡
+                    </span>
+                </div>
+            </div>`).join('');
+        goStep(1);
+    }
+
+    async function selectLevel(id, name) {
+        state.levelId = id; state.levelName = name;
+        const res  = await fetch(`/shule-cafe/api/headmaster/academics/get_class_structure.php?level_id=${id}`, {credentials:'include'});
+        const data = await res.json();
+        apiData = data;
+        renderGrades(data.grades);
+        goStep(2);
+        document.getElementById('step2Title').textContent = `Step 2 — Select Grade (${name})`;
+    }
+
+    // ─── STEP 2: Render Grade Cards ───────────────────────────────
+    function renderGrades(grades) {
+        const grid = document.getElementById('gradeGrid');
+        if (!grades.length) { grid.innerHTML = '<div style="color:var(--c-text-muted);">No grades found for this level.</div>'; return; }
+        grid.innerHTML = grades.map(g => `
+            <div class="choice-card" onclick="selectGrade(${g.id},'${g.name}')">
+                <div class="choice-icon">🏛️</div>
+                <div class="choice-name">${g.name}</div>
+                <div class="choice-meta">Order: Year ${g.order_seq}</div>
+                <div style="margin-top:10px;">
+                    <span class="badge badge-outline" style="font-size:11px;">View Streams ➡</span>
+                </div>
+            </div>`).join('');
+    }
+
+    async function selectGrade(id, name) {
+        state.gradeId = id; state.gradeName = name;
+        const res  = await fetch(`/shule-cafe/api/headmaster/academics/get_class_structure.php?level_id=${state.levelId}&grade_id=${id}`, {credentials:'include'});
+        const data = await res.json();
+        apiData = data;
+        renderStreams(data.streams);
+        goStep(3);
+        document.getElementById('step3Title').textContent = `Step 3 — Streams for ${name} (${state.levelName})`;
+    }
+
+    // ─── STEP 3: Render Stream Cards ──────────────────────────────
+    const STREAM_ICONS = { standard:'🏫', science:'🔬', arts:'🎨', commerce:'💼', combination:'🎓' };
+    const STREAM_COLORS= { standard:'#059669', science:'#0284c7', arts:'#7c3aed', commerce:'#d97706', combination:'#dc2626' };
+
+    function renderStreams(streams) {
+        const grid = document.getElementById('streamGrid');
+        if (!streams.length) { grid.innerHTML = '<div style="color:var(--c-text-muted);">No streams found for this grade.</div>'; return; }
+        grid.innerHTML = streams.map(st => {
+            const color = STREAM_COLORS[st.stream_type] || '#6b7280';
+            return `
+                <div class="choice-card" onclick="selectStream(${st.id},'${escapeSingle(st.name)}','${st.stream_type}')">
+                    <div class="choice-icon">${STREAM_ICONS[st.stream_type]||'🏫'}</div>
+                    <div class="choice-name">${st.name}</div>
+                    <div class="choice-meta">Type: ${capitalize(st.stream_type)} · Capacity: ${st.capacity}</div>
+                    <div style="margin-top:10px;">
+                        <span style="background:${color}20;color:${color};border:1px solid ${color}40;font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;display:inline-block;">
+                            Manage Subjects & Teachers ➡
+                        </span>
+                    </div>
+                </div>`;
+        }).join('');
+    }
+
+    async function selectStream(id, name, type) {
+        state.streamId = id; state.streamName = name;
+        const res  = await fetch(`/shule-cafe/api/headmaster/academics/get_class_structure.php?level_id=${state.levelId}&grade_id=${state.gradeId}&stream_id=${id}`, {credentials:'include'});
+        const data = await res.json();
+        apiData = data;
+        renderStreamWorkspace(data, name, type);
+        goStep(4);
+    }
+
+    // ─── STEP 4: Stream Workspace ─────────────────────────────────
+    function renderStreamWorkspace(data, streamName, streamType) {
+        document.getElementById('step4Title').textContent = `Stream Workspace — ${streamName}`;
+        document.getElementById('step4Sub').textContent   = `${capitalize(streamType)} stream · ${state.gradeName} · ${state.levelName} · Academic Current Year`;
+
+        const subjects  = data.stream_subjects || [];
+        const teachers  = data.teachers        || [];
+        const assigns   = data.assignments     || {};
+        const area      = document.getElementById('step4SubjectsArea');
+
+        if (!subjects.length) {
+            area.innerHTML = '<div style="color:var(--c-text-muted);padding:12px;">No subjects mapped to this stream. Contact Super Admin to configure stream-subject mapping.</div>';
+            return;
+        }
+
+        // Build teacher options HTML (for Select2)
+        const tOptions = teachers.map(t => `<option value="${t.id}">Tr. ${t.full_name}</option>`).join('');
+
+        let rows = subjects.map(sub => {
+            const a  = assigns[sub.subject_code] || {};
+            const ids = a.teacher_ids ? a.teacher_ids.split(',') : [];
+            const badgeClass = sub.is_core ? 'core-badge' : 'elect-badge';
+            const badgeLabel = sub.is_core ? 'Core' : 'Elective';
+
+            let opts = teachers.map(t => {
+                const sel = ids.includes(t.id) ? 'selected' : '';
+                return `<option value="${t.id}" ${sel}>Tr. ${t.full_name}</option>`;
+            }).join('');
+
+            const hasSel = ids.length > 0;
+            const alertHtml = hasSel
+                ? `<span style="font-size:11px;color:#059669;font-weight:700;">🟢 ${a.teacher_names}</span>`
+                : `<span style="font-size:11px;color:#dc2626;font-weight:700;">🔴 No Teacher Assigned</span>`;
+
+            return `<tr style="border-bottom:1px solid var(--c-border-light); vertical-align:middle;">
+                <td style="padding:12px; font-weight:700; width:12%;">
+                    <span class="badge badge-outline" style="font-size:12px;">${sub.subject_code}</span>
+                </td>
+                <td style="padding:12px; font-weight:600; width:25%; color:var(--c-text-primary);">${sub.subject_name}</td>
+                <td style="padding:12px; width:10%;">
+                    <span class="subject-badge ${badgeClass}">${badgeLabel}</span>
+                </td>
+                <td style="padding:12px; width:40%;">
+                    <select class="form-control teacher-multi-select"
+                        data-subject="${sub.subject_code}"
+                        name="teachers[${sub.subject_code}][]"
+                        multiple="multiple"
+                        data-placeholder="Assign teacher(s) for ${sub.subject_code}…">
+                        ${opts}
+                    </select>
+                </td>
+                <td style="padding:12px; text-align:right; width:13%;">${alertHtml}</td>
+            </tr>`;
+        }).join('');
+
+        area.innerHTML = `
+            <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                <thead>
+                    <tr style="background:var(--c-bg-subtle);border-bottom:2px solid var(--c-border-light);text-align:left;">
+                        <th style="padding:10px 12px;">Subject Code</th>
+                        <th style="padding:10px 12px;">Subject Name</th>
+                        <th style="padding:10px 12px;">Type</th>
+                        <th style="padding:10px 12px;">Assigned Teacher(s)</th>
+                        <th style="padding:10px 12px;text-align:right;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>`;
+
+        // Init Select2
+        if (window.$ && $.fn.select2) {
+            $('.teacher-multi-select').select2({
+                width: '100%', allowClear: true, closeOnSelect: false
+            }).on('change', function() {
+                const vals = $(this).val() || [];
+                const td   = $(this).closest('tr').find('td:last-child');
+                if (vals.length) {
+                    const names = vals.map(v => {
+                        const opt = $(this).find(`option[value="${v}"]`).text();
+                        return opt;
+                    }).join(', ');
+                    td.html(`<span style="font-size:11px;color:#059669;font-weight:700;">🟢 ${names}</span>`);
+                } else {
+                    td.html(`<span style="font-size:11px;color:#dc2626;font-weight:700;">🔴 No Teacher Assigned</span>`);
+                }
+            });
+        }
+    }
+
+    async function saveAllAssignments() {
+        const rows = document.querySelectorAll('.teacher-multi-select');
+        const mappings = {};
+        rows.forEach(el => {
+            const code = el.dataset.subject;
+            const ids  = window.$ ? $(el).val() || [] : Array.from(el.selectedOptions).map(o => o.value);
+            mappings[code] = ids;
+        });
+
+        const streamName = state.streamName;
+        const res = await fetch('/shule-cafe/api/headmaster/academics/save_stream_assignments.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ class_stream_id: streamName, subject_teachers: mappings })
+        });
+        const result = await res.json();
+        if (result.success) {
+            showToast('Teacher assignments saved successfully!');
+            // Re-load workspace
+            selectStream(state.streamId, state.streamName, '');
+        } else {
+            showToast(result.message || 'Save failed.', true);
+        }
+    }
+
+    // ─── Toast helper ─────────────────────────────────────────────
+    function showToast(msg, isError=false) {
+        let t = document.getElementById('_toast');
+        if (!t) {
+            t = document.createElement('div');
+            t.id = '_toast';
+            Object.assign(t.style, {
+                position:'fixed', bottom:'24px', right:'24px', zIndex:'9999',
+                borderRadius:'10px', padding:'14px 18px', fontSize:'13px',
+                fontWeight:'600', boxShadow:'0 8px 24px rgba(0,0,0,.12)',
+                transition:'opacity 0.3s', maxWidth:'400px'
+            });
+            document.body.appendChild(t);
+        }
+        t.style.background   = isError ? '#fef2f2' : '#f0fdf4';
+        t.style.border       = `1.5px solid ${isError ? '#fca5a5' : '#6ee7b7'}`;
+        t.style.color        = isError ? '#991b1b' : '#065f46';
+        t.innerHTML          = (isError ? '⚠️ ' : '✅ ') + msg;
+        t.style.opacity      = '1';
+        setTimeout(() => { t.style.opacity = '0'; }, 3500);
+    }
+
+    // ─── Utils ────────────────────────────────────────────────────
+    function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+    function escapeSingle(s) { return (s||'').replace(/'/g, "\\'"); }
+</script>
+</body>
+</html>

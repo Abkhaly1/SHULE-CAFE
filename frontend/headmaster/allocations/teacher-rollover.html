@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Teacher Assignment Rollover ‹ Headmaster ‹ SHULE CAFE</title>
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+    <style>
+        .roll-header { display:flex;justify-content:space-between;align-items:center;padding:18px;background:#fff;border-radius:10px;margin-bottom:12px; }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="tenant_admin" active-path="/headmaster/allocations/teacher-rollover.html"></app-sidebar>
+        <div class="app-main">
+            <app-topbar username="Headmaster Portal"></app-topbar>
+            <main class="app-content-wrapper" style="padding-top:10px;">
+                <div class="app-content">
+                    <app-workspace-layout>
+                        <div class="roll-header">
+                            <div>
+                                <h2 style="margin:0;font-size:18px;font-weight:800;">Annual Rollover — Clone Assignments</h2>
+                                <div style="color:var(--c-text-muted);font-size:13px;">Clone previous year classroom assignments into a new academic year.</div>
+                            </div>
+                            <div>
+                                <a href="teacher-directory.html" class="btn">⬅️ Return</a>
+                            </div>
+                        </div>
+
+                        <div style="background:white;padding:14px;border:1px solid var(--c-border-light);border-radius:8px;">
+                            <form id="rolloverForm">
+                                <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;">
+                                    <label style="font-weight:700;">From Year</label>
+                                    <select id="selFromYear" class="form-control">
+                                        <!-- populated -->
+                                    </select>
+                                    <label style="font-weight:700;">To Year</label>
+                                    <select id="selToYear" class="form-control">
+                                        <!-- populated -->
+                                    </select>
+                                </div>
+
+                                <div style="margin-bottom:12px;">
+                                    <label style="font-weight:700;">Limit To Teachers (optional)</label>
+                                    <select id="selRolloverTeachers" multiple style="width:100%;height:160px;padding:8px;border-radius:8px;border:1px solid var(--c-border-light);background:#fafafa;"> 
+                                        <!-- populated -->
+                                    </select>
+                                </div>
+
+                                <div style="text-align:right;">
+                                    <button type="submit" class="btn btn-primary">🔁 Start Rollover</button>
+                                </div>
+                            </form>
+                        </div>
+                    </app-workspace-layout>
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        async function loadTeacherOptions() {
+            const currentYear = new Date().getFullYear();
+            const res = await fetch(`/shule-cafe/api/headmaster/academics/teacher_allocations_api.php?action=directory&year=${currentYear}`, { credentials: 'include' });
+            const data = await res.json();
+            if (!res.ok || !data.success) return;
+            const sel = $('#selRolloverTeachers').empty();
+            data.teachers.forEach(t => sel.append(`<option value="${t.id}">${t.full_name} (${t.user_code||''})</option>`));
+        }
+
+        $('#rolloverForm').on('submit', async function(e){
+            e.preventDefault();
+            const from = $('#selFromYear').val();
+            const to = $('#selToYear').val();
+            const teacherIds = $('#selRolloverTeachers').val() || [];
+            if (!from || !to) { alert('Select both from and to years'); return; }
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/academics/teacher_allocations_api.php', { method:'POST', credentials:'include', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ action:'rollover', from_year: from, to_year: to, teacher_ids: teacherIds }) });
+                const data = await res.json();
+                if (res.ok && data.success) { alert('Rollover completed.'); } else { alert(data.message || 'Rollover failed.'); }
+            } catch (e) { console.error(e); alert('Error running rollover.'); }
+        });
+
+        $(document).ready(() => { 
+            const selFrom = document.getElementById('selFromYear');
+            const selTo = document.getElementById('selToYear');
+            const currentYear = new Date().getFullYear();
+            
+            for (let y = currentYear; y >= currentYear - 5; y--) {
+                selFrom.add(new Option(y, y, false, y === currentYear));
+            }
+            
+            for (let y = currentYear + 1; y >= currentYear - 4; y--) {
+                selTo.add(new Option(y, y, false, y === currentYear + 1));
+            }
+            
+            loadTeacherOptions(); 
+        });
+    </script>
+</body>
+</html>

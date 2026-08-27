@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Subjects ‹ SHULE CAFE</title>
+    <meta name="description" content="View your enrolled subjects and assigned teachers for this academic year.">
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <script type="module" src="../layouts/global-layout.js"></script>
+    <script type="module" src="../js/auth/auth-guard.js"></script>
+    <style>
+        .page-header { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:28px; flex-wrap:wrap; }
+        .page-header h1 { margin:0; font-size:26px; font-weight:800; color:var(--c-text-primary,#0f172a); }
+        .page-header p  { margin:4px 0 0; font-size:14px; color:var(--c-text-secondary,#64748b); }
+        .classroom-badge {
+            display:inline-flex; align-items:center; gap:8px;
+            background:linear-gradient(135deg,#064e3b,#047857);
+            color:#fff; font-size:13px; font-weight:700;
+            padding:8px 16px; border-radius:999px; letter-spacing:.3px;
+            box-shadow:0 4px 12px rgba(4,120,87,.25); white-space:nowrap;
+        }
+        .subjects-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:18px; }
+        .subject-card {
+            background:#fff; border:1px solid var(--c-border-light,#e2e8f0);
+            border-radius:16px; padding:20px 22px;
+            display:flex; flex-direction:column; gap:14px;
+            box-shadow:0 4px 16px rgba(15,23,42,.05);
+            transition:transform .18s ease,box-shadow .18s ease;
+            position:relative; overflow:hidden;
+        }
+        .subject-card::before {
+            content:''; position:absolute; top:0; left:0; right:0; height:4px;
+            background:var(--card-accent,linear-gradient(90deg,#047857,#10b981));
+            border-radius:16px 16px 0 0;
+        }
+        .subject-card:hover { transform:translateY(-3px); box-shadow:0 10px 30px rgba(15,23,42,.10); }
+        .card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+        .subject-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+        .subject-info { flex:1; min-width:0; }
+        .subject-name { font-size:16px; font-weight:800; color:var(--c-text-primary,#0f172a); margin:0 0 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .subject-code-label { font-size:12px; font-weight:700; color:var(--c-text-secondary,#64748b); letter-spacing:.5px; text-transform:uppercase; }
+        .badge-row { display:flex; gap:6px; flex-wrap:wrap; }
+        .badge { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; letter-spacing:.3px; }
+        .badge-level { background:#dbeafe; color:#1e40af; }
+        .badge-core  { background:#d1fae5; color:#065f46; }
+        .badge-elect { background:#fef3c7; color:#92400e; }
+        .teacher-chip { display:flex; align-items:center; gap:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:9px 12px; }
+        .teacher-avatar { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:#fff; flex-shrink:0; }
+        .teacher-label { font-size:11px; color:var(--c-text-secondary,#64748b); font-weight:600; }
+        .teacher-name  { font-size:13px; color:var(--c-text-primary,#0f172a); font-weight:700; margin-top:1px; }
+        .state-card { background:#fff; border:1px solid var(--c-border-light,#e2e8f0); border-radius:16px; padding:48px 24px; text-align:center; box-shadow:0 4px 16px rgba(15,23,42,.05); }
+        .state-icon { font-size:48px; margin-bottom:12px; }
+        .state-title { font-size:18px; font-weight:800; color:var(--c-text-primary,#0f172a); margin:0 0 6px; }
+        .state-desc  { font-size:14px; color:var(--c-text-secondary,#64748b); margin:0; }
+        .skeleton { background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:10px; }
+        @keyframes shimmer { to { background-position:-200% 0; } }
+        .skel-card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:20px 22px; display:flex; flex-direction:column; gap:14px; }
+    </style>
+</head>
+<body>
+<div class="app-layout">
+    <app-sidebar role="student" active-path="/student/subjects.html"></app-sidebar>
+    <div class="app-main">
+        <app-topbar username="Student Portal"></app-topbar>
+        <main class="app-content-wrapper">
+            <div class="app-content">
+
+                <div class="page-header">
+                    <div>
+                        <h1>My Subjects</h1>
+                        <p>Your enrolled subjects and assigned teachers for this academic year.</p>
+                    </div>
+                    <div id="classroomBadge" style="display:none;" class="classroom-badge">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+                        <span id="classroomName">—</span>
+                    </div>
+                </div>
+
+                <div id="skeletonGrid" class="subjects-grid">
+                    <div class="skel-card"><div style="display:flex;gap:12px"><div class="skeleton" style="width:44px;height:44px;border-radius:12px;flex-shrink:0;"></div><div style="flex:1"><div class="skeleton" style="height:16px;width:70%;margin-bottom:8px;"></div><div class="skeleton" style="height:12px;width:40%;"></div></div></div><div style="display:flex;gap:6px;"><div class="skeleton" style="height:20px;width:64px;border-radius:999px;"></div><div class="skeleton" style="height:20px;width:48px;border-radius:999px;"></div></div><div class="skeleton" style="height:50px;border-radius:10px;"></div></div>
+                    <div class="skel-card"><div style="display:flex;gap:12px"><div class="skeleton" style="width:44px;height:44px;border-radius:12px;flex-shrink:0;"></div><div style="flex:1"><div class="skeleton" style="height:16px;width:70%;margin-bottom:8px;"></div><div class="skeleton" style="height:12px;width:40%;"></div></div></div><div style="display:flex;gap:6px;"><div class="skeleton" style="height:20px;width:64px;border-radius:999px;"></div><div class="skeleton" style="height:20px;width:48px;border-radius:999px;"></div></div><div class="skeleton" style="height:50px;border-radius:10px;"></div></div>
+                    <div class="skel-card"><div style="display:flex;gap:12px"><div class="skeleton" style="width:44px;height:44px;border-radius:12px;flex-shrink:0;"></div><div style="flex:1"><div class="skeleton" style="height:16px;width:70%;margin-bottom:8px;"></div><div class="skeleton" style="height:12px;width:40%;"></div></div></div><div style="display:flex;gap:6px;"><div class="skeleton" style="height:20px;width:64px;border-radius:999px;"></div><div class="skeleton" style="height:20px;width:48px;border-radius:999px;"></div></div><div class="skeleton" style="height:50px;border-radius:10px;"></div></div>
+                </div>
+                <div class="subjects-grid" id="subjectsGrid" style="display:none;"></div>
+                <div id="stateMsg" style="display:none;"></div>
+
+                <app-footer></app-footer>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+const SUBJECT_META = {
+    'PHY'    :{ icon:'⚛️', accent:'linear-gradient(135deg,#1e40af,#3b82f6)', avatarBg:'#1e40af' },
+    'CHE'    :{ icon:'🧪', accent:'linear-gradient(135deg,#7c3aed,#a78bfa)', avatarBg:'#7c3aed' },
+    'BIO'    :{ icon:'🌿', accent:'linear-gradient(135deg,#065f46,#10b981)', avatarBg:'#065f46' },
+    'B-MATH' :{ icon:'📐', accent:'linear-gradient(135deg,#0369a1,#38bdf8)', avatarBg:'#0369a1' },
+    'ADD-MATH':{ icon:'∑',  accent:'linear-gradient(135deg,#0c4a6e,#0ea5e9)', avatarBg:'#0c4a6e' },
+    'AGRI'   :{ icon:'🌾', accent:'linear-gradient(135deg,#3f6212,#84cc16)', avatarBg:'#3f6212' },
+    'ENG'    :{ icon:'📖', accent:'linear-gradient(135deg,#9a3412,#f97316)', avatarBg:'#9a3412' },
+    'KISW'   :{ icon:'🗣️',accent:'linear-gradient(135deg,#831843,#ec4899)', avatarBg:'#831843' },
+    'HIST'   :{ icon:'🏛️',accent:'linear-gradient(135deg,#78350f,#d97706)', avatarBg:'#78350f' },
+    'GEO'    :{ icon:'🌍', accent:'linear-gradient(135deg,#134e4a,#14b8a6)', avatarBg:'#134e4a' },
+    'CIV'    :{ icon:'⚖️',accent:'linear-gradient(135deg,#3730a3,#818cf8)', avatarBg:'#3730a3' },
+    'COMM'   :{ icon:'💼', accent:'linear-gradient(135deg,#92400e,#f59e0b)', avatarBg:'#92400e' },
+    'BOOK'   :{ icon:'📒', accent:'linear-gradient(135deg,#1e3a5f,#60a5fa)', avatarBg:'#1e3a5f' },
+    'IK'     :{ icon:'🌙', accent:'linear-gradient(135deg,#312e81,#6366f1)', avatarBg:'#312e81' },
+    'GS'     :{ icon:'📚', accent:'linear-gradient(135deg,#374151,#9ca3af)', avatarBg:'#374151' },
+};
+const DEFAULT_META = { icon:'📋', accent:'linear-gradient(135deg,#047857,#10b981)', avatarBg:'#047857' };
+
+function initials(n){ return n ? n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase() : '?'; }
+
+function renderCard(s){
+    const m = SUBJECT_META[s.subject_code] || DEFAULT_META;
+    const core = parseInt(s.is_core) === 1;
+    return `
+    <div class="subject-card" style="--card-accent:${m.accent};">
+        <div class="card-top">
+            <div class="subject-icon" style="background:${core?'#d1fae5':'#fef3c7'};">${m.icon}</div>
+            <div class="subject-info">
+                <div class="subject-name" title="${s.subject_name}">${s.subject_name}</div>
+                <div class="subject-code-label">${s.subject_code}</div>
+            </div>
+        </div>
+        <div class="badge-row">
+            <span class="badge badge-level">${s.level_type||'O-Level'}</span>
+            <span class="badge ${core?'badge-core':'badge-elect'}">${core?'✓ Core':'Elective'}</span>
+        </div>
+        <div class="teacher-chip">
+            <div class="teacher-avatar" style="background:${m.avatarBg};">${initials(s.teacher_name)}</div>
+            <div>
+                <div class="teacher-label">Subject Teacher</div>
+                <div class="teacher-name">${s.teacher_name||'Not Assigned'}</div>
+            </div>
+        </div>
+    </div>`;
+}
+
+async function loadSubjects(){
+    try {
+        const res  = await fetch('/shule-cafe/api/students/student_workspace.php?action=my_subjects', { credentials:'include' });
+        const data = await res.json();
+        document.getElementById('skeletonGrid').style.display = 'none';
+
+        if (!data.success) {
+            showState('⚠️','Unable to Load Subjects', data.message || 'Please contact your school administrator.');
+            return;
+        }
+        if (data.classroom) {
+            document.getElementById('classroomName').textContent = data.classroom + ' · ' + data.year;
+            document.getElementById('classroomBadge').style.display = 'inline-flex';
+        }
+        if (!data.subjects || data.subjects.length === 0) {
+            showState('📋','No Subjects Assigned Yet',
+                'The timetable for your class (' + (data.classroom||'—') + ') has not been published yet. Please check back with your class teacher.');
+            return;
+        }
+        const grid = document.getElementById('subjectsGrid');
+        grid.innerHTML = data.subjects.map(renderCard).join('');
+        grid.style.display = 'grid';
+    } catch(e) {
+        document.getElementById('skeletonGrid').style.display = 'none';
+        showState('🔌','Connection Error','Could not reach the server. Please refresh the page.');
+    }
+}
+
+function showState(icon, title, desc){
+    const el = document.getElementById('stateMsg');
+    el.style.display = 'block';
+    el.innerHTML = `<div class="state-card"><div class="state-icon">${icon}</div><h2 class="state-title">${title}</h2><p class="state-desc">${desc}</p></div>`;
+}
+
+document.addEventListener('DOMContentLoaded', loadSubjects);
+</script>
+</body>
+</html>

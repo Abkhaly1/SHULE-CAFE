@@ -1,0 +1,11 @@
+# SHULE CAFE Robots.txt Security Specification
+User-agent: *
+Disallow: /api/
+Disallow: /frontend/headmaster/
+Disallow: /frontend/teacher/
+Disallow: /frontend/student/
+Disallow: /frontend/parent/
+Disallow: /frontend/super-admin/
+Disallow: /frontend/auth/
+
+Crawl-delay: 10

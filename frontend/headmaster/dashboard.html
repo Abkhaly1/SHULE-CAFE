@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard ‹ Headmaster ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/headmaster-theme.css">
+    
+    <script type="module" src="../layouts/global-layout.js"></script>
+    <script type="module" src="../js/auth/auth-guard.js"></script>
+
+    <style>
+        .stat-card-premium {
+            background: #ffffff;
+            border: 1px solid var(--c-border-light);
+            border-radius: 12px;
+            padding: 16px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .stat-card-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+        }
+        .stat-card-accent-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .quick-shortcut-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            color: var(--c-text-primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        .quick-shortcut-btn:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            transform: translateX(2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        
+        <!-- Sidebar Component -->
+        <app-sidebar role="tenant_admin" active-path="/headmaster/dashboard.html"></app-sidebar>
+        
+        <!-- Main Area -->
+        <div class="app-main">
+            
+            <!-- Topbar Component -->
+            <app-topbar id="topbar" username="Headmaster Portal"></app-topbar>
+            
+            <!-- Content Area -->
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    
+                    <app-breadcrumb path="Headmaster, Dashboard"></app-breadcrumb>
+                    
+                    <app-page-header 
+                        id="pageHeader"
+                        title="Headmaster Portal Dashboard" 
+                        subtitle="Real-time overview of school operations, student enrollment, and academic progress.">
+                    </app-page-header>
+
+                    <!-- SCHOOL READINESS CHECKLIST WIDGET -->
+                    <div id="setupChecklistContainer" class="card" style="padding: 16px 20px; margin-top: 12px; margin-bottom: 16px; border: 1px solid var(--c-border-light); background: #ffffff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: #ecfdf5; color: #047857; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; flex-shrink: 0;">🚀</div>
+                                <div>
+                                    <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #0f172a;">School Operational Readiness Checklist</h3>
+                                    <p style="margin: 2px 0 0 0; font-size: 12px; color: #64748b;">Complete these 4 setup steps to fully initialize school operations and unlock teacher scoresheets.</p>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="text-align: right;">
+                                    <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.3px;">Readiness Progress</div>
+                                    <div style="font-size: 13px; font-weight: 800; color: #047857;" id="checklistProgressText">0 / 4 Steps Done (0%)</div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline" onclick="toggleChecklistWidget()" style="font-size: 11px; font-weight: 700; padding: 4px 10px; border-color: #cbd5e1; color: #475569;" id="btnToggleChecklist">Minimize ➖</button>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin-bottom: 14px;">
+                            <div id="checklistProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #10b981, #059669); transition: width 0.4s ease;"></div>
+                        </div>
+
+                        <!-- 4 Step Cards Grid -->
+                        <div id="checklistCardsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px;">
+                            
+                            <!-- Step 1: Classroom Streams -->
+                            <div id="stepCard1" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                                    <div style="font-weight: 800; font-size: 12px; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+                                        <span>🏫</span> 1. Classroom Streams
+                                    </div>
+                                    <span id="stepBadge1" class="badge badge-warning" style="font-size: 10px; font-weight: 700; padding: 2px 6px;">⚠️ Setup</span>
+                                </div>
+                                <div style="font-size: 11px; color: #64748b; margin-bottom: 10px;" id="stepDesc1">Create Grade streams (e.g. Form 1 Stream A).</div>
+                                <a href="classrooms/index.html" class="btn btn-primary btn-sm" id="stepBtn1" style="font-size: 11px; font-weight: 800; text-align: center; text-decoration: none; padding: 4px 8px; display: block;">Setup Streams ➔</a>
+                            </div>
+
+                            <!-- Step 2: Subject Allocations -->
+                            <div id="stepCard2" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                                    <div style="font-weight: 800; font-size: 12px; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+                                        <span>📚</span> 2. Subject Allocations
+                                    </div>
+                                    <span id="stepBadge2" class="badge badge-warning" style="font-size: 10px; font-weight: 700; padding: 2px 6px;">⚠️ Setup</span>
+                                </div>
+                                <div style="font-size: 11px; color: #64748b; margin-bottom: 10px;" id="stepDesc2">Assign subjects to teaching staff.</div>
+                                <a href="academics/index.html" class="btn btn-primary btn-sm" id="stepBtn2" style="font-size: 11px; font-weight: 800; text-align: center; text-decoration: none; padding: 4px 8px; display: block;">Assign Subjects ➔</a>
+                            </div>
+
+                            <!-- Step 3: Student Enrollment -->
+                            <div id="stepCard3" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                                    <div style="font-weight: 800; font-size: 12px; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+                                        <span>👥</span> 3. Student Enrollment
+                                    </div>
+                                    <span id="stepBadge3" class="badge badge-warning" style="font-size: 10px; font-weight: 700; padding: 2px 6px;">⚠️ Setup</span>
+                                </div>
+                                <div style="font-size: 11px; color: #64748b; margin-bottom: 10px;" id="stepDesc3">Import students and allocate to streams.</div>
+                                <a href="classrooms/index.html" class="btn btn-primary btn-sm" id="stepBtn3" style="font-size: 11px; font-weight: 800; text-align: center; text-decoration: none; padding: 4px 8px; display: block;">Enroll Students ➔</a>
+                            </div>
+
+                            <!-- Step 4: Class Timetables -->
+                            <div id="stepCard4" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                                    <div style="font-weight: 800; font-size: 12px; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+                                        <span>📅</span> 4. Class Timetables
+                                    </div>
+                                    <span id="stepBadge4" class="badge badge-warning" style="font-size: 10px; font-weight: 700; padding: 2px 6px;">⚠️ Setup</span>
+                                </div>
+                                <div style="font-size: 11px; color: #64748b; margin-bottom: 10px;" id="stepDesc4">Build &amp; publish class timetables.</div>
+                                <a href="timetable/index.html" class="btn btn-primary btn-sm" id="stepBtn4" style="font-size: 11px; font-weight: 800; text-align: center; text-decoration: none; padding: 4px 8px; display: block;">Build Timetable ➔</a>
+                            </div>
+
+                        </div>
+                    </div>
+                    
+                    <!-- Summary Cards Grid -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 16px; margin-top: 12px;">
+                        
+                        <div class="stat-card-premium" style="padding: 10px 14px; border-radius: 10px;">
+                            <div class="stat-card-accent-bar" style="background: linear-gradient(90deg, #10b981, #059669);"></div>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                                <div style="color: var(--c-text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase;">Enrolled Students</div>
+                                <div style="width: 28px; height: 28px; border-radius: 6px; background: #ecfdf5; color: #059669; display: flex; align-items: center; justify-content: center; font-size: 14px;">🎓</div>
+                            </div>
+                            <div style="font-size: 18px; font-weight: 800; color: #0f172a;" id="statStudents">
+                                <span class="skeleton" style="width: 50px; height: 22px;"></span>
+                            </div>
+                            <div style="font-size: 10px; color: #059669; font-weight: 600; margin-top: 2px;">🟢 Active Enrollment</div>
+                        </div>
+
+                        <div class="stat-card-premium" style="padding: 10px 14px; border-radius: 10px;">
+                            <div class="stat-card-accent-bar" style="background: linear-gradient(90deg, #3b82f6, #1d4ed8);"></div>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                                <div style="color: var(--c-text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase;">Teaching Staff</div>
+                                <div style="width: 28px; height: 28px; border-radius: 6px; background: #eff6ff; color: #1d4ed8; display: flex; align-items: center; justify-content: center; font-size: 14px;">👨‍🏫</div>
+                            </div>
+                            <div style="font-size: 18px; font-weight: 800; color: #0f172a;" id="statTeachers">
+                                <span class="skeleton" style="width: 50px; height: 22px;"></span>
+                            </div>
+                            <div style="font-size: 10px; color: #1d4ed8; font-weight: 600; margin-top: 2px;">📘 Instructors</div>
+                        </div>
+
+                        <div class="stat-card-premium" style="padding: 10px 14px; border-radius: 10px;">
+                            <div class="stat-card-accent-bar" style="background: linear-gradient(90deg, #8b5cf6, #6d28d9);"></div>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                                <div style="color: var(--c-text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase;">Classes & Streams</div>
+                                <div style="width: 28px; height: 28px; border-radius: 6px; background: #f5f3ff; color: #6d28d9; display: flex; align-items: center; justify-content: center; font-size: 14px;">🏫</div>
+                            </div>
+                            <div style="font-size: 18px; font-weight: 800; color: #0f172a;" id="statClasses">
+                                <span class="skeleton" style="width: 50px; height: 22px;"></span>
+                            </div>
+                            <div style="font-size: 10px; color: #6d28d9; font-weight: 600; margin-top: 2px;">📚 Classrooms</div>
+                        </div>
+
+                        <div class="stat-card-premium" style="padding: 10px 14px; border-radius: 10px;">
+                            <div class="stat-card-accent-bar" style="background: linear-gradient(90deg, #f59e0b, #d97706);"></div>
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                                <div style="color: var(--c-text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase;">Guardians</div>
+                                <div style="width: 28px; height: 28px; border-radius: 6px; background: #fffbeb; color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 14px;">👨‍👩‍👧‍👦</div>
+                            </div>
+                            <div style="font-size: 18px; font-weight: 800; color: #0f172a;" id="statParents">
+                                <span class="skeleton" style="width: 50px; height: 22px;"></span>
+                            </div>
+                            <div style="font-size: 10px; color: #d97706; font-weight: 600; margin-top: 2px;">🤝 Guardians</div>
+                        </div>
+
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--sp-6);">
+                        
+                        <!-- Left Column: Recent Activities Feed -->
+                        <div style="display: flex; flex-direction: column; gap: var(--sp-6);">
+                            
+                            <div class="card" style="padding: 0; overflow: hidden;">
+                                <div style="padding: 16px 20px; border-bottom: 1px solid var(--c-border-light); background: #f8fafc; display: flex; justify-content: space-between; align-items: center;">
+                                    <h3 style="margin: 0; font-size: 16px; font-weight: 700; color: var(--c-text-primary);">⚡ Recent School Activity Feed</h3>
+                                    <span class="badge badge-success" style="font-weight: 600;">Live Feed</span>
+                                </div>
+                                <div style="padding: 0;">
+                                    <ul id="activitiesList" style="list-style: none; padding: 0; margin: 0;">
+                                        <li style="padding: 20px; text-align: center; color: var(--c-text-muted);">
+                                            <span class="skeleton" style="width: 100%; height: 40px; margin-bottom: 8px;"></span>
+                                            <span class="skeleton" style="width: 100%; height: 40px;"></span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                        
+                        <!-- Right Column: Quick Action Shortcuts & Academic Term Status -->
+                        <div style="display: flex; flex-direction: column; gap: var(--sp-6);">
+                            
+                            <div class="card" style="padding: var(--sp-4);">
+                                <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 16px; font-weight: 700; color: var(--c-text-primary);">🚀 Quick Action Shortcuts</h3>
+                                <div style="display: flex; flex-direction: column; gap: 10px;">
+                                    <a href="people/index.html?tab=students" class="quick-shortcut-btn">
+                                        <span>🎓</span> Manage Students Directory
+                                    </a>
+                                    <a href="people/index.html?tab=teachers" class="quick-shortcut-btn">
+                                        <span>👨‍🏫</span> Manage Teachers Directory
+                                    </a>
+                                    <a href="academics/index.html" class="quick-shortcut-btn">
+                                        <span>📚</span> Grade Subject Allocations
+                                    </a>
+                                    <a href="classrooms/index.html" class="quick-shortcut-btn">
+                                        <span>🏫</span> Classroom Stream Management
+                                    </a>
+                                    <a href="timetable/index.html" class="quick-shortcut-btn">
+                                        <span>📅</span> Class Timetables Builder
+                                    </a>
+                                    <a href="reports/index.html" class="quick-shortcut-btn" style="border-color: #cbd5e1; background: #ffffff;">
+                                        <span>📊</span> Generate Reports & Exports
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="card" style="padding: var(--sp-4);">
+                                <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 16px; font-weight: 700; color: var(--c-text-primary);">🗓️ Academic Status</h3>
+                                <div style="font-size: var(--text-sm); display: flex; flex-direction: column; gap: 12px;">
+                                    <div style="padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                                        <div style="font-size: 12px; color: var(--c-text-muted); font-weight: 600; text-transform: uppercase;">Current Academic Term</div>
+                                        <div style="font-weight: 800; font-size: 16px; color: #0f172a; margin-top: 2px;">Term 1, <span class="current-year"></span></div>
+                                    </div>
+                                    <div style="padding: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px;">
+                                        <div style="font-size: 12px; color: #166534; font-weight: 600; text-transform: uppercase;">Tenant Operation Status</div>
+                                        <div style="font-weight: 800; font-size: 15px; color: #15803d; margin-top: 2px;">🟢 Active & Fully Provisioned</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <app-footer></app-footer>
+                
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/stats.php', { credentials: 'include' });
+                if (res.status === 401 || res.status === 403) {
+                    window.location.href = '/shule-cafe/frontend/auth/login.html';
+                    return;
+                }
+                const result = await res.json();
+                if (result.success) {
+                    if (result.school) {
+                        const header = document.getElementById('pageHeader');
+                        header.setAttribute('title', `${result.school.name} Dashboard`);
+                        header.setAttribute('subtitle', `${result.school.type || 'Secondary'} School • ${result.school.region || 'Tanzania'}`);
+                    }
+
+                    if (result.stats) {
+                        document.getElementById('statStudents').textContent = (result.stats.total_students || 0).toLocaleString();
+                        document.getElementById('statTeachers').textContent = (result.stats.total_teachers || 0).toLocaleString();
+                        document.getElementById('statClasses').textContent = (result.stats.total_classes || 0).toLocaleString();
+                        document.getElementById('statParents').textContent = (result.stats.total_parents || 0).toLocaleString();
+                        renderChecklist(result.stats);
+                    }
+
+                    const actContainer = document.getElementById('activitiesList');
+                    if (result.activities && result.activities.length > 0) {
+                        let html = '';
+                        result.activities.forEach(act => {
+                            html += `
+                                <li style="padding: 16px 20px; border-bottom: 1px solid var(--c-border-light); display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="font-weight: 700; color: var(--c-text-primary); font-size: 14px;">${act.title}</div>
+                                        <div style="font-size: 13px; color: var(--c-text-secondary); margin-top: 2px;">${act.desc}</div>
+                                    </div>
+                                    <div style="font-size: 12px; color: var(--c-text-muted); font-weight: 600; background: #f1f5f9; padding: 4px 8px; border-radius: 4px;">${act.time}</div>
+                                </li>
+                            `;
+                        });
+                        actContainer.innerHTML = html;
+                    } else {
+                        actContainer.innerHTML = '<li style="padding: 20px; color: var(--c-text-muted); text-align: center;">No recent activities recorded.</li>';
+                    }
+                }
+            } catch (err) {
+                console.error("Error loading headmaster stats:", err);
+            }
+        });
+
+        function renderChecklist(stats) {
+            const container = document.getElementById('setupChecklistContainer');
+            if (!container) return;
+
+            const streamsDone = (stats.total_classes || 0) > 0;
+            const subAllocDone = (stats.total_sub_allocations || 0) > 0;
+            const studentsDone = (stats.total_students || 0) > 0;
+            const timetablesDone = (stats.total_timetables || 0) > 0;
+
+            let completedCount = 0;
+            if (streamsDone) completedCount++;
+            if (subAllocDone) completedCount++;
+            if (studentsDone) completedCount++;
+            if (timetablesDone) completedCount++;
+
+            const pct = Math.round((completedCount / 4) * 100);
+            document.getElementById('checklistProgressText').textContent = `${completedCount} / 4 Steps Done (${pct}%)`;
+            document.getElementById('checklistProgressBar').style.width = `${pct}%`;
+
+            updateStepCard(1, streamsDone);
+            updateStepCard(2, subAllocDone);
+            updateStepCard(3, studentsDone);
+            updateStepCard(4, timetablesDone);
+
+            const isHidden = localStorage.getItem('hideSetupChecklist') === 'true';
+            if (!isHidden || completedCount < 4) {
+                container.style.display = 'block';
+                if (completedCount === 4) {
+                    document.getElementById('checklistCardsGrid').style.display = 'none';
+                    document.getElementById('btnToggleChecklist').textContent = 'Expand ➕';
+                }
+            }
+        }
+
+        function updateStepCard(stepNum, isDone) {
+            const card = document.getElementById(`stepCard${stepNum}`);
+            const badge = document.getElementById(`stepBadge${stepNum}`);
+            const btn = document.getElementById(`stepBtn${stepNum}`);
+
+            if (isDone && card && badge && btn) {
+                card.style.background = '#f0fdf4';
+                card.style.borderColor = '#bbf7d0';
+                badge.className = 'badge badge-success';
+                badge.style.fontSize = '10px';
+                badge.textContent = '✅ Completed';
+                btn.className = 'btn btn-outline btn-sm';
+                btn.style.color = '#15803d';
+                btn.style.borderColor = '#86efac';
+                btn.style.fontSize = '11px';
+                btn.textContent = 'View Setup ➔';
+            }
+        }
+
+        function toggleChecklistWidget() {
+            const grid = document.getElementById('checklistCardsGrid');
+            const btn = document.getElementById('btnToggleChecklist');
+            if (grid.style.display === 'none') {
+                grid.style.display = 'grid';
+                btn.textContent = 'Minimize ➖';
+                localStorage.setItem('hideSetupChecklist', 'false');
+            } else {
+                grid.style.display = 'none';
+                btn.textContent = 'Expand ➕';
+                localStorage.setItem('hideSetupChecklist', 'true');
+            }
+        }
+    </script>
+</body>
+</html>

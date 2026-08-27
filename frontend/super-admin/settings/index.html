@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings ‹ Super Admin ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="super_admin" active-path="/super-admin/settings/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="System Administrator"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content" style="padding: 0;">
+                    
+                    <app-workspace-layout back-url="../dashboard.html">
+                        
+                        <app-workspace-header 
+                            title="Platform Settings" 
+                            subtitle="Configure global system parameters."
+                            initials="SET">
+                        </app-workspace-header>
+                        
+                        <app-workspace-tabs active-tab="general">
+                            <button class="workspace-tab" data-target="general">General</button>
+                            <button class="workspace-tab" data-target="branding">Branding</button>
+                            <button class="workspace-tab" data-target="email">Email Config</button>
+                            <button class="workspace-tab" data-target="security">Security Policy</button>
+                            <button class="workspace-tab" data-target="integrations">Integrations</button>
+                        </app-workspace-tabs>
+                        
+                        <app-workspace-content tab-id="general" active="true">
+                            <div class="card" style="padding: var(--sp-6); max-width: 800px; margin: var(--sp-6);">
+                                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                                    <label class="form-label">Platform Name</label>
+                                    <input type="text" class="form-control" value="Shule Cafe">
+                                </div>
+                                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                                    <label class="form-label">Support Email</label>
+                                    <input type="email" class="form-control" value="support@shulecafe.com">
+                                </div>
+                                <div class="form-group" style="margin-bottom: var(--sp-6);">
+                                    <label class="form-label">Maintenance Mode</label>
+                                    <div style="display: flex; gap: 8px; align-items: center;">
+                                        <input type="checkbox" id="maintenance_mode">
+                                        <label for="maintenance_mode">Enable Maintenance Mode (Only Super Admins can login)</label>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </app-workspace-content>
+                        
+                        <app-workspace-content tab-id="branding">
+                            <div class="card" style="padding: var(--sp-6); margin: var(--sp-6);">
+                                <h3>Brand Settings</h3>
+                                <app-table-empty title="Branding Configuration" message="Upload logos and set platform colors."></app-table-empty>
+                            </div>
+                        </app-workspace-content>
+                        
+                        <app-workspace-content tab-id="email">
+                            <div class="card" style="padding: var(--sp-6); margin: var(--sp-6);">
+                                <h3>SMTP Configuration</h3>
+                                <app-table-empty title="Email Settings" message="Configure SMTP for system emails."></app-table-empty>
+                            </div>
+                        </app-workspace-content>
+                        
+                        <app-workspace-content tab-id="security">
+                            <div class="card" style="padding: var(--sp-6); margin: var(--sp-6);">
+                                <h3>Security Policies</h3>
+                                <app-table-empty title="Security Controls" message="Password policies, 2FA enforcement, and session limits."></app-table-empty>
+                            </div>
+                        </app-workspace-content>
+
+                        <app-workspace-content tab-id="integrations">
+                            <div class="card" style="padding: var(--sp-6); margin: var(--sp-6);">
+                                <h3>Third-Party Integrations</h3>
+                                <app-table-empty title="No Active Integrations" message="Configure SMS gateways or external APIs."></app-table-empty>
+                            </div>
+                        </app-workspace-content>
+                        
+                    </app-workspace-layout>
+                    
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

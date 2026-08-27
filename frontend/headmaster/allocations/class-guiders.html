@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Guiders & Patrons Workspace ‹ Headmaster ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+
+    <style>
+        .guiders-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 24px; background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+            border-radius: 10px; margin-bottom: 12px; color: white;
+            box-shadow: 0 4px 12px -2px rgba(13, 148, 136, 0.25);
+        }
+        .stat-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px; margin-bottom: 14px;
+        }
+        .stat-card {
+            background: white; border: 1px solid var(--c-border-light);
+            border-radius: 10px; padding: 14px 18px; text-align: left;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+        .stat-card.alert-card {
+            border-color: #fca5a5; background: #fff5f5;
+        }
+        .stat-val { font-size: 26px; font-weight: 800; color: var(--c-text-primary); }
+        .stat-lbl { font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--c-text-muted); margin-top: 2px; }
+
+        .guiders-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .guiders-table th { background: #f8fafc; border-bottom: 2px solid #e2e8f0; padding: 12px; text-align: left; font-weight: 800; color: #334155; }
+        .guiders-table td { padding: 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="tenant_admin" active-path="/headmaster/allocations/class-guiders.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Headmaster Portal"></app-topbar>
+            
+            <main class="app-content-wrapper" style="padding-top: 10px;">
+                <div class="app-content" style="padding: 0;">
+                    
+                    <app-workspace-layout hide-back style="gap: 10px;">
+                        
+                        <!-- ── HEADER BANNER ────────────────────────── -->
+                        <div class="guiders-header">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: #ffffff; color: #0f766e; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800;">
+                                    🏫
+                                </div>
+                                <div>
+                                    <h2 style="margin: 0; font-size: 18px; font-weight: 800; color: white; line-height: 1.2;">
+                                        <span data-i18n="headmasterDashboard.allocations.guidersWorkspace">Class Guiders & Patrons Workspace</span>
+                                    </h2>
+                                    <div style="color: #ccfbf1; font-size: 12px;">
+                                        Assign and manage Class Guider Teachers responsible for daily morning attendance & classroom cohorts.
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <a href="teacher-handover.html" class="btn btn-sm" style="background:#ffffff;color:#0f766e !important;border:none;font-weight:800;padding:6px 14px;border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,0.12);text-decoration:none;">
+                                    🔄 Teacher Replacement & Handover Wizard
+                                </a>
+                                <span class="badge" style="background: rgba(255,255,255,0.2); color: #ffffff; font-weight: 800; padding: 5px 12px; font-size: 11px; border: 1px solid rgba(255,255,255,0.3);">Academic Year <span class="current-year"></span></span>
+                            </div>
+                        </div>
+
+                        <!-- ── SUMMARY KPI & ALERT CARDS ──────────────── -->
+                        <div class="stat-grid">
+                            <div class="stat-card">
+                                <div class="stat-lbl">Total Classrooms</div>
+                                <div class="stat-val" id="statTotalRooms">-</div>
+                            </div>
+                            <div class="stat-card" style="border-color:#bbf7d0;background:#f0fdf4;">
+                                <div class="stat-lbl" style="color:#166534;">Assigned Class Guiders</div>
+                                <div class="stat-val" id="statAssignedRooms" style="color:#166534;">-</div>
+                            </div>
+                            <div class="stat-card alert-card" id="alertCardRooms">
+                                <div class="stat-lbl" style="color:#991b1b;">⚠️ Classrooms Missing Guider</div>
+                                <div class="stat-val" id="statUnassignedRooms" style="color:#dc2626;">-</div>
+                            </div>
+                        </div>
+
+                        <!-- ── REAL-TIME ALERT BANNER ────────────────────── -->
+                        <div id="alertBannerRooms" style="display:none;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;padding:12px 16px;margin-bottom:14px;color:#991b1b;font-size:13px;font-weight:600;">
+                            ⚠️ <strong id="alertBannerText">Notice:</strong> <span id="alertBannerList"></span>
+                        </div>
+
+                        <!-- ── MAIN CLASSROOM DIRECTORY ────────────────── -->
+                        <div class="card" style="padding: 20px; background: white; border: 1px solid var(--c-border-light); border-radius: 10px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+                                <div>
+                                    <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: var(--c-text-primary);">
+                                        Classroom Streams & Class Guider Assignments
+                                    </h3>
+                                    <p style="margin: 2px 0 0 0; font-size: 12px; color: var(--c-text-muted);">
+                                        <span data-i18n="headmasterDashboard.allocations.guidersDesc">Select a teacher to assign as the official Class Guider for each classroom stream.</span>
+                                    </p>
+                                </div>
+                                <div style="display:flex;gap:10px;">
+                                    <input type="text" id="searchRoomsInput" class="form-control" placeholder="🔍 Search classroom..." style="width:220px;font-size:13px;">
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="guiders-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Education Level</th>
+                                            <th>Grade Level</th>
+                                            <th>Classroom Stream</th>
+                                            <th>Max Seats</th>
+                                            <th data-i18n="headmasterDashboard.allocations.currentGuider">Current Class Guider</th>
+                                            <th style="text-align: right;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="guidersTbody">
+                                        <tr><td colspan="6" style="text-align:center;padding:24px;color:var(--c-text-muted);">Loading class guiders directory...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </app-workspace-layout>
+
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        let allClassrooms = [];
+        let allTeachers = [];
+
+        async function loadClassGuidersWorkspace() {
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/allocations/guiders_api.php', { credentials: 'include' });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    allClassrooms = data.classrooms || [];
+                    allTeachers = data.teachers || [];
+
+                    // Render Analytics
+                    const a = data.analytics || {};
+                    $('#statTotalRooms').text(a.total_classrooms || 0);
+                    $('#statAssignedRooms').text(a.assigned_count || 0);
+                    $('#statUnassignedRooms').text(a.unassigned_count || 0);
+
+                    if (a.unassigned_count > 0) {
+                        const roomNames = (a.unassigned_rooms || []).map(r => r.room_name).join(', ');
+                        $('#alertBannerText').text(`${a.unassigned_count} Classroom(s) currently have NO Class Guider:`);
+                        $('#alertBannerList').text(roomNames);
+                        $('#alertBannerRooms').show();
+                    } else {
+                        $('#alertBannerRooms').hide();
+                    }
+
+                    renderClassroomsTable(allClassrooms);
+                }
+            } catch(e) {
+                console.error("Error loading class guiders:", e);
+            }
+        }
+
+        function renderClassroomsTable(rooms) {
+            const tbody = $('#guidersTbody').empty();
+            if (rooms.length === 0) {
+                tbody.append('<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--c-text-muted);">No classroom streams registered.</td></tr>');
+                return;
+            }
+
+            rooms.forEach(r => {
+                let teacherOptions = '<option value="">-- Unassigned (No Class Guider) --</option>';
+                allTeachers.forEach(t => {
+                    const sel = (r.guider_id == t.id) ? 'selected' : '';
+                    teacherOptions += `<option value="${t.id}" ${sel}>${t.full_name} (${t.user_code || 'TCH'})</option>`;
+                });
+
+                const statusBadge = r.guider_id 
+                    ? `<span class="badge badge-success" style="font-size:11px;">🟢 ${r.guider_name}</span>`
+                    : `<span class="badge badge-danger" style="font-size:11px;">⚠️ Unassigned</span>`;
+
+                tbody.append(`
+                    <tr>
+                        <td><strong>${r.level_code}</strong></td>
+                        <td>${r.grade_name}</td>
+                        <td><strong style="color:var(--c-primary);font-size:14px;">${r.grade_name} ${r.classroom_name}</strong></td>
+                        <td>${r.capacity} Seats</td>
+                        <td>
+                            <select class="form-control sel-guider-teacher" data-room="${r.classroom_id}" style="width:100%;max-width:280px;font-weight:600;">
+                                ${teacherOptions}
+                            </select>
+                        </td>
+                        <td style="text-align:right;">
+                            <button type="button" class="btn btn-primary btn-sm btn-save-guider" data-room="${r.classroom_id}">
+                                💾 Save Guider
+                            </button>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+
+        $(document).on('click', '.btn-save-guider', async function() {
+            const roomId = $(this).attr('data-room');
+            const teacherId = $(this).closest('tr').find('.sel-guider-teacher').val();
+
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/allocations/guiders_api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ action: 'assign_guider', classroom_id: roomId, teacher_id: teacherId })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    alert(data.message);
+                    loadClassGuidersWorkspace();
+                } else { alert(data.message || 'Failed to assign Class Guider.'); }
+            } catch(e) { alert('Network error assigning Class Guider.'); }
+        });
+
+        $(document).on('input', '#searchRoomsInput', function() {
+            const q = $(this).val().trim().toLowerCase();
+            if (!q) {
+                renderClassroomsTable(allClassrooms);
+                return;
+            }
+            const qClean = q.replace(/[^a-z0-9]/g, '');
+            const filtered = allClassrooms.filter(r => {
+                const raw = `${r.level_code || ''} ${r.grade_name || ''} ${r.classroom_name || ''} ${r.guider_name || ''}`.toLowerCase();
+                const abbr = raw.replace(/\bform\s*(\d+)\b/gi, 'f$1 form$1 form $1')
+                                .replace(/\bstandard\s*(\d+)\b/gi, 'std$1 s$1 standard$1 standard $1')
+                                .replace(/\bstd\s*(\d+)\b/gi, 'std$1 s$1 standard$1 standard $1');
+                const fullText = `${raw} ${abbr}`;
+                const fullClean = fullText.replace(/[^a-z0-9]/g, '');
+                return fullText.includes(q) || (qClean !== '' && fullClean.includes(qClean));
+            });
+            renderClassroomsTable(filtered);
+        });
+
+        $(document).ready(() => {
+            loadClassGuidersWorkspace();
+        });
+    </script>
+</body>
+</html>

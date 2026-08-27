@@ -1,0 +1,15 @@
+# Environment & Credentials
+.env
+.env.local
+config/db_passwords.txt
+
+# OS & IDE Temp Files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+logs/
+backups/
+tmp_*.php
+fpdf.zip

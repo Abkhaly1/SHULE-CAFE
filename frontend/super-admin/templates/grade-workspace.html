@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade Curriculum Workspace ‹ Super Admin ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+
+    <style>
+        .workspace-header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            padding: 24px 30px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.3);
+        }
+        .summary-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .summary-card {
+            background: #ffffff;
+            border: 1px solid var(--c-border-light);
+            border-radius: 10px;
+            padding: 16px 20px;
+            text-align: center;
+        }
+        .summary-card .val { font-size: 26px; font-weight: 800; color: var(--c-text-primary); }
+        .summary-card .lbl { font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--c-text-muted); margin-top: 2px; }
+
+        /* Custom Modal Overlay */
+        .custom-modal-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
+            display: none; align-items: center; justify-content: center; z-index: 9999;
+        }
+        .custom-modal-content {
+            background: white; border-radius: 12px; width: 100%; max-width: 520px;
+            padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="super_admin" active-path="/super-admin/templates/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="System Administrator"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <app-breadcrumb path="Super Admin, Academic Templates, Grade Workspace"></app-breadcrumb>
+
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;margin-bottom:16px;">
+                        <button class="btn btn-outline btn-sm" id="btnBackToLevel" onclick="goBackToLevel()">⬅ Back to Education Level Workspace</button>
+                        <button class="btn btn-primary btn-sm" onclick="openAddSubjectModal()">➕ Add Custom Subject to Grade</button>
+                    </div>
+
+                    <!-- ── HEADER ANCHORED BANNER ────────────────────────── -->
+                    <div class="workspace-header">
+                        <div style="display:flex;align-items:center;gap:18px;">
+                            <div style="width:64px;height:64px;border-radius:50%;background:#059669;color:white;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;" id="gradeAvatar">
+                                F1
+                            </div>
+                            <div>
+                                <h2 style="margin:0 0 4px;font-size:22px;font-weight:800;color:white;" id="gradeTitle">
+                                    Form 1 Curriculum Workspace
+                                </h2>
+                                <div style="font-size:13px;color:#94a3b8;" id="gradeSubtitle">
+                                    Loading master grade curriculum structure...
+                                </div>
+                            </div>
+                        </div>
+                        <div style="text-align:right;">
+                            <span class="badge" style="background:#059669;color:white;font-weight:700;padding:6px 14px;font-size:12px;" id="gradeLevelBadge">O-LEVEL</span>
+                        </div>
+                    </div>
+
+                    <!-- ── SUMMARY STATS CARDS ──────────────────────────── -->
+                    <div class="summary-card-grid">
+                        <div class="summary-card">
+                            <div class="val" id="statTotalSubjects">0</div>
+                            <div class="lbl">Total Grade Subjects</div>
+                        </div>
+                        <div class="summary-card" style="border-color:#059669;background:#f0fdf4;">
+                            <div class="val" id="statCoreSubjects" style="color:#059669;">0</div>
+                            <div class="lbl" style="color:#047857;">Core Mandatory</div>
+                        </div>
+                        <div class="summary-card" style="border-color:#0284c7;background:#f0f9ff;">
+                            <div class="val" id="statElectiveSubjects" style="color:#0284c7;">0</div>
+                            <div class="lbl" style="color:#0369a1;">Optional Electives</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="val" style="color:#6366f1;">Active</div>
+                            <div class="lbl">Curriculum Status</div>
+                        </div>
+                    </div>
+
+                    <!-- ── MASTER GRADE SUBJECT CURRICULUM EDITOR ────────────────── -->
+                    <div class="card" style="padding: 24px; background: white; border: 1px solid var(--c-border-light); border-radius: 10px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--c-border-light);">
+                            <div>
+                                <h3 style="margin:0 0 4px;font-size:17px;font-weight:800;color:var(--c-text-primary);">
+                                    Master Subject Curriculum Checklist
+                                </h3>
+                                <p style="margin:0;font-size:13px;color:var(--c-text-muted);">
+                                    Check subjects assigned to this Grade tier. Set whether each subject is Core Mandatory or Optional Elective.
+                                </p>
+                            </div>
+                            <button class="btn btn-primary" style="font-weight:700;padding:10px 24px;" onclick="saveGradeCurriculum()">💾 Save Grade Curriculum</button>
+                        </div>
+
+                        <form id="gradeSubjectsForm">
+                            <div class="table-responsive" style="margin-bottom:20px;">
+                                <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                                    <thead>
+                                        <tr style="background:var(--c-bg-subtle);border-bottom:2px solid var(--c-border-light);text-align:left;">
+                                            <th style="padding:12px;text-align:center;width:60px;">Assigned</th>
+                                            <th style="padding:12px;">Subject Code</th>
+                                            <th style="padding:12px;">Subject Name</th>
+                                            <th style="padding:12px;text-align:center;width:220px;">Curriculum Type</th>
+                                            <th style="padding:12px;text-align:right;width:120px;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="gradeSubjectsBody">
+                                        <tr><td colspan="5" style="text-align:center;padding:24px;color:var(--c-text-muted);">Loading subjects checklist…</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div style="display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:1px solid var(--c-border-light);">
+                                <span style="font-size:13px;color:var(--c-text-muted);" id="checklistSummaryText">0 of 0 subject(s) assigned.</span>
+                                <button type="submit" class="btn btn-primary" style="font-weight:700;padding:10px 24px;">💾 Save Grade Curriculum</button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- ➕ ADD NEW CUSTOM SUBJECT MODAL OVERLAY -->
+    <div class="custom-modal-overlay" id="addSubjectModal">
+        <div class="custom-modal-content">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #e2e8f0;">
+                <h4 style="margin:0;font-size:16px;font-weight:800;color:var(--c-text-primary);">➕ Add New Subject to Grade Curriculum</h4>
+                <button style="background:none;border:none;font-size:20px;cursor:pointer;" onclick="closeAddSubjectModal()">✕</button>
+            </div>
+
+            <form id="addSubjectForm">
+                <div class="form-group" style="margin-bottom:16px;">
+                    <label class="form-label">Subject Name <span style="color:var(--c-danger);">*</span></label>
+                    <input type="text" id="new_sbj_name" class="form-control" placeholder="e.g. Entrepreneurship or Computer Studies" required>
+                </div>
+                <div class="form-group" style="margin-bottom:16px;">
+                    <label class="form-label">Subject Code / Abbreviation <span style="color:var(--c-danger);">*</span></label>
+                    <input type="text" id="new_sbj_code" class="form-control" placeholder="e.g. ENT or ICS" required>
+                </div>
+                <div class="form-group" style="margin-bottom:20px;">
+                    <label class="form-label">Curriculum Type</label>
+                    <select id="new_sbj_core" class="form-control" style="font-weight:700;">
+                        <option value="1">🟢 Core Mandatory (Required for all students)</option>
+                        <option value="0">🔵 Optional Elective (Custom student selection)</option>
+                    </select>
+                </div>
+
+                <div style="display:flex;justify-content:flex-end;gap:10px;">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="closeAddSubjectModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm" style="font-weight:700;">Add to Grade & Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentClassId = '';
+        let currentLevelCode = 'O-LEVEL';
+        let gradeData = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            currentClassId  = params.get('class_id') || 'cls-o1';
+            currentLevelCode = params.get('code') || 'O-LEVEL';
+
+            loadGradeWorkspace(currentClassId);
+        });
+
+        function goBackToLevel() {
+            window.location.href = `level-workspace.html?code=${encodeURIComponent(currentLevelCode)}`;
+        }
+
+        async function loadGradeWorkspace(classId) {
+            try {
+                const res = await fetch(`/shule-cafe/api/templates/grade_subjects.php?class_id=${encodeURIComponent(classId)}`, { credentials: 'include' });
+                const data = await res.json();
+
+                if (!res.ok || !data.success) {
+                    alert(data.message || 'Failed to load grade workspace.');
+                    return;
+                }
+
+                gradeData = data;
+                const cTpl = data.class_template;
+
+                // Render Header
+                document.getElementById('gradeTitle').textContent = `${cTpl.name} (${cTpl.code}) Curriculum Workspace`;
+                document.getElementById('gradeSubtitle').textContent = cTpl.description || `Master subject curriculum template for ${cTpl.name} (${cTpl.level_code}).`;
+                document.getElementById('gradeAvatar').textContent = cTpl.code || 'GRD';
+                document.getElementById('gradeLevelBadge').textContent = cTpl.level_code;
+
+                renderSubjectsTable(data.subject_checklist || []);
+
+            } catch (err) {
+                console.error("Error loading grade workspace:", err);
+            }
+        }
+
+        function renderSubjectsTable(checklist) {
+            const tbody = document.getElementById('gradeSubjectsBody');
+            const totalCount = checklist.length;
+            const assignedList = checklist.filter(c => c.is_assigned);
+            const assignedCount = assignedList.length;
+            const coreCount     = assignedList.filter(c => c.is_core).length;
+            const electiveCount = assignedCount - coreCount;
+
+            document.getElementById('statTotalSubjects').textContent   = assignedCount;
+            document.getElementById('statCoreSubjects').textContent    = coreCount;
+            document.getElementById('statElectiveSubjects').textContent= electiveCount;
+            document.getElementById('checklistSummaryText').textContent= `${assignedCount} of ${totalCount} subject(s) assigned to Grade.`;
+
+            if (checklist.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--c-text-muted);">No approved subject templates for this level yet. Click "Add Custom Subject" above to create one.</td></tr>';
+                return;
+            }
+
+            let html = '';
+            checklist.forEach(sbj => {
+                const checked = sbj.is_assigned ? 'checked' : '';
+                const isCoreChecked = sbj.is_core ? 'checked' : '';
+
+                html += `
+                    <tr style="border-bottom:1px solid var(--c-border-light);">
+                        <td style="padding:12px;text-align:center;">
+                            <input type="checkbox" class="chk-gw-sbj" data-code="${sbj.subject_code}" data-name="${sbj.subject_name}" ${checked} style="width:18px;height:18px;cursor:pointer;">
+                        </td>
+                        <td style="padding:12px;font-weight:800;font-size:14px;color:var(--c-text-primary);">
+                            ${sbj.subject_code}
+                        </td>
+                        <td style="padding:12px;font-weight:700;font-size:14px;">
+                            ${sbj.subject_name}
+                        </td>
+                        <td style="padding:12px;text-align:center;">
+                            <label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;">
+                                <input type="checkbox" class="chk-gw-core" id="core_${sbj.subject_code}" ${isCoreChecked} style="width:16px;height:16px;">
+                                <span>${sbj.is_core ? '🟢 Core Mandatory' : '🔵 Optional Elective'}</span>
+                            </label>
+                        </td>
+                        <td style="padding:12px;text-align:right;">
+                            <button type="button" class="btn btn-outline btn-xs" onclick="toggleSubjectCheck('${sbj.subject_code}')">Toggle</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function toggleSubjectCheck(code) {
+            $('.chk-gw-sbj[data-code="' + code + '"]').prop('checked', function(i, val){ return !val; });
+        }
+
+        async function saveGradeCurriculum() {
+            const assignedSubjects = [];
+            $('.chk-gw-sbj:checked').each(function () {
+                const code = $(this).attr('data-code');
+                const isCore = $('#core_' + code).is(':checked') ? 1 : 0;
+                assignedSubjects.push({ subject_code: code, is_core: isCore });
+            });
+
+            try {
+                const res = await fetch('/shule-cafe/api/templates/grade_subjects.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        action: 'save_grade_template',
+                        class_id: currentClassId,
+                        assigned_subjects: assignedSubjects
+                    })
+                });
+                const result = await res.json();
+
+                if (res.ok && result.success) {
+                    alert('✅ Grade template curriculum saved successfully!');
+                    loadGradeWorkspace(currentClassId);
+                } else {
+                    alert(result.message || 'Failed to save grade template.');
+                }
+            } catch (err) {
+                alert('Network error saving grade template.');
+            }
+        }
+
+        document.getElementById('gradeSubjectsForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            saveGradeCurriculum();
+        });
+
+        // Add Subject Modal handlers
+        function openAddSubjectModal() {
+            document.getElementById('new_sbj_name').value = '';
+            document.getElementById('new_sbj_code').value = '';
+            document.getElementById('addSubjectModal').style.display = 'flex';
+        }
+
+        function closeAddSubjectModal() {
+            document.getElementById('addSubjectModal').style.display = 'none';
+        }
+
+        document.getElementById('addSubjectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name   = document.getElementById('new_sbj_name').value.trim();
+            const code   = document.getElementById('new_sbj_code').value.trim().toUpperCase();
+            const isCore = parseInt(document.getElementById('new_sbj_core').value);
+
+            try {
+                // 1. Create subject template at level
+                const res1 = await fetch('/shule-cafe/api/templates/create.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        type: 'subject',
+                        name: name,
+                        code: code,
+                        level_code: currentLevelCode,
+                        description: `Custom ${name} subject template`
+                    })
+                });
+
+                // 2. Add to assigned subjects array and save
+                const assignedSubjects = [];
+                $('.chk-gw-sbj:checked').each(function () {
+                    const c = $(this).attr('data-code');
+                    const ic = $('#core_' + c).is(':checked') ? 1 : 0;
+                    assignedSubjects.push({ subject_code: c, is_core: ic });
+                });
+
+                // Include new subject
+                assignedSubjects.push({ subject_code: code, is_core: isCore });
+
+                const res2 = await fetch('/shule-cafe/api/templates/grade_subjects.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        action: 'save_grade_template',
+                        class_id: currentClassId,
+                        assigned_subjects: assignedSubjects
+                    })
+                });
+
+                const r2 = await res2.json();
+                if (res2.ok && r2.success) {
+                    alert(`✅ Added '${name}' (${code}) to ${currentLevelCode} and saved to Grade curriculum!`);
+                    closeAddSubjectModal();
+                    loadGradeWorkspace(currentClassId);
+                } else {
+                    alert(r2.message || 'Failed to save subject to grade.');
+                }
+            } catch (err) {
+                alert('Network error adding custom subject.');
+            }
+        });
+    </script>
+</body>
+</html>

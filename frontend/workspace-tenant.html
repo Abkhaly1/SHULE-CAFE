@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azania Secondary ‹ Tenants ‹ SHULE CAFE</title>
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <div class="layout-wrapper">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                SHULE CAFE
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="super-admin.html" class="active">Tenants (Schools)</a></li>
+                    <li><a href="#">System Users</a></li>
+                    <li><a href="#">Global Settings</a></li>
+                    <li><a href="#">Audit Logs</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-area">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <span id="userName" style="font-weight: 500;">Admin</span>
+                </div>
+                <div class="topbar-right">
+                    <button id="logoutBtn" class="btn">Log Out</button>
+                </div>
+            </header>
+
+            <!-- Workspace Content -->
+            <div class="content-wrapper">
+                <div class="breadcrumb">
+                    <a href="#">Dashboard</a> / <a href="super-admin.html">Tenants</a> / Azania Secondary
+                </div>
+                
+                <div class="page-header">
+                    <h1 class="page-title">Azania Secondary School</h1>
+                    <div class="toolbar">
+                        <button class="btn">Suspend Tenant</button>
+                        <button class="btn btn-primary">Edit Details</button>
+                    </div>
+                </div>
+
+                <!-- Workspace Tabs -->
+                <div class="workspace-tabs">
+                    <div class="workspace-tab active">Overview</div>
+                    <div class="workspace-tab">Tenant Admins</div>
+                    <div class="workspace-tab">Modules</div>
+                    <div class="workspace-tab">Billing</div>
+                    <div class="workspace-tab">Settings</div>
+                </div>
+
+                <!-- Active Tab Content -->
+                <div class="tab-content">
+                    <div class="table-container" style="border: none; background: transparent; padding: 0;">
+                        <!-- Using a simple definition list or minimalist card for overview -->
+                        <div style="background: #fff; padding: 2rem; border: 1px solid var(--color-border); border-radius: 4px;">
+                            <h3 style="margin-bottom: 1.5rem; font-size: 16px; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem;">Basic Information</h3>
+                            <div style="display: grid; grid-template-columns: 200px 1fr; gap: 1rem; font-size: 14px;">
+                                <div style="color: var(--color-text-secondary); font-weight: 500;">Domain:</div>
+                                <div>azania.shulecafe.com</div>
+                                
+                                <div style="color: var(--color-text-secondary); font-weight: 500;">Status:</div>
+                                <div><span style="background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 99px; font-size: 12px; font-weight: 500;">Active</span></div>
+                                
+                                <div style="color: var(--color-text-secondary); font-weight: 500;">Registered Date:</div>
+                                <div>August 1, 2026</div>
+
+                                <div style="color: var(--color-text-secondary); font-weight: 500;">Address:</div>
+                                <div>Dar es Salaam, Tanzania</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = getAuthToken();
+            const user = getCurrentUser();
+            if (!token || !user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            document.getElementById('userName').textContent = "Howdy, " + user.fullName;
+
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                logout();
+            });
+        });
+    </script>
+</body>
+</html>

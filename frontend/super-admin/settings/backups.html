@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Backups ‹ Super Admin ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="super_admin" active-path="/super-admin/settings/backups.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="System Administrator"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <app-breadcrumb path="Super Admin, Settings, Database Backups"></app-breadcrumb>
+                    
+                    <app-page-header 
+                        title="Database Backups & Disaster Recovery" 
+                        subtitle="Automated periodic backups and instant emergency database dumps.">
+                    </app-page-header>
+                    
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--sp-6); margin-top: var(--sp-4);">
+                        
+                        <!-- Left Column: Backups List -->
+                        <div class="card" style="padding: var(--sp-6);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--sp-4);">
+                                <h3 style="margin: 0;">Available SQL Database Backups</h3>
+                                <button type="button" id="btnCreateBackup" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 6px;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                                    Create Instant Backup Now
+                                </button>
+                            </div>
+
+                            <div id="backupAlert" class="alert alert-success" style="display: none; margin-bottom: var(--sp-4);"></div>
+
+                            <div id="backupsListContainer">
+                                <app-table-skeleton rows="4" cols="3"></app-table-skeleton>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Settings & Schedule -->
+                        <div style="display: flex; flex-direction: column; gap: var(--sp-6);">
+                            <div class="card" style="padding: var(--sp-6);">
+                                <h3 style="margin-top: 0; margin-bottom: var(--sp-3);">Automated Schedule</h3>
+                                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                                    <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #22c55e;"></span>
+                                    <strong style="font-size: var(--text-sm);">Daily Auto-Backup: ACTIVE</strong>
+                                </div>
+                                <p style="font-size: var(--text-sm); color: var(--c-text-secondary); margin: 0; line-height: 1.5;">
+                                    The system automatically dumps the full database structure and records every midnight (00:00). Backups older than 30 days are automatically archived.
+                                </p>
+                            </div>
+
+                            <div class="card" style="padding: var(--sp-6); background: #fefce8; border: 1px solid #fef08a;">
+                                <h4 style="margin-top: 0; font-size: var(--text-sm); color: #854d0e; display: flex; align-items: center; gap: 6px;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                                    Emergency Auto-Recovery
+                                </h4>
+                                <p style="font-size: var(--text-xs); color: #713f12; margin: 0; line-height: 1.5;">
+                                    Before any major structural update or if an anomaly is detected, an emergency backup is automatically triggered and stored in <code>/backups</code>.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const listContainer = document.getElementById('backupsListContainer');
+            const createBtn = document.getElementById('btnCreateBackup');
+            const alertBox = document.getElementById('backupAlert');
+
+            createBtn.addEventListener('click', async () => {
+                createBtn.disabled = true;
+                createBtn.textContent = 'Generating Backup SQL...';
+                alertBox.style.display = 'none';
+
+                try {
+                    const res = await fetch('/shule-cafe/api/system/backup.php?reason=manual_admin_click', { credentials: 'include' });
+                    const result = await res.json();
+
+                    if (res.ok && result.success) {
+                        alertBox.className = 'alert alert-success';
+                        alertBox.textContent = `Backup created successfully! File: ${result.filename} (${result.formatted_size})`;
+                        alertBox.style.display = 'block';
+                        loadBackups();
+                    } else {
+                        alertBox.className = 'alert alert-danger';
+                        alertBox.textContent = result.message || 'Error generating backup.';
+                        alertBox.style.display = 'block';
+                    }
+                } catch (err) {
+                    alertBox.className = 'alert alert-danger';
+                    alertBox.textContent = 'Network error creating backup.';
+                    alertBox.style.display = 'block';
+                } finally {
+                    createBtn.disabled = false;
+                    createBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right:4px;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Create Instant Backup Now`;
+                }
+            });
+
+            async function loadBackups() {
+                try {
+                    const res = await fetch('/shule-cafe/api/system/backup.php?action=list', { credentials: 'include' });
+                    const result = await res.json();
+
+                    if (res.ok && result.success && result.data.length > 0) {
+                        let html = `
+                            <table class="table" style="width: 100%; border-collapse: collapse; font-size: var(--text-sm);">
+                                <thead>
+                                    <tr style="border-bottom: 2px solid var(--c-border-light); text-align: left;">
+                                        <th style="padding: 10px;">Backup SQL File</th>
+                                        <th style="padding: 10px;">Size</th>
+                                        <th style="padding: 10px;">Created Date</th>
+                                        <th style="padding: 10px; text-align: right;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                        `;
+
+                        result.data.forEach(item => {
+                            html += `
+                                <tr style="border-bottom: 1px solid var(--c-border-light);">
+                                    <td style="padding: 10px;">
+                                        <code style="background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: var(--c-primary);">${item.filename}</code>
+                                    </td>
+                                    <td style="padding: 10px;">${item.formatted_size}</td>
+                                    <td style="padding: 10px;">${item.created_at}</td>
+                                    <td style="padding: 10px; text-align: right;">
+                                        <a href="/shule-cafe/backups/${item.filename}" download class="btn btn-outline btn-sm" style="text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Download
+                                        </a>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+
+                        html += `</tbody></table>`;
+                        listContainer.innerHTML = html;
+                    } else {
+                        listContainer.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-text-muted);">No SQL backups generated yet. Click above to create your first backup.</div>';
+                    }
+                } catch (err) {
+                    listContainer.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-danger);">Error loading backups list.</div>';
+                }
+            }
+
+            loadBackups();
+        });
+    </script>
+</body>
+</html>

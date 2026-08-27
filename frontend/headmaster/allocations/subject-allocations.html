@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Academic Allocation Workspace ‹ Headmaster ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+
+    <style>
+        .alloc-hero {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 20px; background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+            border-radius: 10px; margin-bottom: 12px; color: white;
+            box-shadow: 0 4px 12px -2px rgba(4, 120, 87, 0.2);
+        }
+        .hero-icon {
+            width: 38px; height: 38px; border-radius: 8px; background: rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center; font-size: 20px;
+            backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.25);
+        }
+        
+        .roster-card {
+            background: #ffffff; border: 1px solid var(--c-border-light);
+            border-radius: 10px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+        
+        .search-box {
+            position: relative; width: 300px;
+        }
+        .search-box input {
+            width: 100%; padding: 8px 12px 8px 34px; border-radius: 6px;
+            border: 1px solid #cbd5e1; font-size: 13px; font-weight: 500;
+            outline: none; transition: all 0.2s;
+        }
+        .search-box input:focus {
+            border-color: #047857; box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.12);
+        }
+        .search-box .search-icon {
+            position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+            color: #64748b; font-size: 14px; pointer-events: none;
+        }
+
+        .faculty-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .faculty-table th {
+            background: #f8fafc; border-bottom: 2px solid #e2e8f0;
+            padding: 10px 14px; text-align: left; font-weight: 800; color: #334155;
+            text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px;
+        }
+        .faculty-table td {
+            padding: 10px 14px; border-bottom: 1px solid #f1f5f9; vertical-align: middle;
+        }
+        .faculty-table tbody tr:hover { background: #f8fafc; }
+
+        .portfolio-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 18px; background: #ffffff; border: 1px solid var(--c-border-light);
+            border-radius: 10px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .level-block {
+            background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px;
+            padding: 14px 16px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .level-block-title {
+            font-size: 14px; font-weight: 800; color: #0f172a; margin: 0 0 10px 0;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        /* Compact Subject Cards Grid */
+        .subject-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 8px;
+        }
+        .subject-card-check {
+            display: flex; align-items: center; justify-content: space-between; gap: 8px;
+            padding: 8px 12px; background: #ffffff; border: 1px solid #cbd5e1;
+            border-radius: 6px; cursor: pointer; transition: all 0.15s ease;
+            user-select: none; min-height: 38px;
+        }
+        .subject-card-check:hover {
+            border-color: #047857; background: #f0fdf4;
+        }
+        .subject-card-check.selected {
+            border-color: #047857; background: #ecfdf5; box-shadow: 0 1px 3px rgba(4, 120, 87, 0.15);
+        }
+        .subject-card-check input[type="checkbox"] {
+            width: 16px; height: 16px; accent-color: #047857; cursor: pointer; margin: 0;
+        }
+        .subject-card-info {
+            display: flex; align-items: center; justify-content: space-between; flex: 1; gap: 6px;
+        }
+        .subject-name-lbl {
+            font-weight: 700; font-size: 13px; color: #0f172a; line-height: 1.2;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .subject-code-lbl {
+            font-size: 10px; font-weight: 800; color: #475569; background: #f1f5f9;
+            padding: 2px 6px; border-radius: 4px; flex-shrink: 0;
+        }
+
+        .btn-action-primary {
+            background: #047857; color: white !important; font-weight: 700;
+            padding: 8px 18px; border-radius: 6px; border: none; cursor: pointer;
+            box-shadow: 0 2px 5px rgba(4,120,87,0.25); transition: all 0.2s; font-size: 13px;
+        }
+        .btn-action-primary:hover { background: #065f46; }
+
+        /* Toast notification */
+        .toast-notify {
+            position: fixed; bottom: 20px; right: 20px; z-index: 99999;
+            padding: 12px 20px; border-radius: 8px; background: #0f172a; color: white;
+            font-weight: 600; font-size: 13px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            display: none; align-items: center; gap: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="tenant_admin" active-path="/headmaster/allocations/subject-allocations.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Headmaster Portal"></app-topbar>
+            
+            <main class="app-content-wrapper" style="padding-top: 10px;">
+                <div class="app-content" style="padding: 0;">
+                    
+                    <app-workspace-layout hide-back style="gap: 10px;">
+                        
+                        <!-- =================================================================== -->
+                        <!-- STEP 1: MASTER STAFF ROSTER WORKSPACE                              -->
+                        <!-- =================================================================== -->
+                        <div id="viewStep1Roster" style="display: block;">
+                            <div class="alloc-hero">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div class="hero-icon">👩‍🏫</div>
+                                    <div>
+                                        <h2 style="margin: 0; font-size: 18px; font-weight: 800; color: white; line-height: 1.2;">
+                                            Teacher Subject Allocation Workspace
+                                        </h2>
+                                        <div style="color: #a7f3d0; font-size: 12px; margin-top: 2px;">
+                                            Select a faculty member below to open their master subject qualification portfolio.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="roster-card">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: #0f172a;">
+                                            Faculty Directory
+                                        </h3>
+                                    </div>
+                                    <div class="search-box">
+                                        <span class="search-icon">🔍</span>
+                                        <input type="text" id="txtSearchTeacher" placeholder="Search teacher by name or staff code...">
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="faculty-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Faculty Member</th>
+                                                <th>Department</th>
+                                                <th>Qualified Master Subjects</th>
+                                                <th style="text-align: right;">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tblFacultyBody">
+                                            <tr>
+                                                <td colspan="4" style="text-align:center; padding:24px; color:#64748b;">
+                                                    Loading staff directory...
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- =================================================================== -->
+                        <!-- STEP 2: MASTER SUBJECTS QUALIFICATION WORKSPACE                    -->
+                        <!-- =================================================================== -->
+                        <div id="viewTeacherPortfolio" style="display: none;">
+                            
+                            <div class="portfolio-header">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="width: 36px; height: 36px; border-radius: 8px; background: #f0fdf4; color: #047857; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800;">
+                                        📁
+                                    </div>
+                                    <div>
+                                        <h2 id="lblPortfolioTeacherName" style="margin: 0; font-size: 16px; font-weight: 800; color: #0f172a;">
+                                            Master Subject Qualifications: Teacher Name
+                                        </h2>
+                                        <div id="lblPortfolioMeta" style="font-size: 12px; color: #64748b; margin-top: 1px;">
+                                            Staff Code: # --- | Department: ---
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button id="btnBackToDirectory" onclick="goBackToDirectory()" class="btn btn-outline btn-sm" style="border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer;">
+                                        ⬅ Back to Staff Directory
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- O-Level Block -->
+                            <div class="level-block">
+                                <div class="level-block-title">
+                                    <span>📘</span> Ordinary Level (O-Level) Curriculum
+                                    <span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:700; font-size:11px; margin-left:auto;">Forms 1, 2, 3, 4</span>
+                                </div>
+                                <div class="subject-grid" id="gridOLevelSubjects">
+                                    <div style="color:#64748b; font-size:12px;">Loading O-Level subjects...</div>
+                                </div>
+                            </div>
+
+                            <!-- A-Level Block -->
+                            <div class="level-block">
+                                <div class="level-block-title">
+                                    <span>📙</span> Advanced Level (A-Level) Curriculum
+                                    <span class="badge" style="background:#fef3c7; color:#92400e; font-weight:700; font-size:11px; margin-left:auto;">Forms 5, 6</span>
+                                </div>
+                                <div class="subject-grid" id="gridALevelSubjects">
+                                    <div style="color:#64748b; font-size:12px;">Loading A-Level subjects...</div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px; background: #ffffff; padding: 12px 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                <button id="btnSaveStep2Qualifications" onclick="saveMasterSubjects()" class="btn-action-primary">
+                                    💾 Save Master Subjects
+                                </button>
+                            </div>
+
+                        </div>
+
+                    </app-workspace-layout>
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal Popup -->
+    <div id="modalConfirmAction" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.5); align-items:center; justify-content:center; z-index:99999; backdrop-filter:blur(3px);">
+        <div style="background:white; width:90%; max-width:440px; border-radius:12px; padding:20px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.2);">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                <div style="width:36px; height:36px; border-radius:50%; background:#f0fdf4; color:#047857; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:800;">
+                    ❓
+                </div>
+                <h3 id="modalConfirmTitle" style="margin:0; font-size:16px; font-weight:800; color:#0f172a;">Confirm Action</h3>
+            </div>
+            <div id="modalConfirmMessage" style="font-size:13px; color:#475569; margin-bottom:20px; line-height:1.5;"></div>
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button id="btnCancelModal" onclick="closeConfirmModal()" class="btn btn-outline btn-sm" style="border-radius:6px; font-weight:700;">Cancel</button>
+                <button id="btnProceedModal" class="btn-action-primary" style="font-size:12px; padding:6px 16px;">Yes, Confirm & Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toastNotify" class="toast-notify"></div>
+
+    <script>
+        const ACADEMIC_YEAR = new Date().getFullYear().toString();
+        let allTeachers = [];
+        let currentTeacherId = null;
+        let teacherData = null;
+        let masterSubjects = [];
+        let currentQualCodes = [];
+        let activeSchoolLevels = [];
+
+        function showToast(message, isError = false) {
+            const t = $('#toastNotify');
+            t.css('background', isError ? '#991b1b' : '#047857');
+            t.html(`${isError ? '❌' : '✅'} ${message}`).css('display', 'flex').fadeIn(200);
+            setTimeout(() => { t.fadeOut(300); }, 3000);
+        }
+
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Confirmation Modal Popup
+        window.showConfirmation = function(title, message) {
+            return new Promise((resolve) => {
+                $('#modalConfirmTitle').text(title);
+                $('#modalConfirmMessage').text(message);
+                $('#modalConfirmAction').css('display', 'flex');
+
+                $('#btnProceedModal').off('click').on('click', function() {
+                    $('#modalConfirmAction').hide();
+                    resolve(true);
+                });
+                $('#btnCancelModal').off('click').on('click', function() {
+                    $('#modalConfirmAction').hide();
+                    resolve(false);
+                });
+            });
+        };
+
+        window.closeConfirmModal = function() {
+            $('#modalConfirmAction').hide();
+        };
+
+        // ==========================================
+        // STEP 1: FACULTY ROSTER DIRECTORY
+        // ==========================================
+        async function loadFacultyRoster() {
+            $('#tblFacultyBody').html('<tr><td colspan="4" style="text-align:center; padding:24px; color:#64748b;">Loading staff directory...</td></tr>');
+            try {
+                const res = await fetch(`/shule-cafe/api/headmaster/academics/teacher_allocations_api.php?action=directory&year=${ACADEMIC_YEAR}`, { credentials: 'include' });
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    $('#tblFacultyBody').html('<tr><td colspan="4" style="text-align:center; padding:24px; color:crimson;">Failed loading staff directory.</td></tr>');
+                    return;
+                }
+
+                allTeachers = data.teachers || [];
+                renderFacultyTable(allTeachers);
+            } catch (e) {
+                console.error("Error loading roster:", e);
+                $('#tblFacultyBody').html('<tr><td colspan="4" style="text-align:center; padding:24px; color:crimson;">Error connecting to server.</td></tr>');
+            }
+        }
+
+        function renderFacultyTable(teachersList) {
+            if (!teachersList || teachersList.length === 0) {
+                $('#tblFacultyBody').html('<tr><td colspan="4" style="text-align:center; padding:24px; color:#64748b;">No faculty members found.</td></tr>');
+                return;
+            }
+
+            const rows = teachersList.map(t => {
+                const quals = t.qualified_subjects || [];
+                const qualCount = t.qualified_subjects_count || quals.length || 0;
+                const userCode = t.user_code ? `<span class="badge" style="background:#f1f5f9; color:#475569; font-weight:700; font-size:10px;">${t.user_code}</span>` : '';
+
+                let qualBadges = '';
+                if (quals.length > 0) {
+                    qualBadges = quals.map(q => `
+                        <span class="badge" style="background:#e0f2fe; color:#0369a1; border: 1px solid #bae6fd; font-weight:700; padding:3px 8px; font-size:11px; margin-right:4px; margin-bottom:4px; display:inline-flex; align-items:center; gap:4px;">
+                            📘 ${q.subject_name} (${q.subject_code})
+                        </span>
+                    `).join('');
+                } else {
+                    qualBadges = `
+                        <span class="badge" style="background:#fef2f2; color:#b91c1c; font-weight:700; padding:3px 8px; font-size:11px;">
+                            ⚠️ No Qualified Subjects
+                        </span>
+                    `;
+                }
+
+                return `
+                    <tr>
+                        <td>
+                            <div style="font-weight: 800; color: #0f172a; font-size: 14px;">${t.full_name}</div>
+                            <div style="margin-top: 1px;">${userCode}</div>
+                        </td>
+                        <td>
+                            <span style="color:#475569; font-weight:600; font-size:12px;">${t.department || 'General Faculty'}</span>
+                        </td>
+                        <td>
+                            <div style="display:flex; flex-wrap:wrap; align-items:center;">
+                                ${qualBadges}
+                            </div>
+                        </td>
+                        <td style="text-align: right;">
+                            <button class="btn btn-sm" style="background:#047857; color:white; font-weight:700; border-radius:6px; padding:6px 12px; font-size:12px;" onclick="openTeacherPortfolio('${t.id}')">
+                                📁 Open Allocation Portfolio
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            $('#tblFacultyBody').html(rows.join(''));
+        }
+
+        $(document).on('input', '#txtSearchTeacher', function() {
+            const query = $(this).val().toLowerCase().trim();
+            if (!query) {
+                renderFacultyTable(allTeachers);
+                return;
+            }
+            const queryClean = query.replace(/[^a-z0-9]/g, '');
+            const filtered = allTeachers.filter(t => {
+                const name = (t.full_name || '').toLowerCase();
+                const code = (t.user_code || '').toLowerCase();
+                const dept = (t.department || '').toLowerCase();
+                const qualNames = (t.qualified_subjects || []).map(q => `${q.subject_name} ${q.subject_code}`).join(' ').toLowerCase();
+                const combined = `${name} ${code} ${dept} ${qualNames}`;
+                const combinedClean = combined.replace(/[^a-z0-9]/g, '');
+                return combined.includes(query) || (queryClean !== '' && combinedClean.includes(queryClean));
+            });
+            renderFacultyTable(filtered);
+        });
+
+        function openTeacherPortfolio(teacherId) {
+            window.location.href = `subject-allocations.html?teacher_id=${teacherId}`;
+        }
+
+        // ==========================================
+        // STEP 2: MASTER SUBJECT QUALIFICATION WORKSPACE
+        // ==========================================
+        async function loadTeacherPortfolio(teacherId) {
+            currentTeacherId = teacherId;
+            $('#viewStep1Roster').hide();
+            $('#viewTeacherPortfolio').show();
+
+            try {
+                const res = await fetch(`/shule-cafe/api/headmaster/academics/teacher_allocations_api.php?action=profile&teacher_id=${teacherId}&year=${ACADEMIC_YEAR}`, { credentials: 'include' });
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    alert(data.message || 'Failed to load teacher portfolio.');
+                    window.location.href = 'subject-allocations.html';
+                    return;
+                }
+
+                teacherData = data.teacher;
+                currentQualCodes = (data.qualifications || []).map(q => q.subject_code);
+                masterSubjects = data.all_subjects || [];
+                activeSchoolLevels = data.active_school_levels || [];
+
+                $('#lblPortfolioTeacherName').text(`Master Subject Qualifications: ${teacherData.full_name}`);
+                $('#lblPortfolioMeta').text(`Staff Code: #${teacherData.user_code || teacherData.id} | Department: ${teacherData.department || 'General Faculty'}`);
+
+                renderStep2Grid();
+
+            } catch (e) {
+                console.error("Error loading portfolio:", e);
+                alert("Error connecting to server.");
+                window.location.href = 'subject-allocations.html';
+            }
+        }
+
+        function renderStep2Grid() {
+            // Strict filtering by true level_code (No dumping of Primary or unmatched subjects!)
+            const oLevelSubjects = masterSubjects.filter(s => {
+                const lvl = (s.level_code || '').toUpperCase();
+                return lvl === 'O-LEVEL' || lvl.includes('ORDINARY') || (lvl.includes('O') && !lvl.includes('A') && !lvl.includes('PRI'));
+            });
+
+            const aLevelSubjects = masterSubjects.filter(s => {
+                const lvl = (s.level_code || '').toUpperCase();
+                return lvl === 'A-LEVEL' || lvl.includes('ADVANCED');
+            });
+
+            renderSubjectBlock('#gridOLevelSubjects', oLevelSubjects);
+            renderSubjectBlock('#gridALevelSubjects', aLevelSubjects);
+        }
+
+        function renderSubjectBlock(targetSelector, subjects) {
+            if (!subjects || subjects.length === 0) {
+                $(targetSelector).html('<div style="color:#94a3b8; font-size:12px; font-style:italic;">No subjects registered under this level.</div>');
+                return;
+            }
+
+            const html = subjects.map(s => {
+                const isChecked = currentQualCodes.includes(s.code);
+                return `
+                    <div class="subject-card-check ${isChecked ? 'selected' : ''}" onclick="toggleSubjectSelection(this)">
+                        <input type="checkbox" class="chkSubjectCode" value="${s.code}" ${isChecked ? 'checked' : ''} onclick="event.stopPropagation(); toggleSubjectCardClass(this);">
+                        <div class="subject-card-info">
+                            <span class="subject-name-lbl" title="${s.name}">${s.name}</span>
+                            <span class="subject-code-lbl">${s.code}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            $(targetSelector).html(html.join(''));
+        }
+
+        function toggleSubjectSelection(cardEl) {
+            const chk = $(cardEl).find('.chkSubjectCode');
+            chk.prop('checked', !chk.prop('checked'));
+            $(cardEl).toggleClass('selected', chk.prop('checked'));
+        }
+
+        function toggleSubjectCardClass(chkEl) {
+            $(chkEl).closest('.subject-card-check').toggleClass('selected', $(chkEl).prop('checked'));
+        }
+
+        // Save Master Subjects
+        window.saveMasterSubjects = async function() {
+            const selectedCodes = $('.chkSubjectCode:checked').map((i, e) => $(e).val()).get();
+            const teacherName = teacherData ? teacherData.full_name : 'this teacher';
+
+            const confirmed = await showConfirmation(
+                'Confirm Save Master Subjects',
+                `Are you sure you want to save ${selectedCodes.length} master subject qualification(s) for ${teacherName}?`
+            );
+
+            if (!confirmed) return;
+
+            const btn = $('#btnSaveStep2Qualifications');
+            btn.prop('disabled', true).text('⏳ Saving...');
+
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/academics/teacher_allocations_api.php', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'save_qualifications',
+                        teacher_id: currentTeacherId,
+                        subject_codes: selectedCodes
+                    })
+                });
+                const data = await res.json();
+                btn.prop('disabled', false).text('💾 Save Master Subjects');
+                if (data.success) {
+                    showToast('Master subjects saved successfully!');
+                    loadTeacherPortfolio(currentTeacherId);
+                } else {
+                    showToast(data.message || 'Failed to save qualifications.', true);
+                }
+            } catch (e) {
+                console.error("Save qualifications error:", e);
+                btn.prop('disabled', false).text('💾 Save Master Subjects');
+                showToast("Error connecting to server.", true);
+            }
+        };
+
+        window.goBackToDirectory = function() {
+            $('#viewTeacherPortfolio').hide();
+            $('#viewStep1Roster').show();
+            if (window.history && window.history.pushState) {
+                const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                window.history.pushState({path: cleanUrl}, '', cleanUrl);
+            }
+            loadFacultyRoster();
+        };
+
+        $('#btnBackToDirectory').on('click', function(e) {
+            e.preventDefault();
+            goBackToDirectory();
+        });
+
+        $('#btnSaveStep2Qualifications').on('click', function(e) {
+            e.preventDefault();
+            saveMasterSubjects();
+        });
+
+        $(document).ready(function() {
+            const teacherIdParam = getQueryParam('teacher_id');
+            if (teacherIdParam) {
+                loadTeacherPortfolio(teacherIdParam);
+            } else {
+                loadFacultyRoster();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Users ‹ Super Admin ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="super_admin" active-path="/super-admin/users/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="System Administrator"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <app-breadcrumb path="Super Admin, Platform Users"></app-breadcrumb>
+                    
+                    <app-page-header 
+                        title="Platform Users" 
+                        subtitle="View and manage all platform users (Regional Officers, Headmasters, Teachers, Students)."
+                        primary-action="Invite Regional Officer"
+                        id="pageHeader">
+                    </app-page-header>
+                    
+                    <div class="card" style="margin-top: var(--sp-4);">
+                        <div style="padding: var(--sp-4); border-bottom: 1px solid var(--c-border-light); display: flex; justify-content: space-between; align-items: center;">
+                            <app-table-toolbar entity-type="users" search-placeholder="Search users by name, email, or phone..."></app-table-toolbar>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-right: var(--sp-4);">
+                                <label style="font-size: var(--text-sm); font-weight: 500; color: var(--c-text-muted);">Role Filter:</label>
+                                <select id="roleFilter" class="form-control" style="width: auto;">
+                                    <option value="ALL">All Roles</option>
+                                    <option value="super_admin">Super Admin</option>
+                                    <option value="regional_officer">Regional Officer</option>
+                                    <option value="tenant_admin">Headmaster (Tenant Admin)</option>
+                                    <option value="teacher">Teacher</option>
+                                    <option value="student">Student</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="tableContainer">
+                            <app-table-skeleton rows="5" cols="4"></app-table-skeleton>
+                        </div>
+                    </div>
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+
+    <!-- Invite Regional Officer Modal -->
+    <div id="addUserModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 480px; padding: var(--sp-6); background: white;">
+            <h3 style="margin-top: 0; margin-bottom: var(--sp-2);">Invite Regional Officer</h3>
+            <p style="font-size: var(--text-xs); color: var(--c-text-muted); margin-bottom: var(--sp-4);">
+                Super Admins can only register Regional Officers directly. Headmasters are created during School Provisioning, while Teachers and Students are automatically provisioned by their respective Headmaster.
+            </p>
+            
+            <div id="addUserAlert" class="alert alert-danger" style="display: none; margin-bottom: var(--sp-4);"></div>
+
+            <form id="addUserForm">
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">Full Name <span style="color:var(--c-danger);">*</span></label>
+                    <input type="text" id="add_u_name" class="form-control" placeholder="e.g. Hon. Juma Ali" required>
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">Email Address (Username) <span style="color:var(--c-danger);">*</span></label>
+                    <input type="email" id="add_u_email" class="form-control" placeholder="e.g. officer@moe.go.tz" required>
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">Phone Number <span style="color:var(--c-danger);">*</span></label>
+                    <input type="text" id="add_u_phone" class="form-control" placeholder="e.g. +255788111222" required>
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">System Role <span style="color:var(--c-danger);">*</span></label>
+                    <select id="add_u_role" class="form-control" required>
+                        <option value="regional_officer">Regional Officer</option>
+                        <option value="super_admin">Super Admin</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-6);">
+                    <label class="form-label">Initial Password <span style="color:var(--c-danger);">*</span></label>
+                    <input type="password" id="add_u_password" class="form-control" placeholder="Set temporary password" required>
+                </div>
+                <div style="display: flex; gap: var(--sp-2); justify-content: flex-end;">
+                    <button type="button" id="closeAddUserModalBtn" class="btn btn-outline">Cancel</button>
+                    <button type="submit" id="saveUserBtn" class="btn btn-primary">Create User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="editUserModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 480px; padding: var(--sp-6); background: white;">
+            <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">Edit Platform User</h3>
+            
+            <div id="editUserAlert" class="alert alert-danger" style="display: none; margin-bottom: var(--sp-4);"></div>
+
+            <form id="editUserForm">
+                <input type="hidden" id="edit_u_id">
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">Full Name <span style="color:var(--c-danger);">*</span></label>
+                    <input type="text" id="edit_u_name" class="form-control" required>
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">Email Address <span style="color:var(--c-danger);">*</span></label>
+                    <input type="email" id="edit_u_email" class="form-control" required>
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">Phone Number <span style="color:var(--c-danger);">*</span></label>
+                    <input type="text" id="edit_u_phone" class="form-control" required>
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">Role</label>
+                    <select id="edit_u_role" class="form-control">
+                        <option value="super_admin">Super Admin</option>
+                        <option value="regional_officer">Regional Officer</option>
+                        <option value="tenant_admin">Headmaster (Tenant Admin)</option>
+                        <option value="teacher">Teacher</option>
+                        <option value="student">Student</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-6);">
+                    <label class="form-label">Account Status</label>
+                    <select id="edit_u_status" class="form-control">
+                        <option value="active">Active</option>
+                        <option value="suspended">Suspended</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: var(--sp-2); justify-content: flex-end;">
+                    <button type="button" id="closeEditUserModalBtn" class="btn btn-outline">Cancel</button>
+                    <button type="submit" id="updateUserBtn" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const tableContainer = document.getElementById('tableContainer');
+            const roleFilter = document.getElementById('roleFilter');
+            const addModal = document.getElementById('addUserModal');
+            const editModal = document.getElementById('editUserModal');
+
+            const closeAddBtn = document.getElementById('closeAddUserModalBtn');
+            const closeEditBtn = document.getElementById('closeEditUserModalBtn');
+            const addForm = document.getElementById('addUserForm');
+            const editForm = document.getElementById('editUserForm');
+            const addUserAlert = document.getElementById('addUserAlert');
+            const editUserAlert = document.getElementById('editUserAlert');
+
+            let rawUsersList = [];
+
+            // Primary action button listener
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('#pageHeader button') || e.target.closest('[primary-action]')) {
+                    addModal.style.display = 'flex';
+                }
+            });
+
+            if (closeAddBtn) closeAddBtn.addEventListener('click', () => addModal.style.display = 'none');
+            if (closeEditBtn) closeEditBtn.addEventListener('click', () => editModal.style.display = 'none');
+
+            roleFilter.addEventListener('change', () => filterAndRender());
+
+            // Handle edit action
+            document.addEventListener('table-edit-action', (e) => {
+                const userId = e.detail.id;
+                const user = rawUsersList.find(u => u.id === userId);
+                if (!user) return;
+
+                document.getElementById('edit_u_id').value = user.id;
+                document.getElementById('edit_u_name').value = user.full_name;
+                document.getElementById('edit_u_email').value = user.email || '';
+                document.getElementById('edit_u_phone').value = user.phone;
+                document.getElementById('edit_u_role').value = user.role;
+                document.getElementById('edit_u_status').value = user.status || 'active';
+
+                editUserAlert.style.display = 'none';
+                editModal.style.display = 'flex';
+            });
+
+            // Create user form submission
+            addForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                addUserAlert.style.display = 'none';
+
+                const data = {
+                    full_name: document.getElementById('add_u_name').value,
+                    email: document.getElementById('add_u_email').value,
+                    phone: document.getElementById('add_u_phone').value,
+                    role: document.getElementById('add_u_role').value,
+                    password: document.getElementById('add_u_password').value
+                };
+
+                try {
+                    const res = await fetch('/shule-cafe/api/users/create.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(data)
+                    });
+                    const result = await res.json();
+                    if (res.ok && result.success) {
+                        addModal.style.display = 'none';
+                        addForm.reset();
+                        loadUsers();
+                    } else {
+                        addUserAlert.textContent = result.message || 'Error creating user.';
+                        addUserAlert.style.display = 'block';
+                    }
+                } catch (err) {
+                    addUserAlert.textContent = 'Network error creating user.';
+                    addUserAlert.style.display = 'block';
+                }
+            });
+
+            // Update user form submission
+            editForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                editUserAlert.style.display = 'none';
+
+                const data = {
+                    id: document.getElementById('edit_u_id').value,
+                    full_name: document.getElementById('edit_u_name').value,
+                    email: document.getElementById('edit_u_email').value,
+                    phone: document.getElementById('edit_u_phone').value,
+                    role: document.getElementById('edit_u_role').value,
+                    status: document.getElementById('edit_u_status').value
+                };
+
+                try {
+                    const res = await fetch('/shule-cafe/api/users/update.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(data)
+                    });
+                    const result = await res.json();
+                    if (res.ok && result.success) {
+                        editModal.style.display = 'none';
+                        loadUsers();
+                    } else {
+                        editUserAlert.textContent = result.message || 'Error updating user.';
+                        editUserAlert.style.display = 'block';
+                    }
+                } catch (err) {
+                    editUserAlert.textContent = 'Network error updating user.';
+                    editUserAlert.style.display = 'block';
+                }
+            });
+
+            const roleLabels = {
+                'super_admin': 'Super Admin',
+                'regional_officer': 'Regional Officer',
+                'tenant_admin': 'Headmaster (Tenant Admin)',
+                'teacher': 'Teacher',
+                'student': 'Student',
+                'parent': 'Parent'
+            };
+
+            const columns = [
+                { key: 'user', label: 'User Name & Email', type: 'avatar' },
+                { key: 'phone', label: 'Phone Number', type: 'text' },
+                { key: 'role_label', label: 'Role', type: 'badge' },
+                { key: 'school_name', label: 'School / Institution', type: 'text' },
+                { key: 'status', label: 'Status', type: 'status' }
+            ];
+
+            async function loadUsers() {
+                try {
+                    const res = await fetch('/shule-cafe/api/users/list.php', { credentials: 'include' });
+                    const result = await res.json();
+
+                    if (res.ok && result.success) {
+                        rawUsersList = result.data;
+                        filterAndRender();
+                    } else {
+                        tableContainer.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-danger);">Failed to load platform users.</div>';
+                    }
+                } catch (err) {
+                    tableContainer.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-danger);">Network error loading platform users.</div>';
+                }
+            }
+
+            function filterAndRender() {
+                const selectedRole = roleFilter.value;
+                let filtered = rawUsersList;
+                if (selectedRole !== 'ALL') {
+                    filtered = filtered.filter(u => u.role === selectedRole);
+                }
+
+                if (filtered.length === 0) {
+                    tableContainer.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-text-muted);">No platform users found for selected role.</div>';
+                    return;
+                }
+
+                const usersData = filtered.map(item => ({
+                    id: item.id,
+                    user: { initials: item.full_name ? item.full_name.charAt(0).toUpperCase() : 'U', name: item.full_name, subtitle: item.email || item.phone },
+                    phone: item.phone || 'N/A',
+                    role_label: roleLabels[item.role] || item.role,
+                    school_name: item.school_name || 'System / Platform',
+                    status: item.status === 'active' ? 'Active' : 'Suspended'
+                }));
+
+                const appTable = document.createElement('app-table');
+                appTable.setAttribute('columns', JSON.stringify(columns));
+                appTable.setAttribute('data', JSON.stringify(usersData));
+                appTable.setAttribute('entity-url', 'workspace.html');
+                appTable.setAttribute('actions', 'view');
+
+                tableContainer.innerHTML = '';
+                tableContainer.appendChild(appTable);
+            }
+
+            loadUsers();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Students ‹ Teacher ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/teacher-theme.css">
+    
+    <script type="module" src="../layouts/global-layout.js"></script>
+    <script type="module" src="../js/auth/auth-guard.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="teacher" active-path="/teacher/students.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Teacher Portal"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content" style="padding: var(--sp-4) var(--sp-6);">
+                    
+                    <div class="card" style="margin-bottom: var(--sp-4); padding: var(--sp-4) var(--sp-6); background: white; border-radius: 8px; border: 1px solid var(--c-primary-border);">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 16px;">
+                                <a href="dashboard.html" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none; font-weight: 600;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                                    Back
+                                </a>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 44px; height: 44px; border-radius: 8px; background: var(--c-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800;">
+                                        STU
+                                    </div>
+                                    <div>
+                                        <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: var(--c-text-primary);">My Students Roster</h2>
+                                        <span style="font-size: 13px; color: var(--c-text-muted);">View assigned class students and basic academic roster.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body" style="padding: 16px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 16px; flex-wrap: wrap;">
+                                <input type="text" id="tchStudentSearch" class="form-control" placeholder="🔍 Search student name or code..." style="width: 260px; font-size: 13px;">
+                                <select id="tchStudentLimit" class="form-control" style="width: 110px; font-weight: 700;">
+                                    <option value="25">25 / page</option>
+                                    <option value="50">50 / page</option>
+                                    <option value="100">100 / page</option>
+                                </select>
+                            </div>
+                            <div id="studentsContainer">
+                                <app-table-skeleton rows="5" cols="4"></app-table-skeleton>
+                            </div>
+                            <!-- PAGINATION -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid #e2e8f0; font-size: 13px;">
+                                <div id="tchPageInfo" style="color: #64748b; font-weight: 600;">Showing 0 of 0 students</div>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <button type="button" id="tchPrevBtn" class="btn btn-outline btn-sm" style="font-weight: 700;" disabled>&laquo; Previous</button>
+                                    <span id="tchPageSpan" style="padding: 6px 12px; background: #f1f5f9; border-radius: 6px; font-weight: 700; color: #0f172a;">Page 1 of 1</span>
+                                    <button type="button" id="tchNextBtn" class="btn btn-outline btn-sm" style="font-weight: 700;" disabled>Next &raquo;</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Non-Sensitive Basic View Student Modal for Teachers -->
+    <div id="teacherViewStudentModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="card" style="width: 100%; max-width: 440px; padding: var(--sp-6); background: white;">
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div id="tchViewAvatar" style="width: 44px; height: 44px; border-radius: 50%; background: var(--c-primary-light); color: var(--c-primary); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800;">
+                        S
+                    </div>
+                    <div>
+                        <h3 id="tchViewFullName" style="margin: 0; font-size: 16px; color: var(--c-text-primary);">-</h3>
+                        <span class="badge badge-info" style="font-size: 11px;">STUDENT</span>
+                    </div>
+                </div>
+                <button type="button" id="closeTchViewModalX" style="background: none; border: none; font-size: 20px; cursor: pointer; color: #64748b;">&times;</button>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px; background: #fffbeb; padding: 16px; border-radius: 8px; border: 1px solid #fde68a; margin-bottom: 16px; font-size: 13px;">
+                <div>
+                    <span style="color: #78350f; font-weight: 600;">Student ID:</span>
+                    <div id="tchViewCode" style="font-weight: 700; color: #451a03; margin-top: 2px;">-</div>
+                </div>
+                <div>
+                    <span style="color: #78350f; font-weight: 600;">Class Level:</span>
+                    <div id="tchViewClass" style="font-weight: 700; color: #451a03; margin-top: 2px;">-</div>
+                </div>
+                <div>
+                    <span style="color: #78350f; font-weight: 600;">Academic Status:</span>
+                    <div id="tchViewStatus" style="font-weight: 700; color: #15803d; margin-top: 2px;">Active Student</div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end;">
+                <button type="button" id="closeTchViewModal" class="btn btn-outline">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tchStudentState = { page: 1, limit: 25, search: '', totalPages: 1 };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const viewModal = document.getElementById('teacherViewStudentModal');
+            document.getElementById('closeTchViewModal').addEventListener('click', () => viewModal.style.display = 'none');
+            document.getElementById('closeTchViewModalX').addEventListener('click', () => viewModal.style.display = 'none');
+
+            document.addEventListener('table-view-action', (e) => {
+                const row = e.detail ? e.detail.row : null;
+                if (!row) return;
+
+                document.getElementById('tchViewAvatar').textContent = row.name && row.name.name ? row.name.name.charAt(0).toUpperCase() : 'S';
+                document.getElementById('tchViewFullName').textContent = row.name && row.name.name ? row.name.name : 'Student';
+                document.getElementById('tchViewCode').textContent = row.code || 'STD/${new Date().getFullYear()}/001';
+                document.getElementById('tchViewClass').textContent = row.class || 'Standard 7 A';
+                document.getElementById('tchViewStatus').textContent = row.status || 'Active';
+
+                viewModal.style.display = 'flex';
+            });
+
+            // Search listener
+            let searchDebounce;
+            document.getElementById('tchStudentSearch').addEventListener('input', (e) => {
+                clearTimeout(searchDebounce);
+                searchDebounce = setTimeout(() => {
+                    tchStudentState.search = e.target.value.trim();
+                    tchStudentState.page = 1;
+                    loadTeacherStudents();
+                }, 300);
+            });
+
+            // Limit listener
+            document.getElementById('tchStudentLimit').addEventListener('change', (e) => {
+                tchStudentState.limit = parseInt(e.target.value, 10);
+                tchStudentState.page = 1;
+                loadTeacherStudents();
+            });
+
+            // Pagination listeners
+            document.getElementById('tchPrevBtn').addEventListener('click', () => {
+                if (tchStudentState.page > 1) {
+                    tchStudentState.page--;
+                    loadTeacherStudents();
+                }
+            });
+
+            document.getElementById('tchNextBtn').addEventListener('click', () => {
+                if (tchStudentState.page < tchStudentState.totalPages) {
+                    tchStudentState.page++;
+                    loadTeacherStudents();
+                }
+            });
+
+            loadTeacherStudents();
+        });
+
+        async function loadTeacherStudents() {
+            const container = document.getElementById('studentsContainer');
+            container.innerHTML = '<app-table-skeleton rows="5" cols="4"></app-table-skeleton>';
+
+            try {
+                const searchQ = encodeURIComponent(tchStudentState.search);
+                const res = await fetch(`/shule-cafe/api/students/list.php?page=${tchStudentState.page}&limit=${tchStudentState.limit}&search=${searchQ}`, { credentials: 'include' });
+                const result = await res.json();
+                if (res.ok && result.success) {
+                    const students = result.data || [];
+                    const pag = result.pagination || {};
+
+                    tchStudentState.totalPages = pag.total_pages || 1;
+                    const startIdx = pag.total > 0 ? (tchStudentState.page - 1) * tchStudentState.limit + 1 : 0;
+                    const endIdx = Math.min(pag.total, tchStudentState.page * tchStudentState.limit);
+
+                    document.getElementById('tchPageInfo').textContent = `Showing ${startIdx} to ${endIdx} of ${pag.total} students`;
+                    document.getElementById('tchPageSpan').textContent = `Page ${tchStudentState.page} of ${tchStudentState.totalPages}`;
+                    document.getElementById('tchPrevBtn').disabled = tchStudentState.page <= 1;
+                    document.getElementById('tchNextBtn').disabled = tchStudentState.page >= tchStudentState.totalPages;
+
+                    if (students.length > 0) {
+                        const cols = [
+                            { key: 'code', label: 'Student ID', type: 'text' },
+                            { key: 'name', label: 'Student Name', type: 'avatar' },
+                            { key: 'class', label: 'Class', type: 'text' },
+                            { key: 'status', label: 'Status', type: 'status' }
+                        ];
+                        const data = students.map(item => ({
+                            id: item.id,
+                            code: item.user_code || 'STD/${new Date().getFullYear()}/001',
+                            class: item.class_name || 'Unassigned',
+                            name: { initials: item.full_name ? item.full_name.charAt(0).toUpperCase() : 'S', name: item.full_name },
+                            status: item.status === 'active' ? 'Active' : 'Suspended'
+                        }));
+                        const table = document.createElement('app-table');
+                        table.setAttribute('columns', JSON.stringify(cols));
+                        table.setAttribute('data', JSON.stringify(data));
+                        table.setAttribute('actions', 'view'); // Only View action!
+                        container.innerHTML = '';
+                        container.appendChild(table);
+                    } else {
+                        container.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-text-muted);">No students found matching criteria.</div>';
+                    }
+                }
+            } catch (e) {
+                console.error("Error loading students:", e);
+                container.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-danger);">Error loading students.</div>';
+            }
+        }
+    </script>
+</body>
+</html>

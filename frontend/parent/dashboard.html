@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Dashboard ‹ SHULE CAFE</title>
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <script type="module" src="../layouts/global-layout.js"></script>
+    <script type="module" src="../js/auth/auth-guard.js"></script>
+    <style>
+        .dashboard-header { display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:24px; }
+        .dashboard-card { background:#fff; border:1px solid var(--c-border-light); border-radius:16px; padding:22px; box-shadow:0 8px 24px rgba(15,23,42,0.04); }
+        .dashboard-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px; margin-bottom:24px; }
+        .parent-summary { display:grid; gap:8px; }
+        .parent-summary-title { font-size:14px; font-weight:700; color:var(--c-text-muted); text-transform:uppercase; }
+        .parent-summary-value { font-size:28px; font-weight:800; color:var(--c-text-primary); }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="parent" active-path="/parent/dashboard.html"></app-sidebar>
+        <div class="app-main">
+            <app-topbar username="Parent Portal"></app-topbar>
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <div class="dashboard-header">
+                        <div>
+                            <h1 style="margin:0; font-size:28px; font-weight:800;">Welcome to Your Parent Portal</h1>
+                            <p style="margin:8px 0 0; color:var(--c-text-secondary);">Track your child’s progress and school updates in one place.</p>
+                        </div>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card">
+                            <div class="parent-summary">
+                                <span class="parent-summary-title">Linked Child</span>
+                                <span class="parent-summary-value" id="parentChildName">--</span>
+                            </div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="parent-summary">
+                                <span class="parent-summary-title">Child's Grade</span>
+                                <span class="parent-summary-value" id="parentChildGrade">--</span>
+                            </div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="parent-summary">
+                                <span class="parent-summary-title">Latest Average</span>
+                                <span class="parent-summary-value" id="parentChildAverage">--</span>
+                            </div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="parent-summary">
+                                <span class="parent-summary-title">Attendance</span>
+                                <span class="parent-summary-value" id="parentAttendance">--</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card" style="margin-bottom:24px;">
+                        <h2 style="margin:0 0 16px; font-size:18px; font-weight:800;">Latest Academic Summary</h2>
+                        <div id="parentAcademicSummary">Loading student progress data...</div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h2 style="margin:0 0 16px; font-size:18px; font-weight:800;">Recent School Communication</h2>
+                        <div id="parentNotices">No messages at the moment.</div>
+                    </div>
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const res = await fetch('/shule-cafe/api/students/student_workspace.php', { credentials: 'include' });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    const profile = data.profile || {};
+                    const alloc = data.current_allocation || {};
+                    const timeline = data.timeline_history || [];
+                    
+                    document.getElementById('parentChildName').textContent = profile.full_name || 'Assigned Child';
+                    document.getElementById('parentChildGrade').textContent = alloc.classroom_name ? `${alloc.grade_name || ''} ${alloc.classroom_name}` : (alloc.grade_name || 'Enrolled');
+                    document.getElementById('parentChildAverage').textContent = data.gpa_average ? `${data.gpa_average}%` : 'N/A';
+                    document.getElementById('parentAttendance').textContent = data.attendance_rate ? `${data.attendance_rate}%` : '100%';
+
+                    document.getElementById('parentAcademicSummary').innerHTML = `<p style="margin:0;color:var(--c-text-secondary);">Tracking academic progress and attendance for <strong>${profile.full_name || 'your child'}</strong> (${alloc.grade_name || 'Class'} ${alloc.classroom_name || ''}).</p>`;
+                } else {
+                    document.getElementById('parentChildName').textContent = 'Assigned Child';
+                    document.getElementById('parentChildGrade').textContent = 'Enrolled';
+                    document.getElementById('parentChildAverage').textContent = 'N/A';
+                    document.getElementById('parentAttendance').textContent = 'N/A';
+                    document.getElementById('parentAcademicSummary').innerHTML = '<p style="margin:0;color:var(--c-text-secondary);">Your child has no new academic alerts or messages today.</p>';
+                }
+            } catch (e) {
+                document.getElementById('parentChildName').textContent = 'Assigned Child';
+                document.getElementById('parentChildGrade').textContent = 'Enrolled';
+                document.getElementById('parentChildAverage').textContent = 'N/A';
+                document.getElementById('parentAttendance').textContent = 'N/A';
+                document.getElementById('parentAcademicSummary').innerHTML = '<p style="margin:0;color:var(--c-text-secondary);">Your child has no new academic alerts or messages today.</p>';
+            }
+            document.getElementById('parentNotices').innerHTML = '<p style="margin:0;color:var(--c-text-secondary);">No recent school notices.</p>';
+        });
+    </script>
+</body>
+</html>

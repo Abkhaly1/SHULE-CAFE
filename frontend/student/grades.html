@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Grades ‹ SHULE CAFE</title>
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <script type="module" src="../layouts/global-layout.js"></script>
+    <script type="module" src="../js/auth/auth-guard.js"></script>
+    <style>
+        .grade-card { background:#fff; border:1px solid var(--c-border-light); border-radius:16px; padding:22px; margin-bottom:18px; box-shadow:0 8px 24px rgba(15,23,42,0.04); }
+        .grade-row { display:grid; grid-template-columns:1fr 120px; gap:12px; padding:12px 0; border-bottom:1px solid var(--c-border-light); }
+        .grade-row:last-child { border-bottom:none; }
+        .subject-label { font-weight:700; color:var(--c-text-primary); }
+        .grade-value { font-size:16px; font-weight:800; color:#0f766e; }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="student" active-path="/student/grades.html"></app-sidebar>
+        <div class="app-main">
+            <app-topbar username="Student Portal"></app-topbar>
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <div class="grade-card">
+                        <h1 style="margin:0 0 14px; font-size:24px; font-weight:800;">Your Grades</h1>
+                        <p style="margin:0 0 20px; color:var(--c-text-secondary);">Latest assessment grades for your enrolled subjects.</p>
+                        <div class="grade-row"><span class="subject-label">Mathematics</span><span class="grade-value">A-</span></div>
+                        <div class="grade-row"><span class="subject-label">English</span><span class="grade-value">B+</span></div>
+                        <div class="grade-row"><span class="subject-label">Biology</span><span class="grade-value">B</span></div>
+                        <div class="grade-row"><span class="subject-label">History</span><span class="grade-value">A</span></div>
+                        <div class="grade-row"><span class="subject-label">Geography</span><span class="grade-value">B+</span></div>
+                        <div class="grade-row"><span class="subject-label">Civics</span><span class="grade-value">A-</span></div>
+                    </div>
+                    <app-footer></app-footer>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Multi-Year Report Card ‹ Headmaster ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+    
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+
+    <style>
+        .report-card-container {
+            background: white; border: 1px solid var(--c-border-light);
+            border-radius: 12px; padding: 24px; margin-top: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,.03);
+        }
+        .report-header-banner {
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;
+            padding: 18px 22px; display: flex; justify-content: space-between;
+            align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;
+        }
+        .readonly-banner {
+            background: #fffbebf8; border: 1px solid #fde68a; color: #92400e;
+            padding: 12px 18px; border-radius: 8px; font-weight: 700; font-size: 13px;
+            display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
+        }
+        .summary-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px; margin-top: 24px;
+        }
+        .summary-card {
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;
+            padding: 16px; text-align: center;
+        }
+        .summary-card .val { font-size: 26px; font-weight: 800; color: var(--c-text-primary); }
+        .summary-card .lbl { font-size: 11px; text-transform: uppercase; font-weight: 700; color: var(--c-text-muted); margin-top: 4px; }
+        .report-table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 14px; }
+        .report-table th { background: #1e293b; color: white; padding: 10px 14px; text-align: left; font-size: 12px; text-transform: uppercase; }
+        .report-table td { padding: 12px 14px; border-bottom: 1px solid #f1f5f9; }
+        .report-table tr:hover td { background: #f8fafc; }
+        .grade-badge {
+            display: inline-block; padding: 3px 10px; border-radius: 12px; font-weight: 800; font-size: 12px;
+        }
+        .grade-A { background: #d1fae5; color: #065f46; }
+        .grade-B { background: #e0f2fe; color: #0369a1; }
+        .grade-C { background: #fef9c3; color: #92400e; }
+        .grade-D { background: #ffedd5; color: #9a3412; }
+        .grade-F { background: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body>
+<div class="app-layout">
+    <app-sidebar role="tenant_admin" active-path="/headmaster/reports/index.html"></app-sidebar>
+    <div class="app-main">
+        <app-topbar username="Headmaster Portal"></app-topbar>
+        <main class="app-content-wrapper">
+            <div class="app-content">
+                <app-breadcrumb path="Headmaster, School Reports, Student Report Card"></app-breadcrumb>
+                
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;margin-bottom:16px;">
+                    <div>
+                        <h2 style="margin:0;font-size:22px;font-weight:800;color:var(--c-text-primary);">📊 Multi-Year Student Report Card</h2>
+                        <p style="margin:4px 0 0;font-size:13px;color:var(--c-text-muted);">Historical academic ledger and gradebook performance viewer.</p>
+                    </div>
+                    <div style="display:flex;gap:10px;">
+                        <button class="btn btn-outline" onclick="window.history.back()">⬅ Back</button>
+                        <button class="btn btn-primary" onclick="window.print()">🖨️ Print Official Report Card</button>
+                    </div>
+                </div>
+
+                <!-- ── STUDENT HEADER & YEAR TOGGLE ─────────────────────── -->
+                <div class="report-header-banner">
+                    <div>
+                        <h3 id="stuName" style="margin:0 0 4px;font-size:18px;font-weight:800;color:var(--c-text-primary);"><span class="skeleton skeleton-title" style="width:200px;display:block;"></span></h3>
+                        <span id="stuCode"><span class="skeleton skeleton-sub" style="width:90px;display:block;"></span></span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <label style="font-size:13px;font-weight:700;color:var(--c-text-primary);">🕒 Select Academic Year:</label>
+                        <select id="yearSelector" class="form-control" style="width:240px;font-weight:700;" onchange="onYearSwitch(this.value)">
+                            <option value="">Loading timeline…</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- ── READONLY BANNER ─────────────────────────────────── -->
+                <div id="readOnlyBanner" class="readonly-banner" style="display:none;">
+                    🔒 <strong>ARCHIVED ACADEMIC RECORD (READ-ONLY)</strong> — Historical report for <span id="readOnlyYear">2025</span>. Past academic performance is permanently preserved in the archives and cannot be modified.
+                </div>
+
+                <!-- ── REPORT CARD CONTENT ─────────────────────────────── -->
+                <div class="report-card-container">
+                    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #f1f5f9;padding-bottom:14px;margin-bottom:16px;">
+                        <div>
+                            <h3 style="margin:0;font-size:16px;font-weight:800;color:var(--c-text-primary);" id="reportCardTitle">Academic Report Card</h3>
+                            <div style="font-size:12px;color:var(--c-text-muted);margin-top:2px;" id="reportClassroomInfo">Class Registered: Loading…</div>
+                        </div>
+                        <div id="yearStatusBadge"></div>
+                    </div>
+
+                    <table class="report-table">
+                        <thead>
+                            <tr>
+                                <th>Subject Code</th>
+                                <th>Subject Name</th>
+                                <th>CA Mark (40%)</th>
+                                <th>Terminal Mark (60%)</th>
+                                <th>Total Score (100%)</th>
+                                <th>Grade</th>
+                                <th>Points</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody id="marksTableBody">
+                            <tr class="skeleton-tr"><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td></tr>
+                            <tr class="skeleton-tr"><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td></tr>
+                            <tr class="skeleton-tr"><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td></tr>
+                        </tbody>
+                    </table>
+
+                    <div class="summary-grid">
+                        <div class="summary-card">
+                            <div class="val" id="sumTotalScore">0.0</div>
+                            <div class="lbl">Total Score</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="val" id="sumGpaAvg">0.0%</div>
+                            <div class="lbl">Average Score (GPA)</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="val" id="sumTotalPoints">0</div>
+                            <div class="lbl">Total Points</div>
+                        </div>
+                        <div class="summary-card" style="border-color:#059669;background:#ecfdf5;">
+                            <div class="val" id="sumDivision" style="color:#059669;">Division I</div>
+                            <div class="lbl" style="color:#047857;">NECTA Division</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+let currentStudentId = '';
+let selectedYear = '';
+
+document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    currentStudentId = params.get('student_id') || 'fc5cc4e2-3e5a-4b8b-88e7-de517e4e6cc7'; // Default sample student if missing
+    selectedYear     = params.get('year') || new Date().getFullYear().toString();
+
+    loadTimelineAndReport();
+});
+
+async function loadTimelineAndReport() {
+    try {
+        // 1. Load Academic History Timeline for dropdown
+        const resT = await fetch(`/shule-cafe/api/reports/student_report_card.php?action=get_timeline&student_id=${currentStudentId}`);
+        const dataT = await resT.json();
+
+        if (dataT.success) {
+            document.getElementById('stuName').textContent = dataT.student.full_name;
+            document.getElementById('stuCode').innerHTML   = `<span style="font-size:12px;font-weight:700;color:var(--c-text-muted);background:#e2e8f0;padding:2px 8px;border-radius:4px;">REG #${dataT.student.user_code || dataT.student.id.substr(0,8)}</span>`;
+
+            const sel = document.getElementById('yearSelector');
+            if (dataT.timeline && dataT.timeline.length) {
+                sel.innerHTML = dataT.timeline.map(t => {
+                    const statusText = t.year_status === 'Repeated' ? ' (Repeated)' : t.year_status === 'Promoted' ? ' (Promoted)' : ' (Active)';
+                    return `<option value="${t.academic_year}" ${t.academic_year === selectedYear ? 'selected' : ''}>📅 ${t.academic_year} — ${t.grade_name} ${t.classroom_name}${statusText}</option>`;
+                }).join('');
+            } else {
+                let yr = new Date().getFullYear().toString();
+                sel.innerHTML = `<option value="${yr}" selected>📅 ${yr} — Current Year</option>`;
+            }
+        }
+
+        // 2. Load Report Card Data for selected year
+        loadReportForYear(selectedYear);
+
+    } catch (e) {
+        console.error('Failed to load report timeline', e);
+    }
+}
+
+async function loadReportForYear(year) {
+    selectedYear = year;
+    const resR = await fetch(`/shule-cafe/api/reports/student_report_card.php?action=get_report&student_id=${currentStudentId}&year=${year}`);
+    const dataR = await resR.json();
+
+    if (!dataR.success) {
+        alert(dataR.message || 'Failed to load report card.');
+        return;
+    }
+
+    const { allocation, is_read_only, summary, marks } = dataR;
+
+    // Header & Read-Only Banner
+    document.getElementById('reportCardTitle').textContent = `Academic Report Card — Year ${year}`;
+    document.getElementById('reportClassroomInfo').textContent = `Grade: ${allocation.grade_name || 'N/A'} · Room: ${allocation.classroom_name || 'N/A'}`;
+
+    const banner = document.getElementById('readOnlyBanner');
+    if (is_read_only) {
+        banner.style.display = 'flex';
+        document.getElementById('readOnlyYear').textContent = year;
+    } else {
+        banner.style.display = 'none';
+    }
+
+    // Status Badge
+    const badgeEl = document.getElementById('yearStatusBadge');
+    const st = allocation.year_status || 'Active';
+    const bg = st === 'Repeated' ? '#fef9c3' : st === 'Promoted' ? '#d1fae5' : '#e0f2fe';
+    const clr = st === 'Repeated' ? '#92400e' : st === 'Promoted' ? '#065f46' : '#0369a1';
+    badgeEl.innerHTML = `<span style="background:${bg};color:${clr};padding:6px 14px;border-radius:20px;font-weight:800;font-size:12px;">Year Status: ${st}</span>`;
+
+    // Render Marks
+    const tbody = document.getElementById('marksTableBody');
+    tbody.innerHTML = marks.map(m => `
+        <tr>
+            <td style="font-weight:700;color:var(--c-text-muted);">${m.subject_code}</td>
+            <td style="font-weight:700;">${m.subject_name}</td>
+            <td>${m.ca_mark}%</td>
+            <td>${m.terminal_mark}%</td>
+            <td style="font-weight:800;color:var(--c-text-primary);">${m.total_score}%</td>
+            <td><span class="grade-badge grade-${m.grade}">${m.grade}</span></td>
+            <td style="font-weight:700;">${m.points}</td>
+            <td style="font-size:12px;color:var(--c-text-muted);">${m.remark}</td>
+        </tr>
+    `).join('');
+
+    // Summary Card Stats
+    document.getElementById('sumTotalScore').textContent  = summary.total_score;
+    document.getElementById('sumGpaAvg').textContent      = `${summary.gpa_avg}%`;
+    document.getElementById('sumTotalPoints').textContent  = summary.total_points;
+    document.getElementById('sumDivision').textContent     = summary.division;
+}
+
+function onYearSwitch(newYear) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('year', newYear);
+    window.history.pushState({}, '', url);
+    loadReportForYear(newYear);
+}
+</script>
+</body>
+</html>
