@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submission Verifications & Finalization Hub ‹ Headmaster ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+    
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+
+    <style>
+        .approval-table th {
+            background: #064e3b;
+            color: #ffffff;
+            padding: 12px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .approval-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+        .approval-table tr:hover td {
+            background: #f8fafc;
+        }
+        .stat-badge-box {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="tenant_admin" active-path="/headmaster/exams/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Headmaster Portal"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <app-breadcrumb path="Headmaster, Examinations, Verifications & Approvals"></app-breadcrumb>
+
+                    <!-- Top Header Box -->
+                    <div class="card" style="margin-top: 14px; margin-bottom: 16px; padding: 18px 24px; background: white; border-radius: 10px; border: 1px solid var(--c-primary-border);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                            <div style="display: flex; align-items: center; gap: 16px;">
+                                <a href="index.html" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none; font-weight: 600;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                                    Back to Hub
+                                </a>
+                                <div>
+                                    <h1 style="margin: 0 0 4px; font-size: 20px; font-weight: 800; color: var(--c-text-primary); display: flex; align-items: center; gap: 8px;">
+                                        <span>🛡️ Submission Verifications & Finalization Hub</span>
+                                    </h1>
+                                    <span style="font-size: 13px; color: var(--c-text-muted);">
+                                        Track marks completion progress across all classes, detect unentered marks, and lock/unlock scoresheets.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filter Bar -->
+                    <div class="card" style="padding: 18px 24px; margin-bottom: 18px; border-radius: 10px; background: #ffffff;">
+                        <div style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+                            <div style="width: 160px;">
+                                <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Academic Year</label>
+                                <select id="appSelYear" class="form-control" style="font-weight: 700;">
+                                    <option value="2026" selected>2026</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2024">2024</option>
+                                </select>
+                            </div>
+
+                            <div style="width: 160px;">
+                                <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Term</label>
+                                <select id="appSelTerm" class="form-control" style="font-weight: 700;">
+                                    <option value="Term 1" selected>Term 1</option>
+                                    <option value="Term 2">Term 2</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <button id="btnRefreshMatrix" class="btn btn-primary" style="height: 38px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                                    <span>🔄</span> Refresh Submissions Matrix
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submission Summary Metrics Cards -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 20px;">
+                        <div class="stat-badge-box" style="border-left: 4px solid #3b82f6;">
+                            <div>
+                                <div style="font-size: 12px; color: #64748b; font-weight: 700;">Total Scoresheets</div>
+                                <div id="appTotalSheets" style="font-size: 22px; font-weight: 900; color: #0f172a; margin-top: 4px;">0</div>
+                            </div>
+                            <span style="font-size: 24px;">📋</span>
+                        </div>
+
+                        <div class="stat-badge-box" style="border-left: 4px solid #059669;">
+                            <div>
+                                <div style="font-size: 12px; color: #64748b; font-weight: 700;">Completed (100%)</div>
+                                <div id="appCompletedSheets" style="font-size: 22px; font-weight: 900; color: #059669; margin-top: 4px;">0</div>
+                            </div>
+                            <span style="font-size: 24px;">✅</span>
+                        </div>
+
+                        <div class="stat-badge-box" style="border-left: 4px solid #f59e0b;">
+                            <div>
+                                <div style="font-size: 12px; color: #64748b; font-weight: 700;">In-Progress</div>
+                                <div id="appInProgressSheets" style="font-size: 22px; font-weight: 900; color: #d97706; margin-top: 4px;">0</div>
+                            </div>
+                            <span style="font-size: 24px;">⏳</span>
+                        </div>
+
+                        <div class="stat-badge-box" style="border-left: 4px solid #dc2626;">
+                            <div>
+                                <div style="font-size: 12px; color: #64748b; font-weight: 700;">Pending (0%)</div>
+                                <div id="appPendingSheets" style="font-size: 22px; font-weight: 900; color: #dc2626; margin-top: 4px;">0</div>
+                            </div>
+                            <span style="font-size: 24px;">⚠️</span>
+                        </div>
+
+                        <div class="stat-badge-box" style="border-left: 4px solid #7c3aed;">
+                            <div>
+                                <div style="font-size: 12px; color: #64748b; font-weight: 700;">Locked / Finalized</div>
+                                <div id="appLockedSheets" style="font-size: 22px; font-weight: 900; color: #7c3aed; margin-top: 4px;">0</div>
+                            </div>
+                            <span style="font-size: 24px;">🔒</span>
+                        </div>
+                    </div>
+
+                    <!-- Quality Control & Finalization Table Card -->
+                    <div class="card" style="padding: 0; overflow: hidden; border-radius: 10px; background: white; margin-bottom: 30px;">
+                        <div style="padding: 16px 20px; border-bottom: 1px solid #f1f5f9; background: #f8fafc; display: flex; justify-content: space-between; align-items: center;">
+                            <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: #064e3b;">
+                                📋 Classrooms & Subject Submissions Quality Matrix
+                            </h3>
+                            <span style="font-size: 12px; color: #64748b; font-weight: 600;">
+                                Action buttons allow one-click Lock / Unlock overrides
+                            </span>
+                        </div>
+
+                        <div style="overflow-x: auto;">
+                            <table class="approval-table" style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 170px;">Classroom</th>
+                                        <th style="width: 140px;">Subject</th>
+                                        <th style="width: 160px; text-align: center;">Entry Progress</th>
+                                        <th style="width: 140px; text-align: center;">Submission State</th>
+                                        <th style="width: 140px; text-align: center;">Lock Status</th>
+                                        <th style="width: 180px; text-align: right;">Action Controls</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="approvalMatrixTbody">
+                                    <!-- Matrix Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastBox" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadApprovalStatus();
+            document.getElementById('btnRefreshMatrix').addEventListener('click', loadApprovalStatus);
+            document.getElementById('appSelYear').addEventListener('change', loadApprovalStatus);
+            document.getElementById('appSelTerm').addEventListener('change', loadApprovalStatus);
+        });
+
+        async function loadApprovalStatus() {
+            const year = document.getElementById('appSelYear').value;
+            const term = document.getElementById('appSelTerm').value;
+            const tbody = document.getElementById('approvalMatrixTbody');
+
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#64748b;">Loading submissions matrix...</td></tr>';
+
+            try {
+                const url = `/shule-cafe/api/headmaster/exams/exams_api.php?action=get_approval_status&year=${year}&term=${encodeURIComponent(term)}`;
+                const res = await fetch(url, { credentials: 'include' });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    // Summary counts
+                    document.getElementById('appTotalSheets').textContent = data.summary.total_sheets;
+                    document.getElementById('appCompletedSheets').textContent = data.summary.completed_sheets;
+                    document.getElementById('appInProgressSheets').textContent = data.summary.in_progress_sheets;
+                    document.getElementById('appPendingSheets').textContent = data.summary.pending_sheets;
+                    document.getElementById('appLockedSheets').textContent = data.summary.locked_sheets;
+
+                    renderMatrixRows(data.matrix, year, term);
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:crimson;">${data.message || 'Error loading status.'}</td></tr>`;
+                }
+            } catch(e) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:crimson;">Network communication error.</td></tr>';
+            }
+        }
+
+        function renderMatrixRows(matrix, year, term) {
+            const tbody = document.getElementById('approvalMatrixTbody');
+            tbody.innerHTML = '';
+
+            if (!matrix || matrix.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:30px; color:#64748b;">No active classrooms found.</td></tr>';
+                return;
+            }
+
+            matrix.forEach(cls => {
+                cls.subjects.forEach((sub, sIdx) => {
+                    const tr = document.createElement('tr');
+                    
+                    let statusBadge = '<span class="badge" style="background:#fee2e2; color:#991b1b; font-weight:800; font-size:11px;">Pending (0%)</span>';
+                    if (sub.status === 'Completed') {
+                        statusBadge = '<span class="badge" style="background:#dcfce7; color:#15803d; font-weight:800; font-size:11px;">Completed (100%)</span>';
+                    } else if (sub.status === 'In-Progress') {
+                        statusBadge = `<span class="badge" style="background:#fef3c7; color:#92400e; font-weight:800; font-size:11px;">In Progress (${sub.completion_percent}%)</span>`;
+                    }
+
+                    const lockBadge = sub.is_locked 
+                        ? '<span class="badge" style="background:#f3e8ff; color:#6b21a8; font-weight:800; font-size:11px;">🔒 Locked</span>'
+                        : '<span class="badge" style="background:#f1f5f9; color:#475569; font-weight:700; font-size:11px;">🔓 Unlocked</span>';
+
+                    tr.innerHTML = `
+                        <td style="font-weight: 800; color: #0f172a;">
+                            ${cls.classroom_name}
+                            <div style="font-size: 11px; color: #64748b; font-weight: 600;">${cls.grade_name || ''}</div>
+                        </td>
+                        <td style="font-weight: 700; color: #334155;">
+                            ${sub.subject_name}
+                            <span style="font-size: 11px; color: #64748b;">(${sub.subject_code})</span>
+                        </td>
+                        <td style="text-align: center;">
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                <strong style="color:#0f172a;">${sub.students_entered} / ${sub.total_students}</strong>
+                                <div style="width: 60px; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;">
+                                    <div style="width: ${sub.completion_percent}%; height: 100%; background: ${sub.completion_percent >= 100 ? '#059669' : '#f59e0b'};"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="text-align: center;">${statusBadge}</td>
+                        <td style="text-align: center;">${lockBadge}</td>
+                        <td style="text-align: right;">
+                            <div style="display: inline-flex; align-items: center; gap: 6px;">
+                                <a href="entry.html?classroom_id=${cls.classroom_id}&subject_code=${sub.subject_code}&year=${year}&term=${encodeURIComponent(term)}" 
+                                    class="btn btn-outline btn-sm" style="font-weight: 700; font-size: 11px; padding: 4px 8px;">
+                                    ✍️ Enter
+                                </a>
+                                <button onclick="toggleLock('${cls.classroom_id}', '${sub.subject_code}', ${sub.is_locked ? 0 : 1})" 
+                                    class="btn btn-sm" style="font-weight: 700; font-size: 11px; padding: 4px 8px; background: ${sub.is_locked ? '#059669' : '#e11d48'}; color: white; border: none;">
+                                    ${sub.is_locked ? '🔓 Unlock' : '🔒 Finalize'}
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+
+        async function toggleLock(classroomId, subjectCode, targetState) {
+            const year = document.getElementById('appSelYear').value;
+            const term = document.getElementById('appSelTerm').value;
+            const actionVerb = targetState === 1 ? 'finalize & lock' : 'unlock for mark adjustments';
+
+            if (!confirm(`Are you sure you want to ${actionVerb} the scoresheet for ${subjectCode}?`)) {
+                return;
+            }
+
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/exams/exams_api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        action: 'toggle_lock',
+                        classroom_id: classroomId,
+                        subject_code: subjectCode,
+                        year: year,
+                        term: term,
+                        lock_state: targetState
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToastNotification(data.message, 'success');
+                    loadApprovalStatus();
+                } else {
+                    showToastNotification(data.message, 'error');
+                }
+            } catch(e) {
+                showToastNotification('Failed to update lock state.', 'error');
+            }
+        }
+
+        function showToastNotification(msg, type = 'info') {
+            const box = document.getElementById('toastBox');
+            const toast = document.createElement('div');
+            let bg = type === 'success' ? '#064e3b' : (type === 'error' ? '#991b1b' : '#1e40af');
+            toast.style.cssText = `background:${bg}; color:white; padding:12px 18px; border-radius:8px; font-weight:700; font-size:13px; margin-top:8px; box-shadow:0 4px 12px rgba(0,0,0,0.15);`;
+            toast.textContent = msg;
+            box.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+    </script>
+</body>
+</html>

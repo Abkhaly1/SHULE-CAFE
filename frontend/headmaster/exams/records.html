@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results Records & Broadsheet Archive ‹ Headmaster ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+    
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+
+    <style>
+        .broadsheet-table th {
+            background: #064e3b;
+            color: #ffffff;
+            padding: 10px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+        .broadsheet-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            border-right: 1px solid #f1f5f9;
+            font-size: 12.5px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+        .broadsheet-table tr:hover td {
+            background: #f8fafc;
+        }
+        .division-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        @media print {
+            .app-sidebar, .app-topbar, .no-print {
+                display: none !important;
+            }
+            .app-main {
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="tenant_admin" active-path="/headmaster/exams/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Headmaster Portal"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <app-breadcrumb path="Headmaster, Examinations, Results Records & Broadsheets"></app-breadcrumb>
+
+                    <!-- Top Header Box -->
+                    <div class="card no-print" style="margin-top: 14px; margin-bottom: 16px; padding: 18px 24px; background: white; border-radius: 10px; border: 1px solid var(--c-primary-border);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                            <div style="display: flex; align-items: center; gap: 16px;">
+                                <a href="index.html" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none; font-weight: 600;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                                    Back to Hub
+                                </a>
+                                <div>
+                                    <h1 style="margin: 0 0 4px; font-size: 20px; font-weight: 800; color: var(--c-text-primary); display: flex; align-items: center; gap: 8px;">
+                                        <span>📊 Results Records & Master Broadsheet Archive</span>
+                                    </h1>
+                                    <span style="font-size: 13px; color: var(--c-text-muted);">
+                                        Multi-year examination records, student subject marks, NECTA points, divisions, positions, and exports.
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <button id="btnPrintBroadsheet" class="btn btn-outline" style="font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                                    <span>🖨️</span> Print Broadsheet
+                                </button>
+                                <button id="btnExportCSV" class="btn btn-primary" style="font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                                    <span>📥</span> Export CSV
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Organized Filter Toolbar (Years, Terms, Levels, Grades, Classrooms, Exam Types) -->
+                    <div class="card no-print" style="padding: 18px 24px; margin-bottom: 18px; border-radius: 10px; background: #ffffff;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; align-items: flex-end;">
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Academic Year</label>
+                                <select id="recSelYear" class="form-control" style="font-weight: 700;">
+                                    <option value="2026" selected>2026</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2024">2024</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Term</label>
+                                <select id="recSelTerm" class="form-control" style="font-weight: 700;">
+                                    <option value="Term 1" selected>Term 1</option>
+                                    <option value="Term 2">Term 2</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Education Level</label>
+                                <select id="recSelLevel" class="form-control" style="font-weight: 700;">
+                                    <option value="all">All Levels</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Classroom / Stream</label>
+                                <select id="recSelClassroom" class="form-control" style="font-weight: 700;">
+                                    <option value="">Select Classroom...</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Exam Filter</label>
+                                <select id="recSelExamType" class="form-control" style="font-weight: 700; background: #ecfdf5; border-color: #a7f3d0; color: #065f46;">
+                                    <option value="all" selected>All Assessments (Aggregate Final)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <button id="btnFetchRecords" class="btn btn-primary" style="width: 100%; height: 38px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+                                    <span>🔎</span> View Broadsheet
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Broadsheet Records Content Area -->
+                    <div id="broadsheetWrapper" style="display: none;">
+                        
+                        <!-- Top Performance Summary Cards -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 18px;">
+                            <div class="division-card" style="border-left: 4px solid #059669;">
+                                <div>
+                                    <div style="font-size: 12px; color: #64748b; font-weight: 700;">Total Evaluated</div>
+                                    <div id="cardTotalStudents" style="font-size: 22px; font-weight: 900; color: #0f172a; margin-top: 4px;">0</div>
+                                </div>
+                                <span style="font-size: 24px;">👨‍🎓</span>
+                            </div>
+
+                            <div class="division-card" style="border-left: 4px solid #10b981;">
+                                <div>
+                                    <div style="font-size: 12px; color: #64748b; font-weight: 700;">Overall Pass Rate</div>
+                                    <div id="cardPassRate" style="font-size: 22px; font-weight: 900; color: #059669; margin-top: 4px;">0%</div>
+                                </div>
+                                <span style="font-size: 24px;">📈</span>
+                            </div>
+
+                            <div class="division-card" style="border-left: 4px solid #3b82f6;">
+                                <div>
+                                    <div style="font-size: 12px; color: #64748b; font-weight: 700;">Division I</div>
+                                    <div id="cardDiv1" style="font-size: 22px; font-weight: 900; color: #2563eb; margin-top: 4px;">0</div>
+                                </div>
+                                <span class="badge" style="background:#eff6ff; color:#1e40af; font-weight:800;">Div I</span>
+                            </div>
+
+                            <div class="division-card" style="border-left: 4px solid #8b5cf6;">
+                                <div>
+                                    <div style="font-size: 12px; color: #64748b; font-weight: 700;">Division II</div>
+                                    <div id="cardDiv2" style="font-size: 22px; font-weight: 900; color: #7c3aed; margin-top: 4px;">0</div>
+                                </div>
+                                <span class="badge" style="background:#f5f3ff; color:#6d28d9; font-weight:800;">Div II</span>
+                            </div>
+
+                            <div class="division-card" style="border-left: 4px solid #f59e0b;">
+                                <div>
+                                    <div style="font-size: 12px; color: #64748b; font-weight: 700;">Division III</div>
+                                    <div id="cardDiv3" style="font-size: 22px; font-weight: 900; color: #d97706; margin-top: 4px;">0</div>
+                                </div>
+                                <span class="badge" style="background:#fffbeb; color:#b45309; font-weight:800;">Div III</span>
+                            </div>
+
+                            <div class="division-card" style="border-left: 4px solid #f97316;">
+                                <div>
+                                    <div style="font-size: 12px; color: #64748b; font-weight: 700;">Division IV & 0</div>
+                                    <div id="cardDiv40" style="font-size: 22px; font-weight: 900; color: #ea580c; margin-top: 4px;">0</div>
+                                </div>
+                                <span class="badge" style="background:#fff7ed; color:#c2410c; font-weight:800;">Div IV/0</span>
+                            </div>
+                        </div>
+
+                        <!-- Best Subject & Header Highlights -->
+                        <div class="card" style="padding: 16px 20px; margin-bottom: 16px; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                                <div>
+                                    <strong id="broadsheetHeaderTitle" style="font-size: 15px; color: #064e3b;">Classroom Broadsheet</strong>
+                                    <div id="broadsheetHeaderSub" style="font-size: 12px; color: #065f46; margin-top: 2px;">NECTA Adaptive Division Framework (Top 7 core subjects evaluated)</div>
+                                </div>
+                                <div id="bestSubjectBadge" class="badge" style="background: white; color: #065f46; border: 1.5px solid #059669; padding: 6px 14px; font-size: 12px; font-weight: 800;">
+                                    🏆 Best Subject: Loading...
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Broadsheet Master Table Card -->
+                        <div class="card" style="padding: 0; overflow-x: auto; border-radius: 10px; background: white; margin-bottom: 30px;">
+                            <table id="broadsheetTable" class="broadsheet-table" style="width: 100%; border-collapse: collapse;">
+                                <thead id="broadsheetThead">
+                                    <!-- Dynamic Columns -->
+                                </thead>
+                                <tbody id="broadsheetTbody">
+                                    <!-- Dynamic Student Broadsheet Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
+                    <!-- Initial State Box -->
+                    <div id="recordsEmptyState" class="card" style="padding: 60px 20px; text-align: center; border-radius: 10px; background: #ffffff;">
+                        <div style="font-size: 44px; margin-bottom: 12px;">📊</div>
+                        <h3 style="margin: 0 0 6px; font-size: 18px; font-weight: 800; color: #0f172a;">Select a Classroom to View Broadsheet</h3>
+                        <p style="margin: 0 auto; max-width: 460px; font-size: 13px; color: var(--c-text-muted);">
+                            Choose your target Academic Year, Term, and Classroom Stream above to generate the full academic broadsheet records.
+                        </p>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        let currentScopes = null;
+        let activeBroadsheetData = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadScopes();
+
+            document.getElementById('recSelLevel').addEventListener('change', filterClasses);
+            document.getElementById('btnFetchRecords').addEventListener('click', fetchBroadsheet);
+            document.getElementById('btnPrintBroadsheet').addEventListener('click', () => window.print());
+            document.getElementById('btnExportCSV').addEventListener('click', exportToCSV);
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('classroom_id')) {
+                setTimeout(() => {
+                    document.getElementById('recSelClassroom').value = urlParams.get('classroom_id');
+                    fetchBroadsheet();
+                }, 400);
+            }
+        });
+
+        async function loadScopes() {
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/exams/exams_api.php?action=get_scopes', { credentials: 'include' });
+                const data = await res.json();
+                if (data.success) {
+                    currentScopes = data;
+
+                    // Levels
+                    const selLvl = document.getElementById('recSelLevel');
+                    selLvl.innerHTML = '<option value="all">All Education Levels</option>';
+                    data.levels.forEach(l => {
+                        selLvl.innerHTML += `<option value="${l.id}">${l.name}</option>`;
+                    });
+
+                    // Assessment Types
+                    const selType = document.getElementById('recSelExamType');
+                    selType.innerHTML = '<option value="all" selected>All Assessments (Aggregate Final)</option>';
+                    data.assessment_types.forEach(at => {
+                        selType.innerHTML += `<option value="${at.id}">${at.name} (${at.weight_percent}%)</option>`;
+                    });
+
+                    populateClassrooms(data.classrooms);
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        function populateClassrooms(classrooms) {
+            const selClass = document.getElementById('recSelClassroom');
+            selClass.innerHTML = '<option value="">Select Classroom...</option>';
+            classrooms.forEach(cls => {
+                selClass.innerHTML += `<option value="${cls.id}" data-level="${cls.level_id || ''}">${cls.classroom_name} (${cls.grade_name || cls.level_name || 'Class'})</option>`;
+            });
+        }
+
+        function filterClasses() {
+            if (!currentScopes) return;
+            const lvl = document.getElementById('recSelLevel').value;
+            if (lvl === 'all') {
+                populateClassrooms(currentScopes.classrooms);
+            } else {
+                const filtered = currentScopes.classrooms.filter(c => String(c.level_id) === String(lvl));
+                populateClassrooms(filtered);
+            }
+        }
+
+        async function fetchBroadsheet() {
+            const classroomId = document.getElementById('recSelClassroom').value;
+            const year = document.getElementById('recSelYear').value;
+            const term = document.getElementById('recSelTerm').value;
+            const examType = document.getElementById('recSelExamType').value;
+
+            if (!classroomId) {
+                alert('Please select a Classroom Stream.');
+                return;
+            }
+
+            try {
+                const url = `/shule-cafe/api/headmaster/exams/exams_api.php?action=get_broadsheet_records&classroom_id=${classroomId}&year=${year}&term=${encodeURIComponent(term)}&exam_type_id=${examType}`;
+                const res = await fetch(url, { credentials: 'include' });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    activeBroadsheetData = data;
+                    document.getElementById('recordsEmptyState').style.display = 'none';
+                    document.getElementById('broadsheetWrapper').style.display = 'block';
+
+                    renderBroadsheetUI(data);
+                } else {
+                    alert(data.message || 'Error generating broadsheet.');
+                }
+            } catch(e) {
+                alert('Network connection error.');
+            }
+        }
+
+        function renderBroadsheetUI(data) {
+            // Summary Cards
+            document.getElementById('cardTotalStudents').textContent = data.total_students;
+            document.getElementById('cardPassRate').textContent = `${data.class_pass_rate_percent}%`;
+            document.getElementById('cardDiv1').textContent = data.division_summary['Division I'] || 0;
+            document.getElementById('cardDiv2').textContent = data.division_summary['Division II'] || 0;
+            document.getElementById('cardDiv3').textContent = data.division_summary['Division III'] || 0;
+            document.getElementById('cardDiv40').textContent = (data.division_summary['Division IV'] || 0) + (data.division_summary['Division 0'] || 0);
+
+            // Best Subject Badge
+            if (data.best_subject) {
+                document.getElementById('bestSubjectBadge').innerHTML = `🏆 Best Subject: <strong>${data.best_subject.name}</strong> (Avg: ${data.best_subject.average}, Pass: ${data.best_subject.pass_rate_percent}%)`;
+            } else {
+                document.getElementById('bestSubjectBadge').textContent = 'No evaluated subjects yet';
+            }
+
+            document.getElementById('broadsheetHeaderTitle').textContent = `${data.class_info.classroom_name} ‹ Master Academic Broadsheet (${data.term} ${data.year})`;
+            document.getElementById('broadsheetHeaderSub').textContent = `${data.level_type} Framework • Total ${data.total_students} Students Evaluated`;
+
+            // Build Table Header
+            const thead = document.getElementById('broadsheetThead');
+            let thHtml = `
+                <tr>
+                    <th style="width: 50px; text-align: center;">Pos</th>
+                    <th style="width: 110px;">Student ID</th>
+                    <th>Full Name</th>
+                    <th style="width: 60px; text-align: center;">Sex</th>
+            `;
+
+            data.subjects.forEach(sub => {
+                thHtml += `<th style="text-align: center; min-width: 75px;" title="${sub.name}">${sub.code}</th>`;
+            });
+
+            thHtml += `
+                    <th style="text-align: center; background: #047857; min-width: 80px;">Total</th>
+                    <th style="text-align: center; background: #047857; min-width: 75px;">Average</th>
+                    <th style="text-align: center; background: #065f46; min-width: 70px;">Points</th>
+                    <th style="text-align: center; background: #065f46; min-width: 100px;">Division</th>
+                    <th style="text-align: center; min-width: 100px;">Remark</th>
+                </tr>
+            `;
+            thead.innerHTML = thHtml;
+
+            // Build Table Rows
+            const tbody = document.getElementById('broadsheetTbody');
+            tbody.innerHTML = '';
+
+            if (data.broadsheet.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="${data.subjects.length + 9}" style="text-align:center; padding:30px; color:#64748b;">No student records found.</td></tr>`;
+                return;
+            }
+
+            data.broadsheet.forEach(stu => {
+                const tr = document.createElement('tr');
+                const isMale = (stu.gender && stu.gender.toLowerCase().startsWith('m'));
+
+                let rowHtml = `
+                    <td style="text-align: center; font-weight: 800; color: #064e3b;">${stu.position}</td>
+                    <td style="font-weight: 700; color: #475569;">${stu.user_code || '-'}</td>
+                    <td style="font-weight: 800; color: #0f172a;">${stu.full_name}</td>
+                    <td style="text-align: center; font-weight: 700; color: ${isMale ? '#2563eb' : '#db2777'};">${isMale ? 'M' : 'F'}</td>
+                `;
+
+                data.subjects.forEach(sub => {
+                    const sc = sub.code;
+                    const gradeObj = stu.subject_scores ? stu.subject_scores[sc] : null;
+                    if (gradeObj) {
+                        const markCol = gradeObj.mark >= 45 ? '#0f172a' : '#dc2626';
+                        rowHtml += `
+                            <td style="text-align: center;">
+                                <strong style="color: ${markCol}; font-size: 13px;">${gradeObj.mark}</strong>
+                                <span style="font-size: 11px; font-weight: 800; margin-left: 2px; color: ${getGradeColor(gradeObj.grade)};">(${gradeObj.grade})</span>
+                            </td>
+                        `;
+                    } else {
+                        rowHtml += `<td style="text-align: center; color: #cbd5e1;">-</td>`;
+                    }
+                });
+
+                rowHtml += `
+                    <td style="text-align: center; font-weight: 900; color: #0f172a; background: #f8fafc;">${stu.total_marks}</td>
+                    <td style="text-align: center; font-weight: 800; color: #2563eb;">${stu.average_mark}</td>
+                    <td style="text-align: center; font-weight: 800; color: #475569;">${stu.points}</td>
+                    <td style="text-align: center;">${renderDivisionBadge(stu.division)}</td>
+                    <td style="text-align: center; font-size: 11px; color: #64748b; font-weight: 600;">${stu.remark || '-'}</td>
+                `;
+
+                tr.innerHTML = rowHtml;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function getGradeColor(grade) {
+            if (grade === 'A') return '#15803d';
+            if (grade === 'B') return '#1d4ed8';
+            if (grade === 'C') return '#b45309';
+            if (grade === 'D') return '#c2410c';
+            return '#dc2626';
+        }
+
+        function renderDivisionBadge(div) {
+            let bg = '#f1f5f9', color = '#475569';
+            if (div === 'Division I') { bg = '#dcfce7'; color = '#15803d'; }
+            else if (div === 'Division II') { bg = '#dbeafe'; color = '#1e40af'; }
+            else if (div === 'Division III') { bg = '#fef3c7'; color = '#92400e'; }
+            else if (div === 'Division IV') { bg = '#ffedd5'; color = '#9a3412'; }
+            else if (div === 'Division 0' || div === 'Fail') { bg = '#fee2e2'; color = '#991b1b'; }
+            return `<span class="badge" style="background:${bg}; color:${color}; font-weight:800; font-size:11px; padding:3px 8px; border-radius:4px;">${div || '-'}</span>`;
+        }
+
+        function exportToCSV() {
+            if (!activeBroadsheetData || activeBroadsheetData.broadsheet.length === 0) {
+                alert('No broadsheet records to export.');
+                return;
+            }
+
+            const data = activeBroadsheetData;
+            let csv = [];
+
+            // Header row
+            let header = ['Position', 'Student ID', 'Full Name', 'Gender'];
+            data.subjects.forEach(s => header.push(`${s.name} (${s.code})`));
+            header.push('Total Marks', 'Average Score', 'Points', 'Division', 'Remark');
+            csv.push(header.map(h => `"${h}"`).join(','));
+
+            // Data rows
+            data.broadsheet.forEach(stu => {
+                let row = [
+                    stu.position,
+                    stu.user_code || '',
+                    stu.full_name,
+                    stu.gender || ''
+                ];
+
+                data.subjects.forEach(s => {
+                    const g = stu.subject_scores ? stu.subject_scores[s.code] : null;
+                    row.push(g ? `${g.mark} (${g.grade})` : '');
+                });
+
+                row.push(stu.total_marks, stu.average_mark, stu.points, stu.division, stu.remark || '');
+                csv.push(row.map(r => `"${String(r).replace(/"/g, '""')}"`).join(','));
+            });
+
+            const blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', `Broadsheet_${data.class_info.classroom_name}_${data.term}_${data.year}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>

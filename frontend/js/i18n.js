@@ -34,6 +34,7 @@ export const translations = {
             assessmentConfig:    'Assessments',
             comparativeAnalytics:'Analytics',
             classLedger:         'Ledger',
+            exams:               'Exams',
         },
 
         // ─── TOPBAR ──────────────────────────────────────────────────────────

@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marks Data Entry Wizard ‹ Headmaster ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+    
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+
+    <style>
+        .step-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #64748b;
+        }
+        .step-pill.active {
+            color: #064e3b;
+        }
+        .step-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e2e8f0;
+            color: #475569;
+            font-size: 11px;
+            font-weight: 800;
+        }
+        .step-pill.active .step-num {
+            background: #059669;
+            color: white;
+        }
+        .score-input {
+            width: 90px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1.5px solid #cbd5e1;
+            font-size: 14px;
+            font-weight: 800;
+            text-align: center;
+            color: #0f172a;
+            transition: all 0.15s ease;
+        }
+        .score-input:focus {
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+            outline: none;
+            background: #f0fdf4;
+        }
+        .score-input:disabled {
+            background: #f8fafc;
+            color: #94a3b8;
+            border-color: #e2e8f0;
+            cursor: not-allowed;
+        }
+        .entry-table th {
+            background: #064e3b;
+            color: #ffffff;
+            padding: 12px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .entry-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+            font-size: 13px;
+        }
+        .entry-table tr:hover td {
+            background: #f8fafc;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="tenant_admin" active-path="/headmaster/exams/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Headmaster Portal"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <app-breadcrumb path="Headmaster, Examinations, Marks Entry Wizard"></app-breadcrumb>
+
+                    <!-- Top Header Box with Back Link -->
+                    <div class="card" style="margin-top: 14px; margin-bottom: 16px; padding: 18px 24px; background: white; border-radius: 10px; border: 1px solid var(--c-primary-border);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                            <div style="display: flex; align-items: center; gap: 16px;">
+                                <a href="index.html" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none; font-weight: 600;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                                    Back to Hub
+                                </a>
+                                <div>
+                                    <h1 style="margin: 0 0 4px; font-size: 20px; font-weight: 800; color: var(--c-text-primary); display: flex; align-items: center; gap: 8px;">
+                                        <span>✍️ Marks Data Entry Wizard</span>
+                                    </h1>
+                                    <span style="font-size: 13px; color: var(--c-text-muted);">
+                                        Select class scope, enter scores with live adaptive grading preview, and confirm batch records.
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- Wizard Steps Progress -->
+                            <div style="display: flex; align-items: center; gap: 16px; background: #f8fafc; padding: 8px 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                <div class="step-pill active" id="step1Indicator">
+                                    <span class="step-num">1</span>
+                                    <span>Scope</span>
+                                </div>
+                                <span style="color: #cbd5e1;">&rarr;</span>
+                                <div class="step-pill active" id="step2Indicator">
+                                    <span class="step-num">2</span>
+                                    <span>Score Sheet</span>
+                                </div>
+                                <span style="color: #cbd5e1;">&rarr;</span>
+                                <div class="step-pill" id="step3Indicator">
+                                    <span class="step-num">3</span>
+                                    <span>Review & Save</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Comprehensive Scope Selection Card -->
+                    <div class="card" style="padding: 20px 24px; margin-bottom: 18px; border-radius: 10px; background: #ffffff;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+                            <h2 style="font-size: 15px; font-weight: 800; color: #064e3b; margin: 0; display: flex; align-items: center; gap: 6px;">
+                                <span>🎯 Academic Target Scope</span>
+                            </h2>
+                            <span style="font-size: 12px; color: var(--c-text-muted);">All school levels & grades accessible by School Admin</span>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; align-items: flex-end;">
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Academic Year</label>
+                                <select id="selYear" class="form-control" style="font-weight: 700;">
+                                    <option value="2026" selected>2026</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2024">2024</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Term</label>
+                                <select id="selTerm" class="form-control" style="font-weight: 700;">
+                                    <option value="Term 1" selected>Term 1</option>
+                                    <option value="Term 2">Term 2</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Education Level</label>
+                                <select id="selLevel" class="form-control" style="font-weight: 700;">
+                                    <option value="all">All Levels</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Classroom / Stream</label>
+                                <select id="selClassroom" class="form-control" style="font-weight: 700;">
+                                    <option value="">Select Classroom...</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Subject</label>
+                                <select id="selSubject" class="form-control" style="font-weight: 700;">
+                                    <option value="">Select Subject...</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px;">Assessment Type</label>
+                                <select id="selAssessmentType" class="form-control" style="font-weight: 700; background: #ecfdf5; border-color: #a7f3d0; color: #065f46;">
+                                    <option value="">Select Assessment...</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <button id="btnLoadSheet" class="btn btn-primary" style="width: 100%; height: 38px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+                                    <span>🔍</span> Load Scoresheet
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 & 3: Score Sheet Matrix Area -->
+                    <div id="scoresheetCard" class="card" style="display: none; padding: 24px; border-radius: 10px; background: white;">
+                        
+                        <!-- Lock / Read-Only Alert Banner (If applicable) -->
+                        <div id="lockBanner" style="display: none; margin-bottom: 20px; padding: 14px 18px; border-radius: 8px; background: #fef2f2; border: 1px solid #fecaca; color: #991b1b;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-size: 22px;">🔒</span>
+                                    <div>
+                                        <strong style="font-size: 14px;">Scoresheet is Finalized & Locked</strong>
+                                        <div style="font-size: 12px; color: #b91c1c;">Marks are in read-only mode to preserve institutional integrity.</div>
+                                    </div>
+                                </div>
+                                <button id="btnUnlockSheet" class="btn btn-sm" style="background: #991b1b; color: white; border: none; font-weight: 700;">
+                                    🔓 Unlock Scoresheet
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Scoresheet Subheader & Quick Tools -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #f1f5f9;">
+                            <div>
+                                <h3 id="sheetTitle" style="margin: 0 0 4px; font-size: 17px; font-weight: 800; color: #064e3b;">
+                                    Classroom Scoresheet
+                                </h3>
+                                <div id="sheetSubtitle" style="font-size: 13px; color: var(--c-text-muted);">
+                                    Assessment Weight: <strong id="weightBadge">30%</strong> | Grading Framework: <strong id="gradingBadge">O-Level Standard</strong>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 6px; background: #f8fafc; padding: 6px 12px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 12px; font-weight: 600;">
+                                    <span>Fill Default Mark:</span>
+                                    <input type="number" id="quickFillInput" placeholder="Mark" style="width: 60px; padding: 4px 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-weight: 700;">
+                                    <button id="btnApplyFill" class="btn btn-outline btn-sm" style="padding: 4px 8px; font-size: 11px;">Apply to All</button>
+                                </div>
+
+                                <button id="btnSaveBatch" class="btn btn-primary" style="font-weight: 800; display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px;">
+                                    <span>💾</span> Save Assessment Marks
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Student Scores Table -->
+                        <div style="border: 1px solid var(--c-border-light); border-radius: 8px; overflow: hidden; margin-bottom: 20px;">
+                            <table class="entry-table" style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 60px; text-align: center;">#</th>
+                                        <th style="width: 130px;">Student ID</th>
+                                        <th>Student Full Name</th>
+                                        <th style="width: 80px; text-align: center;">Gender</th>
+                                        <th style="width: 140px; text-align: center; background: #047857;" id="targetAssessmentHeader">Assessment Score</th>
+                                        <th style="width: 120px; text-align: center;">Total Score</th>
+                                        <th style="width: 100px; text-align: center;">Grade</th>
+                                        <th style="width: 90px; text-align: center;">Points</th>
+                                        <th style="width: 90px; text-align: center;">Position</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rosterTableBody">
+                                    <!-- Dynamic Student Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Live Summary Bottom Bar -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; background: #f8fafc; padding: 16px 20px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                            <div>
+                                <span style="font-size: 12px; color: #64748b; font-weight: 600;">Total Students:</span>
+                                <div id="statTotalStudents" style="font-size: 18px; font-weight: 800; color: #0f172a;">0</div>
+                            </div>
+                            <div>
+                                <span style="font-size: 12px; color: #64748b; font-weight: 600;">Marks Entered:</span>
+                                <div id="statEnteredCount" style="font-size: 18px; font-weight: 800; color: #059669;">0</div>
+                            </div>
+                            <div>
+                                <span style="font-size: 12px; color: #64748b; font-weight: 600;">Class Average Mark:</span>
+                                <div id="statAverageMark" style="font-size: 18px; font-weight: 800; color: #2563eb;">0.0 / 100</div>
+                            </div>
+                            <div>
+                                <span style="font-size: 12px; color: #64748b; font-weight: 600;">Pass Rate (>=45%):</span>
+                                <div id="statPassRate" style="font-size: 18px; font-weight: 800; color: #10b981;">0%</div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Placeholder Initial State -->
+                    <div id="emptyStateBox" class="card" style="padding: 60px 20px; text-align: center; border-radius: 10px; background: #ffffff;">
+                        <div style="font-size: 44px; margin-bottom: 12px;">📋</div>
+                        <h3 style="margin: 0 0 6px; font-size: 18px; font-weight: 800; color: #0f172a;">No Scoresheet Loaded</h3>
+                        <p style="margin: 0 auto; max-width: 460px; font-size: 13px; color: var(--c-text-muted);">
+                            Please configure the academic target scope above (Classroom, Subject, and Assessment Type) and click <strong>Load Scoresheet</strong> to start entering marks.
+                        </p>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999;"></div>
+
+    <script>
+        let currentScopeData = null;
+        let currentRoster = [];
+        let currentGradingScales = [];
+        let currentMaxWeight = 100;
+        let isSheetLocked = false;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initScopes();
+
+            document.getElementById('selLevel').addEventListener('change', filterClassroomsByLevel);
+            document.getElementById('btnLoadSheet').addEventListener('click', loadScoresheet);
+            document.getElementById('btnSaveBatch').addEventListener('click', saveBatchMarks);
+            document.getElementById('btnApplyFill').addEventListener('click', applyDefaultFill);
+            document.getElementById('btnUnlockSheet').addEventListener('click', unlockScoresheet);
+
+            // Auto-load if URL params exist (e.g. ?classroom_id=1&subject_code=MATH)
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('classroom_id') && urlParams.get('subject_code')) {
+                setTimeout(() => {
+                    document.getElementById('selClassroom').value = urlParams.get('classroom_id');
+                    document.getElementById('selSubject').value = urlParams.get('subject_code');
+                    if (urlParams.get('year')) document.getElementById('selYear').value = urlParams.get('year');
+                    if (urlParams.get('term')) document.getElementById('selTerm').value = urlParams.get('term');
+                    loadScoresheet();
+                }, 400);
+            }
+        });
+
+        async function initScopes() {
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/exams/exams_api.php?action=get_scopes', { credentials: 'include' });
+                const data = await res.json();
+                if (data.success) {
+                    currentScopeData = data;
+
+                    // Levels
+                    const selLevel = document.getElementById('selLevel');
+                    selLevel.innerHTML = '<option value="all">All Education Levels</option>';
+                    data.levels.forEach(lvl => {
+                        selLevel.innerHTML += `<option value="${lvl.id}">${lvl.name}</option>`;
+                    });
+
+                    // Subjects
+                    const selSubject = document.getElementById('selSubject');
+                    selSubject.innerHTML = '<option value="">Select Subject...</option>';
+                    data.subjects.forEach(sub => {
+                        selSubject.innerHTML += `<option value="${sub.code}">${sub.name} (${sub.code})</option>`;
+                    });
+
+                    // Assessment Types
+                    const selType = document.getElementById('selAssessmentType');
+                    selType.innerHTML = '';
+                    data.assessment_types.forEach((at, idx) => {
+                        selType.innerHTML += `<option value="${at.id}" ${idx === 0 ? 'selected' : ''}>${at.name} (${at.weight_percent}%)</option>`;
+                    });
+
+                    populateClassrooms(data.classrooms);
+                }
+            } catch(e) {
+                showToast('Failed to load academic scopes.', 'error');
+            }
+        }
+
+        function populateClassrooms(classrooms) {
+            const selClass = document.getElementById('selClassroom');
+            selClass.innerHTML = '<option value="">Select Classroom...</option>';
+            classrooms.forEach(cls => {
+                selClass.innerHTML += `<option value="${cls.id}" data-level="${cls.level_id || ''}">${cls.classroom_name} (${cls.grade_name || cls.level_name || 'Class'})</option>`;
+            });
+        }
+
+        function filterClassroomsByLevel() {
+            if (!currentScopeData) return;
+            const levelVal = document.getElementById('selLevel').value;
+            if (levelVal === 'all') {
+                populateClassrooms(currentScopeData.classrooms);
+            } else {
+                const filtered = currentScopeData.classrooms.filter(c => String(c.level_id) === String(levelVal));
+                populateClassrooms(filtered);
+            }
+        }
+
+        async function loadScoresheet() {
+            const classroomId = document.getElementById('selClassroom').value;
+            const subjectCode = document.getElementById('selSubject').value;
+            const year = document.getElementById('selYear').value;
+            const term = document.getElementById('selTerm').value;
+            const assessmentTypeId = document.getElementById('selAssessmentType').value;
+
+            if (!classroomId || !subjectCode || !assessmentTypeId) {
+                showToast('Please select a Classroom, Subject, and Assessment Type.', 'warning');
+                return;
+            }
+
+            try {
+                const url = `/shule-cafe/api/headmaster/exams/exams_api.php?action=get_entry_sheet&classroom_id=${classroomId}&subject_code=${encodeURIComponent(subjectCode)}&year=${year}&term=${encodeURIComponent(term)}&assessment_type_id=${assessmentTypeId}`;
+                const res = await fetch(url, { credentials: 'include' });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    currentRoster = data.roster || [];
+                    currentGradingScales = data.grading_scales || [];
+                    isSheetLocked = data.is_locked;
+
+                    // Find max weight for active assessment type
+                    const activeTypeObj = data.assessment_types.find(t => String(t.id) === String(assessmentTypeId));
+                    currentMaxWeight = activeTypeObj ? parseFloat(activeTypeObj.weight_percent) : 100;
+
+                    // UI headers
+                    document.getElementById('emptyStateBox').style.display = 'none';
+                    document.getElementById('scoresheetCard').style.display = 'block';
+
+                    document.getElementById('sheetTitle').textContent = `${data.classroom.classroom_name} ‹ ${subjectCode} (${term} ${year})`;
+                    document.getElementById('targetAssessmentHeader').textContent = `${activeTypeObj ? activeTypeObj.name : 'Score'} (Max: ${currentMaxWeight}%)`;
+                    document.getElementById('weightBadge').textContent = `${currentMaxWeight}% Weight`;
+                    document.getElementById('gradingBadge').textContent = `${data.level_type} Standard`;
+
+                    // Lock state banner
+                    const lockBanner = document.getElementById('lockBanner');
+                    if (isSheetLocked) {
+                        lockBanner.style.display = 'block';
+                        document.getElementById('btnSaveBatch').disabled = true;
+                    } else {
+                        lockBanner.style.display = 'none';
+                        document.getElementById('btnSaveBatch').disabled = false;
+                    }
+
+                    renderRosterRows(assessmentTypeId);
+                    recalculateStats();
+                    showToast('Scoresheet loaded successfully.', 'success');
+                } else {
+                    showToast(data.message || 'Error loading roster.', 'error');
+                }
+            } catch(e) {
+                showToast('Network communication error.', 'error');
+            }
+        }
+
+        function renderRosterRows(assessmentTypeId) {
+            const tbody = document.getElementById('rosterTableBody');
+            tbody.innerHTML = '';
+
+            if (currentRoster.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:30px; color:#64748b;">No active students enrolled in this classroom.</td></tr>';
+                return;
+            }
+
+            currentRoster.forEach((stu, idx) => {
+                const tr = document.createElement('tr');
+                const val = (stu.current_score !== null && stu.current_score !== undefined) ? stu.current_score : '';
+                const isMale = (stu.gender && stu.gender.toLowerCase().startsWith('m'));
+
+                tr.innerHTML = `
+                    <td style="text-align:center; color:#64748b; font-weight:700;">${idx + 1}</td>
+                    <td style="font-weight:700; color:#475569;">${stu.user_code || '-'}</td>
+                    <td style="font-weight:800; color:#0f172a;">${stu.full_name}</td>
+                    <td style="text-align:center;">
+                        <span class="badge" style="background:${isMale ? '#eff6ff' : '#fdf2f8'}; color:${isMale ? '#1d4ed8' : '#be185d'}; font-weight:700; font-size:11px; padding:3px 6px;">
+                            ${isMale ? 'Boy' : 'Girl'}
+                        </span>
+                    </td>
+                    <td style="text-align:center;">
+                        <input type="number" step="0.5" min="0" max="${currentMaxWeight}" 
+                            class="score-input" data-student-id="${stu.student_id}" data-index="${idx}"
+                            value="${val}" placeholder="0 - ${currentMaxWeight}" ${isSheetLocked ? 'disabled' : ''}>
+                    </td>
+                    <td style="text-align:center; font-weight:800; color:#0f172a;" id="total-${stu.student_id}">
+                        ${stu.total_score}
+                    </td>
+                    <td style="text-align:center;" id="grade-${stu.student_id}">
+                        ${renderGradeBadge(stu.grade)}
+                    </td>
+                    <td style="text-align:center; font-weight:700; color:#475569;" id="points-${stu.student_id}">
+                        ${stu.points}
+                    </td>
+                    <td style="text-align:center; font-weight:800; color:#059669;" id="rank-${stu.student_id}">
+                        ${stu.rank_position || '-'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Add live input recalculation event listeners
+            document.querySelectorAll('.score-input').forEach(input => {
+                input.addEventListener('input', handleScoreChange);
+                input.addEventListener('keydown', handleArrowNavigation);
+            });
+        }
+
+        function handleScoreChange(e) {
+            const input = e.target;
+            const stuId = input.getAttribute('data-student-id');
+            const rawVal = input.value.trim();
+            const numeric = rawVal !== '' ? parseFloat(rawVal) : 0;
+
+            if (numeric > currentMaxWeight) {
+                input.value = currentMaxWeight;
+                showToast(`Maximum weight for this assessment is ${currentMaxWeight}%`, 'warning');
+            }
+
+            const stu = currentRoster.find(s => s.student_id === stuId);
+            if (!stu) return;
+
+            const assessmentTypeId = document.getElementById('selAssessmentType').value;
+            stu.marks[assessmentTypeId] = rawVal !== '' ? parseFloat(input.value) : 0;
+
+            // Recalculate student total score
+            let sum = 0;
+            for (let k in stu.marks) {
+                sum += parseFloat(stu.marks[k] || 0);
+            }
+            stu.total_score = Math.round(sum * 100) / 100;
+
+            // Adaptive grading lookup
+            let letter = 'F', points = 7;
+            for (let sc of currentGradingScales) {
+                if (stu.total_score >= parseFloat(sc.min_mark) && stu.total_score <= parseFloat(sc.max_mark)) {
+                    letter = sc.grade;
+                    points = parseInt(sc.points || 1);
+                    break;
+                }
+            }
+            stu.grade = letter;
+            stu.points = points;
+
+            // Update DOM cells
+            document.getElementById(`total-${stuId}`).textContent = stu.total_score;
+            document.getElementById(`grade-${stuId}`).innerHTML = renderGradeBadge(letter);
+            document.getElementById(`points-${stuId}`).textContent = points;
+
+            recalculateStats();
+        }
+
+        function handleArrowNavigation(e) {
+            const currentIdx = parseInt(e.target.getAttribute('data-index'));
+            const inputs = document.querySelectorAll('.score-input');
+            if (e.key === 'ArrowDown' || e.key === 'Enter') {
+                e.preventDefault();
+                if (currentIdx + 1 < inputs.length) inputs[currentIdx + 1].focus();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (currentIdx - 1 >= 0) inputs[currentIdx - 1].focus();
+            }
+        }
+
+        function renderGradeBadge(grade) {
+            let bg = '#fee2e2', color = '#991b1b';
+            if (grade === 'A') { bg = '#dcfce7'; color = '#15803d'; }
+            else if (grade === 'B') { bg = '#dbeafe'; color = '#1e40af'; }
+            else if (grade === 'C') { bg = '#fef3c7'; color = '#92400e'; }
+            else if (grade === 'D') { bg = '#ffedd5'; color = '#9a3412'; }
+            return `<span class="badge" style="background:${bg}; color:${color}; font-weight:800; font-size:12px; padding:3px 8px; border-radius:4px;">${grade || 'F'}</span>`;
+        }
+
+        function recalculateStats() {
+            let totalMarks = 0;
+            let entered = 0;
+            let passed = 0;
+
+            currentRoster.forEach(stu => {
+                if (stu.total_score > 0) {
+                    entered++;
+                    totalMarks += stu.total_score;
+                    if (stu.total_score >= 45) passed++;
+                }
+            });
+
+            const avg = entered > 0 ? Math.round((totalMarks / entered) * 10) / 10 : 0;
+            const passPct = entered > 0 ? Math.round((passed / entered) * 100) : 0;
+
+            document.getElementById('statTotalStudents').textContent = currentRoster.length;
+            document.getElementById('statEnteredCount').textContent = `${entered} / ${currentRoster.length}`;
+            document.getElementById('statAverageMark').textContent = `${avg} / 100`;
+            document.getElementById('statPassRate').textContent = `${passPct}%`;
+        }
+
+        function applyDefaultFill() {
+            const fillVal = document.getElementById('quickFillInput').value.trim();
+            if (fillVal === '') return;
+            const numVal = parseFloat(fillVal);
+            if (isNaN(numVal) || numVal < 0 || numVal > currentMaxWeight) {
+                showToast(`Please enter a valid mark between 0 and ${currentMaxWeight}`, 'warning');
+                return;
+            }
+
+            document.querySelectorAll('.score-input').forEach(input => {
+                if (!input.disabled) {
+                    input.value = numVal;
+                    input.dispatchEvent(new Event('input'));
+                }
+            });
+            showToast(`Applied default score ${numVal} to all students.`, 'info');
+        }
+
+        async function saveBatchMarks() {
+            const classroomId = document.getElementById('selClassroom').value;
+            const subjectCode = document.getElementById('selSubject').value;
+            const year = document.getElementById('selYear').value;
+            const term = document.getElementById('selTerm').value;
+            const assessmentTypeId = document.getElementById('selAssessmentType').value;
+
+            const marksList = [];
+            document.querySelectorAll('.score-input').forEach(input => {
+                const sid = input.getAttribute('data-student-id');
+                const val = input.value.trim();
+                marksList.push({
+                    student_id: sid,
+                    score: val !== '' ? parseFloat(val) : null
+                });
+            });
+
+            const payload = {
+                action: 'save_marks_batch',
+                classroom_id: classroomId,
+                subject_code: subjectCode,
+                year: year,
+                term: term,
+                assessment_type_id: assessmentTypeId,
+                marks: marksList
+            };
+
+            const btn = document.getElementById('btnSaveBatch');
+            btn.disabled = true;
+            btn.innerHTML = '<span>⏳</span> Saving...';
+
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/exams/exams_api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    showToast(data.message || 'Marks saved successfully.', 'success');
+                    // Reload sheet to refresh ranks
+                    setTimeout(loadScoresheet, 400);
+                } else {
+                    showToast(data.message || 'Error saving marks.', 'error');
+                }
+            } catch(e) {
+                showToast('Network error while saving.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>💾</span> Save Assessment Marks';
+            }
+        }
+
+        async function unlockScoresheet() {
+            const classroomId = document.getElementById('selClassroom').value;
+            const subjectCode = document.getElementById('selSubject').value;
+            const year = document.getElementById('selYear').value;
+            const term = document.getElementById('selTerm').value;
+
+            if (!confirm('Are you sure you want to unlock this scoresheet for editing?')) return;
+
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/exams/exams_api.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        action: 'toggle_lock',
+                        classroom_id: classroomId,
+                        subject_code: subjectCode,
+                        year: year,
+                        term: term,
+                        lock_state: 0
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    loadScoresheet();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            } catch(e) {
+                showToast('Failed to unlock scoresheet.', 'error');
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            let bg = '#064e3b';
+            if (type === 'error') bg = '#991b1b';
+            if (type === 'warning') bg = '#d97706';
+            if (type === 'info') bg = '#1e40af';
+
+            toast.style.cssText = `background: ${bg}; color: white; padding: 12px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; margin-top: 10px; box-shadow: 0 4px 14px rgba(0,0,0,0.18); animation: fadeIn 0.2s ease; display: flex; align-items: center; gap: 8px;`;
+            toast.innerHTML = `<span>${type === 'success' ? '✅' : (type === 'error' ? '⚠️' : 'ℹ️')}</span> <span>${message}</span>`;
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
