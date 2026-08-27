@@ -13,9 +13,8 @@
     <script type="module" src="../../js/auth/auth-guard.js"></script>
 
     <style>
-        /* Compact Page Layout & Zero Waste Padding */
         .app-content {
-            padding: 8px 16px !important;
+            padding: 6px 14px !important;
         }
 
         /* Step Container: clean & compact */
@@ -23,9 +22,9 @@
             background: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
-            padding: 16px 20px;
-            margin-top: 6px;
-            margin-bottom: 12px;
+            padding: 14px 18px;
+            margin-top: 4px;
+            margin-bottom: 10px;
             max-width: 680px;
         }
 
@@ -97,7 +96,7 @@
             color: #0f172a;
             letter-spacing: 0.02em;
             text-transform: uppercase;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 6px;
@@ -129,19 +128,41 @@
             box-shadow: 0 1px 2px rgba(6, 78, 59, 0.2);
         }
 
-        /* Ultra Compact Header Toolbar */
+        /* Ultra Compact Header Ribbon */
         .workspace-ribbon-bar {
             background: #ffffff;
             border: 1px solid #cbd5e1;
             border-radius: 6px;
-            padding: 6px 12px;
-            margin-top: 6px;
-            margin-bottom: 8px;
+            padding: 4px 10px;
+            margin-top: 4px;
+            margin-bottom: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
+        }
+
+        /* Compact Select Elements */
+        .compact-select {
+            height: 26px;
+            padding: 1px 6px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #1e293b;
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            line-height: 1.2;
+            transition: all 0.12s ease;
+            box-sizing: border-box;
+        }
+
+        .compact-select:focus {
+            border-color: #059669;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15);
         }
 
         /* High-Density Fast Entry Spreadsheet Grid */
@@ -150,8 +171,8 @@
             border-radius: 6px;
             overflow-x: auto;
             background: #ffffff;
-            margin-bottom: 6px;
-            max-height: calc(100vh - 200px); /* Fill entire screen height for large student rosters */
+            margin-bottom: 4px;
+            max-height: calc(100vh - 165px);
         }
 
         .entry-grid {
@@ -164,7 +185,7 @@
         .entry-grid th {
             background: #064e3b;
             color: #ffffff;
-            padding: 6px 4px;
+            padding: 5px 4px;
             font-weight: 700;
             text-align: center;
             position: sticky;
@@ -182,7 +203,7 @@
             vertical-align: middle;
             background: #ffffff;
             white-space: nowrap;
-            height: 30px;
+            height: 28px;
         }
 
         .entry-grid tr:hover td {
@@ -194,7 +215,7 @@
             left: 0;
             z-index: 5;
             background: #ffffff;
-            width: 30px;
+            width: 28px;
             text-align: center;
             font-weight: 700;
             color: #64748b;
@@ -203,10 +224,10 @@
 
         .sticky-col-reg {
             position: sticky;
-            left: 30px;
+            left: 28px;
             z-index: 5;
             background: #ffffff;
-            min-width: 95px;
+            min-width: 90px;
             font-weight: 700;
             color: #475569;
             padding: 2px 6px !important;
@@ -214,14 +235,14 @@
 
         .sticky-col-name {
             position: sticky;
-            left: 125px;
+            left: 118px;
             z-index: 5;
             background: #ffffff;
-            min-width: 170px;
+            min-width: 160px;
             font-weight: 800;
             color: #0f172a;
             border-right: 2px solid #cbd5e1 !important;
-            padding: 2px 8px !important;
+            padding: 2px 6px !important;
         }
 
         .entry-grid th.sticky-col-idx,
@@ -233,12 +254,12 @@
 
         /* Ultra Compact Cell Score Input */
         .grid-score-input {
-            width: 50px;
-            height: 24px;
-            padding: 0 4px;
+            width: 48px;
+            height: 22px;
+            padding: 0 3px;
             border-radius: 3px;
             border: 1px solid #cbd5e1;
-            font-size: 12.5px;
+            font-size: 12px;
             font-weight: 800;
             text-align: center;
             color: #0f172a;
@@ -251,7 +272,7 @@
             border-color: #059669;
             background: #f0fdf4;
             box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.25);
-            font-size: 13px;
+            font-size: 12.5px;
         }
 
         .grid-score-input.has-score {
@@ -281,7 +302,7 @@
         }
 
         .mode-toggle-btn {
-            padding: 3px 8px;
+            padding: 2px 8px;
             border-radius: 4px;
             font-size: 11px;
             font-weight: 700;
@@ -292,8 +313,8 @@
             transition: all 0.12s ease;
             display: inline-flex;
             align-items: center;
-            gap: 3px;
-            height: 26px;
+            gap: 2px;
+            height: 24px;
         }
 
         .mode-toggle-btn.active {
@@ -308,24 +329,24 @@
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 4px 12px;
-            font-size: 12px;
+            border-radius: 5px;
+            padding: 3px 10px;
+            font-size: 11.5px;
         }
 
         .stat-item {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
             font-weight: 700;
             color: #475569;
         }
 
         .stat-item strong {
-            font-size: 13px;
+            font-size: 12.5px;
             color: #0f172a;
         }
     </style>
@@ -341,59 +362,57 @@
                 <div class="app-content">
                     <app-breadcrumb id="entryBreadcrumb" path="Headmaster, Examinations, Marks Entry" style="margin-bottom: 2px;"></app-breadcrumb>
 
-                    <!-- COMPACT CONTROL RIBBON (ALL IN ONE ROW) -->
+                    <!-- COMPACT CONTROL RIBBON (ALL IN ONE NEAT ROW) -->
                     <div class="workspace-ribbon-bar">
                         <!-- Left: Back & Title -->
-                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                            <button id="btnDynamicBack" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700; height: 26px; padding: 2px 8px; font-size: 11.5px;">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                                <span id="btnBackLabel">Back to Exams</span>
+                        <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                            <button id="btnDynamicBack" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 3px; font-weight: 700; height: 24px; padding: 1px 7px; font-size: 11px;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                                <span id="btnBackLabel">Back</span>
                             </button>
-                            <h1 id="pageHeading" style="margin: 0; font-size: 14.5px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 6px;">
+                            <h1 id="pageHeading" style="margin: 0; font-size: 13.5px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
                                 <span>✍️ Examinations Marks Entry</span>
                             </h1>
                         </div>
 
-                        <!-- Right: Controls (Mode, Assessment, Default, Save) -->
-                        <div id="gridControlHeader" style="display: none; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <!-- Right: Single-Row Controls (Mode, Subject, Assessment, Class Filter, Save) -->
+                        <div id="gridControlHeader" style="display: none; align-items: center; gap: 6px; flex-wrap: wrap;">
                             
                             <!-- Mode Toggle -->
-                            <div style="background: #f1f5f9; padding: 2px; border-radius: 6px; display: inline-flex; gap: 2px;">
+                            <div style="background: #f1f5f9; padding: 2px; border-radius: 4px; display: inline-flex; gap: 2px;">
                                 <button id="btnModeAll" class="mode-toggle-btn active" onclick="switchEntryMode('all')">
-                                    <span>⚡ All Subjects</span>
+                                    <span>⚡ All</span>
                                 </button>
                                 <button id="btnModeSingle" class="mode-toggle-btn" onclick="switchEntryMode('single')">
                                     <span>🎯 Single</span>
                                 </button>
                             </div>
 
-                            <!-- Assessment Type -->
-                            <select id="gridAssessmentType" class="form-control" style="padding: 1px 6px; height: 26px; font-weight: 700; font-size: 11.5px; min-width: 170px;">
-                                <!-- Dynamic assessments -->
-                            </select>
-
                             <!-- Single Subject Picker -->
-                            <div id="singleSubPickGroup" style="display: none; align-items: center; gap: 4px;">
-                                <select id="gridSubjectSelect" class="form-control" style="padding: 1px 6px; height: 26px; font-weight: 700; font-size: 11.5px; min-width: 130px; background: #eff6ff; color: #1e40af;">
+                            <div id="singleSubPickGroup" style="display: none; align-items: center;">
+                                <select id="gridSubjectSelect" class="compact-select" style="max-width: 125px; background: #eff6ff; color: #1e40af;">
                                     <!-- Dynamic subjects -->
                                 </select>
                             </div>
 
-                            <!-- Default Quick-Fill -->
-                            <div style="display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; color: #64748b;">
-                                <span>Default:</span>
-                                <input type="number" id="quickFillVal" placeholder="Mark" style="width: 44px; height: 24px; border: 1px solid #cbd5e1; border-radius: 3px; text-align: center; font-weight: 800; font-size: 11.5px; padding: 0;">
-                                <button id="btnQuickFill" class="btn btn-outline btn-sm" style="padding: 1px 5px; font-size: 10.5px; height: 24px; font-weight: 700;">Apply</button>
-                            </div>
+                            <!-- Assessment Type Dropdown (Squeezed width & small font) -->
+                            <select id="gridAssessmentType" class="compact-select" style="max-width: 155px;" title="Assessment Type">
+                                <!-- Dynamic assessments -->
+                            </select>
+
+                            <!-- Classroom / Roster Filter Dropdown (Sensitive live switch) -->
+                            <select id="gridClassFilter" class="compact-select" style="max-width: 175px; font-weight: 700; color: #064e3b; background: #f0fdf4; border-color: #a7f3d0;" title="Class / Roster Filter">
+                                <!-- Dynamic class streams -->
+                            </select>
 
                             <div id="lockNotice" style="display: none;">
-                                <span class="badge" style="background:#fee2e2; color:#991b1b; font-weight:800; font-size:10.5px; padding:2px 6px;">
+                                <span class="badge" style="background:#fee2e2; color:#991b1b; font-weight:800; font-size:10px; padding:2px 5px;">
                                     🔒 Locked
                                 </span>
                             </div>
 
                             <!-- Save Button -->
-                            <button id="btnSaveMarks" class="btn btn-primary" style="font-weight: 800; display: inline-flex; align-items: center; gap: 4px; padding: 2px 14px; height: 26px; font-size: 11.5px;">
+                            <button id="btnSaveMarks" class="btn btn-primary" style="font-weight: 800; display: inline-flex; align-items: center; gap: 4px; padding: 1px 12px; height: 24px; font-size: 11px; border-radius: 4px;">
                                 <span>💾</span> Save Marks
                             </button>
                         </div>
@@ -448,7 +467,7 @@
                         </div>
                     </div>
 
-                    <!-- STEP 4: DATA ENTRY WORKSPACE (High-Density Free Spreadsheet) -->
+                    <!-- STEP 4: DATA ENTRY WORKSPACE (High-Density Spreadsheet) -->
                     <div id="stepWorkspaceView" style="display: none;">
                         
                         <!-- High Density Data Entry Grid Container -->
@@ -504,7 +523,7 @@
         let selectedLevel = null;
         let selectedLevelId = null;
         let selectedGradeId = null;
-        let selectedClassroomId = null;
+        let selectedClassroomId = 0;
         let selectedEntityName = '';
 
         let currentMode = 'all';
@@ -520,9 +539,9 @@
 
             document.getElementById('gridAssessmentType').addEventListener('change', autoLoadSheet);
             document.getElementById('gridSubjectSelect').addEventListener('change', autoLoadSheet);
+            document.getElementById('gridClassFilter').addEventListener('change', handleClassFilterChange);
 
             document.getElementById('btnSaveMarks').addEventListener('click', saveGridMarks);
-            document.getElementById('btnQuickFill').addEventListener('click', applyQuickFill);
 
             document.getElementById('btnDynamicBack').addEventListener('click', handleBackNavigation);
 
@@ -551,12 +570,13 @@
 
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('classroom_id')) {
-                selectedClassroomId = urlParams.get('classroom_id');
+                selectedClassroomId = parseInt(urlParams.get('classroom_id')) || 0;
                 selectedYear = urlParams.get('year') || '2026';
                 selectedTerm = urlParams.get('term') || 'Term 1';
                 goToStep('WORKSPACE');
             } else if (urlParams.get('grade_id')) {
-                selectedGradeId = urlParams.get('grade_id');
+                selectedGradeId = parseInt(urlParams.get('grade_id')) || 0;
+                selectedClassroomId = 0;
                 selectedYear = urlParams.get('year') || '2026';
                 selectedTerm = urlParams.get('term') || 'Term 1';
                 goToStep('WORKSPACE');
@@ -590,6 +610,46 @@
             }
         }
 
+        function populateClassFilterDropdown() {
+            const selFilter = document.getElementById('gridClassFilter');
+            selFilter.innerHTML = '';
+
+            if (!currentScopes) return;
+
+            // Find grade name
+            let gradeName = 'Grade';
+            if (selectedGradeId) {
+                const gObj = (currentScopes.grades || []).find(g => String(g.id) === String(selectedGradeId));
+                if (gObj) gradeName = gObj.name;
+            } else if (selectedClassroomId) {
+                const cObj = (currentScopes.classrooms || []).find(c => String(c.id) === String(selectedClassroomId));
+                if (cObj) {
+                    selectedGradeId = cObj.grade_id;
+                    const gObj = (currentScopes.grades || []).find(g => String(g.id) === String(selectedGradeId));
+                    if (gObj) gradeName = gObj.name;
+                }
+            }
+
+            // 1. Whole Grade Option
+            selFilter.innerHTML += `<option value="0" ${selectedClassroomId === 0 ? 'selected' : ''}>✓ All ${gradeName} (Grade-Wide)</option>`;
+
+            // 2. Stream Options
+            const streams = (currentScopes.classrooms || []).filter(c => String(c.grade_id) === String(selectedGradeId));
+            streams.forEach(st => {
+                selFilter.innerHTML += `<option value="${st.id}" ${selectedClassroomId === st.id ? 'selected' : ''}>✓ Stream: ${st.classroom_name}</option>`;
+            });
+        }
+
+        function handleClassFilterChange() {
+            const val = parseInt(document.getElementById('gridClassFilter').value) || 0;
+            selectedClassroomId = val;
+            
+            const qs = selectedClassroomId ? `classroom_id=${selectedClassroomId}` : `grade_id=${selectedGradeId}`;
+            window.history.pushState({}, '', `entry.html?${qs}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}`);
+
+            autoLoadSheet();
+        }
+
         function goToStep(step) {
             currentStep = step;
             document.getElementById('stepYearsView').style.display = (step === 'YEARS') ? 'block' : 'none';
@@ -615,7 +675,7 @@
                 renderGradesStep();
             } else if (step === 'WORKSPACE') {
                 backLabel.textContent = 'Back to Grades';
-                pageHeading.innerHTML = `<span>✍️ ${selectedEntityName || 'Marks Entry'} ‹ ${selectedTerm} ${selectedYear}</span>`;
+                populateClassFilterDropdown();
                 
                 const qs = selectedClassroomId ? `classroom_id=${selectedClassroomId}` : `grade_id=${selectedGradeId}`;
                 window.history.pushState({}, '', `entry.html?${qs}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}`);
@@ -726,7 +786,7 @@
                     streamsHtml = `<div style="margin-left: 14px; display: flex; flex-direction: column; gap: 1px;">`;
                     streams.forEach(st => {
                         streamsHtml += `
-                            <a href="javascript:void(0)" onclick="openClassStream(${st.id}, '${st.classroom_name}')" class="sub-stream-link">
+                            <a href="javascript:void(0)" onclick="openClassStream(${st.id}, ${grd.id}, '${st.classroom_name}')" class="sub-stream-link">
                                 <span>•</span>
                                 <span>${st.classroom_name}</span>
                             </a>
@@ -754,9 +814,9 @@
             });
         }
 
-        function openClassStream(classroomId, className) {
+        function openClassStream(classroomId, gradeId, className) {
             selectedClassroomId = classroomId;
-            selectedGradeId = null;
+            selectedGradeId = gradeId;
             selectedEntityName = className;
             goToStep('WORKSPACE');
         }
@@ -1023,24 +1083,6 @@
             document.getElementById('statGridFilledCount').textContent = filled;
             document.getElementById('statGridAverage').textContent = `${avg}`;
             document.getElementById('statGridPassRate').textContent = `${passPct}%`;
-        }
-
-        function applyQuickFill() {
-            const fillVal = document.getElementById('quickFillVal').value.trim();
-            if (fillVal === '') return;
-            const num = parseFloat(fillVal);
-            if (isNaN(num) || num < 0 || num > maxAssessmentWeight) {
-                showToast(`Enter mark between 0 and ${maxAssessmentWeight}`, 'warning');
-                return;
-            }
-
-            document.querySelectorAll('.grid-score-input').forEach(inp => {
-                if (!inp.disabled) {
-                    inp.value = num;
-                    inp.dispatchEvent(new Event('input'));
-                }
-            });
-            showToast(`Applied default score ${num}`, 'info');
         }
 
         async function saveGridMarks() {

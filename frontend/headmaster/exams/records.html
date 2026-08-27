@@ -14,16 +14,16 @@
 
     <style>
         .app-content {
-            padding: 8px 16px !important;
+            padding: 6px 14px !important;
         }
 
         .step-container-box {
             background: #ffffff;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
-            padding: 16px 20px;
-            margin-top: 6px;
-            margin-bottom: 12px;
+            padding: 14px 18px;
+            margin-top: 4px;
+            margin-bottom: 10px;
             max-width: 680px;
         }
 
@@ -94,7 +94,7 @@
             color: #0f172a;
             letter-spacing: 0.02em;
             text-transform: uppercase;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 6px;
@@ -130,14 +130,35 @@
             background: #ffffff;
             border: 1px solid #cbd5e1;
             border-radius: 6px;
-            padding: 6px 12px;
-            margin-top: 6px;
-            margin-bottom: 8px;
+            padding: 4px 10px;
+            margin-top: 4px;
+            margin-bottom: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
+        }
+
+        .compact-select {
+            height: 26px;
+            padding: 1px 6px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #1e293b;
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            line-height: 1.2;
+            transition: all 0.12s ease;
+            box-sizing: border-box;
+        }
+
+        .compact-select:focus {
+            border-color: #059669;
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15);
         }
 
         /* Broadsheet Table Styling */
@@ -146,8 +167,8 @@
             border-radius: 6px;
             overflow-x: auto;
             background: #ffffff;
-            margin-bottom: 12px;
-            max-height: calc(100vh - 280px);
+            margin-bottom: 10px;
+            max-height: calc(100vh - 250px);
         }
 
         .broadsheet-table {
@@ -161,7 +182,7 @@
             background: #064e3b;
             color: white;
             font-weight: 700;
-            padding: 6px 4px;
+            padding: 5px 4px;
             border-right: 1px solid rgba(255,255,255,0.15);
             text-align: center;
             white-space: nowrap;
@@ -171,7 +192,7 @@
         }
 
         .broadsheet-table td {
-            padding: 4px 6px;
+            padding: 3px 6px;
             border-bottom: 1px solid #e2e8f0;
             border-right: 1px solid #f1f5f9;
             vertical-align: middle;
@@ -188,19 +209,19 @@
             width: 100%;
             border-collapse: collapse;
             text-align: center;
-            font-size: 12px;
+            font-size: 11.5px;
         }
 
         .summary-matrix-table th {
             background: #064e3b;
             color: white;
-            padding: 4px 6px;
+            padding: 3px 6px;
             font-weight: 700;
             border: 1px solid rgba(255,255,255,0.2);
         }
 
         .summary-matrix-table td {
-            padding: 4px 6px;
+            padding: 3px 6px;
             border: 1px solid #e2e8f0;
             font-weight: 700;
         }
@@ -209,20 +230,20 @@
         .subj-summary-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 12px;
+            font-size: 11.5px;
         }
 
         .subj-summary-table th {
             background: #0f172a;
             color: white;
-            padding: 5px 6px;
+            padding: 4px 6px;
             font-weight: 700;
             border: 1px solid rgba(255,255,255,0.15);
             text-align: center;
         }
 
         .subj-summary-table td {
-            padding: 4px 6px;
+            padding: 3px 6px;
             border: 1px solid #e2e8f0;
             text-align: center;
         }
@@ -260,21 +281,26 @@
 
                     <!-- COMPACT CONTROL RIBBON -->
                     <div class="workspace-ribbon-bar no-print">
-                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                            <button id="btnDynamicBack" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700; height: 26px; padding: 2px 8px; font-size: 11.5px;">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                                <span id="btnBackLabel">Back to Exams</span>
+                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <button id="btnDynamicBack" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 3px; font-weight: 700; height: 24px; padding: 1px 7px; font-size: 11px;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                                <span id="btnBackLabel">Back</span>
                             </button>
-                            <h1 id="pageHeading" style="margin: 0; font-size: 14.5px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 6px;">
+                            <h1 id="pageHeading" style="margin: 0; font-size: 13.5px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
                                 <span>📊 Results Records & Broadsheets</span>
                             </h1>
                         </div>
 
                         <div id="broadsheetActionButtons" style="display: none; align-items: center; gap: 6px;">
-                            <button id="btnPrintBroadsheet" class="btn btn-outline btn-sm" style="font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 26px; font-size: 11.5px; padding: 2px 8px;">
+                            <!-- Classroom / Roster Filter Dropdown -->
+                            <select id="gridClassFilter" class="compact-select" style="max-width: 175px; font-weight: 700; color: #064e3b; background: #f0fdf4; border-color: #a7f3d0;" title="Class / Roster Filter">
+                                <!-- Dynamic class streams -->
+                            </select>
+
+                            <button id="btnPrintBroadsheet" class="btn btn-outline btn-sm" style="font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 11px; padding: 1px 8px;">
                                 <span>🖨️</span> Print
                             </button>
-                            <button id="btnExportCSV" class="btn btn-outline btn-sm" style="font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 26px; font-size: 11.5px; padding: 2px 8px;">
+                            <button id="btnExportCSV" class="btn btn-outline btn-sm" style="font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 11px; padding: 1px 8px;">
                                 <span>📥</span> CSV
                             </button>
                         </div>
@@ -333,23 +359,22 @@
                     <div id="stepWorkspaceView" style="display: none;">
                         
                         <!-- Slim Top Bar: Division Summary Matrix & Badge -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 6px;">
-                            <!-- National Examination Board Division Matrix -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 6px;">
                             <div style="overflow-x: auto; border: 1.5px solid #cbd5e1; border-radius: 4px; background: white;">
                                 <table class="summary-matrix-table">
                                     <thead>
                                         <tr>
-                                            <th style="min-width: 45px;">I</th>
-                                            <th style="min-width: 45px;">II</th>
-                                            <th style="min-width: 45px;">III</th>
-                                            <th style="min-width: 45px;">IV</th>
-                                            <th style="min-width: 45px;">0</th>
-                                            <th style="min-width: 60px; background: #043d2e;">Total</th>
-                                            <th style="min-width: 70px; background: #043d2e;">Pass %</th>
+                                            <th style="min-width: 42px;">I</th>
+                                            <th style="min-width: 42px;">II</th>
+                                            <th style="min-width: 42px;">III</th>
+                                            <th style="min-width: 42px;">IV</th>
+                                            <th style="min-width: 42px;">0</th>
+                                            <th style="min-width: 55px; background: #043d2e;">Total</th>
+                                            <th style="min-width: 65px; background: #043d2e;">Pass %</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr style="font-size: 13px; font-weight: 800; color: #0f172a;">
+                                        <tr style="font-size: 12.5px; font-weight: 800; color: #0f172a;">
                                             <td id="topSumDiv1" style="color: #15803d; background: #f0fdf4;">0</td>
                                             <td id="topSumDiv2" style="color: #1d4ed8; background: #eff6ff;">0</td>
                                             <td id="topSumDiv3" style="color: #b45309; background: #fffbeb;">0</td>
@@ -362,7 +387,7 @@
                                 </table>
                             </div>
 
-                            <div id="bestSubjectBadge" class="badge" style="background: white; color: #065f46; border: 1.5px solid #059669; padding: 3px 8px; font-size: 11px; font-weight: 800;">
+                            <div id="bestSubjectBadge" class="badge" style="background: white; color: #065f46; border: 1.5px solid #059669; padding: 2px 7px; font-size: 10.5px; font-weight: 800;">
                                 🏆 Best Subject: Loading...
                             </div>
                         </div>
@@ -380,25 +405,25 @@
                         </div>
 
                         <!-- Subject Examinations Summary Matrix -->
-                        <div style="padding: 10px 14px; border-radius: 6px; background: white; border: 1.5px solid #cbd5e1; margin-bottom: 14px;">
-                            <h3 style="margin: 0 0 8px; font-size: 12px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.02em;">
+                        <div style="padding: 8px 12px; border-radius: 6px; background: white; border: 1.5px solid #cbd5e1; margin-bottom: 12px;">
+                            <h3 style="margin: 0 0 6px; font-size: 11.5px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.02em;">
                                 📋 Subject Examinations Summary
                             </h3>
                             <div style="overflow-x: auto;">
                                 <table class="subj-summary-table" id="subjSummaryTable">
                                     <thead>
                                         <tr>
-                                            <th style="width: 35px;">S/N</th>
-                                            <th style="width: 60px;">Code</th>
-                                            <th style="text-align: left; min-width: 140px;">Subject Name</th>
-                                            <th style="width: 50px;">REG</th>
-                                            <th style="width: 50px;">SAT</th>
-                                            <th style="width: 40px; background: #15803d;">A</th>
-                                            <th style="width: 40px; background: #1d4ed8;">B</th>
-                                            <th style="width: 40px; background: #b45309;">C</th>
-                                            <th style="width: 40px; background: #c2410c;">D</th>
-                                            <th style="width: 40px; background: #dc2626;">F</th>
-                                            <th style="width: 65px; background: #064e3b;">Pass %</th>
+                                            <th style="width: 30px;">S/N</th>
+                                            <th style="width: 55px;">Code</th>
+                                            <th style="text-align: left; min-width: 130px;">Subject Name</th>
+                                            <th style="width: 45px;">REG</th>
+                                            <th style="width: 45px;">SAT</th>
+                                            <th style="width: 35px; background: #15803d;">A</th>
+                                            <th style="width: 35px; background: #1d4ed8;">B</th>
+                                            <th style="width: 35px; background: #b45309;">C</th>
+                                            <th style="width: 35px; background: #c2410c;">D</th>
+                                            <th style="width: 35px; background: #dc2626;">F</th>
+                                            <th style="width: 60px; background: #064e3b;">Pass %</th>
                                         </tr>
                                     </thead>
                                     <tbody id="subjSummaryTbody">
@@ -422,7 +447,7 @@
         let selectedLevel = null;
         let selectedLevelId = null;
         let selectedGradeId = null;
-        let selectedClassroomId = null;
+        let selectedClassroomId = 0;
         let selectedEntityName = '';
 
         let currentScopes = null;
@@ -435,6 +460,7 @@
 
             document.getElementById('btnPrintBroadsheet').addEventListener('click', () => window.print());
             document.getElementById('btnExportCSV').addEventListener('click', exportToCSV);
+            document.getElementById('gridClassFilter').addEventListener('change', handleClassFilterChange);
 
             document.getElementById('btnDynamicBack').addEventListener('click', handleBackNavigation);
 
@@ -455,12 +481,13 @@
 
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('classroom_id')) {
-                selectedClassroomId = urlParams.get('classroom_id');
+                selectedClassroomId = parseInt(urlParams.get('classroom_id')) || 0;
                 selectedYear = urlParams.get('year') || '2026';
                 selectedTerm = urlParams.get('term') || 'Term 1';
                 goToStep('WORKSPACE');
             } else if (urlParams.get('grade_id')) {
-                selectedGradeId = urlParams.get('grade_id');
+                selectedGradeId = parseInt(urlParams.get('grade_id')) || 0;
+                selectedClassroomId = 0;
                 selectedYear = urlParams.get('year') || '2026';
                 selectedTerm = urlParams.get('term') || 'Term 1';
                 goToStep('WORKSPACE');
@@ -480,6 +507,43 @@
             } catch(e) {
                 console.error(e);
             }
+        }
+
+        function populateClassFilterDropdown() {
+            const selFilter = document.getElementById('gridClassFilter');
+            selFilter.innerHTML = '';
+
+            if (!currentScopes) return;
+
+            let gradeName = 'Grade';
+            if (selectedGradeId) {
+                const gObj = (currentScopes.grades || []).find(g => String(g.id) === String(selectedGradeId));
+                if (gObj) gradeName = gObj.name;
+            } else if (selectedClassroomId) {
+                const cObj = (currentScopes.classrooms || []).find(c => String(c.id) === String(selectedClassroomId));
+                if (cObj) {
+                    selectedGradeId = cObj.grade_id;
+                    const gObj = (currentScopes.grades || []).find(g => String(g.id) === String(selectedGradeId));
+                    if (gObj) gradeName = gObj.name;
+                }
+            }
+
+            selFilter.innerHTML += `<option value="0" ${selectedClassroomId === 0 ? 'selected' : ''}>✓ All ${gradeName} (Grade-Wide)</option>`;
+
+            const streams = (currentScopes.classrooms || []).filter(c => String(c.grade_id) === String(selectedGradeId));
+            streams.forEach(st => {
+                selFilter.innerHTML += `<option value="${st.id}" ${selectedClassroomId === st.id ? 'selected' : ''}>✓ Stream: ${st.classroom_name}</option>`;
+            });
+        }
+
+        function handleClassFilterChange() {
+            const val = parseInt(document.getElementById('gridClassFilter').value) || 0;
+            selectedClassroomId = val;
+            
+            const qs = selectedClassroomId ? `classroom_id=${selectedClassroomId}` : `grade_id=${selectedGradeId}`;
+            window.history.pushState({}, '', `records.html?${qs}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}`);
+
+            openBroadsheet(selectedClassroomId, selectedGradeId, selectedYear, selectedTerm);
         }
 
         function goToStep(step) {
@@ -507,7 +571,7 @@
                 renderGradesStep();
             } else if (step === 'WORKSPACE') {
                 backLabel.textContent = 'Back to Grades';
-                pageHeading.innerHTML = `<span>📊 ${selectedEntityName || 'Results'} ‹ ${selectedTerm} ${selectedYear}</span>`;
+                populateClassFilterDropdown();
                 
                 const qs = selectedClassroomId ? `classroom_id=${selectedClassroomId}` : `grade_id=${selectedGradeId}`;
                 window.history.pushState({}, '', `records.html?${qs}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}`);
@@ -618,7 +682,7 @@
                     streamsHtml = `<div style="margin-left: 14px; display: flex; flex-direction: column; gap: 1px;">`;
                     streams.forEach(st => {
                         streamsHtml += `
-                            <a href="javascript:void(0)" onclick="openClassStream(${st.id}, '${st.classroom_name}')" class="sub-stream-link">
+                            <a href="javascript:void(0)" onclick="openClassStream(${st.id}, ${grd.id}, '${st.classroom_name}')" class="sub-stream-link">
                                 <span>•</span>
                                 <span>${st.classroom_name} Results</span>
                             </a>
@@ -646,9 +710,9 @@
             });
         }
 
-        function openClassStream(classroomId, className) {
+        function openClassStream(classroomId, gradeId, className) {
             selectedClassroomId = classroomId;
-            selectedGradeId = null;
+            selectedGradeId = gradeId;
             selectedEntityName = className;
             goToStep('WORKSPACE');
         }
@@ -673,6 +737,8 @@
         }
 
         function renderBroadsheetUI(data) {
+            document.getElementById('pageHeading').innerHTML = `<span>📊 ${data.class_info.classroom_name} ‹ ${data.term} ${data.year}</span>`;
+
             document.getElementById('topSumDiv1').textContent = data.division_summary['Division I'] || 0;
             document.getElementById('topSumDiv2').textContent = data.division_summary['Division II'] || 0;
             document.getElementById('topSumDiv3').textContent = data.division_summary['Division III'] || 0;
@@ -690,19 +756,19 @@
             const thead = document.getElementById('broadsheetThead');
             let thHtml = `
                 <tr>
-                    <th style="width: 30px; text-align: center;">S/N</th>
-                    <th style="width: 95px; text-align: left;">Reg No</th>
-                    <th style="text-align: left; min-width: 160px;">Full Name</th>
+                    <th style="width: 28px; text-align: center;">S/N</th>
+                    <th style="width: 90px; text-align: left;">Reg No</th>
+                    <th style="text-align: left; min-width: 155px;">Full Name</th>
             `;
 
             data.subjects.forEach(sub => {
-                thHtml += `<th style="text-align: center; min-width: 58px;" title="${sub.name}">${sub.code}</th>`;
+                thHtml += `<th style="text-align: center; min-width: 55px;" title="${sub.name}">${sub.code}</th>`;
             });
 
             thHtml += `
-                    <th style="text-align: center; background: #065f46; width: 48px;">Pts</th>
-                    <th style="text-align: center; background: #065f46; width: 52px;">Div</th>
-                    <th style="text-align: center; width: 42px;">Pos</th>
+                    <th style="text-align: center; background: #065f46; width: 45px;">Pts</th>
+                    <th style="text-align: center; background: #065f46; width: 48px;">Div</th>
+                    <th style="text-align: center; width: 38px;">Pos</th>
                 </tr>
             `;
             thead.innerHTML = thHtml;
@@ -711,7 +777,7 @@
             tbody.innerHTML = '';
 
             if (data.broadsheet.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="${data.subjects.length + 6}" style="text-align:center; padding:20px; color:#64748b;">No student records found.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="${data.subjects.length + 6}" style="text-align:center; padding:15px; color:#64748b;">No student records found.</td></tr>`;
             } else {
                 data.broadsheet.forEach((stu, idx) => {
                     const tr = document.createElement('tr');
@@ -729,7 +795,7 @@
                             const gColor = getGradeColor(gradeObj.grade);
                             rowHtml += `
                                 <td style="text-align: center;" title="Score: ${gradeObj.mark}">
-                                    <strong style="color: ${gColor}; font-size: 12px;">${gradeObj.grade}</strong>
+                                    <strong style="color: ${gColor}; font-size: 11.5px;">${gradeObj.grade}</strong>
                                 </td>
                             `;
                         } else {
@@ -771,7 +837,7 @@
                     subjTbody.appendChild(tr);
                 });
             } else {
-                subjTbody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding:15px; color:#64748b;">No subject marks recorded yet.</td></tr>`;
+                subjTbody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding:12px; color:#64748b;">No subject marks recorded yet.</td></tr>`;
             }
         }
 
@@ -797,7 +863,7 @@
             else if (label === 'III') { bg = '#fef3c7'; color = '#92400e'; }
             else if (label === 'IV') { bg = '#ffedd5'; color = '#9a3412'; }
             else if (label === '0') { bg = '#fee2e2'; color = '#991b1b'; }
-            return `<span class="badge" style="background:${bg}; color:${color}; font-weight:900; font-size:10px; padding:1px 5px; border-radius:3px;">${label || '-'}</span>`;
+            return `<span class="badge" style="background:${bg}; color:${color}; font-weight:900; font-size:9.5px; padding:1px 4px; border-radius:3px;">${label || '-'}</span>`;
         }
 
         function exportToCSV() {
