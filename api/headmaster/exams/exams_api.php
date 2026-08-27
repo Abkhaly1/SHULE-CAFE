@@ -688,10 +688,22 @@ try {
                     ];
 
                     if (!isset($subjectScoresAccumulator[$sc])) {
-                        $subjectScoresAccumulator[$sc] = ['total' => 0, 'count' => 0, 'passed' => 0, 'name' => $sub['name']];
+                        $subjectScoresAccumulator[$sc] = [
+                            'total' => 0,
+                            'count' => 0,
+                            'passed' => 0,
+                            'name' => $sub['name'],
+                            'grades' => ['A' => 0, 'B' => 0, 'C' => 0, 'D' => 0, 'F' => 0]
+                        ];
                     }
                     $subjectScoresAccumulator[$sc]['total'] += $mark;
                     $subjectScoresAccumulator[$sc]['count']++;
+                    $gLetter = $gData['grade'];
+                    if (isset($subjectScoresAccumulator[$sc]['grades'][$gLetter])) {
+                        $subjectScoresAccumulator[$sc]['grades'][$gLetter]++;
+                    } else {
+                        $subjectScoresAccumulator[$sc]['grades']['F']++;
+                    }
                     if ($mark >= 45.0) $subjectScoresAccumulator[$sc]['passed']++;
                     $totalEvaluatedScoreSum += $mark;
                     $totalEvaluatedSubjectEntries++;
@@ -741,7 +753,8 @@ try {
                 'name' => $data['name'],
                 'average' => $avg,
                 'evaluated_count' => $data['count'],
-                'pass_rate_percent' => $passRate
+                'pass_rate_percent' => $passRate,
+                'grades' => $data['grades']
             ];
         }
         usort($subjectRankings, fn($a, $b) => $b['average'] <=> $a['average']);
