@@ -29,15 +29,17 @@ if (!headers_sent()) {
     }
 }
 
-// 🔒 2. HARDENED SESSION CONFIGURATION
-if (php_sapi_name() !== 'cli' && session_status() === PHP_SESSION_NONE) {
-    ini_set('session.cookie_httponly', 1);
-    ini_set('session.use_only_cookies', 1);
-    ini_set('session.cookie_samesite', 'Lax');
-    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-        ini_set('session.cookie_secure', 1);
+// 🔒 2. HARDENED SESSION HELPER (Only started on demand when authentication is needed)
+function startSecureSession() {
+    if (php_sapi_name() !== 'cli' && session_status() === PHP_SESSION_NONE) {
+        ini_set('session.cookie_httponly', 1);
+        ini_set('session.use_only_cookies', 1);
+        ini_set('session.cookie_samesite', 'Lax');
+        if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+            ini_set('session.cookie_secure', 1);
+        }
+        @session_start();
     }
-    session_start();
 }
 
 /**
@@ -216,6 +218,7 @@ function verifySessionSecurity() {
  * Enforce authorization and Anti-Bot checks on backend endpoints
  */
 function requireAuth(array $allowedRoles = []) {
+    startSecureSession();
     // 🤖 Anti-Bot Checks
     checkHoneypotTrap();
     checkRequestThrottling();

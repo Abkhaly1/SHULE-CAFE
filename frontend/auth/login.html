@@ -537,15 +537,11 @@
                     ? currentPath.substring(0, frontendIndex) + '/api/auth/login.php'
                     : '/shule-cafe/api/auth/login.php';
 
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 8000);
-
                 try {
                     const res = await fetch(apiPath, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         credentials: 'include',
-                        signal: controller.signal,
                         body: JSON.stringify({ 
                             email: identifier, 
                             phone: identifier, 

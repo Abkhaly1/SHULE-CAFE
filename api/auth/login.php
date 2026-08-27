@@ -116,7 +116,8 @@ try {
             // Clear any prior failed attempts for this user/IP
             resetFailedAttempts($conn, $clientIp, $identifier);
 
-            // Regenerate session ID to prevent Session Fixation attacks
+            // Start session and regenerate session ID to prevent Session Fixation attacks
+            startSecureSession();
             session_regenerate_id(true);
 
             // Normalize role for unified multi-tenant permissions
