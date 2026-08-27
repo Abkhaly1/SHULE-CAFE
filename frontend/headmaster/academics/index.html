@@ -53,32 +53,12 @@
             <main class="app-content-wrapper" style="padding-top: 10px;">
                 <div class="app-content" style="padding: 0;">
                     
-                    <div style="padding: 0 24px 8px 24px;">
+                    <div style="padding: 0 24px 12px 24px;">
                         <app-breadcrumb path="Headmaster, Settings, Academics"></app-breadcrumb>
                     </div>
 
-                    <app-workspace-layout back-url="../settings/index.html" back-label="Back to Settings" style="gap: 10px;">
+                    <app-workspace-layout hide-back style="gap: 10px;">
                         
-                        <!-- ── HEADER BANNER ────────────────────────── -->
-                        <div class="workspace-header-card" style="margin-bottom: 8px; padding: 8px 14px;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="width: 32px; height: 32px; border-radius: 50%; background: #10b981; color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800;">
-                                    🎓
-                                </div>
-                                <div>
-                                    <h2 style="margin: 0; font-size: 15px; font-weight: 800; color: white; line-height: 1.2;">
-                                        Academic Curriculum
-                                    </h2>
-                                    <div style="color: #a7f3d0; font-size: 11px;">
-                                        Manage school levels, grades, and subjects.
-                                    </div>
-                                </div>
-                            </div>
-                            <div style="text-align: right;">
-                                <span class="badge" style="background: #10b981; color: white; font-weight: 700; padding: 3px 8px; font-size: 11px;">Current Year</span>
-                            </div>
-                        </div>
-
                         <!-- ── WORKSPACE SUMMARY CARDS ──────────────────────── -->
                         <app-workspace-summary style="margin-bottom: 8px; gap: 8px;">
                             <app-workspace-summary-card id="cardLevelsCount" label="Levels" value="-"></app-workspace-summary-card>

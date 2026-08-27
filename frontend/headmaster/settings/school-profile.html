@@ -36,32 +36,13 @@
             <main class="app-content-wrapper">
                 <div class="app-content" style="padding: 0;">
                     
-                    <app-workspace-layout back-url="index.html" back-label="Back to Settings">
+                    <app-workspace-layout hide-back>
                         
-                        <div style="padding: 0 24px;">
+                        <div style="padding: 0 24px 12px 24px;">
                             <app-breadcrumb path="Headmaster, Settings, School Profile"></app-breadcrumb>
                         </div>
 
                         <div style="padding: 0 24px 24px 24px;">
-                            <!-- Header Banner -->
-                            <div class="workspace-header-card" style="display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; background: var(--c-bg-surface); border: 1px solid var(--c-border-light); border-radius: 12px; margin-top: 12px; margin-bottom: 20px;">
-                                <div style="display: flex; align-items: center; gap: 16px;">
-                                    <div style="width: 52px; height: 52px; border-radius: 50%; background: #059669; color: white; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800;">
-                                        🏫
-                                    </div>
-                                    <div>
-                                        <h2 id="displaySchoolName" style="margin: 0; font-size: 20px; font-weight: 800; color: var(--c-text-primary);">
-                                            School Identity & Profile Workspace
-                                        </h2>
-                                        <div id="displaySchoolSub" style="color: var(--c-text-muted); font-size: 13px; margin-top: 2px;">
-                                            Official institutional records, contact details, registration, and branding.
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 800; font-size: 12px; padding: 6px 12px; border-radius: 6px;">Active Tenant</span>
-                                </div>
-                            </div>
 
                             <!-- Alert Box -->
                             <div id="saveAlert" class="alert alert-success" style="display: none; margin-bottom: 20px;"></div>

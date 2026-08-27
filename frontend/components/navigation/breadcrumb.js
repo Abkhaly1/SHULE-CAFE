@@ -35,8 +35,18 @@ class AppBreadcrumb extends HTMLElement {
             'Schools': '/shule-cafe/frontend/super-admin/schools/index.html',
             'Regions': '/shule-cafe/frontend/super-admin/regions/index.html',
             'Students': '/shule-cafe/frontend/headmaster/people/students.html',
+            'Students Directory': '/shule-cafe/frontend/headmaster/people/students.html',
             'Teachers': '/shule-cafe/frontend/headmaster/people/teachers.html',
-            'Academics': '/shule-cafe/frontend/headmaster/academics/index.html'
+            'Teachers/Staffs': '/shule-cafe/frontend/headmaster/people/teachers.html',
+            'Teachers & Staffs': '/shule-cafe/frontend/headmaster/people/teachers.html',
+            'Academics': '/shule-cafe/frontend/headmaster/academics/index.html',
+            'Classrooms': '/shule-cafe/frontend/headmaster/classrooms/index.html',
+            'Timetables': '/shule-cafe/frontend/headmaster/timetable/index.html',
+            'Reports': '/shule-cafe/frontend/headmaster/reports/index.html',
+            'School Reports': '/shule-cafe/frontend/headmaster/reports/index.html',
+            'Class Guiders': '/shule-cafe/frontend/headmaster/allocations/class-guiders.html',
+            'Subject Allocations': '/shule-cafe/frontend/headmaster/allocations/subject-allocations.html',
+            'Assessment Config': '/shule-cafe/frontend/headmaster/academics/assessment-config.html'
         };
 
         const homeUrl = window.location.pathname.includes('/headmaster/') ? '/shule-cafe/frontend/headmaster/dashboard.html' :

@@ -21,16 +21,11 @@
             <app-topbar username="Headmaster Portal"></app-topbar>
             <main class="app-content-wrapper" style="padding-top:10px;">
                 <div class="app-content">
-                    <app-workspace-layout>
-                        <div class="roll-header">
-                            <div>
-                                <h2 style="margin:0;font-size:18px;font-weight:800;">Annual Rollover — Clone Assignments</h2>
-                                <div style="color:var(--c-text-muted);font-size:13px;">Clone previous year classroom assignments into a new academic year.</div>
-                            </div>
-                            <div>
-                                <a href="teacher-directory.html" class="btn">⬅️ Return</a>
-                            </div>
-                        </div>
+                    <div style="margin-bottom: 14px;">
+                        <app-breadcrumb path="Headmaster, Settings, Class Guiders, Teacher Rollover"></app-breadcrumb>
+                    </div>
+
+                    <app-workspace-layout hide-back>
 
                         <div style="background:white;padding:14px;border:1px solid var(--c-border-light);border-radius:8px;">
                             <form id="rolloverForm">
