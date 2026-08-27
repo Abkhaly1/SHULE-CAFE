@@ -291,7 +291,12 @@
                             </h1>
                         </div>
 
-                        <div id="broadsheetActionButtons" style="display: none; align-items: center; gap: 6px;">
+                        <div id="broadsheetActionButtons" style="display: none; align-items: center; gap: 6px; flex-wrap: wrap;">
+                            <!-- Assessment Type Dropdown Filter (Next to Class Filter) -->
+                            <select id="gridAssessmentFilter" class="compact-select" style="max-width: 160px; font-weight: 700; color: #1e293b;" title="Assessment Type">
+                                <option value="all">✓ All Assessments</option>
+                            </select>
+
                             <!-- Classroom / Roster Filter Dropdown -->
                             <select id="gridClassFilter" class="compact-select" style="max-width: 175px; font-weight: 700; color: #064e3b; background: #f0fdf4; border-color: #a7f3d0;" title="Class / Roster Filter">
                                 <!-- Dynamic class streams -->
@@ -448,6 +453,7 @@
         let selectedLevelId = null;
         let selectedGradeId = null;
         let selectedClassroomId = 0;
+        let selectedAssessmentType = 'all';
         let selectedEntityName = '';
 
         let currentScopes = null;
@@ -461,6 +467,7 @@
             document.getElementById('btnPrintBroadsheet').addEventListener('click', () => window.print());
             document.getElementById('btnExportCSV').addEventListener('click', exportToCSV);
             document.getElementById('gridClassFilter').addEventListener('change', handleClassFilterChange);
+            document.getElementById('gridAssessmentFilter').addEventListener('change', handleAssessmentFilterChange);
 
             document.getElementById('btnDynamicBack').addEventListener('click', handleBackNavigation);
 
@@ -503,6 +510,13 @@
                 if (data.success) {
                     currentScopes = data;
                     renderYearsStep();
+
+                    // Populate Assessment Filter Dropdown
+                    const selAssess = document.getElementById('gridAssessmentFilter');
+                    selAssess.innerHTML = '<option value="all">✓ All Assessments</option>';
+                    (data.assessment_types || []).forEach(at => {
+                        selAssess.innerHTML += `<option value="${at.id}">✓ ${at.name} (${at.weight_percent}%)</option>`;
+                    });
                 }
             } catch(e) {
                 console.error(e);
@@ -543,7 +557,12 @@
             const qs = selectedClassroomId ? `classroom_id=${selectedClassroomId}` : `grade_id=${selectedGradeId}`;
             window.history.pushState({}, '', `records.html?${qs}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}`);
 
-            openBroadsheet(selectedClassroomId, selectedGradeId, selectedYear, selectedTerm);
+            openBroadsheet(selectedClassroomId, selectedGradeId, selectedYear, selectedTerm, selectedAssessmentType);
+        }
+
+        function handleAssessmentFilterChange() {
+            selectedAssessmentType = document.getElementById('gridAssessmentFilter').value;
+            openBroadsheet(selectedClassroomId, selectedGradeId, selectedYear, selectedTerm, selectedAssessmentType);
         }
 
         function goToStep(step) {
@@ -575,7 +594,7 @@
                 
                 const qs = selectedClassroomId ? `classroom_id=${selectedClassroomId}` : `grade_id=${selectedGradeId}`;
                 window.history.pushState({}, '', `records.html?${qs}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}`);
-                openBroadsheet(selectedClassroomId, selectedGradeId, selectedYear, selectedTerm);
+                openBroadsheet(selectedClassroomId, selectedGradeId, selectedYear, selectedTerm, selectedAssessmentType);
             }
         }
 
@@ -717,10 +736,10 @@
             goToStep('WORKSPACE');
         }
 
-        async function openBroadsheet(classroomId, gradeId, year, term) {
+        async function openBroadsheet(classroomId, gradeId, year, term, examType = 'all') {
             const scopeParam = classroomId ? `classroom_id=${classroomId}` : `grade_id=${gradeId}`;
             try {
-                const url = `/shule-cafe/api/headmaster/exams/exams_api.php?action=get_broadsheet_records&${scopeParam}&year=${year}&term=${encodeURIComponent(term)}&exam_type_id=all`;
+                const url = `/shule-cafe/api/headmaster/exams/exams_api.php?action=get_broadsheet_records&${scopeParam}&year=${year}&term=${encodeURIComponent(term)}&exam_type_id=${encodeURIComponent(examType)}`;
                 const res = await fetch(url, { credentials: 'include' });
                 const data = await res.json();
 
