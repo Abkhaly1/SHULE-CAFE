@@ -20,7 +20,10 @@ customElements.define('app-table-empty', AppTableEmpty);
 
 // Table Skeleton Loader
 class AppTableSkeleton extends HTMLElement {
-    constructor() { super(); }
+    constructor() { 
+        super(); 
+        this._timeoutId = null;
+    }
     connectedCallback() {
         const rows = parseInt(this.getAttribute('rows')) || 5;
         const cols = parseInt(this.getAttribute('cols')) || 5;
@@ -42,6 +45,23 @@ class AppTableSkeleton extends HTMLElement {
                 </tbody>
             </table>
         `;
+
+        // Safety fallback: if skeleton is not cleared within 2.5 seconds, auto-render empty state
+        this._timeoutId = setTimeout(() => {
+            if (this.isConnected) {
+                const parent = this.parentElement;
+                if (parent && parent.contains(this)) {
+                    this.outerHTML = '<app-table-empty title="No Records Available" message="No data records found in this view. Click the action button above to add new records."></app-table-empty>';
+                }
+            }
+        }, 2500);
+    }
+
+    disconnectedCallback() {
+        if (this._timeoutId) {
+            clearTimeout(this._timeoutId);
+            this._timeoutId = null;
+        }
     }
 }
 customElements.define('app-table-skeleton', AppTableSkeleton);
