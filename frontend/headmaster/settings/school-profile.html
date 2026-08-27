@@ -53,11 +53,11 @@
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
                                     <div class="form-group">
                                         <label class="form-label" style="font-weight: 700; font-size: 12px;">Official School Name <span style="color:var(--c-danger);">*</span></label>
-                                        <input type="text" id="sch_name" class="form-control" placeholder="e.g. Mlimani Secondary School" required>
+                                        <input type="text" id="sch_name" class="form-control" placeholder="Loading school name..." required>
                                     </div>
                                     <div class="form-group">
-                                        <label class="form-label" style="font-weight: 700; font-size: 12px;">Registration Number (MoEST)</label>
-                                        <input type="text" id="sch_reg_no" class="form-control" placeholder="e.g. S.4589/2012" value="S.1042/TZ">
+                                        <label class="form-label" style="font-weight: 700; font-size: 12px;">Registration Number (MoEST / NECTA)</label>
+                                        <input type="text" id="sch_reg_no" class="form-control" placeholder="e.g. S.5000">
                                     </div>
                                 </div>
 
@@ -66,7 +66,7 @@
                                         <label class="form-label" style="font-weight: 700; font-size: 12px;">Education Type</label>
                                         <select id="sch_type" class="form-control">
                                             <option value="Primary">Primary School (Std 1 - 7)</option>
-                                            <option value="Secondary" selected>Secondary School (O-Level / A-Level)</option>
+                                            <option value="Secondary">Secondary School (O-Level / A-Level)</option>
                                             <option value="Combined">Comprehensive (Primary & Secondary)</option>
                                             <option value="Nursery">Early Childhood & Nursery</option>
                                         </select>
@@ -83,7 +83,7 @@
 
                                 <div class="form-group" style="margin-bottom: 24px;">
                                     <label class="form-label" style="font-weight: 700; font-size: 12px;">School Motto / Slogan</label>
-                                    <input type="text" id="sch_motto" class="form-control" placeholder="e.g. Education is the Light of the Nation" value="Excellence, Knowledge & Integrity">
+                                    <input type="text" id="sch_motto" class="form-control" placeholder="e.g. Education is the Light of the Nation">
                                 </div>
 
                                 <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 15px; font-weight: 800; color: #0f172a; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
@@ -93,21 +93,21 @@
                                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px;">
                                     <div class="form-group">
                                         <label class="form-label" style="font-weight: 700; font-size: 12px;">Region <span style="color:var(--c-danger);">*</span></label>
-                                        <input type="text" id="sch_region" class="form-control" placeholder="e.g. Dar es Salaam" required>
+                                        <input type="text" id="sch_region" class="form-control" placeholder="Loading region..." required>
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label" style="font-weight: 700; font-size: 12px;">District / Municipality</label>
-                                        <input type="text" id="sch_district" class="form-control" placeholder="e.g. Kinondoni" value="Kinondoni Municipal">
+                                        <input type="text" id="sch_district" class="form-control" placeholder="e.g. Magharibi 'A'">
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label" style="font-weight: 700; font-size: 12px;">Ward / Street</label>
-                                        <input type="text" id="sch_ward" class="form-control" placeholder="e.g. Mwenge" value="Mwenge">
+                                        <input type="text" id="sch_ward" class="form-control" placeholder="e.g. Dole">
                                     </div>
                                 </div>
 
                                 <div class="form-group" style="margin-bottom: 24px;">
                                     <label class="form-label" style="font-weight: 700; font-size: 12px;">Postal Address</label>
-                                    <input type="text" id="sch_address" class="form-control" placeholder="P.O. Box ..." value="P.O. Box 35091, Dar es Salaam">
+                                    <input type="text" id="sch_address" class="form-control" placeholder="P.O. Box ...">
                                 </div>
 
                                 <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 15px; font-weight: 800; color: #0f172a; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
@@ -117,11 +117,11 @@
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                                     <div class="form-group">
                                         <label class="form-label" style="font-weight: 700; font-size: 12px;">Official Email</label>
-                                        <input type="email" id="sch_email" class="form-control" placeholder="info@school.ac.tz" value="admin@mlimanischool.ac.tz">
+                                        <input type="email" id="sch_email" class="form-control" placeholder="e.g. info@school.ac.tz">
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label" style="font-weight: 700; font-size: 12px;">Official Phone / Hotline</label>
-                                        <input type="text" id="sch_phone" class="form-control" placeholder="+255 7..." value="+255 754 001 223">
+                                        <input type="text" id="sch_phone" class="form-control" placeholder="e.g. +255 700 000 000">
                                     </div>
                                 </div>
                             </div>
@@ -133,7 +133,7 @@
                                     <div style="width: 100px; height: 100px; border-radius: 50%; background: #ecfdf5; border: 3px solid #059669; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 16px auto; box-shadow: 0 4px 10px rgba(5,150,105,0.15);">
                                         🎓
                                     </div>
-                                    <button type="button" class="btn btn-outline btn-sm" onclick="alert('Upload Crest dialog ready.')" style="font-weight: 700;">Change Crest Image</button>
+                                    <button type="button" class="btn btn-outline btn-sm" onclick="alert('School crest management is enabled.')" style="font-weight: 700;">Change Crest Image</button>
                                     <div style="font-size: 11px; color: #94a3b8; margin-top: 8px;">Supports PNG, JPG (Max 2MB)</div>
                                 </div>
 
@@ -141,15 +141,15 @@
                                     <h4 style="margin-top: 0; margin-bottom: 12px; font-size: 14px; font-weight: 800; color: #334155;">Institutional Identifiers</h4>
                                     <div style="margin-bottom: 10px;">
                                         <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700;">ShuleCafe ID</div>
-                                        <div style="font-size: 14px; font-weight: 800; color: #0f172a; font-family: monospace;" id="displaySchId">S/CAFE-2026-0042</div>
+                                        <div style="font-size: 14px; font-weight: 800; color: #0f172a; font-family: monospace;" id="displaySchId">Loading...</div>
                                     </div>
                                     <div style="margin-bottom: 10px;">
                                         <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700;">License Key</div>
-                                        <div style="font-size: 12px; font-weight: 700; color: #059669; font-family: monospace;">SHULE-ENT-2026-ACTIVE</div>
+                                        <div style="font-size: 12px; font-weight: 700; color: #059669; font-family: monospace;" id="displayLicenseKey">SHULE-ENT-2026-ACTIVE</div>
                                     </div>
                                     <div>
-                                        <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700;">System Version</div>
-                                        <div style="font-size: 12px; color: #475569; font-weight: 600;">Release 2.0.0 (2026 Edition)</div>
+                                        <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700;">Institutional Status</div>
+                                        <div style="font-size: 12px; color: #166534; font-weight: 700;" id="displaySchStatus">🟢 Active Institutional Tenant</div>
                                     </div>
                                 </div>
 
@@ -175,17 +175,38 @@
             const alertBox = document.getElementById('saveAlert');
             const saveBtn = document.getElementById('saveProfileBtn');
 
-            try {
-                const res = await fetch('/shule-cafe/api/headmaster/stats.php', { credentials: 'include' });
-                const result = await res.json();
-                if (res.ok && result.success && result.school) {
-                    const sch = result.school;
-                    if (sch.name) document.getElementById('sch_name').value = sch.name;
-                    if (sch.type) document.getElementById('sch_type').value = sch.type;
-                    if (sch.region) document.getElementById('sch_region').value = sch.region;
-                    if (sch.registration_number) document.getElementById('sch_reg_no').value = sch.registration_number;
+            async function loadSchoolData() {
+                try {
+                    const res = await fetch('/shule-cafe/api/headmaster/school_profile.php', { credentials: 'include' });
+                    const result = await res.json();
+                    
+                    if (res.ok && result.success && result.school) {
+                        const sch = result.school;
+                        
+                        document.getElementById('sch_name').value = sch.name || '';
+                        document.getElementById('sch_reg_no').value = sch.necta_no || '';
+                        if (sch.type) document.getElementById('sch_type').value = sch.type;
+                        if (sch.ownership_type) document.getElementById('sch_ownership').value = sch.ownership_type;
+                        document.getElementById('sch_region').value = sch.region || '';
+                        document.getElementById('sch_district').value = sch.district || '';
+                        document.getElementById('sch_ward').value = sch.ward_address || '';
+                        document.getElementById('sch_email').value = sch.school_email || '';
+                        document.getElementById('sch_phone').value = sch.school_phone || '';
+                        
+                        document.getElementById('displaySchId').textContent = sch.school_code || sch.id || 'N/A';
+                        if (sch.license_key) {
+                            document.getElementById('displayLicenseKey').textContent = sch.license_key;
+                        }
+                        if (sch.status === 'active') {
+                            document.getElementById('displaySchStatus').textContent = '🟢 Active Institutional Tenant';
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error loading school profile:', e);
                 }
-            } catch (e) {}
+            }
+
+            await loadSchoolData();
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -194,24 +215,31 @@
                 saveBtn.textContent = 'Saving Profile...';
 
                 const data = {
-                    name: document.getElementById('sch_name').value,
-                    region: document.getElementById('sch_region').value,
+                    name: document.getElementById('sch_name').value.trim(),
+                    necta_no: document.getElementById('sch_reg_no').value.trim(),
                     type: document.getElementById('sch_type').value,
-                    registration_number: document.getElementById('sch_reg_no').value
+                    ownership_type: document.getElementById('sch_ownership').value,
+                    region: document.getElementById('sch_region').value.trim(),
+                    district: document.getElementById('sch_district').value.trim(),
+                    ward_address: document.getElementById('sch_ward').value.trim(),
+                    school_email: document.getElementById('sch_email').value.trim(),
+                    school_phone: document.getElementById('sch_phone').value.trim()
                 };
 
                 try {
-                    const res = await fetch('/shule-cafe/api/schools/update.php', {
+                    const res = await fetch('/shule-cafe/api/headmaster/school_profile.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         credentials: 'include',
                         body: JSON.stringify(data)
                     });
                     const result = await res.json();
+                    
                     if (res.ok && result.success) {
                         alertBox.className = 'alert alert-success';
-                        alertBox.textContent = 'School profile information saved successfully!';
+                        alertBox.textContent = 'School profile records successfully updated and synchronized!';
                         alertBox.style.display = 'block';
+                        await loadSchoolData();
                     } else {
                         alertBox.className = 'alert alert-danger';
                         alertBox.textContent = result.message || 'Error saving profile.';
