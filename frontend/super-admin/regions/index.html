@@ -32,9 +32,7 @@
                     <div class="card" style="margin-top: var(--sp-4);">
                         <app-table-toolbar search-placeholder="Search regions or officers..."></app-table-toolbar>
                         
-                        <div id="tableContainer">
-                            <app-table-skeleton rows="5" cols="4"></app-table-skeleton>
-                        </div>
+                        <div id="tableContainer"></div>
                     </div>
                 </div>
                 <app-footer></app-footer>
@@ -140,7 +138,7 @@
                 const res = await fetch('/shule-cafe/api/regional/list.php', { credentials: 'include' });
                 const result = await res.json();
 
-                if (res.ok && result.success) {
+                if (res.ok && result.success && result.data && result.data.length > 0) {
                     const regionsData = result.data.map(item => ({
                         id: item.id,
                         user: { initials: item.full_name ? item.full_name.charAt(0).toUpperCase() : 'O', name: item.full_name },
@@ -157,10 +155,10 @@
                     tableContainer.innerHTML = '';
                     tableContainer.appendChild(appTable);
                 } else {
-                    tableContainer.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-text-muted);">No regional officers registered.</div>';
+                    tableContainer.innerHTML = '<app-table-empty title="No Regional Officers" message="No regional education officers registered yet. Click \'Add Regional Officer\' above to register an officer."></app-table-empty>';
                 }
             } catch (err) {
-                tableContainer.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-danger);">Failed to load regional offices.</div>';
+                tableContainer.innerHTML = '<app-table-empty title="No Regional Officers Found" message="Unable to load regional offices."></app-table-empty>';
             }
         });
     </script>

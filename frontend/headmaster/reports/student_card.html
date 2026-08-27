@@ -75,13 +75,13 @@
                 <!-- ── STUDENT HEADER & YEAR TOGGLE ─────────────────────── -->
                 <div class="report-header-banner">
                     <div>
-                        <h3 id="stuName" style="margin:0 0 4px;font-size:18px;font-weight:800;color:var(--c-text-primary);"><span class="skeleton skeleton-title" style="width:200px;display:block;"></span></h3>
-                        <span id="stuCode"><span class="skeleton skeleton-sub" style="width:90px;display:block;"></span></span>
+                        <h3 id="stuName" style="margin:0 0 4px;font-size:18px;font-weight:800;color:var(--c-text-primary);">Student Report Card</h3>
+                        <span id="stuCode" style="font-size:12px;color:var(--c-text-muted);">REG —</span>
                     </div>
                     <div style="display:flex;align-items:center;gap:10px;">
                         <label style="font-size:13px;font-weight:700;color:var(--c-text-primary);">🕒 Select Academic Year:</label>
                         <select id="yearSelector" class="form-control" style="width:240px;font-weight:700;" onchange="onYearSwitch(this.value)">
-                            <option value="">Loading timeline…</option>
+                            <option value="">Select Academic Year</option>
                         </select>
                     </div>
                 </div>
@@ -115,9 +115,7 @@
                             </tr>
                         </thead>
                         <tbody id="marksTableBody">
-                            <tr class="skeleton-tr"><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td></tr>
-                            <tr class="skeleton-tr"><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td></tr>
-                            <tr class="skeleton-tr"><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td><td><div class="skeleton skeleton-text"></div></td></tr>
+                            <tr><td colspan="8" style="text-align:center;padding:24px;color:var(--c-text-muted);">No academic marks recorded for this academic year.</td></tr>
                         </tbody>
                     </table>
 

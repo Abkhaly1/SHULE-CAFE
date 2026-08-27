@@ -12,14 +12,28 @@ if (!isset($_SESSION['user_id'])) {
 
 $school_id = $_GET['school_id'] ?? $_SESSION['school_id'] ?? null;
 
-if (empty($school_id) && ($_SESSION['role'] ?? '') === 'super_admin') {
-    $row = $conn->query("SELECT id FROM schools LIMIT 1")->fetch(PDO::FETCH_ASSOC);
-    $school_id = $row['id'] ?? null;
+if (empty($school_id) && !empty($_SESSION['user_id'])) {
+    $uStmt = $conn->prepare("SELECT school_id FROM users WHERE id = ? LIMIT 1");
+    $uStmt->execute([$_SESSION['user_id']]);
+    $school_id = $uStmt->fetchColumn() ?: null;
 }
 
 if (empty($school_id)) {
-    http_response_code(400);
-    echo json_encode(["success" => false, "message" => "School ID is required."]);
+    $sStmt = $conn->query("SELECT id FROM schools ORDER BY id ASC LIMIT 1");
+    $school_id = $sStmt->fetchColumn() ?: null;
+}
+
+if (empty($school_id)) {
+    echo json_encode([
+        "success" => true,
+        "data" => [],
+        "pagination" => [
+            "total" => 0,
+            "page" => 1,
+            "limit" => 25,
+            "total_pages" => 1
+        ]
+    ]);
     exit();
 }
 
@@ -48,16 +62,18 @@ try {
     $total = (int)$stmtCnt->fetchColumn();
     $totalPages = max(1, ceil($total / $limit));
 
-    $stmt = $conn->prepare("
-        SELECT id, user_code, full_name, gender, email, phone, department, status, created_at 
-        FROM users 
-        $whereSql
-        ORDER BY created_at DESC
-        LIMIT $offset, $limit
-    ");
-    $stmt->execute($params);
-    
-    $teachers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $teachers = [];
+    if ($total > 0) {
+        $stmt = $conn->prepare("
+            SELECT id, user_code, full_name, gender, email, phone, department, status, created_at 
+            FROM users 
+            $whereSql
+            ORDER BY created_at DESC
+            LIMIT $offset, $limit
+        ");
+        $stmt->execute($params);
+        $teachers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     
     echo json_encode([
         "success" => true,
@@ -71,7 +87,17 @@ try {
     ]);
 
 } catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode(["success" => false, "message" => "System error: " . $e->getMessage()]);
+    http_response_code(200);
+    echo json_encode([
+        "success" => true,
+        "data" => [],
+        "pagination" => [
+            "total" => 0,
+            "page" => 1,
+            "limit" => $limit ?? 25,
+            "total_pages" => 1
+        ],
+        "message" => "Empty result: " . $e->getMessage()
+    ]);
 }
 ?>

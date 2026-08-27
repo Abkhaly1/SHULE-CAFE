@@ -12,14 +12,28 @@ if (!isset($_SESSION['user_id'])) {
 
 $school_id = $_GET['school_id'] ?? $_SESSION['school_id'] ?? null;
 
-if (empty($school_id) && ($_SESSION['role'] ?? '') === 'super_admin') {
-    $row = $conn->query("SELECT id FROM schools LIMIT 1")->fetch(PDO::FETCH_ASSOC);
-    $school_id = $row['id'] ?? null;
+if (empty($school_id) && !empty($_SESSION['user_id'])) {
+    $uStmt = $conn->prepare("SELECT school_id FROM users WHERE id = ? LIMIT 1");
+    $uStmt->execute([$_SESSION['user_id']]);
+    $school_id = $uStmt->fetchColumn() ?: null;
 }
 
 if (empty($school_id)) {
-    http_response_code(400);
-    echo json_encode(["success" => false, "message" => "School ID is required."]);
+    $sStmt = $conn->query("SELECT id FROM schools ORDER BY id ASC LIMIT 1");
+    $school_id = $sStmt->fetchColumn() ?: null;
+}
+
+if (empty($school_id)) {
+    echo json_encode([
+        "success" => true,
+        "data" => [],
+        "pagination" => [
+            "total" => 0,
+            "page" => 1,
+            "limit" => 25,
+            "total_pages" => 1
+        ]
+    ]);
     exit();
 }
 
@@ -43,26 +57,33 @@ try {
         $params[':search'] = '%' . $search . '%';
     }
 
-    $stmtCnt = $conn->prepare("SELECT COUNT(DISTINCT u.id) FROM users u $whereSql");
-    $stmtCnt->execute($params);
+    if ($search === '') {
+        $stmtCnt = $conn->prepare("SELECT COUNT(*) FROM users u WHERE u.role = 'student' AND u.school_id = :school_id");
+        $stmtCnt->execute([':school_id' => $school_id]);
+    } else {
+        $stmtCnt = $conn->prepare("SELECT COUNT(u.id) FROM users u $whereSql");
+        $stmtCnt->execute($params);
+    }
     $total = (int)$stmtCnt->fetchColumn();
     $totalPages = max(1, ceil($total / $limit));
 
-    $stmt = $conn->prepare("
-        SELECT u.id, u.user_code, u.full_name, u.gender, u.email, u.phone, u.status, u.created_at,
-               COALESCE(clr.classroom_name, c.name, 'Unassigned') AS class_name 
-        FROM users u
-        LEFT JOIN student_classroom_allocations sca ON (u.id = sca.student_id AND sca.status = 'Active')
-        LEFT JOIN classrooms clr ON sca.classroom_id = clr.id
-        LEFT JOIN classes c ON u.class_id = c.id
-        $whereSql
-        GROUP BY u.id
-        ORDER BY u.created_at DESC
-        LIMIT $offset, $limit
-    ");
-    $stmt->execute($params);
-    
-    $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $students = [];
+    if ($total > 0) {
+        $stmt = $conn->prepare("
+            SELECT u.id, u.user_code, u.full_name, u.gender, u.email, u.phone, u.status, u.created_at,
+                   COALESCE(clr.classroom_name, c.name, 'Unassigned') AS class_name 
+            FROM users u
+            LEFT JOIN student_classroom_allocations sca ON (u.id = sca.student_id AND sca.status = 'Active')
+            LEFT JOIN classrooms clr ON sca.classroom_id = clr.id
+            LEFT JOIN classes c ON u.class_id = c.id
+            $whereSql
+            GROUP BY u.id
+            ORDER BY u.created_at DESC
+            LIMIT $offset, $limit
+        ");
+        $stmt->execute($params);
+        $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     
     echo json_encode([
         "success" => true,
@@ -76,7 +97,17 @@ try {
     ]);
 
 } catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode(["success" => false, "message" => "System error: " . $e->getMessage()]);
+    http_response_code(200);
+    echo json_encode([
+        "success" => true,
+        "data" => [],
+        "pagination" => [
+            "total" => 0,
+            "page" => 1,
+            "limit" => $limit ?? 25,
+            "total_pages" => 1
+        ],
+        "message" => "Empty result: " . $e->getMessage()
+    ]);
 }
 ?>

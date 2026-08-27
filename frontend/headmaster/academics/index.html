@@ -91,9 +91,7 @@
                                     </div>
                                 </div>
 
-                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px;" id="academicsGradesGrid">
-                                    <app-table-skeleton rows="4" cols="2"></app-table-skeleton>
-                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px;" id="academicsGradesGrid"></div>
                             </div>
                         </app-workspace-content>
 
@@ -111,9 +109,7 @@
                                     </div>
                                 </div>
 
-                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px;" id="academicsLevelsGrid">
-                                    <app-table-skeleton rows="3" cols="2"></app-table-skeleton>
-                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px;" id="academicsLevelsGrid"></div>
                             </div>
                         </app-workspace-content>
 
@@ -131,9 +127,7 @@
                                     </div>
                                 </div>
 
-                                <div id="academicsSubjectsContainer">
-                                    <app-table-skeleton rows="6" cols="3"></app-table-skeleton>
-                                </div>
+                                <div id="academicsSubjectsContainer"></div>
                             </div>
                         </app-workspace-content>
 
@@ -247,11 +241,11 @@
 
         function renderLevelsGrid() {
             const container = document.getElementById('academicsLevelsGrid');
-            if (!container || !portalData) return;
+            if (!container) return;
 
-            const levels = portalData.education_levels || [];
+            const levels = portalData ? (portalData.education_levels || []) : [];
             if (levels.length === 0) {
-                container.innerHTML = '<div style="padding: 20px; color: var(--c-text-muted);">No registered education levels.</div>';
+                container.innerHTML = '<div style="grid-column: 1/-1;"><app-table-empty title="No Education Levels" message="No active education levels configured for your school."></app-table-empty></div>';
                 return;
             }
 
@@ -284,11 +278,11 @@
 
         function renderSubjectsTable() {
             const container = document.getElementById('academicsSubjectsContainer');
-            if (!container || !portalData) return;
+            if (!container) return;
 
-            const subjects = portalData.approved_subjects || [];
+            const subjects = portalData ? (portalData.approved_subjects || []) : [];
             if (subjects.length === 0) {
-                container.innerHTML = '<div style="padding: 20px; color: var(--c-text-muted);">No approved master subjects found.</div>';
+                container.innerHTML = '<app-table-empty title="No Master Subjects" message="No approved master subjects configured yet."></app-table-empty>';
                 return;
             }
 

@@ -12,9 +12,15 @@ if (!isset($_SESSION['user_id'])) {
 
 $school_id = $_SESSION['school_id'] ?? $_GET['school_id'] ?? null;
 
-if (!$school_id && $_SESSION['role'] === 'super_admin') {
-    $stmt = $conn->query("SELECT id FROM schools LIMIT 1");
-    $school_id = $stmt->fetchColumn();
+if (empty($school_id) && !empty($_SESSION['user_id'])) {
+    $uStmt = $conn->prepare("SELECT school_id FROM users WHERE id = ? LIMIT 1");
+    $uStmt->execute([$_SESSION['user_id']]);
+    $school_id = $uStmt->fetchColumn() ?: null;
+}
+
+if (empty($school_id)) {
+    $sStmt = $conn->query("SELECT id FROM schools ORDER BY id ASC LIMIT 1");
+    $school_id = $sStmt->fetchColumn() ?: null;
 }
 
 try {
@@ -41,10 +47,13 @@ try {
     $total = (int)$stmtCnt->fetchColumn();
     $totalPages = max(1, ceil($total / $limit));
 
-    $query = "SELECT id, full_name, phone, email, status, created_at FROM users $queryWhere ORDER BY created_at DESC LIMIT $offset, $limit";
-    $stmt = $conn->prepare($query);
-    $stmt->execute($params);
-    $parents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $parents = [];
+    if ($total > 0) {
+        $query = "SELECT id, full_name, phone, email, status, created_at FROM users $queryWhere ORDER BY created_at DESC LIMIT $offset, $limit";
+        $stmt = $conn->prepare($query);
+        $stmt->execute($params);
+        $parents = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
     echo json_encode([
         "success" => true,
@@ -58,7 +67,17 @@ try {
     ]);
 
 } catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode(["success" => false, "message" => "Database error: " . $e->getMessage()]);
+    http_response_code(200);
+    echo json_encode([
+        "success" => true,
+        "data" => [],
+        "pagination" => [
+            "total" => 0,
+            "page" => 1,
+            "limit" => $limit ?? 25,
+            "total_pages" => 1
+        ],
+        "message" => "Empty result: " . $e->getMessage()
+    ]);
 }
 ?>

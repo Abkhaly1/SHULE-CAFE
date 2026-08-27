@@ -41,9 +41,7 @@
 
                             <div id="backupAlert" class="alert alert-success" style="display: none; margin-bottom: var(--sp-4);"></div>
 
-                            <div id="backupsListContainer">
-                                <app-table-skeleton rows="4" cols="3"></app-table-skeleton>
-                            </div>
+                            <div id="backupsListContainer"></div>
                         </div>
 
                         <!-- Right Column: Settings & Schedule -->
@@ -151,10 +149,10 @@
                         html += `</tbody></table>`;
                         listContainer.innerHTML = html;
                     } else {
-                        listContainer.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-text-muted);">No SQL backups generated yet. Click above to create your first backup.</div>';
+                        listContainer.innerHTML = '<app-table-empty title="No Backups Generated" message="No SQL database backups generated yet. Click \'Create Instant Backup Now\' above to create one."></app-table-empty>';
                     }
                 } catch (err) {
-                    listContainer.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-danger);">Error loading backups list.</div>';
+                    listContainer.innerHTML = '<app-table-empty title="No Backups Found" message="Unable to load backups list."></app-table-empty>';
                 }
             }
 

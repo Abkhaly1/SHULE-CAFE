@@ -32,9 +32,7 @@
                     <div class="card" style="margin-top: var(--sp-4);">
                         <app-table-toolbar entity-type="schools" search-placeholder="Search schools by name or region..."></app-table-toolbar>
                         
-                        <div id="tableContainer">
-                            <app-table-skeleton rows="5" cols="4"></app-table-skeleton>
-                        </div>
+                        <div id="tableContainer"></div>
                     </div>
                 </div>
                 <app-footer></app-footer>
@@ -241,7 +239,7 @@
                     const res = await fetch('/shule-cafe/api/schools/list.php', { credentials: 'include' });
                     const result = await res.json();
                     
-                    if (res.ok && result.success) {
+                    if (res.ok && result.success && result.data && result.data.length > 0) {
                         rawSchoolsList = result.data;
                         const schoolsData = result.data.map(item => ({
                             id: item.id,
@@ -260,10 +258,10 @@
                         tableContainer.innerHTML = '';
                         tableContainer.appendChild(appTable);
                     } else {
-                        tableContainer.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-danger);">Failed to load schools list.</div>';
+                        tableContainer.innerHTML = '<app-table-empty title="No Schools Found" message="No registered school tenants found. Click \'Register School Tenant\' above to provision a school."></app-table-empty>';
                     }
                 } catch (err) {
-                    tableContainer.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-danger);">Network error loading schools.</div>';
+                    tableContainer.innerHTML = '<app-table-empty title="No Schools Found" message="Unable to load schools list."></app-table-empty>';
                 }
             }
 

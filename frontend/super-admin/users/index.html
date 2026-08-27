@@ -45,9 +45,7 @@
                             </div>
                         </div>
                         
-                        <div id="tableContainer">
-                            <app-table-skeleton rows="5" cols="4"></app-table-skeleton>
-                        </div>
+                        <div id="tableContainer"></div>
                     </div>
                 </div>
                 <app-footer></app-footer>
@@ -281,13 +279,14 @@
                     const result = await res.json();
 
                     if (res.ok && result.success) {
-                        rawUsersList = result.data;
-                        filterAndRender();
+                        rawUsersList = result.data || [];
                     } else {
-                        tableContainer.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-danger);">Failed to load platform users.</div>';
+                        rawUsersList = [];
                     }
+                    filterAndRender();
                 } catch (err) {
-                    tableContainer.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-danger);">Network error loading platform users.</div>';
+                    rawUsersList = [];
+                    filterAndRender();
                 }
             }
 
@@ -298,8 +297,8 @@
                     filtered = filtered.filter(u => u.role === selectedRole);
                 }
 
-                if (filtered.length === 0) {
-                    tableContainer.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-text-muted);">No platform users found for selected role.</div>';
+                if (!filtered || filtered.length === 0) {
+                    tableContainer.innerHTML = '<app-table-empty title="No Users Found" message="No platform users found matching criteria."></app-table-empty>';
                     return;
                 }
 

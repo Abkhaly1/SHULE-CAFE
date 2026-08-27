@@ -52,9 +52,7 @@
                                     <option value="100">100 / page</option>
                                 </select>
                             </div>
-                            <div id="studentsContainer">
-                                <app-table-skeleton rows="5" cols="4"></app-table-skeleton>
-                            </div>
+                            <div id="studentsContainer"></div>
                             <!-- PAGINATION -->
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding-top: 14px; border-top: 1px solid #e2e8f0; font-size: 13px;">
                                 <div id="tchPageInfo" style="color: #64748b; font-weight: 600;">Showing 0 of 0 students</div>
@@ -168,13 +166,13 @@
 
         async function loadTeacherStudents() {
             const container = document.getElementById('studentsContainer');
-            container.innerHTML = '<app-table-skeleton rows="5" cols="4"></app-table-skeleton>';
+            if (!container) return;
 
             try {
                 const searchQ = encodeURIComponent(tchStudentState.search);
                 const res = await fetch(`/shule-cafe/api/students/list.php?page=${tchStudentState.page}&limit=${tchStudentState.limit}&search=${searchQ}`, { credentials: 'include' });
                 const result = await res.json();
-                if (res.ok && result.success) {
+                if (result && result.success) {
                     const students = result.data || [];
                     const pag = result.pagination || {};
 
@@ -196,7 +194,7 @@
                         ];
                         const data = students.map(item => ({
                             id: item.id,
-                            code: item.user_code || 'STD/${new Date().getFullYear()}/001',
+                            code: item.user_code || `STD/${new Date().getFullYear()}/001`,
                             class: item.class_name || 'Unassigned',
                             name: { initials: item.full_name ? item.full_name.charAt(0).toUpperCase() : 'S', name: item.full_name },
                             status: item.status === 'active' ? 'Active' : 'Suspended'
@@ -208,12 +206,14 @@
                         container.innerHTML = '';
                         container.appendChild(table);
                     } else {
-                        container.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-text-muted);">No students found matching criteria.</div>';
+                        container.innerHTML = '<app-table-empty title="No Students Found" message="No student records found."></app-table-empty>';
                     }
+                } else {
+                    container.innerHTML = '<app-table-empty title="No Students Found" message="No student records found."></app-table-empty>';
                 }
             } catch (e) {
                 console.error("Error loading students:", e);
-                container.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-danger);">Error loading students.</div>';
+                container.innerHTML = '<app-table-empty title="No Students Available" message="No student records available at this time."></app-table-empty>';
             }
         }
     </script>

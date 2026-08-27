@@ -32,28 +32,26 @@
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--sp-4); margin-bottom: var(--sp-6); margin-top: var(--sp-4);">
                         <div class="card" style="padding: var(--sp-4);">
                             <div style="font-size: var(--text-sm); color: var(--c-text-muted); font-weight: 500; margin-bottom: var(--sp-2);">Registered Schools</div>
-                            <div style="font-size: var(--text-2xl); font-weight: 700; color: var(--c-primary);" id="statSchools">-</div>
+                            <div style="font-size: var(--text-2xl); font-weight: 700; color: var(--c-primary);" id="statSchools">0</div>
                         </div>
                         <div class="card" style="padding: var(--sp-4);">
                             <div style="font-size: var(--text-sm); color: var(--c-text-muted); font-weight: 500; margin-bottom: var(--sp-2);">Total Teachers</div>
-                            <div style="font-size: var(--text-2xl); font-weight: 700; color: var(--c-primary);" id="statTeachers">-</div>
+                            <div style="font-size: var(--text-2xl); font-weight: 700; color: var(--c-primary);" id="statTeachers">0</div>
                         </div>
                         <div class="card" style="padding: var(--sp-4);">
                             <div style="font-size: var(--text-sm); color: var(--c-text-muted); font-weight: 500; margin-bottom: var(--sp-2);">Total Students</div>
-                            <div style="font-size: var(--text-2xl); font-weight: 700; color: var(--c-primary);" id="statStudents">-</div>
+                            <div style="font-size: var(--text-2xl); font-weight: 700; color: var(--c-primary);" id="statStudents">0</div>
                         </div>
                         <div class="card" style="padding: var(--sp-4);">
                             <div style="font-size: var(--text-sm); color: var(--c-text-muted); font-weight: 500; margin-bottom: var(--sp-2);">Total Parents</div>
-                            <div style="font-size: var(--text-2xl); font-weight: 700; color: var(--c-primary);" id="statParents">-</div>
+                            <div style="font-size: var(--text-2xl); font-weight: 700; color: var(--c-primary);" id="statParents">0</div>
                         </div>
                     </div>
 
                     <!-- Regional Schools Table -->
                     <div class="card" style="padding: var(--sp-6);">
                         <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">Schools Directory</h3>
-                        <div id="schoolsTableContainer">
-                            <app-table-skeleton rows="5" cols="4"></app-table-skeleton>
-                        </div>
+                        <div id="schoolsTableContainer"></div>
                     </div>
 
                 </div>
@@ -72,11 +70,11 @@
                     return;
                 }
                 const data = await res.json();
-                if (data.success) {
-                    document.getElementById('statSchools').textContent = data.data.schools.toLocaleString();
-                    document.getElementById('statTeachers').textContent = data.data.teachers.toLocaleString();
-                    document.getElementById('statStudents').textContent = data.data.students.toLocaleString();
-                    document.getElementById('statParents').textContent = data.data.parents.toLocaleString();
+                if (data.success && data.data) {
+                    document.getElementById('statSchools').textContent = (data.data.schools || 0).toLocaleString();
+                    document.getElementById('statTeachers').textContent = (data.data.teachers || 0).toLocaleString();
+                    document.getElementById('statStudents').textContent = (data.data.students || 0).toLocaleString();
+                    document.getElementById('statParents').textContent = (data.data.parents || 0).toLocaleString();
                 }
             } catch (error) {
                 console.error("Failed to load regional stats", error);
@@ -88,7 +86,7 @@
                 const sResult = await sRes.json();
                 const container = document.getElementById('schoolsTableContainer');
 
-                if (sRes.ok && sResult.success && sResult.data.length > 0) {
+                if (sRes.ok && sResult.success && sResult.data && sResult.data.length > 0) {
                     const cols = [
                         { key: 'school', label: 'School Name', type: 'avatar' },
                         { key: 'type', label: 'School Type', type: 'text' },
@@ -108,10 +106,14 @@
                     container.innerHTML = '';
                     container.appendChild(table);
                 } else {
-                    container.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-text-muted);">No schools registered in region yet.</div>';
+                    container.innerHTML = '<app-table-empty title="No Schools Registered" message="No schools registered in this region yet."></app-table-empty>';
                 }
             } catch (e) {
                 console.error("Failed to load schools", e);
+                const container = document.getElementById('schoolsTableContainer');
+                if (container) {
+                    container.innerHTML = '<app-table-empty title="No Schools Found" message="Unable to load schools directory."></app-table-empty>';
+                }
             }
         });
     </script>

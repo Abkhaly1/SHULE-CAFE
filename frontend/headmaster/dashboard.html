@@ -177,9 +177,7 @@
                                 <div style="color: var(--c-text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase;">Enrolled Students</div>
                                 <div style="width: 28px; height: 28px; border-radius: 6px; background: #ecfdf5; color: #059669; display: flex; align-items: center; justify-content: center; font-size: 14px;">🎓</div>
                             </div>
-                            <div style="font-size: 18px; font-weight: 800; color: #0f172a;" id="statStudents">
-                                <span class="skeleton" style="width: 50px; height: 22px;"></span>
-                            </div>
+                            <div style="font-size: 18px; font-weight: 800; color: #0f172a;" id="statStudents">0</div>
                             <div style="font-size: 10px; color: #059669; font-weight: 600; margin-top: 2px;">🟢 Active Enrollment</div>
                         </div>
 
@@ -189,9 +187,7 @@
                                 <div style="color: var(--c-text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase;">Teaching Staff</div>
                                 <div style="width: 28px; height: 28px; border-radius: 6px; background: #eff6ff; color: #1d4ed8; display: flex; align-items: center; justify-content: center; font-size: 14px;">👨‍🏫</div>
                             </div>
-                            <div style="font-size: 18px; font-weight: 800; color: #0f172a;" id="statTeachers">
-                                <span class="skeleton" style="width: 50px; height: 22px;"></span>
-                            </div>
+                            <div style="font-size: 18px; font-weight: 800; color: #0f172a;" id="statTeachers">0</div>
                             <div style="font-size: 10px; color: #1d4ed8; font-weight: 600; margin-top: 2px;">📘 Instructors</div>
                         </div>
 
@@ -201,9 +197,7 @@
                                 <div style="color: var(--c-text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase;">Classes & Streams</div>
                                 <div style="width: 28px; height: 28px; border-radius: 6px; background: #f5f3ff; color: #6d28d9; display: flex; align-items: center; justify-content: center; font-size: 14px;">🏫</div>
                             </div>
-                            <div style="font-size: 18px; font-weight: 800; color: #0f172a;" id="statClasses">
-                                <span class="skeleton" style="width: 50px; height: 22px;"></span>
-                            </div>
+                            <div style="font-size: 18px; font-weight: 800; color: #0f172a;" id="statClasses">0</div>
                             <div style="font-size: 10px; color: #6d28d9; font-weight: 600; margin-top: 2px;">📚 Classrooms</div>
                         </div>
 
@@ -213,9 +207,7 @@
                                 <div style="color: var(--c-text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase;">Guardians</div>
                                 <div style="width: 28px; height: 28px; border-radius: 6px; background: #fffbeb; color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 14px;">👨‍👩‍👧‍👦</div>
                             </div>
-                            <div style="font-size: 18px; font-weight: 800; color: #0f172a;" id="statParents">
-                                <span class="skeleton" style="width: 50px; height: 22px;"></span>
-                            </div>
+                            <div style="font-size: 18px; font-weight: 800; color: #0f172a;" id="statParents">0</div>
                             <div style="font-size: 10px; color: #d97706; font-weight: 600; margin-top: 2px;">🤝 Guardians</div>
                         </div>
 
@@ -233,9 +225,8 @@
                                 </div>
                                 <div style="padding: 0;">
                                     <ul id="activitiesList" style="list-style: none; padding: 0; margin: 0;">
-                                        <li style="padding: 20px; text-align: center; color: var(--c-text-muted);">
-                                            <span class="skeleton" style="width: 100%; height: 40px; margin-bottom: 8px;"></span>
-                                            <span class="skeleton" style="width: 100%; height: 40px;"></span>
+                                        <li style="padding: 24px 20px; text-align: center; color: var(--c-text-muted); font-size: 13px;">
+                                            No recent activities recorded.
                                         </li>
                                     </ul>
                                 </div>
@@ -304,38 +295,41 @@
                     return;
                 }
                 const result = await res.json();
-                if (result.success) {
+                if (result && result.success) {
                     if (result.school) {
                         const header = document.getElementById('pageHeader');
-                        header.setAttribute('title', `${result.school.name} Dashboard`);
-                        header.setAttribute('subtitle', `${result.school.type || 'Secondary'} School • ${result.school.region || 'Tanzania'}`);
+                        if (header) {
+                            header.setAttribute('title', `${result.school.name || 'School'} Dashboard`);
+                            header.setAttribute('subtitle', `${result.school.type || 'Secondary'} School • ${result.school.region || 'Tanzania'}`);
+                        }
                     }
 
-                    if (result.stats) {
-                        document.getElementById('statStudents').textContent = (result.stats.total_students || 0).toLocaleString();
-                        document.getElementById('statTeachers').textContent = (result.stats.total_teachers || 0).toLocaleString();
-                        document.getElementById('statClasses').textContent = (result.stats.total_classes || 0).toLocaleString();
-                        document.getElementById('statParents').textContent = (result.stats.total_parents || 0).toLocaleString();
-                        renderChecklist(result.stats);
-                    }
+                    const stats = result.stats || {};
+                    document.getElementById('statStudents').textContent = (stats.total_students || 0).toLocaleString();
+                    document.getElementById('statTeachers').textContent = (stats.total_teachers || 0).toLocaleString();
+                    document.getElementById('statClasses').textContent = (stats.total_classes || 0).toLocaleString();
+                    document.getElementById('statParents').textContent = (stats.total_parents || 0).toLocaleString();
+                    renderChecklist(stats);
 
                     const actContainer = document.getElementById('activitiesList');
-                    if (result.activities && result.activities.length > 0) {
-                        let html = '';
-                        result.activities.forEach(act => {
-                            html += `
-                                <li style="padding: 16px 20px; border-bottom: 1px solid var(--c-border-light); display: flex; justify-content: space-between; align-items: center;">
-                                    <div>
-                                        <div style="font-weight: 700; color: var(--c-text-primary); font-size: 14px;">${act.title}</div>
-                                        <div style="font-size: 13px; color: var(--c-text-secondary); margin-top: 2px;">${act.desc}</div>
-                                    </div>
-                                    <div style="font-size: 12px; color: var(--c-text-muted); font-weight: 600; background: #f1f5f9; padding: 4px 8px; border-radius: 4px;">${act.time}</div>
-                                </li>
-                            `;
-                        });
-                        actContainer.innerHTML = html;
-                    } else {
-                        actContainer.innerHTML = '<li style="padding: 20px; color: var(--c-text-muted); text-align: center;">No recent activities recorded.</li>';
+                    if (actContainer) {
+                        if (result.activities && result.activities.length > 0) {
+                            let html = '';
+                            result.activities.forEach(act => {
+                                html += `
+                                    <li style="padding: 16px 20px; border-bottom: 1px solid var(--c-border-light); display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <div style="font-weight: 700; color: var(--c-text-primary); font-size: 14px;">${act.title}</div>
+                                            <div style="font-size: 13px; color: var(--c-text-secondary); margin-top: 2px;">${act.desc}</div>
+                                        </div>
+                                        <div style="font-size: 12px; color: var(--c-text-muted); font-weight: 600; background: #f1f5f9; padding: 4px 8px; border-radius: 4px;">${act.time}</div>
+                                    </li>
+                                `;
+                            });
+                            actContainer.innerHTML = html;
+                        } else {
+                            actContainer.innerHTML = '<li style="padding: 24px 20px; color: var(--c-text-muted); text-align: center; font-size: 13px;">No recent activities recorded.</li>';
+                        }
                     }
                 }
             } catch (err) {

@@ -54,9 +54,7 @@
                                 secondary-actions='[{"label":"📥 Bulk CSV Import","action":"import_teachers"},{"label":"📤 Export Data As...","menu":[{"label":"PDF Document (.pdf)","action":"export_teachers_pdf"},{"label":"Excel Spreadsheet (.xlsx)","action":"export_teachers_excel"},{"label":"CSV Raw File (.csv)","action":"export_teachers_csv"}]}]'>
                             </app-workspace-toolbar>
                             <div class="card" style="margin-top: var(--sp-3);">
-                                <div id="teachersTableContainer">
-                                    <app-table-skeleton rows="5" cols="5"></app-table-skeleton>
-                                </div>
+                                <div id="teachersTableContainer"></div>
                                 <app-table-pagination id="teachersPagination" current-page="1" total-pages="1" total-records="0" page-size="10"></app-table-pagination>
                             </div>
                         </app-workspace-content>
@@ -688,16 +686,18 @@
 
             // Load Students
             async function loadStudents() {
-                document.getElementById('studentsTableContainer').innerHTML = '<app-table-skeleton rows="6" cols="6"></app-table-skeleton>';
                 try {
                     const res = await fetch('/shule-cafe/api/students/list.php', { credentials: 'include' });
                     const result = await res.json();
-                    if (res.ok && result.success) {
+                    if (result && result.success) {
                         allStudents = result.data || [];
-                        renderPaginatedStudents();
+                    } else {
+                        allStudents = [];
                     }
+                    renderPaginatedStudents();
                 } catch (e) {
-                    document.getElementById('studentsTableContainer').innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-danger);">Error loading students.</div>';
+                    allStudents = [];
+                    renderPaginatedStudents();
                 }
             }
 
@@ -712,6 +712,7 @@
             function renderPaginatedTeachers() {
                 const container = document.getElementById('teachersTableContainer');
                 const paginator = document.getElementById('teachersPagination');
+                if (!container || !paginator) return;
 
                 let filtered = allTeachers || [];
                 if (teacherSearchQuery) {
@@ -725,7 +726,7 @@
                 }
 
                 if (!filtered || filtered.length === 0) {
-                    container.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-text-muted);">No teachers found matching search criteria.</div>';
+                    container.innerHTML = '<app-table-empty title="No Teachers Registered" message="No teacher records found. Click \'Register Teacher\' above or use Bulk CSV Import to add staff."></app-table-empty>';
                     paginator.setAttribute('total-records', '0');
                     paginator.setAttribute('total-pages', '1');
                     paginator.setAttribute('current-page', '1');
@@ -758,7 +759,7 @@
                     code: item.user_code || ('TCH/' + new Date().getFullYear() + '/001'),
                     raw_name: item.full_name,
                     gender: (item.gender === 'F' || item.gender === 'Female') ? 'Female' : ((item.gender === 'M' || item.gender === 'Male') ? 'Male' : (item.gender || 'Female')),
-                    department: item.department || 'Mathematics',
+                    department: item.department || 'General',
                     phone: item.phone || 'N/A',
                     email: item.email || 'N/A',
                     teacher: { initials: item.full_name ? item.full_name.charAt(0).toUpperCase() : 'T', name: item.full_name },
@@ -788,7 +789,7 @@
                         container.parentNode.insertBefore(alertBox, container);
                     }
 
-                    if (data.success && data.group_count > 0 && alertBox) {
+                    if (data && data.success && data.group_count > 0 && alertBox) {
                         alertBox.style.display = 'flex';
                         alertBox.innerHTML = `
                             <span>⚠️ <strong>Duplicate Name Auto-Audit Alert:</strong> System detected ${data.group_count} duplicate name group(s) in database.</span>
@@ -809,17 +810,21 @@
 
             // Load Teachers
             async function loadTeachers() {
-                document.getElementById('teachersTableContainer').innerHTML = '<app-table-skeleton rows="6" cols="5"></app-table-skeleton>';
                 try {
                     const res = await fetch('/shule-cafe/api/teachers/list.php', { credentials: 'include' });
                     const result = await res.json();
-                    if (res.ok && result.success) {
+                    if (result && result.success) {
                         allTeachers = result.data || [];
-                        renderPaginatedTeachers();
+                    } else {
+                        allTeachers = [];
+                    }
+                    renderPaginatedTeachers();
+                    if (allTeachers.length > 0) {
                         autoCheckDuplicates('teacher');
                     }
                 } catch (e) {
-                    document.getElementById('teachersTableContainer').innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-danger);">Error loading teachers.</div>';
+                    allTeachers = [];
+                    renderPaginatedTeachers();
                 }
             }
 
@@ -827,9 +832,10 @@
             function renderPaginatedParents() {
                 const container = document.getElementById('parentsTableContainer');
                 const paginator = document.getElementById('parentsPagination');
+                if (!container || !paginator) return;
 
                 if (!allParents || allParents.length === 0) {
-                    container.innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-text-muted);">No parents registered yet.</div>';
+                    container.innerHTML = '<app-table-empty title="No Parents Registered" message="No parent or guardian records found. Parents are linked upon student enrollment."></app-table-empty>';
                     paginator.setAttribute('total-records', '0');
                     paginator.setAttribute('total-pages', '1');
                     paginator.setAttribute('current-page', '1');
@@ -873,16 +879,18 @@
 
             // Load Parents
             async function loadParents() {
-                document.getElementById('parentsTableContainer').innerHTML = '<app-table-skeleton rows="6" cols="4"></app-table-skeleton>';
                 try {
                     const res = await fetch('/shule-cafe/api/parents/list.php', { credentials: 'include' });
                     const result = await res.json();
-                    if (res.ok && result.success) {
+                    if (result && result.success) {
                         allParents = result.data || [];
-                        renderPaginatedParents();
+                    } else {
+                        allParents = [];
                     }
+                    renderPaginatedParents();
                 } catch (e) {
-                    document.getElementById('parentsTableContainer').innerHTML = '<div style="padding: var(--sp-4); text-align: center; color: var(--c-danger);">Error loading parents.</div>';
+                    allParents = [];
+                    renderPaginatedParents();
                 }
             }
 
