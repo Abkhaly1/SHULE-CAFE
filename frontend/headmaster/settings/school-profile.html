@@ -13,63 +13,22 @@
     <script type="module" src="../../js/auth/auth-guard.js"></script>
     
     <style>
-        .profile-container {
-            max-width: 860px;
-            margin: 0 auto;
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-top: 14px;
         }
-
-        .profile-card-header {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            border-radius: 10px;
-            padding: 14px 20px;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-
-        .avatar-circle {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: #047857;
-            color: white;
-            font-size: 20px;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #059669;
-            flex-shrink: 0;
-        }
-
-        .form-section-card {
-            background: white;
-            border: 1px solid var(--c-border-light);
-            border-radius: 10px;
-            padding: 20px 24px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
-        }
-
-        .form-section-title {
-            font-size: 14px;
-            font-weight: 800;
-            color: #0f172a;
-            margin: 0 0 16px 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid #f1f5f9;
-            padding-bottom: 8px;
+        @media (max-width: 960px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div class="app-layout">
-        <app-sidebar role="tenant_admin" active-path="/headmaster/settings/index.html"></app-sidebar>
+        <app-sidebar role="tenant_admin" active-path="/headmaster/settings/school-profile.html"></app-sidebar>
         
         <div class="app-main">
             <app-topbar username="Headmaster Portal"></app-topbar>
@@ -77,40 +36,21 @@
             <main class="app-content-wrapper">
                 <div class="app-content" style="padding: var(--sp-4) var(--sp-6);">
                     
-                    <div class="profile-container">
-                        <app-breadcrumb path="Headmaster, Settings, School Profile"></app-breadcrumb>
+                    <app-breadcrumb path="Headmaster, School Profile"></app-breadcrumb>
 
-                        <!-- Profile Header Card (Standardized with User Profile) -->
-                        <div class="profile-card-header" style="margin-top: 12px;">
-                            <div style="display: flex; align-items: center; gap: 14px;">
-                                <div class="avatar-circle">🏫</div>
-                                <div>
-                                    <h2 style="margin: 0 0 2px 0; font-size: 16px; font-weight: 800; color: #ffffff;" id="displaySchoolName">
-                                        School Profile & Identity
-                                    </h2>
-                                    <div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #94a3b8; flex-wrap: wrap;">
-                                        <span>Reg Code: <strong style="color: #34d399;" id="displayRegNo">S.1042/TZ</strong></span>
-                                        <span>•</span>
-                                        <span>Type: <span class="badge" style="background: #059669; color: white; font-weight: 800; font-size: 10px; padding: 2px 6px;" id="displayTypeBadge">Secondary</span></span>
-                                        <span>•</span>
-                                        <span>Status: <strong style="color: #34d399;">Active Tenant</strong></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <!-- Alert Box -->
+                    <div id="saveAlert" class="alert alert-success" style="display: none; margin-top: 12px; margin-bottom: 16px;"></div>
 
-                        <!-- Alert Box -->
-                        <div id="saveAlert" class="alert alert-success" style="display: none; margin-bottom: 16px;"></div>
-
-                        <form id="schoolProfileForm">
+                    <form id="schoolProfileForm">
+                        <div class="profile-grid">
                             
-                            <!-- 1. Core School Identity -->
-                            <div class="form-section-card">
-                                <h3 class="form-section-title">
-                                    <span>🏛️</span> 1. Institutional Identity & Registration
+                            <!-- Left Column: Core School Information -->
+                            <div class="card" style="padding: 24px; border-radius: 12px; background: white; border: 1px solid var(--c-border-light);">
+                                <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 15px; font-weight: 800; color: #0f172a; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
+                                    1. Institutional Identity & Registration
                                 </h3>
 
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
                                     <div class="form-group">
                                         <label class="form-label" style="font-weight: 700; font-size: 12px;">Official School Name <span style="color:var(--c-danger);">*</span></label>
                                         <input type="text" id="sch_name" class="form-control" placeholder="e.g. Mlimani Secondary School" required>
@@ -121,7 +61,7 @@
                                     </div>
                                 </div>
 
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
                                     <div class="form-group">
                                         <label class="form-label" style="font-weight: 700; font-size: 12px;">Education Type</label>
                                         <select id="sch_type" class="form-control">
@@ -141,19 +81,16 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group">
+                                <div class="form-group" style="margin-bottom: 24px;">
                                     <label class="form-label" style="font-weight: 700; font-size: 12px;">School Motto / Slogan</label>
                                     <input type="text" id="sch_motto" class="form-control" placeholder="e.g. Education is the Light of the Nation" value="Excellence, Knowledge & Integrity">
                                 </div>
-                            </div>
 
-                            <!-- 2. Physical Location -->
-                            <div class="form-section-card">
-                                <h3 class="form-section-title">
-                                    <span>📍</span> 2. Physical Location & Postal Address
+                                <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 15px; font-weight: 800; color: #0f172a; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
+                                    2. Physical Location & Postal Address
                                 </h3>
 
-                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 14px;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px;">
                                     <div class="form-group">
                                         <label class="form-label" style="font-weight: 700; font-size: 12px;">Region <span style="color:var(--c-danger);">*</span></label>
                                         <input type="text" id="sch_region" class="form-control" placeholder="e.g. Dar es Salaam" required>
@@ -168,16 +105,13 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group">
+                                <div class="form-group" style="margin-bottom: 24px;">
                                     <label class="form-label" style="font-weight: 700; font-size: 12px;">Postal Address</label>
                                     <input type="text" id="sch_address" class="form-control" placeholder="P.O. Box ..." value="P.O. Box 35091, Dar es Salaam">
                                 </div>
-                            </div>
 
-                            <!-- 3. Official Contacts -->
-                            <div class="form-section-card">
-                                <h3 class="form-section-title">
-                                    <span>📞</span> 3. Official Contacts & Communications
+                                <h3 style="margin-top: 0; margin-bottom: 16px; font-size: 15px; font-weight: 800; color: #0f172a; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">
+                                    3. Official Contacts & Communication
                                 </h3>
 
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
@@ -192,21 +126,42 @@
                                 </div>
                             </div>
 
-                            <!-- 4. System Identifiers & Save Action -->
-                            <div class="form-section-card" style="background: #f8fafc; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-                                <div>
-                                    <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700;">ShuleCafe License Key</div>
-                                    <div style="font-size: 13px; font-weight: 700; color: #059669; font-family: monospace;">SHULE-ENT-2026-ACTIVE (S/CAFE-2026-0042)</div>
+                            <!-- Right Column: School Crest & Quick Summary -->
+                            <div>
+                                <div class="card" style="padding: 24px; border-radius: 12px; margin-bottom: 16px; text-align: center; background: white; border: 1px solid var(--c-border-light);">
+                                    <h4 style="margin-top: 0; margin-bottom: 14px; font-size: 15px; font-weight: 800; color: #0f172a;">Official School Crest / Logo</h4>
+                                    <div style="width: 100px; height: 100px; border-radius: 50%; background: #ecfdf5; border: 3px solid #059669; display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 16px auto; box-shadow: 0 4px 10px rgba(5,150,105,0.15);">
+                                        🎓
+                                    </div>
+                                    <button type="button" class="btn btn-outline btn-sm" onclick="alert('Upload Crest dialog ready.')" style="font-weight: 700;">Change Crest Image</button>
+                                    <div style="font-size: 11px; color: #94a3b8; margin-top: 8px;">Supports PNG, JPG (Max 2MB)</div>
                                 </div>
+
+                                <div class="card" style="padding: 20px; border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0; margin-bottom: 16px;">
+                                    <h4 style="margin-top: 0; margin-bottom: 12px; font-size: 14px; font-weight: 800; color: #334155;">Institutional Identifiers</h4>
+                                    <div style="margin-bottom: 10px;">
+                                        <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700;">ShuleCafe ID</div>
+                                        <div style="font-size: 14px; font-weight: 800; color: #0f172a; font-family: monospace;" id="displaySchId">S/CAFE-2026-0042</div>
+                                    </div>
+                                    <div style="margin-bottom: 10px;">
+                                        <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700;">License Key</div>
+                                        <div style="font-size: 12px; font-weight: 700; color: #059669; font-family: monospace;">SHULE-ENT-2026-ACTIVE</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700;">System Version</div>
+                                        <div style="font-size: 12px; color: #475569; font-weight: 600;">Release 2.0.0 (2026 Edition)</div>
+                                    </div>
+                                </div>
+
                                 <div>
-                                    <button type="submit" id="saveProfileBtn" class="btn btn-primary" style="font-weight: 800; padding: 10px 24px; font-size: 13px; border-radius: 6px;">
+                                    <button type="submit" id="saveProfileBtn" class="btn btn-primary btn-block" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 800; border-radius: 8px;">
                                         💾 Save Profile Changes
                                     </button>
                                 </div>
                             </div>
 
-                        </form>
-                    </div>
+                        </div>
+                    </form>
 
                 </div>
                 <app-footer></app-footer>
@@ -225,15 +180,10 @@
                 const result = await res.json();
                 if (res.ok && result.success && result.school) {
                     const sch = result.school;
-                    if (sch.name) {
-                        document.getElementById('sch_name').value = sch.name;
-                        document.getElementById('displaySchoolName').textContent = sch.name;
-                    }
-                    if (sch.type) {
-                        document.getElementById('sch_type').value = sch.type;
-                        document.getElementById('displayTypeBadge').textContent = sch.type;
-                    }
+                    if (sch.name) document.getElementById('sch_name').value = sch.name;
+                    if (sch.type) document.getElementById('sch_type').value = sch.type;
                     if (sch.region) document.getElementById('sch_region').value = sch.region;
+                    if (sch.registration_number) document.getElementById('sch_reg_no').value = sch.registration_number;
                 }
             } catch (e) {}
 
@@ -246,7 +196,8 @@
                 const data = {
                     name: document.getElementById('sch_name').value,
                     region: document.getElementById('sch_region').value,
-                    type: document.getElementById('sch_type').value
+                    type: document.getElementById('sch_type').value,
+                    registration_number: document.getElementById('sch_reg_no').value
                 };
 
                 try {
@@ -261,8 +212,6 @@
                         alertBox.className = 'alert alert-success';
                         alertBox.textContent = 'School profile information saved successfully!';
                         alertBox.style.display = 'block';
-                        document.getElementById('displaySchoolName').textContent = data.name;
-                        document.getElementById('displayTypeBadge').textContent = data.type;
                     } else {
                         alertBox.className = 'alert alert-danger';
                         alertBox.textContent = result.message || 'Error saving profile.';
