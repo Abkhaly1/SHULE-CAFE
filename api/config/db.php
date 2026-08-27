@@ -26,6 +26,7 @@ if ($requestMethod === 'OPTIONS') {
 $currentScript = str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME'] ?? $_SERVER['SCRIPT_NAME'] ?? '');
 $publicEndpoints = [
     '/api/auth/login.php',
+    '/api/auth/check_account.php',
     '/api/schools/register.php',
     '/api/schools/check_name.php',
     '/api/system/backup.php' // Handled by its own internal CLI/SuperAdmin auth

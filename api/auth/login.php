@@ -159,12 +159,22 @@ try {
         } else {
             recordFailedAttempt($conn, $clientIp, $identifier);
             http_response_code(401);
-            echo json_encode(["success" => false, "message" => "Invalid phone number, email, registration code, or password."]);
+            echo json_encode([
+                "success" => false, 
+                "error_type" => "invalid_password",
+                "message" => "Incorrect password for this account. Please check your password or click 'Forgot password?' below to reset it."
+            ]);
         }
     } else {
         recordFailedAttempt($conn, $clientIp, $identifier);
-        http_response_code(401);
-        echo json_encode(["success" => false, "message" => "Invalid phone number, email, registration code, or password."]);
+        http_response_code(404);
+        echo json_encode([
+            "success" => false, 
+            "error_type" => "account_not_found",
+            "account_needed" => true,
+            "message" => "Account Needed: No registered account found matching '" . htmlspecialchars($identifier) . "'. If you are a new school, please register your school to create your portal.",
+            "register_url" => "register-school.html"
+        ]);
     }
 
 } catch (PDOException $e) {

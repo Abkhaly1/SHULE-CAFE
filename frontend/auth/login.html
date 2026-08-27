@@ -301,22 +301,148 @@
             font-size: 13px;
         }
 
-        /* Responsive Breakpoint for Mobile/Tablet */
-        @media (max-width: 820px) {
-            .wide-login-container {
-                grid-template-columns: 1fr;
-                max-width: 440px;
-                border-radius: 24px;
-            }
-            .hero-panel {
-                padding: 32px 28px;
-            }
-            .form-panel {
-                padding: 32px 28px;
-            }
-            .mobile-register-link {
-                display: block;
-            }
+        .account-needed-card {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border: 1.5px solid #f59e0b;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .card-header-icon {
+            font-size: 22px;
+            line-height: 1;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .card-content {
+            flex: 1;
+            text-align: left;
+        }
+
+        .card-heading {
+            font-size: 14px;
+            font-weight: 800;
+            color: #92400e;
+            margin: 0 0 4px;
+        }
+
+        .card-text {
+            font-size: 12.5px;
+            color: #78350f;
+            margin: 0 0 10px;
+            line-height: 1.4;
+        }
+
+        .btn-register-now {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #059669;
+            color: #ffffff;
+            font-size: 12.5px;
+            font-weight: 700;
+            padding: 7px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(5, 150, 105, 0.25);
+            transition: all 0.2s ease;
+        }
+
+        .btn-register-now:hover {
+            background: #047857;
+            transform: translateY(-1px);
+        }
+
+        .identifier-feedback {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11.5px;
+            margin-top: -12px;
+            margin-bottom: 14px;
+            min-height: 20px;
+            padding: 0 4px;
+        }
+
+        .identifier-type-tag {
+            color: #64748b;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-quick-verify {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #047857;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-quick-verify:hover {
+            background: #e2e8f0;
+            color: #065f46;
+        }
+
+        .demo-quick-bar {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 18px;
+            text-align: left;
+        }
+
+        .demo-quick-title {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .demo-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .demo-pill-btn {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #334155;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .demo-pill-btn:hover {
+            background: #ecfdf5;
+            border-color: #059669;
+            color: #047857;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -355,10 +481,22 @@
         <!-- Right Sign In Form Panel -->
         <div class="form-panel">
             <h2 class="form-title">Sign In to Portal</h2>
-            <p class="form-subtitle">Enter your School Email or ShuleCafe School ID to access your portal</p>
+            <p class="form-subtitle">Enter your School Email, ShuleCafe ID, Phone, or Staff/Student ID</p>
 
-            <!-- Alert Notification -->
-            <div id="errorNotice" class="alert alert-danger" style="display: none; margin-bottom: 20px; border-radius: 12px;">
+            <!-- Prominent Account Needed Card -->
+            <div id="accountNeededCard" class="account-needed-card" style="display: none;">
+                <div class="card-header-icon">⚠️</div>
+                <div class="card-content">
+                    <h4 class="card-heading">Account Needed</h4>
+                    <p class="card-text" id="accountNeededText">No account was found for this identifier. If you are a new school owner or headmaster, you need to register your school first to create your portal.</p>
+                    <a href="register-school.html" class="btn-register-now">
+                        ➕ Register Your School Now &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- Standard Alert Notification (Invalid Password / Server Errors) -->
+            <div id="errorNotice" class="alert alert-danger" style="display: none; margin-bottom: 16px; border-radius: 12px;">
                 <span id="errorMessage">Invalid credentials.</span>
             </div>
 
@@ -369,10 +507,16 @@
 
                 <!-- Identifier Field -->
                 <div style="text-align: left;">
-                    <label class="form-label-custom" for="username">School Email or ShuleCafe School ID <span style="color:#ef4444;">*</span></label>
-                    <div class="input-wrapper">
-                        <input type="text" id="username" class="form-control-custom" placeholder="e.g. info@school.ac.tz or S/CAFE-2026-0001" required autofocus>
+                    <label class="form-label-custom" for="username">School Email, ShuleCafe ID, or Phone <span style="color:#ef4444;">*</span></label>
+                    <div class="input-wrapper" style="margin-bottom: 14px;">
+                        <input type="text" id="username" class="form-control-custom" placeholder="e.g. info@school.ac.tz or S/CAFE-2026-0001" required autofocus autocomplete="username">
                         <span class="input-icon">✉️</span>
+                    </div>
+
+                    <!-- Live Format & Quick Verification Feedback -->
+                    <div class="identifier-feedback">
+                        <span id="identifierTag" class="identifier-type-tag">Type identifier to verify</span>
+                        <button type="button" id="btnQuickVerify" class="btn-quick-verify">⚡ Quick Verify</button>
                     </div>
                 </div>
 
@@ -382,8 +526,8 @@
                         <label class="form-label-custom" for="password" style="margin:0;">Password <span style="color:#ef4444;">*</span></label>
                         <a href="../forgot-password.html" style="font-size: 12px; color: #059669; font-weight: 600; text-decoration: none;">Forgot password?</a>
                     </div>
-                    <div class="input-wrapper" style="margin-bottom: 20px;">
-                        <input type="password" id="password" class="form-control-custom" placeholder="Enter your password" required style="padding-right: 44px !important;">
+                    <div class="input-wrapper" style="margin-bottom: 16px;">
+                        <input type="password" id="password" class="form-control-custom" placeholder="Enter your password" required style="padding-right: 44px !important;" autocomplete="current-password">
                         <span class="input-icon">🔒</span>
                         <button type="button" id="togglePassword" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 16px; padding: 4px;">👁️</button>
                     </div>
@@ -395,12 +539,23 @@
                 </button>
             </form>
 
+            <!-- Quick Demo Credentials Selector -->
+            <div class="demo-quick-bar">
+                <div class="demo-quick-title">⚡ Quick Fill &amp; Fast Verification</div>
+                <div class="demo-pills">
+                    <button type="button" class="demo-pill-btn" data-user="+255700000000" data-pass="ShuleAdmin@2026" title="Login as Super Administrator">👑 Super Admin</button>
+                    <button type="button" class="demo-pill-btn" data-user="S/CAFE-2026-0001" data-pass="Admin@2026" title="Verify School ID format">🏫 School ID</button>
+                    <button type="button" class="demo-pill-btn" data-user="0788112233" data-pass="Teacher@2026" title="Test Staff Phone">👨‍🏫 Teacher</button>
+                    <button type="button" class="demo-pill-btn" data-user="unregistered@school.ac.tz" data-pass="Temp1234!" title="Test Unregistered Account Response">⚠️ Test Unregistered</button>
+                </div>
+            </div>
+
             <div class="mobile-register-link">
                 <span style="color: #64748b;">New School Owner?</span>
                 <a href="register-school.html" style="color: #059669; font-weight: 700; text-decoration: none; margin-left: 4px;">Register School Here</a>
             </div>
 
-            <div style="margin-top: 32px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 16px;">
+            <div style="margin-top: 24px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 14px;">
                 SHULE CAFE Enterprise &copy; 2026 • All Rights Reserved
             </div>
         </div>
@@ -415,7 +570,21 @@
             const togglePasswordBtn = document.getElementById('togglePassword');
             const errorNotice = document.getElementById('errorNotice');
             const errorMessage = document.getElementById('errorMessage');
+            const accountNeededCard = document.getElementById('accountNeededCard');
+            const accountNeededText = document.getElementById('accountNeededText');
+            const identifierTag = document.getElementById('identifierTag');
+            const btnQuickVerify = document.getElementById('btnQuickVerify');
             const submitBtn = document.getElementById('submitBtn');
+
+            // Quick Fill Presets
+            document.querySelectorAll('.demo-pill-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    usernameInput.value = btn.getAttribute('data-user') || '';
+                    passwordInput.value = btn.getAttribute('data-pass') || '';
+                    updateIdentifierTag(usernameInput.value);
+                    quickVerifyAccount(usernameInput.value);
+                });
+            });
 
             if (togglePasswordBtn) {
                 togglePasswordBtn.addEventListener('click', () => {
@@ -429,6 +598,81 @@
                 });
             }
 
+            // Real-Time Live Format Detection
+            function updateIdentifierTag(val) {
+                val = (val || '').trim();
+                if (!val) {
+                    identifierTag.innerHTML = 'Type identifier to verify';
+                    identifierTag.style.color = '#64748b';
+                    return;
+                }
+
+                if (/^s\/cafe/i.test(val)) {
+                    identifierTag.innerHTML = '🏫 ShuleCafe School ID';
+                    identifierTag.style.color = '#047857';
+                } else if (val.includes('@')) {
+                    identifierTag.innerHTML = '✉️ Email Address';
+                    identifierTag.style.color = '#0284c7';
+                } else if (/^(\+?255|0)[67]\d{7,8}$/.test(val.replace(/\s+/g, ''))) {
+                    identifierTag.innerHTML = '📱 Mobile Phone Number';
+                    identifierTag.style.color = '#7c3aed';
+                } else if (/^(tch|std|adm)/i.test(val)) {
+                    identifierTag.innerHTML = '🆔 Staff / Student ID';
+                    identifierTag.style.color = '#d97706';
+                } else {
+                    identifierTag.innerHTML = '🔍 Identifier format detected';
+                    identifierTag.style.color = '#64748b';
+                }
+            }
+
+            usernameInput.addEventListener('input', () => {
+                accountNeededCard.style.display = 'none';
+                errorNotice.style.display = 'none';
+                updateIdentifierTag(usernameInput.value);
+            });
+
+            // Quick Verification Function
+            async function quickVerifyAccount(identifier) {
+                identifier = (identifier || usernameInput.value).trim();
+                if (!identifier) {
+                    identifierTag.innerHTML = '⚠️ Please enter an identifier to verify';
+                    identifierTag.style.color = '#dc2626';
+                    return;
+                }
+
+                identifierTag.innerHTML = '⏳ Verifying account in database...';
+                identifierTag.style.color = '#047857';
+
+                try {
+                    const res = await fetch('/shule-cafe/api/auth/check_account.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ identifier: identifier })
+                    });
+                    const data = await res.json();
+
+                    if (data.exists) {
+                        identifierTag.innerHTML = `✓ Found: <strong>${data.display_name}</strong> (${data.role || 'User'})`;
+                        identifierTag.style.color = '#059669';
+                        accountNeededCard.style.display = 'none';
+                    } else {
+                        identifierTag.innerHTML = '⚠️ Account Not Found — Registration Needed';
+                        identifierTag.style.color = '#dc2626';
+                        accountNeededText.textContent = `No account was found for '${identifier}'. If you are a new school owner or headmaster, you need to register your school first to create your portal.`;
+                        accountNeededCard.style.display = 'flex';
+                    }
+                } catch (err) {
+                    console.warn('Verification check error:', err);
+                    identifierTag.innerHTML = 'ℹ️ Verification ready for sign in';
+                    identifierTag.style.color = '#64748b';
+                }
+            }
+
+            btnQuickVerify.addEventListener('click', () => {
+                quickVerifyAccount(usernameInput.value);
+            });
+
+            // Sign In Submission
             loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
@@ -436,6 +680,7 @@
                 const password = passwordInput.value.trim();
 
                 errorNotice.style.display = 'none';
+                accountNeededCard.style.display = 'none';
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Authenticating...';
 
@@ -486,8 +731,16 @@
 
                         window.location.href = dashboardMap[role] || '../headmaster/dashboard.html';
                     } else {
-                        errorMessage.textContent = data.message || 'Invalid username or password.';
-                        errorNotice.style.display = 'block';
+                        // Check if account is not found / account needed
+                        if (data.account_needed || data.error_type === 'account_not_found' || res.status === 404) {
+                            accountNeededText.textContent = data.message || `No account was found for '${identifier}'. If you are a new school owner or headmaster, you need to register your school first to create your portal.`;
+                            accountNeededCard.style.display = 'flex';
+                            identifierTag.innerHTML = '⚠️ Account Not Found — Registration Needed';
+                            identifierTag.style.color = '#dc2626';
+                        } else {
+                            errorMessage.textContent = data.message || 'Invalid username or password.';
+                            errorNotice.style.display = 'block';
+                        }
                     }
                 } catch (err) {
                     console.error("Login failed", err);
