@@ -194,17 +194,17 @@ try {
     }
 
     // ────────────────────────────────────────────────────────────────────────
-    // 2. GET ENTRY SHEET (Roster, Saved Scores, Grading Scales, Max Weights)
+    // 2. GET ENTRY SHEET (Supports Single Subject & Multi-Subject Grid)
     // ────────────────────────────────────────────────────────────────────────
     if ($action === 'get_entry_sheet') {
         $classroomId = intval($_GET['classroom_id'] ?? 0);
-        $subjectCode = trim($_GET['subject_code'] ?? '');
+        $subjectCode = trim($_GET['subject_code'] ?? 'all');
         $year = trim($_GET['year'] ?? date('Y'));
         $term = trim($_GET['term'] ?? 'Term 1');
         $assessmentTypeId = trim($_GET['assessment_type_id'] ?? '');
 
-        if (!$classroomId || empty($subjectCode)) {
-            echo json_encode(['success' => false, 'message' => 'Classroom ID and Subject Code are required.']);
+        if (!$classroomId) {
+            echo json_encode(['success' => false, 'message' => 'Classroom ID is required.']);
             exit();
         }
 
@@ -242,15 +242,33 @@ try {
             $scales = $stmtScales->fetchAll(PDO::FETCH_ASSOC);
         }
 
-        // Fetch lock status
-        $stmtLock = $conn->prepare("
-            SELECT is_locked, locked_at, locked_by
-            FROM marks_entry_locks
-            WHERE school_id = ? AND classroom_id = ? AND subject_code = ? AND academic_year = ? AND term = ? AND is_locked = 1
+        // Fetch all available subjects
+        $stmtSubjs = $conn->prepare("
+            SELECT id, name, code 
+            FROM subjects 
+            WHERE school_id = ? OR school_id IS NULL OR school_id = '' 
+            ORDER BY name ASC
         ");
-        $stmtLock->execute([$schoolId, $classroomId, $subjectCode, $year, $term]);
-        $lockRow = $stmtLock->fetch(PDO::FETCH_ASSOC);
-        $isLocked = !empty($lockRow);
+        $stmtSubjs->execute([$schoolId]);
+        $allSubjects = $stmtSubjs->fetchAll(PDO::FETCH_ASSOC);
+
+        if (empty($allSubjects)) {
+            $stmtAllSubj = $conn->query("SELECT id, name, code FROM subjects ORDER BY name ASC");
+            $allSubjects = $stmtAllSubj->fetchAll(PDO::FETCH_ASSOC);
+        }
+        if (empty($allSubjects)) {
+            $allSubjects = [
+                ['id' => 's1', 'code' => 'MATH', 'name' => 'Basic Mathematics'],
+                ['id' => 's2', 'code' => 'ENG', 'name' => 'English Language'],
+                ['id' => 's3', 'code' => 'KISW', 'name' => 'Kiswahili'],
+                ['id' => 's4', 'code' => 'PHY', 'name' => 'Physics'],
+                ['id' => 's5', 'code' => 'CHEM', 'name' => 'Chemistry'],
+                ['id' => 's6', 'code' => 'BIO', 'name' => 'Biology'],
+                ['id' => 's7', 'code' => 'GEO', 'name' => 'Geography'],
+                ['id' => 's8', 'code' => 'HIST', 'name' => 'History'],
+                ['id' => 's9', 'code' => 'CIV', 'name' => 'Civics']
+            ];
+        }
 
         // Fetch assessment types configured for this school & term
         $stmtTypes = $conn->prepare("
@@ -269,6 +287,26 @@ try {
             ];
         }
 
+        if (empty($assessmentTypeId)) {
+            $assessmentTypeId = $assessmentTypes[0]['id'] ?? '1';
+        }
+
+        // Fetch lock status for classroom
+        $stmtLocks = $conn->prepare("
+            SELECT subject_code, is_locked, locked_at, locked_by
+            FROM marks_entry_locks
+            WHERE school_id = ? AND classroom_id = ? AND academic_year = ? AND term = ? AND is_locked = 1
+        ");
+        $stmtLocks->execute([$schoolId, $classroomId, $year, $term]);
+        $lockRows = $stmtLocks->fetchAll(PDO::FETCH_ASSOC);
+        $locksMap = [];
+        foreach ($lockRows as $lr) {
+            $locksMap[$lr['subject_code']] = $lr;
+        }
+
+        $isSingleSubject = (!empty($subjectCode) && $subjectCode !== 'all');
+        $isLocked = $isSingleSubject ? isset($locksMap[$subjectCode]) : false;
+
         // Student Roster for this classroom
         $stmtRoster = $conn->prepare("
             SELECT u.id AS student_id, u.full_name, u.user_code, u.gender
@@ -280,54 +318,80 @@ try {
         $stmtRoster->execute([$classroomId, $schoolId]);
         $students = $stmtRoster->fetchAll(PDO::FETCH_ASSOC);
 
-        // Fetch dynamic marks entered for these students in this subject/year/term
+        // Fetch dynamic marks entered for these students in this year/term
         $stmtMarks = $conn->prepare("
-            SELECT student_id, assessment_type_id, score
+            SELECT student_id, subject_code, assessment_type_id, score
             FROM marks_entry_dynamic
-            WHERE school_id = ? AND subject_code = ? AND academic_year = ? AND term = ?
+            WHERE school_id = ? AND academic_year = ? AND term = ?
         ");
-        $stmtMarks->execute([$schoolId, $subjectCode, $year, $term]);
+        $stmtMarks->execute([$schoolId, $year, $term]);
         $dynamicMarks = $stmtMarks->fetchAll(PDO::FETCH_ASSOC);
 
+        // marksMap[student_id][subject_code][assessment_type_id] = score
         $marksMap = [];
         foreach ($dynamicMarks as $dm) {
-            $marksMap[$dm['student_id']][$dm['assessment_type_id']] = floatval($dm['score']);
+            $marksMap[$dm['student_id']][$dm['subject_code']][$dm['assessment_type_id']] = floatval($dm['score']);
         }
 
         // Build composite roster with totals and adaptive grading
         $roster = [];
         foreach ($students as $stu) {
             $sid = $stu['student_id'];
-            $stuMarks = $marksMap[$sid] ?? [];
-            $totalMark = 0.0;
-            foreach ($stuMarks as $scVal) {
-                $totalMark += floatval($scVal);
-            }
+            $stuAllSubjects = $marksMap[$sid] ?? [];
 
-            $gradeLetter = 'F';
-            $gradeRemark = 'Fail';
-            $gradePoints = 7;
+            // Multi-subject score dictionary: subject_code => active assessment score
+            $subjectScores = [];
+            $totalMarks = 0.0;
+            $subjectGradesMap = [];
 
-            foreach ($scales as $sc) {
-                if ($totalMark >= floatval($sc['min_mark']) && $totalMark <= floatval($sc['max_mark'])) {
-                    $gradeLetter = $sc['grade'];
-                    $gradeRemark = $sc['remark'];
-                    $gradePoints = intval($sc['points'] ?? 1);
-                    break;
+            foreach ($allSubjects as $sub) {
+                $sc = $sub['code'];
+                $scoreVal = isset($stuAllSubjects[$sc][$assessmentTypeId]) ? floatval($stuAllSubjects[$sc][$assessmentTypeId]) : null;
+                $subjectScores[$sc] = $scoreVal;
+
+                if ($scoreVal !== null) {
+                    $totalMarks += $scoreVal;
+                    $subjectGradesMap[$sc] = $scoreVal;
                 }
             }
 
-            $stu['marks'] = $stuMarks;
-            $stu['current_score'] = isset($stuMarks[$assessmentTypeId]) ? floatval($stuMarks[$assessmentTypeId]) : null;
-            $stu['total_score'] = round($totalMark, 2);
-            $stu['grade'] = $gradeLetter;
-            $stu['remark'] = $gradeRemark;
-            $stu['points'] = $gradePoints;
+            // Single-subject breakdown if single subject mode
+            $singleSubMarks = $stuAllSubjects[$subjectCode] ?? [];
+            $singleSubTotal = 0.0;
+            foreach ($singleSubMarks as $v) $singleSubTotal += floatval($v);
+
+            $perf = $gradingManager->calculateStudentPerformance($levelTypeKey, $subjectGradesMap);
+
+            $stu['subject_scores'] = $subjectScores;
+            $stu['single_subject_marks'] = $singleSubMarks;
+            $stu['current_score'] = $isSingleSubject ? ($singleSubMarks[$assessmentTypeId] ?? null) : null;
+            $stu['total_score'] = $isSingleSubject ? round($singleSubTotal, 2) : round($totalMarks, 2);
+            $stu['points'] = $perf['total_points'];
+            $stu['division'] = $perf['division'];
+            $stu['remark'] = $perf['remark'];
+
+            // Grade letter for single subject mode
+            if ($isSingleSubject) {
+                $gradeLetter = 'F';
+                $gradeRemark = 'Fail';
+                $gradePoints = 7;
+                foreach ($scales as $sc) {
+                    if ($stu['total_score'] >= floatval($sc['min_mark']) && $stu['total_score'] <= floatval($sc['max_mark'])) {
+                        $gradeLetter = $sc['grade'];
+                        $gradeRemark = $sc['remark'];
+                        $gradePoints = intval($sc['points'] ?? 1);
+                        break;
+                    }
+                }
+                $stu['grade'] = $gradeLetter;
+                $stu['grade_remark'] = $gradeRemark;
+                $stu['points'] = $gradePoints;
+            }
 
             $roster[] = $stu;
         }
 
-        // Calculate competition rank in this subject
+        // Calculate competition rank in class
         usort($roster, fn($a, $b) => $b['total_score'] <=> $a['total_score']);
         $currentRank = 1;
         foreach ($roster as $idx => &$rStu) {
@@ -345,44 +409,34 @@ try {
             'success' => true,
             'classroom' => $classroom,
             'subject_code' => $subjectCode,
+            'subjects' => $allSubjects,
             'year' => $year,
             'term' => $term,
             'level_type' => $levelTypeKey,
             'is_locked' => $isLocked,
-            'lock_details' => $lockRow,
+            'locks_map' => $locksMap,
             'grading_scales' => $scales,
             'assessment_types' => $assessmentTypes,
+            'active_assessment_type_id' => $assessmentTypeId,
             'roster' => $roster
         ]);
         exit();
     }
 
     // ────────────────────────────────────────────────────────────────────────
-    // 3. SAVE MARKS BATCH
+    // 3. SAVE MARKS BATCH (Supports Single Subject & Multi-Subject Grid)
     // ────────────────────────────────────────────────────────────────────────
     if ($action === 'save_marks_batch') {
         $classroomId = intval($input['classroom_id'] ?? 0);
-        $subjectCode = trim($input['subject_code'] ?? '');
+        $subjectCode = trim($input['subject_code'] ?? 'all');
         $year = trim($input['year'] ?? date('Y'));
         $term = trim($input['term'] ?? 'Term 1');
         $assessmentTypeId = trim($input['assessment_type_id'] ?? '');
         $marksList = $input['marks'] ?? [];
+        $isMultiSubject = !empty($input['is_multi_subject']) || ($subjectCode === 'all');
 
-        if (!$classroomId || empty($subjectCode) || empty($assessmentTypeId) || !is_array($marksList)) {
-            echo json_encode(['success' => false, 'message' => 'Classroom, Subject, Assessment Type, and Marks list are required.']);
-            exit();
-        }
-
-        // Check lock status
-        $stmtLock = $conn->prepare("
-            SELECT is_locked 
-            FROM marks_entry_locks 
-            WHERE school_id = ? AND classroom_id = ? AND subject_code = ? AND academic_year = ? AND term = ? AND is_locked = 1
-        ");
-        $stmtLock->execute([$schoolId, $classroomId, $subjectCode, $year, $term]);
-        if ($stmtLock->fetch()) {
-            http_response_code(423);
-            echo json_encode(['success' => false, 'message' => 'This scoresheet is currently finalized and locked. Please request Headmaster unlock approval before saving changes.']);
+        if (!$classroomId || empty($assessmentTypeId) || !is_array($marksList)) {
+            echo json_encode(['success' => false, 'message' => 'Classroom, Assessment Type, and Marks entries are required.']);
             exit();
         }
 
@@ -391,10 +445,25 @@ try {
         $stmtWeight->execute([$assessmentTypeId, $schoolId]);
         $maxWeight = floatval($stmtWeight->fetchColumn() ?: 100.00);
 
+        // Fetch locked subjects
+        $stmtLocks = $conn->prepare("
+            SELECT subject_code 
+            FROM marks_entry_locks 
+            WHERE school_id = ? AND classroom_id = ? AND academic_year = ? AND term = ? AND is_locked = 1
+        ");
+        $stmtLocks->execute([$schoolId, $classroomId, $year, $term]);
+        $lockedSubjs = $stmtLocks->fetchAll(PDO::FETCH_COLUMN);
+        $lockedMap = array_flip($lockedSubjs);
+
         $stmtSave = $conn->prepare("
             INSERT INTO marks_entry_dynamic (school_id, academic_year, term, student_id, subject_code, assessment_type_id, score, updated_at)
             VALUES (:sch, :yr, :trm, :sid, :subj, :atid, :score, NOW())
             ON DUPLICATE KEY UPDATE score = VALUES(score), updated_at = NOW()
+        ");
+
+        $stmtDel = $conn->prepare("
+            DELETE FROM marks_entry_dynamic 
+            WHERE school_id = ? AND academic_year = ? AND term = ? AND student_id = ? AND subject_code = ? AND assessment_type_id = ?
         ");
 
         $savedCount = 0;
@@ -402,44 +471,68 @@ try {
 
         foreach ($marksList as $entry) {
             $studentId = $entry['student_id'] ?? '';
-            $scoreVal = $entry['score'] ?? null;
-
             if (empty($studentId)) continue;
 
-            if ($scoreVal === '' || $scoreVal === null) {
-                // If blank, remove entry
-                $stmtDel = $conn->prepare("
-                    DELETE FROM marks_entry_dynamic 
-                    WHERE school_id = ? AND academic_year = ? AND term = ? AND student_id = ? AND subject_code = ? AND assessment_type_id = ?
-                ");
-                $stmtDel->execute([$schoolId, $year, $term, $studentId, $subjectCode, $assessmentTypeId]);
+            if ($isMultiSubject && isset($entry['subject_scores']) && is_array($entry['subject_scores'])) {
+                // Multi-subject row: scores: { MATH: 85, ENG: 70, ... }
+                foreach ($entry['subject_scores'] as $sCode => $sVal) {
+                    if (isset($lockedMap[$sCode])) continue; // Skip locked subjects
+
+                    if ($sVal === '' || $sVal === null) {
+                        $stmtDel->execute([$schoolId, $year, $term, $studentId, $sCode, $assessmentTypeId]);
+                        $savedCount++;
+                        continue;
+                    }
+
+                    $numScore = floatval($sVal);
+                    if ($numScore < 0) $numScore = 0.0;
+                    if ($maxWeight > 0 && $numScore > $maxWeight) $numScore = $maxWeight;
+
+                    $stmtSave->execute([
+                        ':sch' => $schoolId,
+                        ':yr' => $year,
+                        ':trm' => $term,
+                        ':sid' => $studentId,
+                        ':subj' => $sCode,
+                        ':atid' => $assessmentTypeId,
+                        ':score' => $numScore
+                    ]);
+                    $savedCount++;
+                }
+            } else {
+                // Single-subject row
+                $curSubCode = $entry['subject_code'] ?? $subjectCode;
+                if (isset($lockedMap[$curSubCode])) continue;
+
+                $scoreVal = $entry['score'] ?? null;
+                if ($scoreVal === '' || $scoreVal === null) {
+                    $stmtDel->execute([$schoolId, $year, $term, $studentId, $curSubCode, $assessmentTypeId]);
+                    $savedCount++;
+                    continue;
+                }
+
+                $numScore = floatval($scoreVal);
+                if ($numScore < 0) $numScore = 0.0;
+                if ($maxWeight > 0 && $numScore > $maxWeight) $numScore = $maxWeight;
+
+                $stmtSave->execute([
+                    ':sch' => $schoolId,
+                    ':yr' => $year,
+                    ':trm' => $term,
+                    ':sid' => $studentId,
+                    ':subj' => $curSubCode,
+                    ':atid' => $assessmentTypeId,
+                    ':score' => $numScore
+                ]);
                 $savedCount++;
-                continue;
             }
-
-            $numericScore = floatval($scoreVal);
-            if ($numericScore < 0) $numericScore = 0.0;
-            if ($maxWeight > 0 && $numericScore > $maxWeight) {
-                $numericScore = $maxWeight;
-            }
-
-            $stmtSave->execute([
-                ':sch' => $schoolId,
-                ':yr' => $year,
-                ':trm' => $term,
-                ':sid' => $studentId,
-                ':subj' => $subjectCode,
-                ':atid' => $assessmentTypeId,
-                ':score' => $numericScore
-            ]);
-            $savedCount++;
         }
 
         $conn->commit();
 
         echo json_encode([
             'success' => true,
-            'message' => "Successfully saved $savedCount student marks for $subjectCode ($term $year).",
+            'message' => "Successfully recorded $savedCount assessment marks.",
             'saved_count' => $savedCount
         ]);
         exit();
