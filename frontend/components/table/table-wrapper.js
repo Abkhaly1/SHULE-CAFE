@@ -1,4 +1,8 @@
 class AppTable extends HTMLElement {
+    static get observedAttributes() {
+        return ['columns', 'data', 'actions', 'entity-url'];
+    }
+
     constructor() {
         super();
     }
@@ -6,6 +10,13 @@ class AppTable extends HTMLElement {
     connectedCallback() {
         this.render();
         this.setupEventListeners();
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (oldValue !== newValue) {
+            this.render();
+            this.setupEventListeners();
+        }
     }
 
     get columns() {
