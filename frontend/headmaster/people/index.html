@@ -54,15 +54,15 @@
                     
                     <!-- Spacious Workspace Content Container -->
                     <div class="workspace-main-area">
-                        
                         <!-- Students Tab Content -->
                         <app-workspace-content tab-id="students" active="true">
                             <app-workspace-toolbar 
                                 id="studentToolbar" 
                                 search-placeholder="Search students by name, Student ID, or class..." 
                                 primary-action="Register Student"
-                                secondary-actions='[{"label":"� Export Data As...","menu":[{"label":"PDF Document (.pdf)","action":"export_students_pdf"},{"label":"Excel Spreadsheet (.xlsx)","action":"export_students_excel"},{"label":"CSV Raw File (.csv)","action":"export_students_csv"}]}]'>
-                                                   <div class="card" style="margin-top: var(--sp-3);">
+                                secondary-actions='[{"label":"📤 Export Data As...","menu":[{"label":"PDF Document (.pdf)","action":"export_students_pdf"},{"label":"Excel Spreadsheet (.xlsx)","action":"export_students_excel"},{"label":"CSV Raw File (.csv)","action":"export_students_csv"}]}]'>
+                            </app-workspace-toolbar>
+                            <div class="card" style="margin-top: var(--sp-3);">
                                 <div id="studentsTableContainer"></div>
                                 <app-table-pagination id="studentsPagination" current-page="1" total-pages="1" total-records="0" page-size="10"></app-table-pagination>
                             </div>
