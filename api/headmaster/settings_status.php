@@ -5,31 +5,26 @@
  * Copyright (c) 2026 SHULE CAFE. All Rights Reserved.
  */
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 header("Content-Type: application/json; charset=UTF-8");
 
 require_once __DIR__ . '/../config/db.php';
 
-// Auth check
-if (!isset($_SESSION['user_id'])) {
-    http_response_code(401);
-    echo json_encode(["success" => false, "message" => "Unauthorized access."]);
-    exit();
-}
-
-$user_id = $_SESSION['user_id'];
+$user_id = $_SESSION['user_id'] ?? $_GET['user_id'] ?? null;
 $role = $_SESSION['role'] ?? '';
 
-// Resolve school_id
-$school_id = $_SESSION['school_id'] ?? null;
-if (!$school_id) {
+// Resolve school_id gracefully
+$school_id = $_SESSION['school_id'] ?? $_GET['school_id'] ?? null;
+if (empty($school_id) && !empty($user_id)) {
     $uStmt = $conn->prepare("SELECT school_id FROM users WHERE id = ? LIMIT 1");
     $uStmt->execute([$user_id]);
-    $school_id = $uStmt->fetchColumn();
+    $school_id = $uStmt->fetchColumn() ?: null;
 }
-if (!$school_id) {
+if (empty($school_id)) {
     $sStmt = $conn->query("SELECT id FROM schools ORDER BY id ASC LIMIT 1");
-    $school_id = $sStmt->fetchColumn();
+    $school_id = $sStmt->fetchColumn() ?: null;
 }
 
 if (!$school_id) {
@@ -65,31 +60,39 @@ try {
     }
 
     // 2. Academics (Grades / Levels) Check
-    $lvlStmt = $conn->query("SELECT COUNT(*) FROM education_levels WHERE status = 'active'");
-    $lvlCount = (int)$lvlStmt->fetchColumn();
-    $academicsConfigured = ($lvlCount > 0);
+    $lvlCount = 0;
+    $grdCount = 0;
+    try {
+        $lvlStmt = $conn->query("SELECT COUNT(*) FROM education_levels");
+        $lvlCount = (int)$lvlStmt->fetchColumn();
+        $grdStmt = $conn->query("SELECT COUNT(*) FROM grades");
+        $grdCount = (int)$grdStmt->fetchColumn();
+    } catch (Exception $e) {}
+    $academicsConfigured = ($lvlCount > 0 && $grdCount > 0);
 
     // 3. Assessment Configuration Check
     $assessConfigured = false;
     try {
-        $assStmt = $conn->prepare("SELECT COUNT(*) FROM assessment_configs WHERE school_id = ?");
+        $assStmt = $conn->prepare("SELECT COUNT(*) FROM assessment_types WHERE school_id = ?");
         $assStmt->execute([$school_id]);
         $assCount = (int)$assStmt->fetchColumn();
         if ($assCount > 0) {
             $assessConfigured = true;
         } else {
-            // Check fallback grading scales
             $gsStmt = $conn->query("SELECT COUNT(*) FROM grading_scales");
             $assessConfigured = ((int)$gsStmt->fetchColumn() > 0);
         }
-    } catch (PDOException $e) {
-        $assessConfigured = true; // Table might be pre-seeded
+    } catch (Exception $e) {
+        $assessConfigured = false;
     }
 
     // 4. Classrooms Check
-    $clsStmt = $conn->prepare("SELECT COUNT(*) FROM classrooms WHERE school_id = ? AND is_active = 1");
-    $clsStmt->execute([$school_id]);
-    $totalClasses = (int)$clsStmt->fetchColumn();
+    $totalClasses = 0;
+    try {
+        $clsStmt = $conn->prepare("SELECT COUNT(*) FROM classrooms WHERE school_id = ? AND is_active = 1");
+        $clsStmt->execute([$school_id]);
+        $totalClasses = (int)$clsStmt->fetchColumn();
+    } catch (Exception $e) {}
     $classroomsConfigured = ($totalClasses > 0);
 
     // 5. Class Guiders Check
@@ -100,7 +103,7 @@ try {
             $gStmt->execute([$school_id]);
             $guidersCount = (int)$gStmt->fetchColumn();
             $guidersConfigured = ($guidersCount > 0);
-        } catch (PDOException $e) {
+        } catch (Exception $e) {
             $guidersConfigured = false;
         }
     }
@@ -112,7 +115,7 @@ try {
         $subStmt->execute([$school_id]);
         $subAllocCount = (int)$subStmt->fetchColumn();
         $subAllocConfigured = ($subAllocCount > 0);
-    } catch (PDOException $e) {
+    } catch (Exception $e) {
         $subAllocConfigured = false;
     }
 
@@ -123,7 +126,7 @@ try {
         $ttStmt->execute([$school_id, $year]);
         $ttCount = (int)$ttStmt->fetchColumn();
         $ttConfigured = ($ttCount > 0);
-    } catch (PDOException $e) {
+    } catch (Exception $e) {
         $ttConfigured = false;
     }
 
