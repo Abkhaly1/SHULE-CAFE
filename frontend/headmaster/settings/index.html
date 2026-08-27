@@ -35,8 +35,8 @@
         }
 
         .settings-icon-box {
-            width: 44px;
-            height: 44px;
+            width: 42px;
+            height: 42px;
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -72,197 +72,228 @@
                         <table class="settings-list-table">
                             <thead>
                                 <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">
-                                    <th style="padding: 16px 20px; font-weight: 700; width: 320px;">Configuration Module</th>
+                                    <th style="padding: 16px 20px; font-weight: 700; width: 300px;">School Setup Page</th>
                                     <th style="padding: 16px 20px; font-weight: 700;">Scope & Description</th>
-                                    <th style="padding: 16px 20px; font-weight: 700; width: 180px;">Category</th>
-                                    <th style="padding: 16px 20px; font-weight: 700; text-align: center; width: 120px;">Status</th>
-                                    <th style="padding: 16px 20px; text-align: right; width: 50px;"></th>
+                                    <th style="padding: 16px 20px; font-weight: 700; width: 190px;">Category</th>
+                                    <th style="padding: 16px 20px; font-weight: 700; text-align: center; width: 110px;">Status</th>
+                                    <th style="padding: 16px 20px; text-align: right; width: 40px;"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 
-                                <!-- 1. School Identity & Profile -->
+                                <!-- 1. School Profile Settings -->
                                 <tr class="settings-list-row" onclick="window.location.href='school-profile.html';">
-                                    <td style="padding: 18px 20px; vertical-align: middle;">
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
                                         <div style="display: flex; align-items: center; gap: 14px;">
                                             <div class="settings-icon-box" style="background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0;">
                                                 🏫
                                             </div>
                                             <div>
-                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a;">School Identity & Profile</div>
-                                                <div style="font-size: 12px; color: #059669; font-weight: 600; margin-top: 2px;">Official Registry & Contacts</div>
+                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a;">School Profile</div>
+                                                <div style="font-size: 12px; color: #059669; font-weight: 600; margin-top: 2px;">Identity & Location</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle;">
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
                                         <div style="font-size: 13px; color: #334155; line-height: 1.4;">
-                                            Official school name, registration number, postal address, contacts, motto, and crest logo.
+                                            Official school name, registration number, contacts, region, district, motto, and logo crest.
                                         </div>
                                     </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle;">
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
                                         <span class="badge" style="background: #ecfdf5; color: #047857; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px; border: 1px solid #a7f3d0;">
-                                            Institutional Profile
+                                            Institutional Identity
                                         </span>
                                     </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle; text-align: center;">
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: center;">
                                         <span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px;">Active</span>
                                     </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle; text-align: right;">
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: right;">
                                         <svg class="settings-row-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
                                     </td>
                                 </tr>
 
-                                <!-- 2. Academic Tiers & Terms -->
-                                <tr class="settings-list-row" onclick="window.location.href='academic-tiers.html';">
-                                    <td style="padding: 18px 20px; vertical-align: middle;">
+                                <!-- 2. Academics Management -->
+                                <tr class="settings-list-row" onclick="window.location.href='../academics/index.html';">
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
                                         <div style="display: flex; align-items: center; gap: 14px;">
                                             <div class="settings-icon-box" style="background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe;">
                                                 📚
                                             </div>
                                             <div>
-                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a;">Academic Tiers & Terms</div>
-                                                <div style="font-size: 12px; color: #2563eb; font-weight: 600; margin-top: 2px;">Curriculum & Calendar</div>
+                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a;">Academics</div>
+                                                <div style="font-size: 12px; color: #2563eb; font-weight: 600; margin-top: 2px;">Tiers, Classes & Subjects</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle;">
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
                                         <div style="font-size: 13px; color: #334155; line-height: 1.4;">
-                                            Configure active education levels (Nursery, Primary, O-Level, A-Level), academic terms, and academic year.
+                                            Education levels, standard classes, master subject assignments, grading scales, and academic terms.
                                         </div>
                                     </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle;">
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
                                         <span class="badge" style="background: #eff6ff; color: #1d4ed8; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px; border: 1px solid #bfdbfe;">
-                                            Academic Calendar
+                                            Academic Curriculum
                                         </span>
                                     </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle; text-align: center;">
-                                        <span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px;">Active</span>
-                                    </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle; text-align: right;">
-                                        <svg class="settings-row-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-                                    </td>
-                                </tr>
-
-                                <!-- 3. Grading & Division System -->
-                                <tr class="settings-list-row" onclick="window.location.href='grading-system.html';">
-                                    <td style="padding: 18px 20px; vertical-align: middle;">
-                                        <div style="display: flex; align-items: center; gap: 14px;">
-                                            <div class="settings-icon-box" style="background: #faf5ff; color: #7c3aed; border: 1px solid #ddd6fe;">
-                                                📊
-                                            </div>
-                                            <div>
-                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a;">Grading & Division System</div>
-                                                <div style="font-size: 12px; color: #7c3aed; font-weight: 600; margin-top: 2px;">NECTA Standards</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle;">
-                                        <div style="font-size: 13px; color: #334155; line-height: 1.4;">
-                                            Configure mark ranges, letter grade scale (A–F), points, division point thresholds (Div I–IV), and GPA formulas.
-                                        </div>
-                                    </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle;">
-                                        <span class="badge" style="background: #faf5ff; color: #6d28d9; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px; border: 1px solid #ddd6fe;">
-                                            Benchmarks & Scales
-                                        </span>
-                                    </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle; text-align: center;">
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: center;">
                                         <span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px;">Configured</span>
                                     </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle; text-align: right;">
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: right;">
                                         <svg class="settings-row-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
                                     </td>
                                 </tr>
 
-                                <!-- 4. Classrooms & Streams Setup -->
-                                <tr class="settings-list-row" onclick="window.location.href='classrooms-setup.html';">
-                                    <td style="padding: 18px 20px; vertical-align: middle;">
+                                <!-- 3. Assessment Configuration -->
+                                <tr class="settings-list-row" onclick="window.location.href='../academics/assessment-config.html';">
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
+                                        <div style="display: flex; align-items: center; gap: 14px;">
+                                            <div class="settings-icon-box" style="background: #faf5ff; color: #7c3aed; border: 1px solid #ddd6fe;">
+                                                📝
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a;">Assessment Config</div>
+                                                <div style="font-size: 12px; color: #7c3aed; font-weight: 600; margin-top: 2px;">Tests, Weights & CA Rules</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
+                                        <div style="font-size: 13px; color: #334155; line-height: 1.4;">
+                                            Configure Continuous Assessments (CA), terminal exam components, percentage weightings, and remarks.
+                                        </div>
+                                    </td>
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
+                                        <span class="badge" style="background: #faf5ff; color: #6d28d9; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px; border: 1px solid #ddd6fe;">
+                                            Assessment Rules
+                                        </span>
+                                    </td>
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: center;">
+                                        <span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px;">Ready</span>
+                                    </td>
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: right;">
+                                        <svg class="settings-row-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                                    </td>
+                                </tr>
+
+                                <!-- 4. Classrooms Management -->
+                                <tr class="settings-list-row" onclick="window.location.href='../classrooms/index.html';">
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
                                         <div style="display: flex; align-items: center; gap: 14px;">
                                             <div class="settings-icon-box" style="background: #fffbeb; color: #d97706; border: 1px solid #fde68a;">
                                                 🏛️
                                             </div>
                                             <div>
-                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a;">Classrooms & Streams Setup</div>
-                                                <div style="font-size: 12px; color: #d97706; font-weight: 600; margin-top: 2px;">Facilities & Capacity</div>
+                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a;">Classrooms</div>
+                                                <div style="font-size: 12px; color: #d97706; font-weight: 600; margin-top: 2px;">Streams & Room Capacities</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle;">
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
                                         <div style="font-size: 13px; color: #334155; line-height: 1.4;">
-                                            Classroom allocations, stream divisions (Stream A, B, C, etc.), room desk capacities, and building blocks.
+                                            Classroom allocations, stream divisions (Stream A, B, C, etc.), room seating capacities, and building blocks.
                                         </div>
                                     </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle;">
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
                                         <span class="badge" style="background: #fffbeb; color: #b45309; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px; border: 1px solid #fde68a;">
                                             Campus Facilities
                                         </span>
                                     </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle; text-align: center;">
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: center;">
                                         <span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px;">Active</span>
                                     </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle; text-align: right;">
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: right;">
                                         <svg class="settings-row-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
                                     </td>
                                 </tr>
 
-                                <!-- 5. Notifications & SMS Alerts -->
-                                <tr class="settings-list-row" onclick="window.location.href='notifications.html';">
-                                    <td style="padding: 18px 20px; vertical-align: middle;">
+                                <!-- 5. Class Guiders Allocation -->
+                                <tr class="settings-list-row" onclick="window.location.href='../allocations/class-guiders.html';">
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
                                         <div style="display: flex; align-items: center; gap: 14px;">
-                                            <div class="settings-icon-box" style="background: #fdf2f8; color: #db2777; border: 1px solid #fbcfe8;">
-                                                🔔
+                                            <div class="settings-icon-box" style="background: #f0fdfa; color: #0d9488; border: 1px solid #99f6e4;">
+                                                👨‍🏫
                                             </div>
                                             <div>
-                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a;">Notifications & SMS Alerts</div>
-                                                <div style="font-size: 12px; color: #db2777; font-weight: 600; margin-top: 2px;">Parent Communications</div>
+                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a;">Class Guiders</div>
+                                                <div style="font-size: 12px; color: #0d9488; font-weight: 600; margin-top: 2px;">Class Teacher Allocations</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle;">
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
                                         <div style="font-size: 13px; color: #334155; line-height: 1.4;">
-                                            TCRA registered SMS sender ID, automated parent attendance alerts, fee balance notices, and exam results SMS.
+                                            Assign and manage master class guiders and mentors for each student classroom and stream.
                                         </div>
                                     </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle;">
-                                        <span class="badge" style="background: #fdf2f8; color: #be185d; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px; border: 1px solid #fbcfe8;">
-                                            SMS Gateway
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
+                                        <span class="badge" style="background: #f0fdfa; color: #0f766e; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px; border: 1px solid #99f6e4;">
+                                            Staff Allocation
                                         </span>
                                     </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle; text-align: center;">
-                                        <span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px;">Ready</span>
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: center;">
+                                        <span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px;">Assigned</span>
                                     </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle; text-align: right;">
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: right;">
                                         <svg class="settings-row-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
                                     </td>
                                 </tr>
 
-                                <!-- 6. Security, Roles & Access Policy -->
-                                <tr class="settings-list-row" onclick="window.location.href='security.html';">
-                                    <td style="padding: 18px 20px; vertical-align: middle;">
+                                <!-- 6. Subject Teacher Allocations -->
+                                <tr class="settings-list-row" onclick="window.location.href='../allocations/subject-allocations.html';">
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
                                         <div style="display: flex; align-items: center; gap: 14px;">
-                                            <div class="settings-icon-box" style="background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1;">
-                                                🔒
+                                            <div class="settings-icon-box" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;">
+                                                📘
                                             </div>
                                             <div>
-                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a;">Security & Access Policy</div>
-                                                <div style="font-size: 12px; color: #475569; font-weight: 600; margin-top: 2px;">Access Protection & Audits</div>
+                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a;">Subject Allocations</div>
+                                                <div style="font-size: 12px; color: #047857; font-weight: 600; margin-top: 2px;">Subject-Teacher Mapping</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle;">
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
                                         <div style="font-size: 13px; color: #334155; line-height: 1.4;">
-                                            Teacher first-time password reset, session auto-logout, brute-force protection, and full database .SQL backups.
+                                            Assign approved subjects to qualified teachers across specific streams, classes, and terms.
                                         </div>
                                     </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle;">
-                                        <span class="badge" style="background: #f1f5f9; color: #334155; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
-                                            Policy & Backups
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
+                                        <span class="badge" style="background: #ecfdf5; color: #065f46; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px; border: 1px solid #a7f3d0;">
+                                            Staff Allocation
                                         </span>
                                     </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle; text-align: center;">
-                                        <span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px;">Protected</span>
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: center;">
+                                        <span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px;">Assigned</span>
                                     </td>
-                                    <td style="padding: 18px 20px; vertical-align: middle; text-align: right;">
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: right;">
+                                        <svg class="settings-row-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                                    </td>
+                                </tr>
+
+                                <!-- 7. Timetables & Schedules -->
+                                <tr class="settings-list-row" onclick="window.location.href='../timetable/index.html';">
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
+                                        <div style="display: flex; align-items: center; gap: 14px;">
+                                            <div class="settings-icon-box" style="background: #f5f3ff; color: #8b5cf6; border: 1px solid #ddd6fe;">
+                                                📅
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a;">Timetables</div>
+                                                <div style="font-size: 12px; color: #8b5cf6; font-weight: 600; margin-top: 2px;">School Period Schedules</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
+                                        <div style="font-size: 13px; color: #334155; line-height: 1.4;">
+                                            Master weekly timetable generator, class lesson schedule grids, period intervals, and bell times.
+                                        </div>
+                                    </td>
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
+                                        <span class="badge" style="background: #f5f3ff; color: #7c3aed; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px; border: 1px solid #ddd6fe;">
+                                            Schedule & Operations
+                                        </span>
+                                    </td>
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: center;">
+                                        <span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px;">Generated</span>
+                                    </td>
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: right;">
                                         <svg class="settings-row-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
                                     </td>
                                 </tr>
@@ -279,7 +310,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Settings Hub interactive table ready
+            // School Setup & Settings Hub initialized
         });
     </script>
 </body>
