@@ -391,9 +391,15 @@
                             </h1>
                         </div>
 
-                        <!-- Right: Single-Row Controls (Mode, Subject, Assessment, Class Filter, Save) -->
+                        <!-- Right: Single-Row Controls (Term Switcher, Mode, Subject, Assessment, Class Filter, Save) -->
                         <div id="gridControlHeader" style="display: none; align-items: center; gap: 6px; flex-wrap: wrap;">
                             
+                            <!-- Fast Term Switcher Pill -->
+                            <div class="term-pill-bar" id="ribbonTermSwitcher" style="background: #f1f5f9; padding: 2px; border-radius: 4px; display: inline-flex; gap: 2px;">
+                                <button id="btnRibbonTerm1" class="term-pill-btn active" onclick="switchWorkspaceTerm('Term 1')">Term 1</button>
+                                <button id="btnRibbonTerm2" class="term-pill-btn" onclick="switchWorkspaceTerm('Term 2')">Term 2</button>
+                            </div>
+
                             <!-- Mode Toggle -->
                             <div style="background: #f1f5f9; padding: 2px; border-radius: 4px; display: inline-flex; gap: 2px;">
                                 <button id="btnModeAll" class="mode-toggle-btn active" onclick="switchEntryMode('all')">
@@ -412,7 +418,7 @@
                             </div>
 
                             <!-- Assessment Type Dropdown (Squeezed width & small font) -->
-                            <select id="gridAssessmentType" class="compact-select" style="max-width: 155px;" title="Assessment Type">
+                            <select id="gridAssessmentType" class="compact-select" style="max-width: 165px;" title="Assessment Type">
                                 <!-- Dynamic assessments -->
                             </select>
 
@@ -553,7 +559,7 @@
         document.addEventListener('DOMContentLoaded', async () => {
             await loadScopes();
 
-            document.getElementById('gridAssessmentType').addEventListener('change', autoLoadSheet);
+            document.getElementById('gridAssessmentType').addEventListener('change', handleAssessmentTypeChange);
             document.getElementById('gridSubjectSelect').addEventListener('change', autoLoadSheet);
             document.getElementById('gridClassFilter').addEventListener('change', handleClassFilterChange);
 
@@ -628,19 +634,51 @@
             selType.innerHTML = '';
 
             const isTerm2 = (selectedTerm === 'Term 2');
-            const examName = isTerm2 ? 'Second Term Exam' : 'First Term Exam';
 
+            // Find configured assessment types
             const allAssess = (currentScopes && currentScopes.assessment_types) ? currentScopes.assessment_types : [];
-            const termTypes = allAssess.filter(at => !at.term || at.term === selectedTerm);
+            
+            let t1Exam = allAssess.find(a => (a.term === 'Term 1' || !a.term) && (a.is_terminal == 1 || (a.name && a.name.toLowerCase().includes('first'))));
+            let t2Exam = allAssess.find(a => a.term === 'Term 2' && (a.is_terminal == 1 || (a.name && a.name.toLowerCase().includes('second'))));
+            let caType = allAssess.find(a => (a.name && a.name.toLowerCase().includes('continuous')) || a.is_terminal == 0);
 
-            if (termTypes.length > 0) {
-                termTypes.forEach((at, i) => {
-                    selType.innerHTML += `<option value="${at.id}" ${i === 0 ? 'selected' : ''}>${at.name} (${at.weight_percent}%)</option>`;
-                });
-            } else {
-                selType.innerHTML += `<option value="ca">Continuous Assessment (CA) (30%)</option>`;
-                selType.innerHTML += `<option value="term_exam">${examName} (70%)</option>`;
+            let t1Id = t1Exam ? t1Exam.id : 'exam_t1';
+            let t2Id = t2Exam ? t2Exam.id : 'exam_t2';
+            let caId = caType ? caType.id : 'ca';
+
+            selType.innerHTML += `<option value="${t1Id}" data-term="Term 1" ${!isTerm2 ? 'selected' : ''}>First Term Exam (70%)</option>`;
+            selType.innerHTML += `<option value="${t2Id}" data-term="Term 2" ${isTerm2 ? 'selected' : ''}>Second Term Exam (70%)</option>`;
+            selType.innerHTML += `<option value="${caId}" data-term="${selectedTerm}">Continuous Assessment (CA) (30%)</option>`;
+        }
+
+        function handleAssessmentTypeChange() {
+            const selType = document.getElementById('gridAssessmentType');
+            const selectedOpt = selType.options[selType.selectedIndex];
+            const optTerm = selectedOpt.getAttribute('data-term');
+            
+            if (optTerm && optTerm !== selectedTerm) {
+                switchWorkspaceTerm(optTerm, false);
+                return;
             }
+
+            autoLoadSheet();
+        }
+
+        function switchWorkspaceTerm(term, updateDropdown = true) {
+            selectedTerm = term;
+            const btnT1 = document.getElementById('btnRibbonTerm1');
+            const btnT2 = document.getElementById('btnRibbonTerm2');
+            if (btnT1) btnT1.classList.toggle('active', term === 'Term 1');
+            if (btnT2) btnT2.classList.toggle('active', term === 'Term 2');
+            
+            if (updateDropdown) {
+                populateAssessmentTypeDropdown();
+            }
+
+            const qs = selectedClassroomId ? `classroom_id=${selectedClassroomId}` : `grade_id=${selectedGradeId}`;
+            window.history.pushState({}, '', `entry.html?${qs}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}`);
+
+            autoLoadSheet();
         }
 
         function populateClassFilterDropdown() {
