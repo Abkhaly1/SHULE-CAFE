@@ -262,21 +262,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Action Button in Right Column -->
-                                <div id="boxBottomAction">
-                                    <button type="button" id="btnBottomEdit" class="btn btn-outline btn-block" style="width: 100%; padding: 10px; font-size: 13px; font-weight: 800; border-radius: 8px; border-color: #cbd5e1; color: #334155;">
-                                        ✏️ Edit School Profile
-                                    </button>
-                                </div>
-
-                                <div id="boxBottomSave" style="display: none; flex-direction: column; gap: 8px;">
-                                    <button type="submit" id="saveProfileBtn" class="btn btn-primary btn-block" style="width: 100%; padding: 12px; font-size: 14px; font-weight: 800; border-radius: 8px; background: #047857;">
-                                        💾 Save Profile Changes
-                                    </button>
-                                    <button type="button" id="btnBottomCancel" class="btn btn-outline btn-block" style="width: 100%; padding: 8px; font-size: 12px; font-weight: 700; border-radius: 8px;">
-                                        Cancel
-                                    </button>
-                                </div>
                             </div>
 
                         </div>
@@ -300,15 +285,10 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const form = document.getElementById('schoolProfileForm');
             const alertBox = document.getElementById('saveAlert');
-            const saveBtn = document.getElementById('saveProfileBtn');
             const btnSaveTop = document.getElementById('btnSaveTop');
             const btnToggleEdit = document.getElementById('btnToggleEdit');
-            const btnBottomEdit = document.getElementById('btnBottomEdit');
             const btnCancelEdit = document.getElementById('btnCancelEdit');
-            const btnBottomCancel = document.getElementById('btnBottomCancel');
             const boxEditActions = document.getElementById('boxEditActions');
-            const boxBottomAction = document.getElementById('boxBottomAction');
-            const boxBottomSave = document.getElementById('boxBottomSave');
             const badgeProfileMode = document.getElementById('badgeProfileMode');
             const btnChangeCrest = document.getElementById('btnChangeCrest');
 
@@ -335,9 +315,6 @@
                     btnToggleEdit.style.display = 'none';
                     boxEditActions.style.display = 'flex';
 
-                    boxBottomAction.style.display = 'none';
-                    boxBottomSave.style.display = 'flex';
-
                     // Focus on school name
                     document.getElementById('sch_name')?.focus();
                 } else {
@@ -346,9 +323,6 @@
 
                     btnToggleEdit.style.display = 'inline-flex';
                     boxEditActions.style.display = 'none';
-
-                    boxBottomAction.style.display = 'block';
-                    boxBottomSave.style.display = 'none';
                 }
             }
 
@@ -396,11 +370,10 @@
             await loadSchoolData();
             setEditMode(false);
 
-            // Edit buttons
+            // Edit button
             btnToggleEdit.addEventListener('click', () => setEditMode(true));
-            btnBottomEdit.addEventListener('click', () => setEditMode(true));
 
-            // Cancel buttons
+            // Cancel button
             function cancelEditing() {
                 populateForm(originalSchoolData);
                 setEditMode(false);
@@ -408,16 +381,13 @@
             }
 
             btnCancelEdit.addEventListener('click', cancelEditing);
-            btnBottomCancel.addEventListener('click', cancelEditing);
 
             // Form Submit (Save)
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 alertBox.style.display = 'none';
                 
-                saveBtn.disabled = true;
                 btnSaveTop.disabled = true;
-                saveBtn.textContent = 'Saving Profile...';
                 btnSaveTop.textContent = 'Saving...';
 
                 const data = {
@@ -464,9 +434,7 @@
                     alertBox.textContent = 'Network error saving school profile.';
                     alertBox.style.display = 'block';
                 } finally {
-                    saveBtn.disabled = false;
                     btnSaveTop.disabled = false;
-                    saveBtn.textContent = '💾 Save Profile Changes';
                     btnSaveTop.innerHTML = '<span>💾</span> Save Changes';
                 }
             });
