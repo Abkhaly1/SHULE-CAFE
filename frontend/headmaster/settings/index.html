@@ -81,7 +81,41 @@
                             </thead>
                             <tbody>
                                 
-                                <!-- 1. Academics Management -->
+                                <!-- 1. School Profile -->
+                                <tr class="settings-list-row" onclick="window.location.href='school-profile.html';">
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
+                                        <div style="display: flex; align-items: center; gap: 14px;">
+                                            <div class="settings-icon-box" style="background: #fdf2f8; color: #db2777; border: 1px solid #fbcfe8;">
+                                                🏫
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a; display: flex; align-items: center;">
+                                                    <span>School Profile</span>
+                                                    <span id="warn-school-profile" class="setup-warning-icon" style="display: none;" title="Action Required: School profile details not configured yet">!</span>
+                                                </div>
+                                                <div style="font-size: 12px; color: #db2777; font-weight: 600; margin-top: 2px;">Identity & Legal Information</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
+                                        <div style="font-size: 13px; color: #334155; line-height: 1.4;">
+                                            Official school name, NECTA registration number, ownership, contact details, and location.
+                                        </div>
+                                    </td>
+                                    <td style="padding: 16px 20px; vertical-align: middle;">
+                                        <span class="badge" style="background: #fdf2f8; color: #be185d; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px; border: 1px solid #fbcfe8;">
+                                            Institutional Profile
+                                        </span>
+                                    </td>
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: center;" id="badge-school-profile">
+                                        <span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px;">Configured</span>
+                                    </td>
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: right;">
+                                        <svg class="settings-row-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                                    </td>
+                                </tr>
+
+                                <!-- 2. Academics Management -->
                                 <tr class="settings-list-row" onclick="window.location.href='../academics/index.html';">
                                     <td style="padding: 16px 20px; vertical-align: middle;">
                                         <div style="display: flex; align-items: center; gap: 14px;">
@@ -89,7 +123,10 @@
                                                 📚
                                             </div>
                                             <div>
-                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a;">Academics</div>
+                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a; display: flex; align-items: center;">
+                                                    <span>Academics</span>
+                                                    <span id="warn-academics" class="setup-warning-icon" style="display: none;" title="Action Required: Academic tiers and classes not configured yet">!</span>
+                                                </div>
                                                 <div style="font-size: 12px; color: #2563eb; font-weight: 600; margin-top: 2px;">Tiers, Classes & Subjects</div>
                                             </div>
                                         </div>
@@ -104,7 +141,7 @@
                                             Academic Curriculum
                                         </span>
                                     </td>
-                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: center;">
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: center;" id="badge-academics">
                                         <span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px;">Configured</span>
                                     </td>
                                     <td style="padding: 16px 20px; vertical-align: middle; text-align: right;">
@@ -120,7 +157,10 @@
                                                 📝
                                             </div>
                                             <div>
-                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a;">Assessment Config</div>
+                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a; display: flex; align-items: center;">
+                                                    <span>Assessment Config</span>
+                                                    <span id="warn-assessment-config" class="setup-warning-icon" style="display: none;" title="Action Required: Assessment policy and test weights not configured yet">!</span>
+                                                </div>
                                                 <div style="font-size: 12px; color: #7c3aed; font-weight: 600; margin-top: 2px;">Tests, Weights & CA Rules</div>
                                             </div>
                                         </div>
@@ -135,7 +175,7 @@
                                             Assessment Rules
                                         </span>
                                     </td>
-                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: center;">
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: center;" id="badge-assessment-config">
                                         <span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px;">Ready</span>
                                     </td>
                                     <td style="padding: 16px 20px; vertical-align: middle; text-align: right;">
@@ -151,7 +191,10 @@
                                                 🏛️
                                             </div>
                                             <div>
-                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a;">Classrooms</div>
+                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a; display: flex; align-items: center;">
+                                                    <span>Classrooms</span>
+                                                    <span id="warn-classrooms" class="setup-warning-icon" style="display: none;" title="Action Required: Classrooms and streams not configured yet">!</span>
+                                                </div>
                                                 <div style="font-size: 12px; color: #d97706; font-weight: 600; margin-top: 2px;">Streams & Room Capacities</div>
                                             </div>
                                         </div>
@@ -166,7 +209,7 @@
                                             Campus Facilities
                                         </span>
                                     </td>
-                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: center;">
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: center;" id="badge-classrooms">
                                         <span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px;">Active</span>
                                     </td>
                                     <td style="padding: 16px 20px; vertical-align: middle; text-align: right;">
@@ -182,7 +225,10 @@
                                                 👨‍🏫
                                             </div>
                                             <div>
-                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a;">Class Guiders</div>
+                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a; display: flex; align-items: center;">
+                                                    <span>Class Guiders</span>
+                                                    <span id="warn-class-guiders" class="setup-warning-icon" style="display: none;" title="Action Required: Class guiders / teacher mentors not assigned yet">!</span>
+                                                </div>
                                                 <div style="font-size: 12px; color: #0d9488; font-weight: 600; margin-top: 2px;">Class Teacher Allocations</div>
                                             </div>
                                         </div>
@@ -197,7 +243,7 @@
                                             Staff Allocation
                                         </span>
                                     </td>
-                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: center;">
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: center;" id="badge-class-guiders">
                                         <span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px;">Assigned</span>
                                     </td>
                                     <td style="padding: 16px 20px; vertical-align: middle; text-align: right;">
@@ -213,7 +259,10 @@
                                                 📘
                                             </div>
                                             <div>
-                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a;">Subject Allocations</div>
+                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a; display: flex; align-items: center;">
+                                                    <span>Subject Allocations</span>
+                                                    <span id="warn-subject-allocations" class="setup-warning-icon" style="display: none;" title="Action Required: Subject teacher allocations not configured yet">!</span>
+                                                </div>
                                                 <div style="font-size: 12px; color: #047857; font-weight: 600; margin-top: 2px;">Subject-Teacher Mapping</div>
                                             </div>
                                         </div>
@@ -228,7 +277,7 @@
                                             Staff Allocation
                                         </span>
                                     </td>
-                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: center;">
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: center;" id="badge-subject-allocations">
                                         <span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px;">Assigned</span>
                                     </td>
                                     <td style="padding: 16px 20px; vertical-align: middle; text-align: right;">
@@ -244,7 +293,10 @@
                                                 📅
                                             </div>
                                             <div>
-                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a;">Timetables</div>
+                                                <div style="font-weight: 800; font-size: 15px; color: #0f172a; display: flex; align-items: center;">
+                                                    <span>Timetables</span>
+                                                    <span id="warn-timetable" class="setup-warning-icon" style="display: none;" title="Action Required: School timetable schedule not generated yet">!</span>
+                                                </div>
                                                 <div style="font-size: 12px; color: #8b5cf6; font-weight: 600; margin-top: 2px;">School Period Schedules</div>
                                             </div>
                                         </div>
@@ -259,7 +311,7 @@
                                             Schedule & Operations
                                         </span>
                                     </td>
-                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: center;">
+                                    <td style="padding: 16px 20px; vertical-align: middle; text-align: center;" id="badge-timetable">
                                         <span class="badge" style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 12px; padding: 5px 10px; border-radius: 6px;">Generated</span>
                                     </td>
                                     <td style="padding: 16px 20px; vertical-align: middle; text-align: right;">
@@ -278,8 +330,43 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // School Setup & Settings Hub initialized
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/settings_status.php', { credentials: 'include' });
+                const json = await res.json();
+                if (json && json.success && json.settings) {
+                    const s = json.settings;
+                    
+                    const updateItem = (key, elemSuffix) => {
+                        const info = s[key];
+                        if (!info) return;
+                        const warnEl = document.getElementById(`warn-${elemSuffix}`);
+                        const badgeEl = document.getElementById(`badge-${elemSuffix}`);
+                        
+                        if (info.configured) {
+                            if (warnEl) warnEl.style.display = 'none';
+                            if (badgeEl) {
+                                badgeEl.innerHTML = `<span class="badge" style="background:#dcfce7;color:#15803d;font-weight:700;font-size:12px;padding:5px 10px;border-radius:6px;">${info.label || 'Configured'}</span>`;
+                            }
+                        } else {
+                            if (warnEl) warnEl.style.display = 'inline-flex';
+                            if (badgeEl) {
+                                badgeEl.innerHTML = `<span class="badge" style="background:#fef3c7;color:#b45309;font-weight:700;font-size:12px;padding:5px 10px;border-radius:6px;border:1px solid #fde68a;">Needs Setup</span>`;
+                            }
+                        }
+                    };
+
+                    updateItem('school_profile', 'school-profile');
+                    updateItem('academics', 'academics');
+                    updateItem('assessment_config', 'assessment-config');
+                    updateItem('classrooms', 'classrooms');
+                    updateItem('class_guiders', 'class-guiders');
+                    updateItem('subject_allocations', 'subject-allocations');
+                    updateItem('timetable', 'timetable');
+                }
+            } catch (err) {
+                console.warn('Could not load settings status:', err);
+            }
         });
     </script>
 </body>

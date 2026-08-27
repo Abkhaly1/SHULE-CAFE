@@ -21,7 +21,13 @@
             <main class="app-content-wrapper">
                 <div class="app-content">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px;">
-                        <app-breadcrumb path="Headmaster, Settings, Assessment Config"></app-breadcrumb>
+                        <div>
+                            <app-breadcrumb path="Headmaster, Settings, Assessment Config"></app-breadcrumb>
+                            <h1 style="margin: 4px 0 0 0; font-size: 20px; font-weight: 800; color: #0f172a; display: flex; align-items: center;">
+                                <span>Assessment Config</span>
+                                <span id="warnAssessmentTitle" class="setup-warning-icon" style="display: none;" title="Action Required: Assessment policy and CA weights not established yet">!</span>
+                            </h1>
+                        </div>
                         <div style="display: flex; gap: 10px; align-items: center;">
                             <label style="font-size: 12px; font-weight: 800; color: #475569; margin: 0;">Target Term:</label>
                             <select id="selTerm" class="form-control" style="width: 140px; font-weight: 700; height: 32px; padding: 2px 10px; font-size: 12px;">
@@ -150,6 +156,8 @@
                 const data = await res.json();
                 if (res.ok && data.success) {
                     isPolicyLocked = data.has_saved_policy !== false;
+                    const warnEl = document.getElementById('warnAssessmentTitle');
+                    if (warnEl) warnEl.style.display = data.has_saved_policy ? 'none' : 'inline-flex';
                     renderRows(data.assessment_types || [], isPolicyLocked);
                 }
             } catch(e) {

@@ -31,10 +31,10 @@
                         
                         <app-workspace-tabs active-tab="general">
                             <button class="workspace-tab" data-target="general">General</button>
-                            <button class="workspace-tab" data-target="branding">Branding</button>
-                            <button class="workspace-tab" data-target="email">Email Config</button>
-                            <button class="workspace-tab" data-target="security">Security Policy</button>
-                            <button class="workspace-tab" data-target="integrations">Integrations</button>
+                            <button class="workspace-tab" data-target="branding">Branding <span class="setup-warning-icon" style="width:16px;height:16px;font-size:10px;margin-left:4px;" title="Setup Required: Branding not configured">!</span></button>
+                            <button class="workspace-tab" data-target="email">Email Config <span class="setup-warning-icon" style="width:16px;height:16px;font-size:10px;margin-left:4px;" title="Setup Required: SMTP not configured">!</span></button>
+                            <button class="workspace-tab" data-target="security">Security Policy <span class="setup-warning-icon" style="width:16px;height:16px;font-size:10px;margin-left:4px;" title="Setup Required: Policies not configured">!</span></button>
+                            <button class="workspace-tab" data-target="integrations">Integrations <span class="setup-warning-icon" style="width:16px;height:16px;font-size:10px;margin-left:4px;" title="Setup Required: Integrations not configured">!</span></button>
                         </app-workspace-tabs>
                         
                         <app-workspace-content tab-id="general" active="true">

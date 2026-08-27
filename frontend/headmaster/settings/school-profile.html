@@ -100,7 +100,7 @@
                     
                     <!-- Top Action Bar with Breadcrumb and Mode Toggles -->
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 8px;">
-                        <app-breadcrumb path="Headmaster, School Profile"></app-breadcrumb>
+                        <app-breadcrumb path="Headmaster, Settings, School Profile"></app-breadcrumb>
                         
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <span id="badgeProfileMode" class="mode-badge mode-locked">
@@ -122,6 +122,20 @@
                                 </button>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Page Title with Warning Indicator -->
+                    <div style="display: flex; align-items: center; margin-top: 4px; margin-bottom: 12px;">
+                        <h1 style="margin: 0; font-size: 20px; font-weight: 800; color: #0f172a; display: flex; align-items: center;">
+                            <span>School Profile</span>
+                            <span id="warnProfileTitle" class="setup-warning-icon" style="display: none;" title="Action Required: School profile setup is incomplete">!</span>
+                        </h1>
+                    </div>
+
+                    <!-- Unconfigured Notice Banner -->
+                    <div id="setupNoticeBanner" style="display: none; background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; padding: 10px 16px; margin-bottom: 14px; font-size: 13px; color: #92400e; font-weight: 700; align-items: center; gap: 8px;">
+                        <span class="setup-warning-icon" style="margin-left: 0; width: 18px; height: 18px; font-size: 11px;">!</span>
+                        <span>Setup Required: Institutional contact details, region, and district need to be configured.</span>
                     </div>
 
                     <!-- Alert Banner -->
@@ -330,6 +344,13 @@
                 if (sch.status === 'active') {
                     document.getElementById('displaySchStatus').textContent = '🟢 Active Institutional Tenant';
                 }
+
+                // Configuration status check
+                const isConfigured = Boolean((sch.school_email || sch.school_phone) && sch.region);
+                const warnEl = document.getElementById('warnProfileTitle');
+                const noticeBanner = document.getElementById('setupNoticeBanner');
+                if (warnEl) warnEl.style.display = isConfigured ? 'none' : 'inline-flex';
+                if (noticeBanner) noticeBanner.style.display = isConfigured ? 'none' : 'flex';
             }
 
             async function loadSchoolData() {

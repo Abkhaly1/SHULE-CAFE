@@ -509,3 +509,48 @@ a:hover { color: var(--c-primary-700); text-decoration: underline; }
 .skeleton-card { height: 110px; width: 100%; border-radius: 10px; }
 .skeleton-row { height: 42px; width: 100%; margin-bottom: 8px; border-radius: 6px; }
 
+/* --------------------------------------------------------------------------
+   12. SETUP & CONFIGURATION WARNING BADGES (AMBER EXCLAMATION CIRCLE)
+   -------------------------------------------------------------------------- */
+.setup-warning-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #f59e0b;
+    color: #ffffff;
+    font-weight: 900;
+    font-size: 13px;
+    font-family: inherit;
+    line-height: 1;
+    box-shadow: 0 0 0 2.5px #fef3c7;
+    margin-left: 8px;
+    vertical-align: middle;
+    flex-shrink: 0;
+    cursor: help;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    user-select: none;
+}
+
+.setup-warning-icon:hover {
+    transform: scale(1.15);
+    box-shadow: 0 0 0 3.5px #fde68a;
+}
+
+.setup-warning-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    vertical-align: middle;
+    margin-left: 8px;
+}
+

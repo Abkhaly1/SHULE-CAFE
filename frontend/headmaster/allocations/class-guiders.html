@@ -51,7 +51,13 @@
                 <div class="app-content" style="padding: 0;">
                     
                     <div style="padding: 0 24px 12px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-                        <app-breadcrumb path="Headmaster, Settings, Class Guiders"></app-breadcrumb>
+                        <div>
+                            <app-breadcrumb path="Headmaster, Settings, Class Guiders"></app-breadcrumb>
+                            <h1 style="margin: 4px 0 0 0; font-size: 20px; font-weight: 800; color: #0f172a; display: flex; align-items: center;">
+                                <span>Class Guiders</span>
+                                <span id="warnGuidersTitle" class="setup-warning-icon" style="display: none;" title="Action Required: Class guiders / mentors have not been assigned yet">!</span>
+                            </h1>
+                        </div>
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <a href="teacher-handover.html" class="btn btn-outline btn-sm" style="font-weight: 700; font-size: 12px; height: 30px; border-radius: 6px; text-decoration: none;">
                                 🔄 Teacher Replacement & Handover Wizard
@@ -139,11 +145,14 @@
                     allClassrooms = data.classrooms || [];
                     allTeachers = data.teachers || [];
 
-                    // Render Analytics
                     const a = data.analytics || {};
                     $('#statTotalRooms').text(a.total_classrooms || 0);
                     $('#statAssignedRooms').text(a.assigned_count || 0);
                     $('#statUnassignedRooms').text(a.unassigned_count || 0);
+
+                    const hasGuiders = (a.assigned_count > 0);
+                    const warnEl = document.getElementById('warnGuidersTitle');
+                    if (warnEl) warnEl.style.display = hasGuiders ? 'none' : 'inline-flex';
 
                     if (a.unassigned_count > 0) {
                         const roomNames = (a.unassigned_rooms || []).map(r => r.room_name).join(', ');

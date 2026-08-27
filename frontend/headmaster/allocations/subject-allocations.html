@@ -133,6 +133,10 @@
                     
                     <div style="padding: 0 24px 12px 24px;">
                         <app-breadcrumb path="Headmaster, Settings, Subject Allocations"></app-breadcrumb>
+                        <h1 style="margin: 4px 0 0 0; font-size: 20px; font-weight: 800; color: #0f172a; display: flex; align-items: center;">
+                            <span>Subject Allocations</span>
+                            <span id="warnSubjectAllocTitle" class="setup-warning-icon" style="display: none;" title="Action Required: Teacher subject allocations have not been configured yet">!</span>
+                        </h1>
                     </div>
 
                     <app-workspace-layout hide-back style="gap: 10px;">
@@ -325,6 +329,10 @@
         }
 
         function renderFacultyTable(teachersList) {
+            const hasAllocations = Boolean(teachersList && teachersList.length > 0 && teachersList.some(t => (t.qualified_subjects && t.qualified_subjects.length > 0)));
+            const warnEl = document.getElementById('warnSubjectAllocTitle');
+            if (warnEl) warnEl.style.display = hasAllocations ? 'none' : 'inline-flex';
+
             if (!teachersList || teachersList.length === 0) {
                 $('#tblFacultyBody').html('<tr><td colspan="4" style="text-align:center; padding:24px; color:#64748b;">No faculty members found.</td></tr>');
                 return;

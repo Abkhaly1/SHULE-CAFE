@@ -32,8 +32,13 @@ class AppPageHeader extends HTMLElement {
         return this.getAttribute('secondary-url') || '';
     }
 
+    get needsConfig() {
+        return this.getAttribute('needs-config') === 'true' || this.hasAttribute('needs-config');
+    }
+
     render() {
         let subtitleHtml = this.subtitle ? `<p class="text-muted" style="margin-top:4px;">${this.subtitle}</p>` : '';
+        let warnIconHtml = this.needsConfig ? `<span class="setup-warning-icon" title="Setup Required: Not configured yet">!</span>` : '';
         
         let primaryBtnHtml = '';
         if (this.primaryAction) {
@@ -66,7 +71,7 @@ class AppPageHeader extends HTMLElement {
         this.innerHTML = `
             <div class="page-header-wrapper" style="margin-top: var(--sp-2); display:flex; justify-content:space-between; align-items:center;">
                 <div class="page-header-left">
-                    <h1 style="margin:0;">${this.title}</h1>
+                    <h1 style="margin:0; display:flex; align-items:center;"><span>${this.title}</span>${warnIconHtml}</h1>
                     ${subtitleHtml}
                 </div>
                 ${actionsHtml}

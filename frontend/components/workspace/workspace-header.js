@@ -1,6 +1,6 @@
 class AppWorkspaceHeader extends HTMLElement {
     static get observedAttributes() {
-        return ['title', 'subtitle', 'status', 'status-color', 'avatar-text', 'initials'];
+        return ['title', 'subtitle', 'status', 'status-color', 'avatar-text', 'initials', 'needs-config'];
     }
 
     constructor() {
@@ -41,8 +41,13 @@ class AppWorkspaceHeader extends HTMLElement {
         return this.getAttribute('status-color') || 'success';
     }
 
+    get needsConfig() {
+        return this.getAttribute('needs-config') === 'true' || this.hasAttribute('needs-config');
+    }
+
     render() {
         let badgeHtml = this.status ? `<span class="badge badge-${this.statusColor}" id="headerStatusBadge" style="margin-left: 8px; font-size: 10px; padding: 2px 6px; font-weight: 700;">${this.status}</span>` : '';
+        let warnIconHtml = this.needsConfig ? `<span class="setup-warning-icon" id="headerWarnIcon" title="Setup Required: Not configured yet">!</span>` : `<span class="setup-warning-icon" id="headerWarnIcon" style="display:none;" title="Setup Required: Not configured yet">!</span>`;
         let subtitleHtml = this.subtitle ? `<div id="headerSubtitle" style="color: var(--c-text-muted); font-size: 12px; margin-top: 2px; font-weight: 600;">${this.subtitle}</div>` : '';
         const metaContent = this._metaContent || '';
 
@@ -55,6 +60,7 @@ class AppWorkspaceHeader extends HTMLElement {
                     <div>
                         <h2 style="margin: 0; font-size: 17px; font-weight: 800; display: flex; align-items: center; color: var(--c-text-primary);" id="headerTitleContainer">
                             <span id="headerTitleText">${this.title}</span>
+                            ${warnIconHtml}
                             ${badgeHtml}
                         </h2>
                         ${subtitleHtml}
@@ -70,10 +76,12 @@ class AppWorkspaceHeader extends HTMLElement {
         const subtitleEl = this.querySelector('#headerSubtitle');
         const avatarEl = this.querySelector('#headerAvatar');
         const badgeEl = this.querySelector('#headerStatusBadge');
+        const warnEl = this.querySelector('#headerWarnIcon');
 
         if (titleEl) titleEl.textContent = this.title;
         if (subtitleEl) subtitleEl.textContent = this.subtitle;
         if (avatarEl) avatarEl.textContent = this.avatarText;
+        if (warnEl) warnEl.style.display = this.needsConfig ? 'inline-flex' : 'none';
         if (badgeEl) {
             badgeEl.textContent = this.status;
             badgeEl.className = `badge badge-${this.statusColor}`;

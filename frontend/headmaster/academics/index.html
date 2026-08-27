@@ -53,8 +53,14 @@
             <main class="app-content-wrapper" style="padding-top: 10px;">
                 <div class="app-content" style="padding: 0;">
                     
-                    <div style="padding: 0 24px 12px 24px;">
-                        <app-breadcrumb path="Headmaster, Settings, Academics"></app-breadcrumb>
+                    <div style="padding: 0 24px 8px 24px; display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <app-breadcrumb path="Headmaster, Settings, Academics"></app-breadcrumb>
+                            <h1 style="margin: 4px 0 0 0; font-size: 20px; font-weight: 800; color: #0f172a; display: flex; align-items: center;">
+                                <span>Academics</span>
+                                <span id="warnAcademicsTitle" class="setup-warning-icon" style="display: none;" title="Action Required: Academic tiers and classes not configured yet">!</span>
+                            </h1>
+                        </div>
                     </div>
 
                     <app-workspace-layout hide-back style="gap: 10px;">
@@ -163,6 +169,10 @@
                     document.getElementById('cardLevelsCount').setAttribute('value', levels.length.toString());
                     document.getElementById('cardGradesCount').setAttribute('value', grades.length.toString());
                     document.getElementById('cardSubjectsCount').setAttribute('value', approvedSbjs.length.toString());
+
+                    const isConfigured = (levels.length > 0 && grades.length > 0);
+                    const warnEl = document.getElementById('warnAcademicsTitle');
+                    if (warnEl) warnEl.style.display = isConfigured ? 'none' : 'inline-flex';
 
                     renderLevelFilterPills(levels);
                     renderGradesGrid();
