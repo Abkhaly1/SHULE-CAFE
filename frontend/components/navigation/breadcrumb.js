@@ -55,7 +55,15 @@ class AppBreadcrumb extends HTMLElement {
             'School Reports': basePath + 'headmaster/reports/index.html',
             'Class Guiders': basePath + 'headmaster/allocations/class-guiders.html',
             'Subject Allocations': basePath + 'headmaster/allocations/subject-allocations.html',
-            'Assessment Config': basePath + 'headmaster/academics/assessment-config.html'
+            'Assessment Config': basePath + 'headmaster/academics/assessment-config.html',
+            'Examinations': basePath + 'headmaster/exams/index.html',
+            'Exams': basePath + 'headmaster/exams/index.html',
+            'Examinations Hub': basePath + 'headmaster/exams/index.html',
+            'Marks Entry': basePath + 'headmaster/exams/entry.html',
+            'Results Records': basePath + 'headmaster/exams/records.html',
+            'Class Analytics': basePath + 'headmaster/exams/analytics.html',
+            'Verifications & Locks': basePath + 'headmaster/exams/approvals.html',
+            'People': basePath + 'headmaster/people/index.html'
         };
 
         const homeUrl = currentPath.includes('/headmaster/') ? (basePath + 'headmaster/dashboard.html') :
