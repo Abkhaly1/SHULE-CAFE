@@ -67,28 +67,8 @@
                 <div class="app-content">
                     <app-breadcrumb path="Headmaster, Settings"></app-breadcrumb>
                     
-                    <!-- Header Banner -->
-                    <div style="background: linear-gradient(135deg, #064e3b 0%, #059669 100%); color: white; padding: 22px 28px; border-radius: 12px; margin-top: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.25);">
-                        <div>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <h1 style="margin: 0; font-size: 22px; font-weight: 800; color: white;">School Setup & Settings Hub</h1>
-                                <span id="schoolTypeBadge" style="background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase;">Primary & Secondary</span>
-                            </div>
-                            <p id="schoolSubtitle" style="margin: 6px 0 0 0; color: rgba(255,255,255,0.9); font-size: 13px;">
-                                Select an administrative workspace below to configure institutional records, academic rules, facilities, and communications.
-                            </p>
-                        </div>
-                        <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end;">
-                            <div style="font-size: 11px; text-transform: uppercase; color: rgba(255,255,255,0.7); font-weight: 700;">Institutional Status</div>
-                            <div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.25); border: 1px solid rgba(255, 255, 255, 0.4); padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-top: 4px;">
-                                <span style="width: 8px; height: 8px; border-radius: 50%; background: #34d399;"></span>
-                                Fully Configured
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Clean List-Wise Table Container -->
-                    <div class="card" style="padding: 0; overflow: hidden; border-radius: 12px; box-shadow: var(--shadow-sm); border: 1px solid #e2e8f0; margin-top: 20px;">
+                    <div class="card" style="padding: 0; overflow: hidden; border-radius: 12px; box-shadow: var(--shadow-sm); border: 1px solid #e2e8f0; margin-top: 16px;">
                         <table class="settings-list-table">
                             <thead>
                                 <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">
@@ -298,19 +278,8 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                const res = await fetch('/shule-cafe/api/headmaster/stats.php', { credentials: 'include' });
-                const result = await res.json();
-                if (res.ok && result.success && result.school) {
-                    if (result.school.type) {
-                        document.getElementById('schoolTypeBadge').textContent = result.school.type;
-                    }
-                    if (result.school.name) {
-                        document.getElementById('schoolSubtitle').textContent = `Configuration workspace for ${result.school.name} (${result.school.region || 'Tanzania'}). Click any row to open its workspace.`;
-                    }
-                }
-            } catch (e) {}
+        document.addEventListener('DOMContentLoaded', () => {
+            // Settings Hub interactive table ready
         });
     </script>
 </body>
