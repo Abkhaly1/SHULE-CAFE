@@ -302,6 +302,9 @@
                                 <!-- Dynamic class streams -->
                             </select>
 
+                            <button id="btnNectaCamsModal" class="btn btn-outline btn-sm" style="font-weight: 800; display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 11px; padding: 1px 9px; color: #047857; border-color: #a7f3d0; background: #f0fdf4;" onclick="openNectaCamsModal()">
+                                <span>🎓</span> NECTA CAMS
+                            </button>
                             <button id="btnPrintBroadsheet" class="btn btn-outline btn-sm" style="font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 11px; padding: 1px 8px;">
                                 <span>🖨️</span> Print
                             </button>
@@ -854,7 +857,11 @@
                     let rowHtml = `
                         <td style="text-align: center; font-weight: 700; color: #64748b;">${idx + 1}</td>
                         <td style="font-weight: 700; color: #475569;">${stu.user_code || '-'}</td>
-                        <td style="font-weight: 800; color: #0f172a;">${stu.full_name}</td>
+                        <td style="font-weight: 800;">
+                            <a href="/shule-cafe/frontend/headmaster/reports/student_transcript_pdf.html?student_id=${stu.student_id}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}" target="_blank" style="color: #064e3b; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Click to view/print official transcript">
+                                <span>${stu.full_name}</span> <span style="font-size: 10px; opacity: 0.7;">📄</span>
+                            </a>
+                        </td>
                     `;
 
                     data.subjects.forEach(sub => {
@@ -947,7 +954,7 @@
             activeBroadsheetData.broadsheet.forEach((stu, idx) => {
                 const subScores = activeBroadsheetData.subjects.map(s => {
                     const g = stu.subject_scores ? stu.subject_scores[s.code] : null;
-                    return g ? g.grade : '-';
+                    return g ? `${g.mark} (${g.grade})` : '-';
                 });
 
                 const row = [
@@ -965,11 +972,154 @@
             const blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.setAttribute('download', `results_${activeBroadsheetData.class_info.classroom_name}_${activeBroadsheetData.term}_${activeBroadsheetData.year}.csv`);
+            link.setAttribute('download', `broadsheet_${activeBroadsheetData.class_info.classroom_name}_${activeBroadsheetData.term}_${activeBroadsheetData.year}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        let activeNectaCamsData = null;
+
+        async function openNectaCamsModal() {
+            const modal = document.getElementById('modalNectaCams');
+            const content = document.getElementById('nectaCamsContent');
+            modal.style.display = 'flex';
+            content.innerHTML = `<div style="text-align:center; padding:30px; color:#064e3b; font-weight:700;">⏳ Harvesting multi-year candidate milestones from historical records...</div>`;
+
+            const scopeParam = selectedClassroomId ? `classroom_id=${selectedClassroomId}` : `grade_id=${selectedGradeId}`;
+
+            try {
+                const res = await fetch(`/shule-cafe/api/headmaster/exams/exams_api.php?action=get_necta_cams_data&${scopeParam}&year=${selectedYear}`, {
+                    credentials: 'include'
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    activeNectaCamsData = data;
+                    document.getElementById('lblNectaCandidateCount').textContent = `${data.total_candidates} Candidate(s) Loaded (${data.cohort_grade} • ${data.level_type})`;
+
+                    let tableHtml = `
+                        <div style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:6px; padding:10px 14px; margin-bottom:14px; font-size:12px; color:#065f46; font-weight:600;">
+                            ✨ <strong>NECTA Compliance Verified:</strong> Form 1 marks are strictly excluded for O-Level candidate profiles. Harvest aggregates Form 2 FTNA/Annual (20%), Form 3 Annual (30%), Form 4 Mock (40%), and Project Portfolio (10%).
+                        </div>
+                        <table style="width:100%; border-collapse:collapse; font-size:12px;">
+                            <thead>
+                                <tr style="background:#064e3b; color:white; font-size:11px; text-transform:uppercase;">
+                                    <th style="padding:6px 8px; text-align:center;">S/N</th>
+                                    <th style="padding:6px 8px;">Index No</th>
+                                    <th style="padding:6px 8px;">First Name</th>
+                                    <th style="padding:6px 8px;">Middle Name</th>
+                                    <th style="padding:6px 8px;">Surname</th>
+                                    <th style="padding:6px 8px; text-align:center;">F2 Annual %</th>
+                                    <th style="padding:6px 8px; text-align:center;">F3 Annual %</th>
+                                    <th style="padding:6px 8px; text-align:center;">F4 Mock %</th>
+                                    <th style="padding:6px 8px; text-align:center;">Project %</th>
+                                    <th style="padding:6px 8px; text-align:center; background:#047857;">Final CA %</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+
+                    (data.cams_records || []).forEach(r => {
+                        tableHtml += `
+                            <tr style="border-bottom:1px solid #e2e8f0;">
+                                <td style="padding:6px 8px; text-align:center; color:#64748b; font-weight:700;">${r.sn}</td>
+                                <td style="padding:6px 8px; font-weight:700; color:#1e293b;">${r.index_no}</td>
+                                <td style="padding:6px 8px; font-weight:700;">${r.first_name}</td>
+                                <td style="padding:6px 8px;">${r.middle_name || '-'}</td>
+                                <td style="padding:6px 8px; font-weight:700;">${r.surname}</td>
+                                <td style="padding:6px 8px; text-align:center;">${r.f2_annual_pct || r.f5_annual_pct || r.term1_pct}%</td>
+                                <td style="padding:6px 8px; text-align:center;">${r.f3_annual_pct || r.f6_t1_pct || r.term2_pct}%</td>
+                                <td style="padding:6px 8px; text-align:center;">${r.f4_mock_pct || r.f6_mock_pct || '-'}%</td>
+                                <td style="padding:6px 8px; text-align:center;">${r.project_pct || '-'}%</td>
+                                <td style="padding:6px 8px; text-align:center; font-weight:900; color:#064e3b; background:#f0fdf4;">${r.final_necta_ca_pct}%</td>
+                            </tr>
+                        `;
+                    });
+
+                    tableHtml += `</tbody></table>`;
+                    content.innerHTML = tableHtml;
+                } else {
+                    content.innerHTML = `<div style="text-align:center; padding:20px; color:#dc2626;">${data.message || 'Error harvesting candidate records.'}</div>`;
+                }
+            } catch(e) {
+                content.innerHTML = `<div style="text-align:center; padding:20px; color:#dc2626;">Network communication error.</div>`;
+            }
+        }
+
+        function closeNectaCamsModal() {
+            document.getElementById('modalNectaCams').style.display = 'none';
+        }
+
+        function downloadNectaCamsCSV() {
+            if (!activeNectaCamsData || !activeNectaCamsData.cams_records || activeNectaCamsData.cams_records.length === 0) {
+                alert('No NECTA CAMS records loaded.');
+                return;
+            }
+
+            // Strictly compliant NECTA CAMS batch upload format: flat 1-row header, zero top padding
+            let csvRows = ['INDEX_NO,FIRST_NAME,MIDDLE_NAME,SURNAME,SEX,F2_ANNUAL_PCT,F3_ANNUAL_PCT,F4_MOCK_PCT,PROJECT_PCT,FINAL_CA_PCT'];
+
+            activeNectaCamsData.cams_records.forEach(r => {
+                const row = [
+                    `"${r.index_no}"`,
+                    `"${r.first_name}"`,
+                    `"${r.middle_name || ''}"`,
+                    `"${r.surname}"`,
+                    `"${r.gender || 'M'}"`,
+                    r.f2_annual_pct || r.f5_annual_pct || r.term1_pct,
+                    r.f3_annual_pct || r.f6_t1_pct || r.term2_pct,
+                    r.f4_mock_pct || r.f6_mock_pct || 0,
+                    r.project_pct || 0,
+                    r.final_necta_ca_pct
+                ];
+                csvRows.push(row.join(','));
+            });
+
+            const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', `NECTA_CAMS_${activeNectaCamsData.cohort_grade}_${activeNectaCamsData.academic_year}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }
     </script>
+
+    <!-- NECTA CAMS Batch Upload Export Modal -->
+    <div id="modalNectaCams" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: white; border-radius: 12px; width: 100%; max-width: 920px; max-height: 88vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+            
+            <div style="background: #064e3b; color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 style="margin: 0; font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 6px;">
+                        <span>🎓</span> Official NECTA Continuous Assessment (CAMS) Export
+                    </h3>
+                    <div style="font-size: 11px; opacity: 0.9; margin-top: 2px;">
+                        Multi-Year Continuous Assessment Harvest • Form 1 Excluded • Strict NECTA CAMS Flat CSV
+                    </div>
+                </div>
+                <button onclick="closeNectaCamsModal()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; font-weight: 800;">✕</button>
+            </div>
+
+            <div style="padding: 16px 20px; overflow-y: auto; flex: 1;" id="nectaCamsContent">
+                <div style="text-align: center; padding: 30px; color: #64748b;">
+                    Loading candidate historical assessment records...
+                </div>
+            </div>
+
+            <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11.5px; font-weight: 700; color: #64748b;" id="lblNectaCandidateCount">0 Candidate(s) Loaded</span>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-outline btn-sm" onclick="closeNectaCamsModal()" style="padding: 4px 14px; font-weight: 700;">Close</button>
+                    <button class="btn btn-primary btn-sm" id="btnDownloadNectaCsv" onclick="downloadNectaCamsCSV()" style="background: #047857; padding: 4px 16px; font-weight: 800;">
+                        <span>📥</span> Download Official NECTA CAMS CSV
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </body>
 </html>
+

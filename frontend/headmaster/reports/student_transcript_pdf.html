@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<!--
+   ====================================================================
+   SHULE CAFE - PROPRIETARY ACADEMIC TRANSCRIPT & REPORT CARD SYSTEM
+   Copyright (c) 2026 SHULE CAFE. All Rights Reserved.
+   100% English Directive Enforced
+   ====================================================================
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Official Academic Transcript & Report Card ‹ SHULE CAFE</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --c-primary: #064e3b;
+            --c-primary-light: #059669;
+            --c-primary-soft: #ecfdf5;
+            --c-border: #cbd5e1;
+            --c-text-dark: #0f172a;
+            --c-text-muted: #475569;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f1f5f9;
+            color: var(--c-text-dark);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .no-print-toolbar {
+            width: 100%;
+            max-width: 820px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #047857;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #065f46;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid #cbd5e1;
+            color: #334155;
+        }
+
+        .btn-outline:hover {
+            background: #f8fafc;
+        }
+
+        /* ── TRANSCRIPT SHEET ────────────────────────────────────────── */
+        .transcript-sheet {
+            width: 100%;
+            max-width: 820px;
+            background: white;
+            padding: 36px 44px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Watermark */
+        .watermark-bg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 58px;
+            font-weight: 900;
+            color: rgba(4, 120, 87, 0.035);
+            white-space: nowrap;
+            user-select: none;
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            z-index: 1;
+        }
+
+        .content-layer {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Official Header */
+        .school-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2.5px solid #064e3b;
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+        }
+
+        .school-crest {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: #ecfdf5;
+            border: 2px solid #059669;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+        }
+
+        .school-meta {
+            text-align: center;
+            flex: 1;
+            padding: 0 16px;
+        }
+
+        .school-meta h1 {
+            font-size: 20px;
+            font-weight: 900;
+            color: #064e3b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .school-meta .motto {
+            font-size: 11px;
+            font-weight: 700;
+            color: #059669;
+            font-style: italic;
+            margin-bottom: 3px;
+        }
+
+        .school-meta .contact-line {
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .report-title-badge {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        .report-title-badge span {
+            display: inline-block;
+            background: #064e3b;
+            color: white;
+            padding: 4px 18px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Student Info Box */
+        .student-info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px 24px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 12px 18px;
+            margin-bottom: 20px;
+            font-size: 12.5px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .info-label {
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            font-size: 11px;
+        }
+
+        .info-val {
+            font-weight: 800;
+            color: #0f172a;
+        }
+
+        /* Grades Table */
+        .academic-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 12.5px;
+        }
+
+        .academic-table th {
+            background: #064e3b;
+            color: white;
+            padding: 7px 10px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: left;
+        }
+
+        .academic-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .academic-table tr:nth-child(even) td {
+            background: #f8fafc;
+        }
+
+        .grade-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 900;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .grade-A { background: #dcfce7; color: #15803d; }
+        .grade-B { background: #dbeafe; color: #1e40af; }
+        .grade-C { background: #fef3c7; color: #92400e; }
+        .grade-D { background: #ffedd5; color: #9a3412; }
+        .grade-F { background: #fee2e2; color: #991b1b; }
+
+        /* Summary Cards */
+        .summary-banner {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .sum-card {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .sum-card .num {
+            font-size: 18px;
+            font-weight: 900;
+            color: #064e3b;
+        }
+
+        .sum-card .label {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #047857;
+            margin-top: 2px;
+        }
+
+        /* Scales Table */
+        .scales-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px 14px;
+            margin-bottom: 24px;
+        }
+
+        .scales-heading {
+            font-size: 10.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #64748b;
+            margin-bottom: 6px;
+        }
+
+        .scales-list {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 11px;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        /* Signatures Section */
+        .signatures-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 36px;
+            margin-top: 30px;
+            padding-top: 18px;
+            border-top: 1.5px dashed #cbd5e1;
+        }
+
+        .sig-box {
+            text-align: center;
+        }
+
+        .sig-line {
+            width: 100%;
+            height: 1px;
+            background: #94a3b8;
+            margin: 40px auto 6px;
+        }
+
+        .sig-title {
+            font-size: 11.5px;
+            font-weight: 800;
+            color: #334155;
+            text-transform: uppercase;
+        }
+
+        .sig-date {
+            font-size: 10px;
+            color: #64748b;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        /* Print Media Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .no-print-toolbar {
+                display: none !important;
+            }
+            .transcript-sheet {
+                box-shadow: none;
+                border: none;
+                padding: 10px 20px;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Action Toolbar (Hidden in Print) -->
+    <div class="no-print-toolbar">
+        <div>
+            <span style="font-weight: 800; font-size: 14px; color: #064e3b;">📄 Official Student Transcript</span>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button class="btn btn-outline" onclick="window.history.back()">⬅ Back</button>
+            <button class="btn btn-primary" onclick="window.print()">🖨️ Print / Save as PDF</button>
+        </div>
+    </div>
+
+    <!-- Official Transcript Sheet -->
+    <div class="transcript-sheet">
+        <div class="watermark-bg" id="txtWatermark">OFFICIAL TRANSCRIPT</div>
+
+        <div class="content-layer">
+            <!-- Header -->
+            <div class="school-header">
+                <div class="school-crest">🎓</div>
+                <div class="school-meta">
+                    <h1 id="lblSchoolName">SHULE CAFE SECONDARY SCHOOL</h1>
+                    <div class="motto" id="lblSchoolMotto">"Excellence in Academic and Moral Integrity"</div>
+                    <div class="contact-line" id="lblSchoolContact">P.O. Box 100, Dar es Salaam, Tanzania • Email: info@shulecafe.com</div>
+                </div>
+                <div style="width: 72px; text-align: right; font-size: 11px; font-weight: 800; color: #047857;">
+                    REG NO:<br><span id="lblSchoolRegNo" style="color: #0f172a;">TZ-99201</span>
+                </div>
+            </div>
+
+            <div class="report-title-badge">
+                <span id="lblReportCycle">ACADEMIC PROGRESS REPORT & TRANSCRIPT</span>
+            </div>
+
+            <!-- Student Profile -->
+            <div class="student-info-grid">
+                <div class="info-row">
+                    <span class="info-label">Full Student Name:</span>
+                    <span class="info-val" id="valStudentName">Loading...</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Student Reg No:</span>
+                    <span class="info-val" id="valRegNo">Loading...</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Classroom / Grade:</span>
+                    <span class="info-val" id="valClassroom">Loading...</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Academic Session:</span>
+                    <span class="info-val" id="valSession">2026 • Term 1</span>
+                </div>
+            </div>
+
+            <!-- Academic Scores Table -->
+            <table class="academic-table">
+                <thead>
+                    <tr>
+                        <th style="width: 40px;">S/N</th>
+                        <th style="width: 80px;">Code</th>
+                        <th>Subject Name</th>
+                        <th style="width: 80px; text-align: center;">Score (%)</th>
+                        <th style="width: 60px; text-align: center;">Grade</th>
+                        <th style="width: 60px; text-align: center;">Points</th>
+                        <th>Subject Teacher Remarks</th>
+                    </tr>
+                </thead>
+                <tbody id="transcriptTbody">
+                    <tr><td colspan="7" style="text-align: center; padding: 20px;">Loading student marks...</td></tr>
+                </tbody>
+            </table>
+
+            <!-- Summary Statistical Cards -->
+            <div class="summary-banner">
+                <div class="sum-card">
+                    <div class="num" id="sumTotalMarks">-</div>
+                    <div class="label">Total Marks</div>
+                </div>
+                <div class="sum-card">
+                    <div class="num" id="sumAverage">-</div>
+                    <div class="label">Average %</div>
+                </div>
+                <div class="sum-card">
+                    <div class="num" id="sumPoints">-</div>
+                    <div class="label">Total Points</div>
+                </div>
+                <div class="sum-card">
+                    <div class="num" id="sumDivision">-</div>
+                    <div class="label">Division</div>
+                </div>
+                <div class="sum-card">
+                    <div class="num" id="sumPosition">-</div>
+                    <div class="label">Class Position</div>
+                </div>
+            </div>
+
+            <!-- Grading Scale Benchmark Reference -->
+            <div class="scales-box">
+                <div class="scales-heading">Official Grading Benchmark Key:</div>
+                <div class="scales-list" id="scalesListContainer">
+                    <span>A: 75–100% (Excellent / 1 Pt)</span>
+                    <span>B: 65–74% (Very Good / 2 Pts)</span>
+                    <span>C: 45–64% (Good / 3 Pts)</span>
+                    <span>D: 30–44% (Satisfactory / 4 Pts)</span>
+                    <span>F: 0–29% (Fail / 5 Pts)</span>
+                </div>
+            </div>
+
+            <!-- Signatures Section -->
+            <div class="signatures-grid">
+                <div class="sig-box">
+                    <div class="sig-line"></div>
+                    <div class="sig-title">Class Teacher Signature</div>
+                    <div class="sig-date" id="sigDate1">Date: _______________</div>
+                </div>
+                <div class="sig-box">
+                    <div class="sig-line"></div>
+                    <div class="sig-title">Head of School & Official Stamp</div>
+                    <div class="sig-date" id="sigDate2">Date: _______________</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const studentId = urlParams.get('student_id') || '';
+            const year = urlParams.get('year') || '2026';
+            const term = urlParams.get('term') || 'Term 1';
+
+            if (!studentId) {
+                document.getElementById('transcriptTbody').innerHTML = `<tr><td colspan="7" style="text-align:center;color:#dc2626;padding:20px;">No student ID specified.</td></tr>`;
+                return;
+            }
+
+            try {
+                const res = await fetch(`/shule-cafe/api/headmaster/analytics/analytics_api.php?action=student_report_card&student_id=${studentId}&year=${year}&term=${encodeURIComponent(term)}`, {
+                    credentials: 'include'
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    const stu = data.student;
+                    document.getElementById('valStudentName').textContent = stu.full_name;
+                    document.getElementById('valRegNo').textContent = stu.user_code || '-';
+                    document.getElementById('valClassroom').textContent = `${stu.classroom_name || 'Classroom'} (${stu.level_type || 'O-Level'})`;
+                    document.getElementById('valSession').textContent = `${year} • ${term}`;
+
+                    const subjects = data.report_card || [];
+                    const tbody = document.getElementById('transcriptTbody');
+                    tbody.innerHTML = '';
+
+                    let totalScore = 0;
+                    let totalPoints = 0;
+                    let evaluatedCount = 0;
+
+                    subjects.forEach((sub, idx) => {
+                        const scoreVal = sub.total_score !== undefined ? sub.total_score : (sub.score || 0);
+                        const grade = sub.grade || 'F';
+                        const points = sub.points || 5;
+                        const remark = sub.remark || '-';
+
+                        totalScore += scoreVal;
+                        totalPoints += points;
+                        evaluatedCount++;
+
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td style="font-weight: 700; color: #64748b;">${idx + 1}</td>
+                            <td style="font-weight: 800; color: #0f172a;">${sub.subject_code}</td>
+                            <td style="font-weight: 700; color: #334155;">${sub.subject_name}</td>
+                            <td style="text-align: center; font-weight: 800; color: #064e3b;">${scoreVal}%</td>
+                            <td style="text-align: center;"><span class="grade-badge grade-${grade}">${grade}</span></td>
+                            <td style="text-align: center; font-weight: 800;">${points}</td>
+                            <td style="font-size: 11.5px; color: #475569; font-style: italic;">${remark}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+
+                    const avg = evaluatedCount > 0 ? Math.round((totalScore / evaluatedCount) * 10) / 10 : 0;
+                    document.getElementById('sumTotalMarks').textContent = totalScore;
+                    document.getElementById('sumAverage').textContent = `${avg}%`;
+                    document.getElementById('sumPoints').textContent = data.summary?.total_points || totalPoints;
+                    document.getElementById('sumDivision').textContent = data.summary?.division || 'Division I';
+                    document.getElementById('sumPosition').textContent = data.summary?.class_position || '1';
+
+                    const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                    document.getElementById('sigDate1').textContent = `Date: ${today}`;
+                    document.getElementById('sigDate2').textContent = `Date: ${today}`;
+                } else {
+                    document.getElementById('transcriptTbody').innerHTML = `<tr><td colspan="7" style="text-align:center;color:#dc2626;padding:20px;">${data.message || 'Error loading report card.'}</td></tr>`;
+                }
+            } catch (e) {
+                document.getElementById('transcriptTbody').innerHTML = `<tr><td colspan="7" style="text-align:center;color:#dc2626;padding:20px;">Network communication error.</td></tr>`;
+            }
+        });
+    </script>
+</body>
+</html>
