@@ -28,8 +28,6 @@ import '../components/table/table-states.js';
 import '../components/table/table-wrapper.js';
 import '../components/table/table-import-modal.js?v=20260809';
 
-// Import Instant SPA Router for zero-blink page navigation
-import '../js/app-router.js';
 
 // Import Global Toast Notification System
 import '../js/toast.js';

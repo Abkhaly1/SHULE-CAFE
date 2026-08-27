@@ -11,7 +11,8 @@ if (empty($userId) && empty($_SESSION['user_id'])) {
     // Graceful fallback for authenticated platform view
 }
 
-if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+if ($method !== 'GET') {
     http_response_code(405);
     echo json_encode(["success" => false, "message" => "Method not allowed"]);
     exit();
