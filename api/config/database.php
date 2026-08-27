@@ -9,7 +9,7 @@ class Database {
     private static $instance = null;
     private $pdo = null;
 
-    private function __construct() {
+    private function connect() {
         $host = '127.0.0.1';
         $db_name = 'shule_cafe';
         $username = 'root';
@@ -31,11 +31,17 @@ class Database {
             while (ob_get_level() > 0) {
                 @ob_end_clean();
             }
-            header('Content-Type: application/json');
-            http_response_code(400);
+            if (!headers_sent()) {
+                header('Content-Type: application/json');
+            }
+            http_response_code(200);
             echo json_encode(["success" => false, "message" => "Database Connection Error: " . $e->getMessage()]);
             exit();
         }
+    }
+
+    private function __construct() {
+        $this->connect();
     }
 
     public static function getInstance() {
@@ -46,6 +52,9 @@ class Database {
     }
 
     public function getConnection() {
+        if ($this->pdo === null) {
+            $this->connect();
+        }
         return $this->pdo;
     }
 }
