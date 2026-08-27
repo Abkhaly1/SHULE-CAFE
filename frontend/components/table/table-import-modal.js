@@ -61,8 +61,9 @@ class AppCsvImportModal extends HTMLElement {
         const labels = {
             'schools': 'Schools',
             'users': 'Platform Users',
-            'teachers': 'Teachers / Staffs',
+            'teachers': 'Teachers / Staff',
             'students': 'Students',
+            'parents': 'Parents / Guardians',
             'templates': 'Academic Templates',
             'general': 'Records'
         };
@@ -72,14 +73,19 @@ class AppCsvImportModal extends HTMLElement {
     getInstructionsHtml(type) {
         const specs = {
             'teachers': {
-                headers: 'Full Name, Reg Code, Department',
-                sample: 'Mr. Baraka Test, TCH/202X/001, Mathematics',
-                fields: ['Full Name (required)', 'Reg Code / Staff ID (required)', 'Department (optional)']
+                headers: 'Full Name, Reg Code, Department, Phone',
+                sample: 'Mr. Baraka Joseph, TCH/2026/001, Mathematics, +255714000444',
+                fields: ['Full Name (required)', 'Reg Code / Staff ID (required)', 'Department (optional)', 'Phone (optional)']
             },
             'students': {
                 headers: 'Full Name, Reg Code',
-                sample: 'Baraka Juma Mussa, STD/${new Date().getFullYear()}/001',
+                sample: 'Amani Hassan Juma, STD/2026/001',
                 fields: ['Full Name (required)', 'Reg Code / Student Reg No (required)']
+            },
+            'parents': {
+                headers: 'Full Name, Phone, Student Reg Code, Email',
+                sample: 'Parent Hassan Juma, +255711000111, STD/2026/001, hassan@example.com',
+                fields: ['Full Name (required)', 'Phone (required)', 'Student Reg Code (required to link to child)', 'Email (optional)']
             },
             'schools': {
                 headers: 'name, type, region, headmaster_name, headmaster_phone',
@@ -108,9 +114,10 @@ class AppCsvImportModal extends HTMLElement {
 
     downloadSampleCsv() {
         const specs = {
-            'teachers': "Full Name,Reg Code,Department\r\n\"Mr. Baraka Test\",\"TCH/202X/001\",\"Mathematics\"\r\n\"Ms. Asha Juma\",\"TCH/202X/002\",\"Sciences\"\r\n\"Mr. David John\",\"TCH/202X/003\",\"Languages\"\r\n",
-            'students': "Full Name,Reg Code\r\n\"Baraka Juma Mussa\",\"STD/202X/001\"\r\n\"Amani Hassan Juma\",\"STD/202X/002\"\r\n\"Neema Charles Kimaro\",\"STD/202X/003\"\r\n",
-            'general': "Full Name,Reg Code\r\n\"Sample Name\",\"REG/202X/001\"\r\n"
+            'teachers': "Full Name,Reg Code,Department,Phone\r\n\"Mr. Baraka Joseph\",\"TCH/2026/001\",\"Mathematics\",\"+255714000444\"\r\n\"Ms. Asha Juma\",\"TCH/2026/002\",\"Sciences\",\"+255715000555\"\r\n\"Mr. David John\",\"TCH/2026/003\",\"Languages\",\"+255716000666\"\r\n",
+            'students': "Full Name,Reg Code\r\n\"Amani Hassan Juma\",\"STD/2026/001\"\r\n\"Neema Charles Kimaro\",\"STD/2026/002\"\r\n\"Baraka John Mussa\",\"STD/2026/003\"\r\n",
+            'parents': "Full Name,Phone,Student Reg Code,Email\r\n\"Parent Hassan Juma\",\"+255711000111\",\"STD/2026/001\",\"hassan@example.com\"\r\n\"Parent Charles Kimaro\",\"+255712000222\",\"STD/2026/002\",\"charles@example.com\"\r\n\"Parent John Mussa\",\"+255713000333\",\"STD/2026/003\",\"john@example.com\"\r\n",
+            'general': "Full Name,Reg Code\r\n\"Sample Name\",\"REG/2026/001\"\r\n"
         };
 
         const csvData = specs[this._entityType] || specs['general'];
@@ -337,16 +344,22 @@ class AppCsvImportModal extends HTMLElement {
                 rowObj[h] = values[idx] || '';
             });
 
-            // Map header synonyms
-            const nameVal = rowObj['full name'] || rowObj['full_name'] || rowObj['name'] || rowObj['majina kamili'] || rowObj['jina'] || '';
-            const codeVal = rowObj['reg code'] || rowObj['namba ya usajili'] || rowObj['user_code'] || rowObj['staff id'] || rowObj['reg no'] || rowObj['student id'] || rowObj['id'] || '';
-            const deptVal = rowObj['department'] || rowObj['idara'] || 'Academics';
+            // Map header fields
+            const nameVal = rowObj['full name'] || rowObj['full_name'] || rowObj['name'] || rowObj['parent name'] || '';
+            const codeVal = rowObj['reg code'] || rowObj['user_code'] || rowObj['staff id'] || rowObj['reg no'] || rowObj['student id'] || rowObj['id'] || '';
+            const deptVal = rowObj['department'] || 'Academics';
+            const phoneVal = rowObj['phone'] || rowObj['phone number'] || rowObj['mobile'] || rowObj['contact'] || '';
+            const emailVal = rowObj['email'] || rowObj['email address'] || '';
+            const studentRegCode = rowObj['student reg code'] || rowObj['student reg no'] || rowObj['student id'] || rowObj['student_reg_code'] || '';
 
-            if (nameVal && codeVal) {
+            if (nameVal && (codeVal || phoneVal || studentRegCode || this._entityType === 'students')) {
                 rows.push({
                     full_name: nameVal,
                     user_code: codeVal,
-                    department: deptVal
+                    department: deptVal,
+                    phone: phoneVal,
+                    email: emailVal,
+                    student_reg_code: studentRegCode
                 });
             }
         }
@@ -393,7 +406,7 @@ class AppCsvImportModal extends HTMLElement {
                     const rows = this.parseCsvText(text);
 
                     if (rows.length === 0) {
-                        alertBox.textContent = 'The CSV file contains no data or is incorrectly formatted. Ensure "Full Name" and "Reg Code" columns exist.';
+                        alertBox.textContent = 'The CSV file contains no valid data rows or is incorrectly formatted.';
                         alertBox.style.display = 'block';
                         return;
                     }
@@ -407,7 +420,7 @@ class AppCsvImportModal extends HTMLElement {
                     progressText.textContent = '50%';
 
                     try {
-                        const targetRole = (this._entityType === 'students') ? 'student' : 'teacher';
+                        const targetRole = (this._entityType === 'students') ? 'student' : ((this._entityType === 'parents') ? 'parent' : 'teacher');
                         const res = await fetch('/shule-cafe/api/headmaster/people/import_users.php?action=detect_duplicates', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -433,7 +446,7 @@ class AppCsvImportModal extends HTMLElement {
                                         <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;">
                                             <td style="padding: 10px 14px; font-weight: 800; color: #475569;">#${c.row_index}</td>
                                             <td style="padding: 10px 14px; font-weight: 700; color: #0f172a;">${c.full_name}</td>
-                                            <td style="padding: 10px 14px; font-family: monospace; font-size: 12px; color: #047857; font-weight: 800;">${c.user_code}</td>
+                                            <td style="padding: 10px 14px; font-family: monospace; font-size: 12px; color: #047857; font-weight: 800;">${c.user_code || c.phone || 'N/A'}</td>
                                             <td style="padding: 10px 14px; color: #92400e; font-weight: 600;">${msg}</td>
                                         </tr>
                                     `;
@@ -442,7 +455,9 @@ class AppCsvImportModal extends HTMLElement {
                             }
                             
                             // Render classroom prompt for students
-                            this.renderClassroomPrompt();
+                            if (this._entityType === 'students') {
+                                this.renderClassroomPrompt();
+                            }
 
                             // Auto-scroll to reveal review sections
                             const scrollBody = this.querySelector('#importScrollBody');
@@ -496,7 +511,7 @@ class AppCsvImportModal extends HTMLElement {
         const startBtn = this.querySelector('#btnStartImport');
         const alertBox = this.querySelector('#importAlert');
         const statusText = this.querySelector('#importStatusText');
-        const targetRole = (this._entityType === 'students') ? 'student' : 'teacher';
+        const targetRole = (this._entityType === 'students') ? 'student' : ((this._entityType === 'parents') ? 'parent' : 'teacher');
 
         startBtn.disabled = true;
         statusText.textContent = 'Importing user accounts into the database...';

@@ -45,14 +45,19 @@ try {
         
         if ($role === 'student') {
             echo "Full Name,Reg Code\n";
-            echo "Baraka Juma Mussa,STD/2026/001\n";
-            echo "Amani Hassan Juma,STD/2026/002\n";
-            echo "Neema Charles Kimaro,STD/2026/003\n";
+            echo "Amani Hassan Juma,STD/2026/001\n";
+            echo "Neema Charles Kimaro,STD/2026/002\n";
+            echo "Baraka John Mussa,STD/2026/003\n";
+        } else if ($role === 'parent') {
+            echo "Full Name,Phone,Student Reg Code,Email\n";
+            echo "Parent Hassan Juma,+255711000111,STD/2026/001,hassan@example.com\n";
+            echo "Parent Charles Kimaro,+255712000222,STD/2026/002,charles@example.com\n";
+            echo "Parent John Mussa,+255713000333,STD/2026/003,john@example.com\n";
         } else {
-            echo "Full Name,Reg Code,Department\n";
-            echo "Mr. Baraka Test,TCH/2026/001,Mathematics\n";
-            echo "Ms. Asha Juma,TCH/2026/002,Sciences\n";
-            echo "Mr. David John,TCH/2026/003,Languages\n";
+            echo "Full Name,Reg Code,Department,Phone\n";
+            echo "Mr. Baraka Joseph,TCH/2026/001,Mathematics,+255714000444\n";
+            echo "Ms. Asha Juma,TCH/2026/002,Sciences,+255715000555\n";
+            echo "Mr. David John,TCH/2026/003,Languages,+255716000666\n";
         }
         exit();
     }
@@ -60,7 +65,7 @@ try {
     // 2. POST: Detect Duplicates & Conflict Analysis
     if ($method === 'POST' && $action === 'detect_duplicates') {
         $role = $input['role'] ?? 'teacher';
-        $rows = $input['rows'] ?? []; // [{full_name, user_code, department}]
+        $rows = $input['rows'] ?? []; // [{full_name, user_code, department, phone, student_reg_code, email}]
 
         if (empty($rows)) {
             echo json_encode(['success' => false, 'message' => 'No user rows provided for duplicate analysis.']);
@@ -71,12 +76,13 @@ try {
         $conflicts = [];
 
         // Pre-fetch all existing users in this school
-        $stmtExisting = $conn->prepare("SELECT id, user_code, full_name, role, status FROM users WHERE school_id = ?");
+        $stmtExisting = $conn->prepare("SELECT id, user_code, full_name, phone, role, status FROM users WHERE school_id = ?");
         $stmtExisting->execute([$schoolId]);
         $existingUsers = $stmtExisting->fetchAll(PDO::FETCH_ASSOC);
 
         $existingByCode = [];
         $existingByName = [];
+        $existingByPhone = [];
         foreach ($existingUsers as $eu) {
             if (!empty($eu['user_code'])) {
                 $existingByCode[strtolower(trim($eu['user_code']))] = $eu;
@@ -84,25 +90,32 @@ try {
             if (!empty($eu['full_name'])) {
                 $existingByName[strtolower(trim($eu['full_name']))] = $eu;
             }
+            if (!empty($eu['phone'])) {
+                $existingByPhone[trim($eu['phone'])] = $eu;
+            }
         }
 
         $seenInFileCodes = [];
         $seenInFileNames = [];
+        $seenInFilePhones = [];
 
         foreach ($rows as $index => $row) {
             $name = trim($row['full_name'] ?? '');
             $code = trim($row['user_code'] ?? '');
             $dept = trim($row['department'] ?? 'Academics');
+            $phone = trim($row['phone'] ?? '');
+            $studentCode = trim($row['student_reg_code'] ?? '');
 
-            if (empty($name) || empty($code)) continue;
+            if (empty($name)) continue;
 
             $lowerName = strtolower($name);
             $lowerCode = strtolower($code);
 
-            $matchByCode = $existingByCode[$lowerCode] ?? null;
+            $matchByCode = !empty($code) ? ($existingByCode[$lowerCode] ?? null) : null;
             $matchByName = $existingByName[$lowerName] ?? null;
+            $matchByPhone = !empty($phone) ? ($existingByPhone[$phone] ?? null) : null;
 
-            $inFileCodeRow = $seenInFileCodes[$lowerCode] ?? null;
+            $inFileCodeRow = !empty($code) ? ($seenInFileCodes[$lowerCode] ?? null) : null;
             $inFileNameRow = $seenInFileNames[$lowerName] ?? null;
 
             $hasConflict = false;
@@ -114,7 +127,7 @@ try {
                     'type' => 'in_file_duplicate',
                     'message' => "Reg Code ({$code}) is duplicated within this file (Line #{$inFileCodeRow})."
                 ];
-            } else if ($inFileNameRow) {
+            } else if ($inFileNameRow && $role !== 'parent') {
                 $hasConflict = true;
                 $conflictDetails = [
                     'type' => 'in_file_duplicate',
@@ -138,18 +151,9 @@ try {
                     'existing_code' => $matchByCode['user_code'],
                     'message' => "Reg Code ({$code}) is already used by '{$matchByCode['full_name']}'."
                 ];
-            } else if ($matchByName) {
-                $hasConflict = true;
-                $conflictDetails = [
-                    'type' => 'name_conflict',
-                    'existing_id' => $matchByName['id'],
-                    'existing_name' => $matchByName['full_name'],
-                    'existing_code' => $matchByName['user_code'],
-                    'message' => "Name '{$name}' matches existing user with Reg Code ({$matchByName['user_code']})."
-                ];
             }
 
-            if (!$inFileCodeRow) $seenInFileCodes[$lowerCode] = $index + 1;
+            if (!empty($code) && !$inFileCodeRow) $seenInFileCodes[$lowerCode] = $index + 1;
             if (!$inFileNameRow) $seenInFileNames[$lowerName] = $index + 1;
 
             $parsedRow = [
@@ -157,6 +161,8 @@ try {
                 'full_name' => $name,
                 'user_code' => $code,
                 'department' => $dept,
+                'phone' => $phone,
+                'student_reg_code' => $studentCode,
                 'has_conflict' => $hasConflict,
                 'conflict' => $conflictDetails
             ];
@@ -180,8 +186,9 @@ try {
 
     // 1b. GET: List Classrooms for Allocation Selection
     if ($method === 'GET' && $action === 'list_classrooms') {
+        $year = $_GET['year'] ?? date('Y');
         $stmtC = $conn->prepare("
-            SELECT c.id, c.classroom_name, c.capacity, g.name AS grade_name,
+            SELECT c.id, c.classroom_name, c.capacity, c.grade_id, g.name AS grade_name,
                    (SELECT COUNT(*) FROM student_classroom_allocations sca WHERE sca.classroom_id = c.id AND sca.status = 'Active') AS filled_count
             FROM classrooms c
             JOIN grades g ON c.grade_id = g.id
@@ -217,14 +224,23 @@ try {
         $updatedCount  = 0;
         $skippedCount  = 0;
         $allocatedCount = 0;
+        $linkedParentCount = 0;
+
+        // Get Grade ID for the classroom if provided
+        $gradeId = null;
+        if ($classroomId > 0) {
+            $stmtG = $conn->prepare("SELECT grade_id FROM classrooms WHERE id = ?");
+            $stmtG->execute([$classroomId]);
+            $gradeId = $stmtG->fetchColumn() ?: null;
+        }
 
         $stmtIns = $conn->prepare("
-            INSERT INTO users (id, school_id, user_code, full_name, department, password_hash, is_password_changed, first_login_completed, role, status)
-            VALUES (?, ?, ?, ?, ?, ?, 0, 0, ?, 'active')
+            INSERT INTO users (id, school_id, user_code, full_name, phone, email, department, class_id, grade_id, password_hash, is_password_changed, first_login_completed, role, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, ?, 'active')
         ");
 
         $stmtUpd = $conn->prepare("
-            UPDATE users SET full_name = ?, department = ?, updated_at = NOW()
+            UPDATE users SET full_name = ?, phone = COALESCE(?, phone), email = COALESCE(?, email), department = ?, class_id = COALESCE(?, class_id), grade_id = COALESCE(?, grade_id), updated_at = NOW()
             WHERE id = ? AND school_id = ?
         ");
 
@@ -234,53 +250,94 @@ try {
             ON DUPLICATE KEY UPDATE classroom_id = VALUES(classroom_id), status = 'Active', updated_at = NOW()
         ");
 
-        $stmtFindCode = $conn->prepare("SELECT id FROM users WHERE school_id = ? AND LOWER(user_code) = LOWER(?) LIMIT 1");
-        $stmtFindName = $conn->prepare("SELECT id FROM users WHERE school_id = ? AND LOWER(full_name) = LOWER(?) LIMIT 1");
+        $stmtLinkParent = $conn->prepare("
+            INSERT IGNORE INTO parent_student (parent_id, student_id)
+            VALUES (?, ?)
+        ");
 
-        foreach ($rows as $r) {
-            $name = trim($r['full_name'] ?? '');
+        $stmtFindCode = $conn->prepare("SELECT id FROM users WHERE school_id = ? AND LOWER(user_code) = LOWER(?) LIMIT 1");
+        $stmtFindName = $conn->prepare("SELECT id FROM users WHERE school_id = ? AND LOWER(full_name) = LOWER(?) AND role = ? LIMIT 1");
+        $stmtFindStudentByCode = $conn->prepare("SELECT id FROM users WHERE school_id = ? AND LOWER(user_code) = LOWER(?) AND role = 'student' LIMIT 1");
+
+        $currentYear = date('Y');
+
+        foreach ($rows as $idx => $r) {
+            $name = mb_strtoupper(trim($r['full_name'] ?? ''), 'UTF-8');
             $code = trim($r['user_code'] ?? '');
             $dept = trim($r['department'] ?? 'Academics');
+            $phone = trim($r['phone'] ?? '') ?: null;
+            $email = trim($r['email'] ?? '') ?: null;
+            $studentRegCode = trim($r['student_reg_code'] ?? '');
 
-            if (empty($name) || empty($code)) {
+            if (empty($name)) {
                 $skippedCount++;
                 continue;
             }
 
+            // If user_code is empty (e.g. parents), generate one
+            if (empty($code)) {
+                $prefix = ($role === 'student') ? 'STD' : (($role === 'teacher') ? 'TCH' : 'PAR');
+                $code = sprintf("%s/%s/%04d", $prefix, $currentYear, rand(1000, 9999));
+            }
+
             // Check if existing user
             $existingId = null;
-            $stmtFindCode->execute([$schoolId, $code]);
-            $existingId = $stmtFindCode->fetchColumn();
+            if (!empty($code)) {
+                $stmtFindCode->execute([$schoolId, $code]);
+                $existingId = $stmtFindCode->fetchColumn();
+            }
 
             if (!$existingId) {
-                $stmtFindName->execute([$schoolId, $name]);
+                $stmtFindName->execute([$schoolId, $name, $role]);
                 $existingId = $stmtFindName->fetchColumn();
             }
 
-            $targetStudentId = null;
+            $targetUserId = null;
 
             if ($existingId) {
                 if ($duplicateHandling === 'update') {
-                    $stmtUpd->execute([$name, $dept, $existingId, $schoolId]);
+                    $stmtUpd->execute([$name, $phone, $email, $dept, $classroomId ?: null, $gradeId, $existingId, $schoolId]);
                     $updatedCount++;
-                    $targetStudentId = $existingId;
+                    $targetUserId = $existingId;
                 } else {
                     $skippedCount++;
                 }
             } else {
                 // New User Creation
-                $userId = generateUuid();
-                $initialPasswordHash = password_hash($code, PASSWORD_BCRYPT);
+                $targetUserId = generateUuid();
+                $initialPassword = !empty($code) ? $code : ($phone ?: 'Shule@' . $currentYear);
+                $initialPasswordHash = password_hash($initialPassword, PASSWORD_BCRYPT);
 
-                $stmtIns->execute([$userId, $schoolId, $code, $name, $dept, $initialPasswordHash, $role]);
+                $stmtIns->execute([
+                    $targetUserId,
+                    $schoolId,
+                    $code,
+                    $name,
+                    $phone,
+                    $email,
+                    $dept,
+                    $classroomId ?: null,
+                    $gradeId,
+                    $initialPasswordHash,
+                    $role
+                ]);
                 $insertedCount++;
-                $targetStudentId = $userId;
             }
 
-            // If classroom selected & role is student, allocate student to classroom
-            if ($targetStudentId && $role === 'student' && $classroomId > 0) {
-                $stmtAlloc->execute([$schoolId, $targetStudentId, $classroomId]);
+            // If role is student and classroom is selected, allocate to classroom
+            if ($targetUserId && $role === 'student' && $classroomId > 0) {
+                $stmtAlloc->execute([$schoolId, $targetUserId, $classroomId]);
                 $allocatedCount++;
+            }
+
+            // If role is parent and studentRegCode is provided, link parent to student
+            if ($targetUserId && $role === 'parent' && !empty($studentRegCode)) {
+                $stmtFindStudentByCode->execute([$schoolId, $studentRegCode]);
+                $matchedStudentId = $stmtFindStudentByCode->fetchColumn();
+                if ($matchedStudentId) {
+                    $stmtLinkParent->execute([$targetUserId, $matchedStudentId]);
+                    $linkedParentCount++;
+                }
             }
         }
 
@@ -294,33 +351,18 @@ try {
                 'inserted'        => $insertedCount,
                 'updated'         => $updatedCount,
                 'skipped'         => $skippedCount,
-                'allocated'       => $allocatedCount
+                'allocated'       => $allocatedCount,
+                'linked_parents'  => $linkedParentCount
             ],
             'message' => "Import complete: {$insertedCount} account(s) created, {$updatedCount} updated, {$skippedCount} skipped."
         ]);
         exit();
     }
 
-    // 4. GET: List Classrooms for active tenant school & academic year
-    if ($method === 'GET' && $action === 'list_classrooms') {
-        $year = $_GET['year'] ?? date('Y');
-        $stmtC = $conn->prepare("
-            SELECT c.id, CONCAT(g.name, ' - ', c.classroom_name) AS classroom_name, c.grade_id 
-            FROM classrooms c
-            JOIN grades g ON c.grade_id = g.id
-            WHERE c.school_id = ? AND c.academic_year = ? AND c.is_active = 1
-            ORDER BY g.id ASC, c.classroom_name ASC
-        ");
-        $stmtC->execute([$schoolId, $year]);
-        $classrooms = $stmtC->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode(['success' => true, 'classrooms' => $classrooms, 'year' => $year]);
-        exit();
-    }
-
     echo json_encode(['success' => false, 'message' => 'Unknown import action.']);
 
 } catch (PDOException $e) {
-    if ($conn->inTransaction()) $conn->rollBack();
+    if (isset($conn) && $conn->inTransaction()) $conn->rollBack();
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
 }

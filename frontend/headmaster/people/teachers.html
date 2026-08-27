@@ -82,15 +82,15 @@
                         <input type="text" id="stu_code" class="form-control" placeholder="Auto-generated">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Class Level</label>
+                        <label class="form-label">Class Stream</label>
                         <select id="stu_class_id" class="form-control">
-                            <option value="">-- Select Class --</option>
+                            <option value="">-- Select Class Stream --</option>
                         </select>
                     </div>
                 </div>
                 <div class="form-group" style="margin-bottom: var(--sp-3);">
-                    <label class="form-label">Guardian / Parent Phone Number <span style="color:var(--c-danger);">*</span></label>
-                    <input type="text" id="stu_phone" class="form-control" required placeholder="e.g. +255788111222">
+                    <label class="form-label">Guardian / Parent Phone Number (Optional)</label>
+                    <input type="text" id="stu_phone" class="form-control" placeholder="e.g. +255788111222">
                 </div>
                 <div class="form-group" style="margin-bottom: var(--sp-6);">
                     <label class="form-label">Student Email (Optional)</label>
@@ -146,17 +146,23 @@
             <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">Register New Parent</h3>
             <div id="parentAlert" class="alert alert-danger" style="display: none; margin-bottom: var(--sp-4);"></div>
             <form id="addParentForm">
-                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                <div class="form-group" style="margin-bottom: var(--sp-3);">
                     <label class="form-label">Full Name <span style="color:var(--c-danger);">*</span></label>
-                    <input type="text" id="par_name" class="form-control" required placeholder="e.g. Mzazi Juma Hassan">
+                    <input type="text" id="par_name" class="form-control" required placeholder="e.g. Parent Juma Hassan">
                 </div>
-                <div class="form-group" style="margin-bottom: var(--sp-4);">
+                <div class="form-group" style="margin-bottom: var(--sp-3);">
                     <label class="form-label">Phone Number <span style="color:var(--c-danger);">*</span></label>
                     <input type="text" id="par_phone" class="form-control" required placeholder="e.g. +255799333444">
                 </div>
-                <div class="form-group" style="margin-bottom: var(--sp-6);">
+                <div class="form-group" style="margin-bottom: var(--sp-3);">
                     <label class="form-label">Email Address (Optional)</label>
                     <input type="email" id="par_email" class="form-control" placeholder="e.g. parent.juma@shulecafe.com">
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-6);">
+                    <label class="form-label">Link Student / Child (Optional)</label>
+                    <select id="par_student_id" class="form-control">
+                        <option value="">— Select student to link (optional) —</option>
+                    </select>
                 </div>
                 <div style="display: flex; gap: var(--sp-2); justify-content: flex-end;">
                     <button type="button" id="closeParentModal" class="btn btn-outline">Cancel</button>
@@ -319,7 +325,7 @@
                     const res = await fetch('/shule-cafe/api/classes/list.php', { credentials: 'include' });
                     const result = await res.json();
                     if (res.ok && result.success && result.data.length > 0) {
-                        select.innerHTML = '<option value="">-- Select Class --</option>';
+                        select.innerHTML = '<option value="">-- Select Class Stream --</option>';
                         result.data.forEach(cls => {
                             select.innerHTML += `<option value="${cls.id}">${cls.name}</option>`;
                         });
@@ -328,11 +334,29 @@
             }
             populateClasses();
 
+            // Populate Student Options for Parent Linking
+            function populateParentStudentOptions() {
+                const select = document.getElementById('par_student_id');
+                if (!select) return;
+                select.innerHTML = '<option value="">— Select student to link (optional) —</option>';
+                if (allStudents && allStudents.length > 0) {
+                    allStudents.forEach(stu => {
+                        const name = stu.full_name || (stu.student ? stu.student.name : 'Unknown Student');
+                        const code = stu.user_code ? `(${stu.user_code})` : '';
+                        const cls = stu.class_name ? `- ${stu.class_name}` : '';
+                        select.innerHTML += `<option value="${stu.id}">${name} ${code} ${cls}</option>`;
+                    });
+                }
+            }
+
             // Handle primary action buttons from workspace toolbars
             document.addEventListener('toolbar-primary-click', (e) => {
                 if (e.target.closest('#studentToolbar')) studentModal.style.display = 'flex';
                 if (e.target.closest('#teacherToolbar')) teacherModal.style.display = 'flex';
-                if (e.target.closest('#parentToolbar')) parentModal.style.display = 'flex';
+                if (e.target.closest('#parentToolbar')) {
+                    populateParentStudentOptions();
+                    parentModal.style.display = 'flex';
+                }
             });
 
             // Handle secondary action buttons (Bulk Import & Export CSV)
@@ -342,9 +366,17 @@
                     if (sameNameModal && typeof sameNameModal.open === 'function') {
                         sameNameModal.open('teacher');
                     }
-                } else if (action === 'import_students' || action === 'import_teachers') {
+                } else if (action === 'import_students') {
                     if (csvModal && typeof csvModal.open === 'function') {
-                        csvModal.open(action === 'import_students' ? 'students' : 'teachers');
+                        csvModal.open('students');
+                    }
+                } else if (action === 'import_teachers') {
+                    if (csvModal && typeof csvModal.open === 'function') {
+                        csvModal.open('teachers');
+                    }
+                } else if (action === 'import_parents') {
+                    if (csvModal && typeof csvModal.open === 'function') {
+                        csvModal.open('parents');
                     }
                 } else if (action === 'export_students_pdf') {
                     window.location.href = '/shule-cafe/api/export/users.php?role=student&format=pdf';
@@ -605,6 +637,7 @@
                     full_name: document.getElementById('par_name').value,
                     phone: document.getElementById('par_phone').value,
                     email: document.getElementById('par_email').value,
+                    student_id: document.getElementById('par_student_id') ? document.getElementById('par_student_id').value : null,
                     role: 'parent'
                 };
 

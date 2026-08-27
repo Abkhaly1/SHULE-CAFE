@@ -19,13 +19,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $sessionRole = $_SESSION['role'] ?? '';
 $sessionSchoolId = $_SESSION['school_id'] ?? null;
 
-$input = json_decode(file_get_contents('php://input'), true);
+$input = json_decode(file_get_contents('php://input'), true) ?? [];
 
 $full_name = mb_strtoupper(trim($input['full_name'] ?? ''), 'UTF-8');
 $email = trim($input['email'] ?? '') ?: null;
-$phone = trim($input['phone'] ?? '');
+$phone = trim($input['phone'] ?? '') ?: null;
 $role = trim($input['role'] ?? 'teacher');
 $class_id = trim($input['class_id'] ?? '') ?: null;
+$student_id = trim($input['student_id'] ?? '') ?: null;
 $department = trim($input['department'] ?? '') ?: null;
 $user_code = trim($input['user_code'] ?? '') ?: null;
 $gender = trim($input['gender'] ?? '') ?: null;
@@ -49,7 +50,7 @@ if ($sessionRole === 'super_admin') {
         http_response_code(400);
         echo json_encode([
             "success" => false, 
-            "message" => "Headmasters can only register Teachers, Students, or Parents for their school."
+            "message" => "School Administrators can only register Teachers, Students, or Parents for their school."
         ]);
         exit();
     }
@@ -59,15 +60,22 @@ if ($sessionRole === 'super_admin') {
     exit();
 }
 
-if (empty($full_name) || empty($phone)) {
+if (empty($full_name)) {
     http_response_code(400);
-    echo json_encode(["success" => false, "message" => "Full Name and Phone Number are required."]);
+    echo json_encode(["success" => false, "message" => "Full Name is required."]);
     exit();
 }
 
-// Auto generate User Code (Student ID / Teacher ID) if empty
+// For teachers, regional officers, admins and parents, phone number is required
+if ($role !== 'student' && empty($phone)) {
+    http_response_code(400);
+    echo json_encode(["success" => false, "message" => "Phone Number is required for " . ucfirst($role) . " accounts."]);
+    exit();
+}
+
+// Auto generate User Code (Student ID / Teacher ID / Parent ID) if empty
 if (empty($user_code)) {
-    $prefix = ($role === 'student') ? 'STD' : (($role === 'teacher') ? 'TCH' : 'USR');
+    $prefix = ($role === 'student') ? 'STD' : (($role === 'teacher') ? 'TCH' : (($role === 'parent') ? 'PAR' : 'USR'));
     $cntStmt = $conn->prepare("SELECT COUNT(*) FROM users WHERE school_id = ? AND role = ?");
     $cntStmt->execute([$school_id, $role]);
     $nextSeq = (int)$cntStmt->fetchColumn() + 1;
@@ -93,19 +101,58 @@ function generateUuidV4() {
 }
 
 try {
-    $chk = $conn->prepare("SELECT id FROM users WHERE phone = ? OR (email IS NOT NULL AND email = ?)");
-    $chk->execute([$phone, $email]);
-    if ($chk->fetch()) {
-        http_response_code(400);
-        echo json_encode(["success" => false, "message" => "A user with this phone number or email already exists."]);
-        exit();
+    // Check if staff/admin account with this email already exists
+    if (!empty($email)) {
+        $chk = $conn->prepare("SELECT id FROM users WHERE email = ? AND role != 'student'");
+        $chk->execute([$email]);
+        if ($chk->fetch()) {
+            http_response_code(400);
+            echo json_encode(["success" => false, "message" => "A staff account with this email address already exists."]);
+            exit();
+        }
     }
+
+    $conn->beginTransaction();
 
     $id = generateUuidV4();
     $hashed_password = password_hash($tempPassword, PASSWORD_BCRYPT);
 
-    $stmt = $conn->prepare("INSERT INTO users (id, school_id, user_code, class_id, department, role, email, phone, password_hash, temp_password, is_password_changed, full_name, gender, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, 'active')");
-    $stmt->execute([$id, $school_id, $user_code, $class_id, $department, $role, $email, $phone, $hashed_password, $tempPassword, $full_name, $gender]);
+    $gradeId = null;
+    $classroomId = null;
+    if ($role === 'student' && !empty($class_id)) {
+        $classroomId = intval($class_id);
+        $stmtG = $conn->prepare("SELECT grade_id FROM classrooms WHERE id = ?");
+        $stmtG->execute([$classroomId]);
+        $gradeId = $stmtG->fetchColumn() ?: null;
+    }
+
+    $stmt = $conn->prepare("
+        INSERT INTO users (id, school_id, user_code, class_id, grade_id, department, role, email, phone, password_hash, temp_password, is_password_changed, full_name, gender, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, 'active')
+    ");
+    $stmt->execute([$id, $school_id, $user_code, $class_id, $gradeId, $department, $role, $email, $phone, $hashed_password, $tempPassword, $full_name, $gender]);
+
+    // If student has classroom, allocate student to classroom in active academic year
+    if ($role === 'student' && !empty($classroomId)) {
+        $currentYear = date('Y');
+        $stmtAlloc = $conn->prepare("
+            INSERT INTO student_classroom_allocations (school_id, academic_year, student_id, classroom_id, status)
+            VALUES (?, ?, ?, ?, 'Active')
+            ON DUPLICATE KEY UPDATE classroom_id = VALUES(classroom_id), status = 'Active', updated_at = NOW()
+        ");
+        $stmtAlloc->execute([$school_id, $currentYear, $id, $classroomId]);
+    }
+
+    // If parent has linked student, insert into parent_student mapping
+    if ($role === 'parent' && !empty($student_id)) {
+        $stmtLink = $conn->prepare("
+            INSERT IGNORE INTO parent_student (parent_id, student_id)
+            VALUES (?, ?)
+        ");
+        $stmtLink->execute([$id, $student_id]);
+    }
+
+    $conn->commit();
 
     echo json_encode([
         "success" => true, 
@@ -123,6 +170,9 @@ try {
     ]);
 
 } catch (PDOException $e) {
+    if (isset($conn) && $conn->inTransaction()) {
+        $conn->rollBack();
+    }
     http_response_code(500);
     echo json_encode(["success" => false, "message" => "System error: " . $e->getMessage()]);
 }
