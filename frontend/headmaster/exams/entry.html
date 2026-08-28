@@ -630,11 +630,7 @@
         function populateAssessmentTypeDropdown() {
             const selType = document.getElementById('gridAssessmentType');
             if (!selType) return;
-            selType.innerHTML = '';
 
-            const isTerm2 = (selectedTerm === 'Term 2');
-
-            // Find configured assessment types
             const allAssess = (currentScopes && currentScopes.assessment_types) ? currentScopes.assessment_types : [];
             
             let t1Exam = allAssess.find(a => (a.term === 'Term 1' || !a.term) && (a.is_terminal == 1 || (a.name && a.name.toLowerCase().includes('first'))));
@@ -643,33 +639,30 @@
             let t1Id = t1Exam ? t1Exam.id : 'exam_t1';
             let t2Id = t2Exam ? t2Exam.id : 'exam_t2';
 
-            selType.innerHTML += `<option value="${t1Id}" data-term="Term 1" ${!isTerm2 ? 'selected' : ''}>First Term Exam (100%)</option>`;
-            selType.innerHTML += `<option value="${t2Id}" data-term="Term 2" ${isTerm2 ? 'selected' : ''}>Second Term Exam (100%)</option>`;
+            selType.innerHTML = `
+                <option value="${t1Id}" data-term="Term 1" ${selectedTerm === 'Term 1' ? 'selected' : ''}>First Term Exam (100%)</option>
+                <option value="${t2Id}" data-term="Term 2" ${selectedTerm === 'Term 2' ? 'selected' : ''}>Second Term Exam (100%)</option>
+            `;
+
+            selType.value = (selectedTerm === 'Term 2') ? String(t2Id) : String(t1Id);
         }
 
         function handleAssessmentTypeChange() {
             const selType = document.getElementById('gridAssessmentType');
             const selectedOpt = selType.options[selType.selectedIndex];
-            const optTerm = selectedOpt.getAttribute('data-term');
+            const optTerm = selectedOpt.getAttribute('data-term') || 'Term 1';
             
-            if (optTerm && optTerm !== selectedTerm) {
-                switchWorkspaceTerm(optTerm, false);
-                return;
-            }
+            selectedTerm = optTerm;
+
+            const qs = selectedClassroomId ? `classroom_id=${selectedClassroomId}` : `grade_id=${selectedGradeId}`;
+            window.history.pushState({}, '', `entry.html?${qs}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}`);
 
             autoLoadSheet();
         }
 
-        function switchWorkspaceTerm(term, updateDropdown = true) {
+        function switchWorkspaceTerm(term) {
             selectedTerm = term;
-            const btnT1 = document.getElementById('btnRibbonTerm1');
-            const btnT2 = document.getElementById('btnRibbonTerm2');
-            if (btnT1) btnT1.classList.toggle('active', term === 'Term 1');
-            if (btnT2) btnT2.classList.toggle('active', term === 'Term 2');
-            
-            if (updateDropdown) {
-                populateAssessmentTypeDropdown();
-            }
+            populateAssessmentTypeDropdown();
 
             const qs = selectedClassroomId ? `classroom_id=${selectedClassroomId}` : `grade_id=${selectedGradeId}`;
             window.history.pushState({}, '', `entry.html?${qs}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}`);

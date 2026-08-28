@@ -525,9 +525,7 @@
         function populateAssessmentFilterDropdown() {
             const selAssess = document.getElementById('gridAssessmentFilter');
             if (!selAssess) return;
-            selAssess.innerHTML = '';
 
-            const isTerm2 = (selectedTerm === 'Term 2');
             const allAssess = (currentScopes && currentScopes.assessment_types) ? currentScopes.assessment_types : [];
             
             let t1Exam = allAssess.find(a => (a.term === 'Term 1' || !a.term) && (a.is_terminal == 1 || (a.name && a.name.toLowerCase().includes('first'))));
@@ -536,34 +534,32 @@
             let t1Id = t1Exam ? t1Exam.id : 'exam_t1';
             let t2Id = t2Exam ? t2Exam.id : 'exam_t2';
 
-            selAssess.innerHTML += `<option value="${t1Id}" data-term="Term 1" ${!isTerm2 ? 'selected' : ''}>✓ First Term Exam (100%)</option>`;
-            selAssess.innerHTML += `<option value="${t2Id}" data-term="Term 2" ${isTerm2 ? 'selected' : ''}>✓ Second Term Exam (100%)</option>`;
+            selAssess.innerHTML = `
+                <option value="${t1Id}" data-term="Term 1" ${selectedTerm === 'Term 1' ? 'selected' : ''}>✓ First Term Exam (100%)</option>
+                <option value="${t2Id}" data-term="Term 2" ${selectedTerm === 'Term 2' ? 'selected' : ''}>✓ Second Term Exam (100%)</option>
+            `;
+
+            selectedAssessmentType = (selectedTerm === 'Term 2') ? String(t2Id) : String(t1Id);
+            selAssess.value = selectedAssessmentType;
         }
 
         function handleAssessmentFilterChange() {
             const selAssess = document.getElementById('gridAssessmentFilter');
             const selectedOpt = selAssess.options[selAssess.selectedIndex];
-            const optTerm = selectedOpt.getAttribute('data-term');
+            const optTerm = selectedOpt.getAttribute('data-term') || 'Term 1';
             
-            if (optTerm && optTerm !== selectedTerm) {
-                switchRecordsTerm(optTerm, false);
-                return;
-            }
-
             selectedAssessmentType = selAssess.value;
+            selectedTerm = optTerm;
+
+            const qs = selectedClassroomId ? `classroom_id=${selectedClassroomId}` : `grade_id=${selectedGradeId}`;
+            window.history.pushState({}, '', `records.html?${qs}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}`);
+
             openBroadsheet(selectedClassroomId, selectedGradeId, selectedYear, selectedTerm, selectedAssessmentType);
         }
 
-        function switchRecordsTerm(term, updateDropdown = true) {
+        function switchRecordsTerm(term) {
             selectedTerm = term;
-            const btnT1 = document.getElementById('btnRecordsTerm1');
-            const btnT2 = document.getElementById('btnRecordsTerm2');
-            if (btnT1) btnT1.classList.toggle('active', term === 'Term 1');
-            if (btnT2) btnT2.classList.toggle('active', term === 'Term 2');
-
-            if (updateDropdown) {
-                populateAssessmentFilterDropdown();
-            }
+            populateAssessmentFilterDropdown();
 
             const qs = selectedClassroomId ? `classroom_id=${selectedClassroomId}` : `grade_id=${selectedGradeId}`;
             window.history.pushState({}, '', `records.html?${qs}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}`);
