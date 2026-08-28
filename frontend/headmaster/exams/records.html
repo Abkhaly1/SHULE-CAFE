@@ -293,12 +293,13 @@
 
                         <div id="broadsheetActionButtons" style="display: none; align-items: center; gap: 6px; flex-wrap: wrap;">
                             <!-- Assessment Type Dropdown Filter (Next to Class Filter) -->
-                            <select id="gridAssessmentFilter" class="compact-select" style="max-width: 180px; font-weight: 700; color: #1e293b;" title="Assessment Type">
-                                <option value="all">✓ Average Assessment (30% CA + 70% Exam)</option>
+                            <select id="gridAssessmentFilter" class="compact-select" style="max-width: 180px; font-weight: 700; color: #1e293b;" title="Assessment Type" onchange="handleAssessmentFilterChange()">
+                                <option value="exam_t1" data-term="Term 1">✓ First Term Exam (100%)</option>
+                                <option value="exam_t2" data-term="Term 2">✓ Second Term Exam (100%)</option>
                             </select>
 
                             <!-- Classroom / Roster Filter Dropdown -->
-                            <select id="gridClassFilter" class="compact-select" style="max-width: 175px; font-weight: 700; color: #064e3b; background: #f0fdf4; border-color: #a7f3d0;" title="Class / Roster Filter">
+                            <select id="gridClassFilter" class="compact-select" style="max-width: 175px; font-weight: 700; color: #064e3b; background: #f0fdf4; border-color: #a7f3d0;" title="Class / Roster Filter" onchange="handleClassFilterChange()">
                                 <!-- Dynamic class streams -->
                             </select>
 
@@ -545,8 +546,9 @@
 
         function handleAssessmentFilterChange() {
             const selAssess = document.getElementById('gridAssessmentFilter');
+            if (!selAssess || selAssess.selectedIndex < 0) return;
             const selectedOpt = selAssess.options[selAssess.selectedIndex];
-            const optTerm = selectedOpt.getAttribute('data-term') || 'Term 1';
+            const optTerm = (selectedOpt && selectedOpt.getAttribute('data-term')) ? selectedOpt.getAttribute('data-term') : (selAssess.value.includes('t2') ? 'Term 2' : 'Term 1');
             
             selectedAssessmentType = selAssess.value;
             selectedTerm = optTerm;
