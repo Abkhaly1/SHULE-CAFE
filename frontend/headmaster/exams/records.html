@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,11 +8,11 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Results Records ‹ Headmaster ‹ SHULE CAFE</title>
-    
+
     <link rel="stylesheet" href="../../css/design-system.css">
     <link rel="stylesheet" href="../../css/layout.css">
     <link rel="stylesheet" href="../../css/headmaster-theme.css">
-    
+
     <script type="module" src="../../layouts/global-layout.js"></script>
     <script type="module" src="../../js/auth/auth-guard.js"></script>
 
@@ -186,7 +187,7 @@
             color: white;
             font-weight: 700;
             padding: 5px 4px;
-            border-right: 1px solid rgba(255,255,255,0.15);
+            border-right: 1px solid rgba(255, 255, 255, 0.15);
             text-align: center;
             white-space: nowrap;
             position: sticky;
@@ -220,7 +221,7 @@
             color: white;
             padding: 3px 6px;
             font-weight: 700;
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .summary-matrix-table td {
@@ -241,7 +242,7 @@
             color: white;
             padding: 4px 6px;
             font-weight: 700;
-            border: 1px solid rgba(255,255,255,0.15);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             text-align: center;
         }
 
@@ -252,17 +253,24 @@
         }
 
         @media print {
-            .no-print, app-sidebar, app-topbar, app-breadcrumb {
+
+            .no-print,
+            app-sidebar,
+            app-topbar,
+            app-breadcrumb {
                 display: none !important;
             }
+
             .app-main {
                 margin: 0 !important;
                 padding: 0 !important;
             }
+
             .card {
                 box-shadow: none !important;
                 border: 1px solid #94a3b8 !important;
             }
+
             .broadsheet-table th {
                 background: #000 !important;
                 color: #fff !important;
@@ -271,45 +279,63 @@
         }
     </style>
 </head>
+
 <body>
     <div class="app-layout">
         <app-sidebar role="tenant_admin" active-path="/headmaster/exams/index.html"></app-sidebar>
-        
+
         <div class="app-main">
             <app-topbar username="Headmaster Portal"></app-topbar>
-            
+
             <main class="app-content-wrapper">
                 <div class="app-content">
-                    <app-breadcrumb id="resultsBreadcrumb" path="Headmaster, Examinations, Results Records" style="margin-bottom: 2px;"></app-breadcrumb>
+                    <app-breadcrumb id="resultsBreadcrumb" path="Headmaster, Examinations, Results Records"
+                        style="margin-bottom: 2px;"></app-breadcrumb>
 
                     <!-- COMPACT CONTROL RIBBON -->
                     <div class="workspace-ribbon-bar no-print">
                         <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                            <button id="btnDynamicBack" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 3px; font-weight: 700; height: 24px; padding: 1px 7px; font-size: 11px;">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+                            <button id="btnDynamicBack" class="btn btn-outline btn-sm"
+                                style="display: inline-flex; align-items: center; gap: 3px; font-weight: 700; height: 24px; padding: 1px 7px; font-size: 11px;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+                                </svg>
                                 <span id="btnBackLabel">Back</span>
                             </button>
-                            <h1 id="pageHeading" style="margin: 0; font-size: 13.5px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
+                            <h1 id="pageHeading"
+                                style="margin: 0; font-size: 13.5px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
                                 <span>📊 Results Records & Broadsheets</span>
                             </h1>
                         </div>
 
-                        <div id="broadsheetActionButtons" style="display: none; align-items: center; gap: 6px; flex-wrap: wrap;">
+                        <div id="broadsheetActionButtons"
+                            style="display: none; align-items: center; gap: 6px; flex-wrap: wrap;">
                             <!-- Assessment Type Dropdown Filter (Next to Class Filter) -->
-                            <select id="gridAssessmentFilter" class="compact-select" style="max-width: 180px; font-weight: 700; color: #1e293b;" title="Assessment Type" onchange="handleAssessmentFilterChange()">
+                            <select id="gridAssessmentFilter" class="compact-select"
+                                style="max-width: 180px; font-weight: 700; color: #1e293b;" title="Assessment Type"
+                                onchange="handleAssessmentFilterChange()">
                                 <option value="exam_t1" data-term="Term 1">✓ First Term Exam (100%)</option>
                                 <option value="exam_t2" data-term="Term 2">✓ Second Term Exam (100%)</option>
                             </select>
 
                             <!-- Classroom / Roster Filter Dropdown -->
-                            <select id="gridClassFilter" class="compact-select" style="max-width: 175px; font-weight: 700; color: #064e3b; background: #f0fdf4; border-color: #a7f3d0;" title="Class / Roster Filter" onchange="handleClassFilterChange()">
+                            <select id="gridClassFilter" class="compact-select"
+                                style="max-width: 175px; font-weight: 700; color: #064e3b; background: #f0fdf4; border-color: #a7f3d0;"
+                                title="Class / Roster Filter" onchange="handleClassFilterChange()">
                                 <!-- Dynamic class streams -->
                             </select>
 
-                            <button id="btnPrintBroadsheet" class="btn btn-outline btn-sm" style="font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 11px; padding: 1px 8px;">
+                            <button id="btnNectaCamsModal" class="btn btn-outline btn-sm"
+                                style="font-weight: 800; display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 11px; padding: 1px 9px; color: #047857; border-color: #a7f3d0; background: #f0fdf4;"
+                                onclick="openNectaCamsModal()">
+                                <span>🎓</span> NECTA CAMS
+                            </button>
+                            <button id="btnPrintBroadsheet" class="btn btn-outline btn-sm"
+                                style="font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 11px; padding: 1px 8px;">
                                 <span>🖨️</span> Print
                             </button>
-                            <button id="btnExportCSV" class="btn btn-outline btn-sm" style="font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 11px; padding: 1px 8px;">
+                            <button id="btnExportCSV" class="btn btn-outline btn-sm"
+                                style="font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 11px; padding: 1px 8px;">
                                 <span>📥</span> CSV
                             </button>
                         </div>
@@ -325,14 +351,17 @@
                         </div>
 
                         <!-- 10 Years Pagination -->
-                        <div id="yearsPaginationBar" style="display: none; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid #e2e8f0; margin-top: 12px; flex-wrap: wrap; gap: 6px;">
-                            <button id="btnPrevYears" class="btn btn-outline btn-sm" style="font-size: 11px; font-weight: 700; padding: 2px 8px; height: 24px;">
+                        <div id="yearsPaginationBar"
+                            style="display: none; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid #e2e8f0; margin-top: 12px; flex-wrap: wrap; gap: 6px;">
+                            <button id="btnPrevYears" class="btn btn-outline btn-sm"
+                                style="font-size: 11px; font-weight: 700; padding: 2px 8px; height: 24px;">
                                 ← Newer Years
                             </button>
                             <span id="yearsPaginationInfo" style="font-size: 11.5px; font-weight: 700; color: #64748b;">
                                 Page 1
                             </span>
-                            <button id="btnNextYears" class="btn btn-outline btn-sm" style="font-size: 11px; font-weight: 700; padding: 2px 8px; height: 24px;">
+                            <button id="btnNextYears" class="btn btn-outline btn-sm"
+                                style="font-size: 11px; font-weight: 700; padding: 2px 8px; height: 24px;">
                                 Older Years →
                             </button>
                         </div>
@@ -340,12 +369,15 @@
 
                     <!-- STEP 2: SELECT EDUCATION LEVEL (Clean 2 Columns) -->
                     <div id="stepLevelsView" class="step-container-box" style="display: none;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
                             <div class="step-heading" style="margin-bottom: 0;">
-                                <span>🏛️ Education Levels &bull; <strong id="step2YearBadge" style="color: #059669;">2026</strong></span>
+                                <span>🏛️ Education Levels &bull; <strong id="step2YearBadge"
+                                        style="color: #059669;">2026</strong></span>
                             </div>
                             <div class="term-pill-bar" id="termSwitcherBar">
-                                <button class="term-pill-btn active" onclick="setTermSelection('Term 1')">Term 1</button>
+                                <button class="term-pill-btn active" onclick="setTermSelection('Term 1')">Term
+                                    1</button>
                                 <button class="term-pill-btn" onclick="setTermSelection('Term 2')">Term 2</button>
                             </div>
                         </div>
@@ -357,7 +389,8 @@
                     <!-- STEP 3: SELECT GRADE (Clean 2 Columns) -->
                     <div id="stepGradesView" class="step-container-box" style="display: none;">
                         <div class="step-heading">
-                            <span>📚 Grades for <strong id="step3LevelBadge" style="color: #059669;">O-Level</strong></span>
+                            <span>📚 Grades for <strong id="step3LevelBadge"
+                                    style="color: #059669;">O-Level</strong></span>
                         </div>
                         <div id="gradesGridContainer" class="compact-list-2col">
                             <!-- Dynamic Grade Links -->
@@ -366,10 +399,12 @@
 
                     <!-- STEP 4: BROADSHEET WORKSPACE VIEW (High Density) -->
                     <div id="stepWorkspaceView" style="display: none;">
-                        
+
                         <!-- Slim Top Bar: Division Summary Matrix & Badge -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 6px;">
-                            <div style="overflow-x: auto; border: 1.5px solid #cbd5e1; border-radius: 4px; background: white;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 6px;">
+                            <div
+                                style="overflow-x: auto; border: 1.5px solid #cbd5e1; border-radius: 4px; background: white;">
                                 <table class="summary-matrix-table">
                                     <thead>
                                         <tr>
@@ -390,7 +425,8 @@
                                             <td id="topSumDiv4" style="color: #c2410c; background: #fff7ed;">0</td>
                                             <td id="topSumDiv0" style="color: #dc2626; background: #fef2f2;">0</td>
                                             <td id="topSumTotal" style="background: #f8fafc;">0</td>
-                                            <td id="topSumPassRate" style="background: #ecfdf5; color: #059669; font-weight: 900;">0%</td>
+                                            <td id="topSumPassRate"
+                                                style="background: #ecfdf5; color: #059669; font-weight: 900;">0%</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -410,8 +446,10 @@
                         </div>
 
                         <!-- Subject Examinations Summary Matrix -->
-                        <div style="padding: 8px 12px; border-radius: 6px; background: white; border: 1.5px solid #cbd5e1; margin-bottom: 12px;">
-                            <h3 style="margin: 0 0 6px; font-size: 11.5px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.02em;">
+                        <div
+                            style="padding: 8px 12px; border-radius: 6px; background: white; border: 1.5px solid #cbd5e1; margin-bottom: 12px;">
+                            <h3
+                                style="margin: 0 0 6px; font-size: 11.5px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.02em;">
                                 📋 Subject Examinations Summary
                             </h3>
                             <div style="overflow-x: auto;">
@@ -514,7 +552,7 @@
                     renderYearsStep();
                     populateAssessmentFilterDropdown();
                 }
-            } catch(e) {
+            } catch (e) {
                 console.error(e);
             }
         }
@@ -524,7 +562,7 @@
             if (!selAssess) return;
 
             const allAssess = (currentScopes && currentScopes.assessment_types) ? currentScopes.assessment_types : [];
-            
+
             let t1Exam = allAssess.find(a => (a.term === 'Term 1' || !a.term) && (a.is_terminal == 1 || (a.name && a.name.toLowerCase().includes('first'))));
             let t2Exam = allAssess.find(a => a.term === 'Term 2' && (a.is_terminal == 1 || (a.name && a.name.toLowerCase().includes('second'))));
 
@@ -545,7 +583,7 @@
             if (!selAssess || selAssess.selectedIndex < 0) return;
             const selectedOpt = selAssess.options[selAssess.selectedIndex];
             const optTerm = (selectedOpt && selectedOpt.getAttribute('data-term')) ? selectedOpt.getAttribute('data-term') : (selAssess.value.includes('t2') ? 'Term 2' : 'Term 1');
-            
+
             selectedAssessmentType = selAssess.value;
             selectedTerm = optTerm;
 
@@ -595,7 +633,7 @@
         function handleClassFilterChange() {
             const val = parseInt(document.getElementById('gridClassFilter').value) || 0;
             selectedClassroomId = val;
-            
+
             const qs = selectedClassroomId ? `classroom_id=${selectedClassroomId}` : `grade_id=${selectedGradeId}`;
             window.history.pushState({}, '', `records.html?${qs}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}`);
 
@@ -634,7 +672,7 @@
                 backLabel.textContent = 'Back to Grades';
                 populateAssessmentFilterDropdown();
                 populateClassFilterDropdown();
-                
+
                 const selAssess = document.getElementById('gridAssessmentFilter');
                 if (selAssess && selAssess.value) {
                     selectedAssessmentType = selAssess.value;
@@ -819,12 +857,12 @@
                             .then(d => {
                                 if (d.success) broadsheetMemoryCache[otherKey] = d;
                             })
-                            .catch(() => {});
+                            .catch(() => { });
                     }
                 } else {
                     showAlert(data.message || 'Error loading broadsheet.', 'error');
                 }
-            } catch(e) {
+            } catch (e) {
                 console.error(e);
             } finally {
                 if (viewEl) {
@@ -845,15 +883,10 @@
             document.getElementById('topSumTotal').textContent = data.total_students;
             document.getElementById('topSumPassRate').textContent = `${data.class_pass_rate_percent}%`;
 
-            // Sync dropdown select state to active data term
-            const selAssess = document.getElementById('gridAssessmentFilter');
-            if (selAssess) {
-                for (let i = 0; i < selAssess.options.length; i++) {
-                    if (selAssess.options[i].getAttribute('data-term') === data.term) {
-                        selAssess.selectedIndex = i;
-                        break;
-                    }
-                }
+            if (data.best_subject) {
+                document.getElementById('bestSubjectBadge').innerHTML = `🏆 Best: <strong>${data.best_subject.name}</strong> (Avg: ${data.best_subject.average}, Pass: ${data.best_subject.pass_rate_percent}%)`;
+            } else {
+                document.getElementById('bestSubjectBadge').textContent = 'No evaluated subjects yet';
             }
 
             const thead = document.getElementById('broadsheetThead');
@@ -901,9 +934,8 @@
                         if (gradeObj) {
                             const gColor = getGradeColor(gradeObj.grade);
                             rowHtml += `
-                                <td style="text-align: center; padding: 3px 2px;" title="Mark: ${gradeObj.mark} (${gradeObj.grade})">
-                                    <strong style="color: ${gColor}; font-size: 12.5px; line-height: 1.1; display: block;">${gradeObj.grade}</strong>
-                                    <span style="font-size: 10px; font-weight: 700; color: #64748b; line-height: 1;">${gradeObj.mark}</span>
+                                <td style="text-align: center;" title="Score: ${gradeObj.mark}">
+                                    <strong style="color: ${gColor}; font-size: 11.5px;">${gradeObj.grade}</strong>
                                 </td>
                             `;
                         } else {
@@ -1074,7 +1106,7 @@
                 } else {
                     content.innerHTML = `<div style="text-align:center; padding:20px; color:#dc2626;">${data.message || 'Error harvesting candidate records.'}</div>`;
                 }
-            } catch(e) {
+            } catch (e) {
                 content.innerHTML = `<div style="text-align:center; padding:20px; color:#dc2626;">Network communication error.</div>`;
             }
         }
@@ -1119,19 +1151,24 @@
     </script>
 
     <!-- NECTA CAMS Batch Upload Export Modal -->
-    <div id="modalNectaCams" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
-        <div style="background: white; border-radius: 12px; width: 100%; max-width: 920px; max-height: 88vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
-            
-            <div style="background: #064e3b; color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
+    <div id="modalNectaCams"
+        style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
+        <div
+            style="background: white; border-radius: 12px; width: 100%; max-width: 920px; max-height: 88vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+
+            <div
+                style="background: #064e3b; color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <h3 style="margin: 0; font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 6px;">
+                    <h3
+                        style="margin: 0; font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 6px;">
                         <span>🎓</span> Official NECTA Continuous Assessment (CAMS) Export
                     </h3>
                     <div style="font-size: 11px; opacity: 0.9; margin-top: 2px;">
                         Multi-Year Continuous Assessment Harvest • Form 1 Excluded • Strict NECTA CAMS Flat CSV
                     </div>
                 </div>
-                <button onclick="closeNectaCamsModal()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; font-weight: 800;">✕</button>
+                <button onclick="closeNectaCamsModal()"
+                    style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; font-weight: 800;">✕</button>
             </div>
 
             <div style="padding: 16px 20px; overflow-y: auto; flex: 1;" id="nectaCamsContent">
@@ -1140,11 +1177,15 @@
                 </div>
             </div>
 
-            <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 11.5px; font-weight: 700; color: #64748b;" id="lblNectaCandidateCount">0 Candidate(s) Loaded</span>
+            <div
+                style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 11.5px; font-weight: 700; color: #64748b;" id="lblNectaCandidateCount">0
+                    Candidate(s) Loaded</span>
                 <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-outline btn-sm" onclick="closeNectaCamsModal()" style="padding: 4px 14px; font-weight: 700;">Close</button>
-                    <button class="btn btn-primary btn-sm" id="btnDownloadNectaCsv" onclick="downloadNectaCamsCSV()" style="background: #047857; padding: 4px 16px; font-weight: 800;">
+                    <button class="btn btn-outline btn-sm" onclick="closeNectaCamsModal()"
+                        style="padding: 4px 14px; font-weight: 700;">Close</button>
+                    <button class="btn btn-primary btn-sm" id="btnDownloadNectaCsv" onclick="downloadNectaCamsCSV()"
+                        style="background: #047857; padding: 4px 16px; font-weight: 800;">
                         <span>📥</span> Download Official NECTA CAMS CSV
                     </button>
                 </div>
@@ -1153,5 +1194,5 @@
         </div>
     </div>
 </body>
-</html>
 
+</html>
