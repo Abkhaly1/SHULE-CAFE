@@ -431,11 +431,6 @@
                                     </tbody>
                                 </table>
                             </div>
-
-                            <div id="bestSubjectBadge" class="badge"
-                                style="background: white; color: #065f46; border: 1.5px solid #059669; padding: 2px 8px; font-size: 11px; font-weight: 800; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px;">
-                                🏆 Best Subject: Loading...
-                            </div>
                         </div>
 
                         <!-- Student Results Master Table Box -->
@@ -888,10 +883,13 @@
             document.getElementById('topSumTotal').textContent = data.total_students;
             document.getElementById('topSumPassRate').textContent = `${data.class_pass_rate_percent}%`;
 
-            if (data.best_subject) {
-                document.getElementById('bestSubjectBadge').innerHTML = `🏆 Best: <strong>${data.best_subject.name}</strong> (Avg: ${data.best_subject.average}, Pass: ${data.best_subject.pass_rate_percent}%)`;
-            } else {
-                document.getElementById('bestSubjectBadge').textContent = 'No evaluated subjects yet';
+            const bestBadge = document.getElementById('bestSubjectBadge');
+            if (bestBadge) {
+                if (data.best_subject) {
+                    bestBadge.innerHTML = `🏆 Best: <strong>${data.best_subject.name}</strong> (Avg: ${data.best_subject.average}, Pass: ${data.best_subject.pass_rate_percent}%)`;
+                } else {
+                    bestBadge.textContent = 'No evaluated subjects yet';
+                }
             }
 
             const thead = document.getElementById('broadsheetThead');
