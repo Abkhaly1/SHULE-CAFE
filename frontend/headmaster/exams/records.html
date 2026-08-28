@@ -788,6 +788,9 @@
 
         async function openBroadsheet(classroomId, gradeId, year, term, examType = 'all') {
             const scopeParam = classroomId ? `classroom_id=${classroomId}` : `grade_id=${gradeId}`;
+            const viewEl = document.getElementById('stepWorkspaceView');
+            if (viewEl) viewEl.style.opacity = '0.5';
+
             try {
                 const url = `/shule-cafe/api/headmaster/exams/exams_api.php?action=get_broadsheet_records&${scopeParam}&year=${year}&term=${encodeURIComponent(term)}&exam_type_id=${encodeURIComponent(examType)}`;
                 const res = await fetch(url, { credentials: 'include' });
@@ -802,6 +805,11 @@
             } catch(e) {
                 console.error(e);
                 alert('Network connection error.');
+            } finally {
+                if (viewEl) {
+                    viewEl.style.transition = 'opacity 0.2s ease';
+                    viewEl.style.opacity = '1';
+                }
             }
         }
 
