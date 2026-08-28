@@ -306,10 +306,19 @@
         }
 
         .grid-score-input:disabled {
-            background: #f1f5f9;
-            color: #94a3b8;
+            background: #f8fafc;
+            color: #475569;
             border-color: #e2e8f0;
             cursor: not-allowed;
+            font-weight: 700;
+        }
+
+        .grid-score-input.is-submitted-locked {
+            background: #f8fafc !important;
+            color: #334155 !important;
+            border-color: #cbd5e1 !important;
+            cursor: not-allowed !important;
+            font-weight: 800 !important;
         }
 
         .summary-col {
@@ -1423,31 +1432,59 @@
         function updateStatusButtonsUI() {
             const btnDraft = document.getElementById('btnStatusDraft');
             const btnSubmit = document.getElementById('btnStatusSubmit');
+            const lockNotice = document.getElementById('lockNotice');
             if (!btnDraft || !btnSubmit) return;
 
-            if (currentSheetStatus === 'submitted') {
+            const isSubmitted = (currentSheetStatus === 'submitted');
+
+            if (isSubmitted) {
                 btnDraft.classList.remove('active');
                 btnSubmit.classList.add('active');
                 btnSubmit.innerHTML = '<span>✅</span> Submitted';
+                btnDraft.innerHTML = '<span>📝</span> Draft (Re-open)';
+                btnDraft.title = 'Click to re-open and edit marks';
+                btnSubmit.title = 'Marks are submitted and finalized';
+                if (lockNotice) {
+                    lockNotice.style.display = 'inline-flex';
+                    lockNotice.innerHTML = `<span class="badge" style="background:#fee2e2; color:#991b1b; font-weight:800; font-size:10.5px; padding:2px 6px; border-radius:3px;">🔒 Submitted (Locked)</span>`;
+                }
             } else {
                 btnSubmit.classList.remove('active');
                 btnDraft.classList.add('active');
+                btnDraft.innerHTML = '<span>📝</span> Draft';
                 btnSubmit.innerHTML = '<span>🚀</span> Submit';
-            }
-        }
-
-        async function setSheetStatus(newStatus) {
-            if (newStatus === 'submitted' && currentSheetStatus !== 'submitted') {
-                if (!confirm('Are you sure you want to submit and finalize marks for this assessment?')) {
-                    return;
+                btnDraft.title = 'Marks are in active working draft state';
+                btnSubmit.title = 'Submit and finalize marks for this assessment';
+                if (lockNotice) {
+                    lockNotice.style.display = 'none';
                 }
             }
 
+            // Instantly enable or disable all score cells without waiting
+            document.querySelectorAll('.grid-score-input').forEach(inp => {
+                inp.disabled = isSubmitted;
+                if (isSubmitted) {
+                    inp.classList.add('is-submitted-locked');
+                } else {
+                    inp.classList.remove('is-submitted-locked');
+                }
+            });
+        }
+
+        async function setSheetStatus(newStatus) {
             currentSheetStatus = newStatus;
+            
+            // Instantly update UI and lock/unlock cells (0ms delay)
             updateStatusButtonsUI();
 
-            await saveGridMarks(true);
-            showToast(newStatus === 'submitted' ? 'Marks finalized and submitted!' : 'Marks updated to Draft mode.', 'success');
+            // Background async save to database
+            saveGridMarks(true);
+
+            if (newStatus === 'submitted') {
+                showToast('Marks finalized & submitted. Editing closed.', 'success');
+            } else {
+                showToast('Form re-opened in Draft mode. You can edit marks.', 'info');
+            }
         }
 
         async function saveGridMarks(silent = false) {
