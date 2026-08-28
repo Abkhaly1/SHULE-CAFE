@@ -1029,8 +1029,8 @@
                 });
 
                 rowHtml += `
-                    <td class="summary-col" id="row-total-${stu.student_id}">${stu.total_score}</td>
-                    <td class="summary-col" style="color: #475569;" id="row-points-${stu.student_id}">${stu.points}</td>
+                    <td class="summary-col" id="row-total-${stu.student_id}">${stu.total_score || 0}</td>
+                    <td class="summary-col" style="color: #475569; font-weight: 700;" id="row-points-${stu.student_id}">${stu.points || 0}</td>
                     <td class="summary-col" id="row-div-${stu.student_id}">${renderDivBadge(stu.division)}</td>
                     <td class="summary-col" style="color: #059669; font-weight: 900;" id="row-pos-${stu.student_id}">${stu.rank_position || '-'}</td>
                 `;
@@ -1045,6 +1045,131 @@
                 input.addEventListener('wheel', (e) => {
                     e.preventDefault();
                 }, { passive: false });
+            });
+
+            // Initial calculation of Points, Division, and Rank Position
+            recalculateAllRosterPerformanceAndRanks();
+        }
+
+        function computeStudentGrading(stu) {
+            const level = (sheetData && sheetData.level_type) ? sheetData.level_type : 'O-Level';
+            const subjectScores = stu.subject_scores || {};
+
+            let evaluated = [];
+            let passCountDOrBetter = 0;
+            let totalSum = 0;
+
+            for (let sc in subjectScores) {
+                const val = subjectScores[sc];
+                if (val !== null && val !== undefined && val !== '') {
+                    const score = parseFloat(val);
+                    totalSum += score;
+                    let grade = 'F';
+                    let points = 5;
+                    let remark = 'Fail';
+
+                    if (level === 'A-Level') {
+                        if (score >= 80) { grade = 'A'; points = 1; remark = 'Excellent'; }
+                        else if (score >= 70) { grade = 'B'; points = 2; remark = 'Very Good'; }
+                        else if (score >= 60) { grade = 'C'; points = 3; remark = 'Good'; }
+                        else if (score >= 50) { grade = 'D'; points = 4; remark = 'Average'; }
+                        else if (score >= 40) { grade = 'E'; points = 5; remark = 'Pass'; }
+                        else if (score >= 35) { grade = 'S'; points = 6; remark = 'Subsidiary'; }
+                        else { grade = 'F'; points = 7; remark = 'Fail'; }
+                    } else if (level === 'Primary') {
+                        if (score >= 81) { grade = 'A'; points = 1; remark = 'Distinction'; }
+                        else if (score >= 61) { grade = 'B'; points = 2; remark = 'Very Good'; }
+                        else if (score >= 41) { grade = 'C'; points = 3; remark = 'Good'; }
+                        else if (score >= 21) { grade = 'D'; points = 4; remark = 'Pass'; }
+                        else { grade = 'E'; points = 5; remark = 'Fail'; }
+                    } else {
+                        // O-Level
+                        if (score >= 75) { grade = 'A'; points = 1; remark = 'Distinction'; }
+                        else if (score >= 65) { grade = 'B'; points = 2; remark = 'Very Good'; }
+                        else if (score >= 45) { grade = 'C'; points = 3; remark = 'Good'; }
+                        else if (score >= 30) { grade = 'D'; points = 4; remark = 'Pass'; }
+                        else { grade = 'F'; points = 5; remark = 'Fail'; }
+                    }
+
+                    if (['A', 'B', 'C', 'D'].includes(grade)) {
+                        passCountDOrBetter++;
+                    }
+
+                    evaluated.push({ subject: sc, score: score, grade: grade, points: points });
+                }
+            }
+
+            stu.total_score = Math.round(totalSum * 10) / 10;
+
+            if (evaluated.length === 0) {
+                stu.points = 0;
+                stu.division = '-';
+                return;
+            }
+
+            // Sort best subjects first (lowest points)
+            evaluated.sort((a, b) => a.points - b.points);
+
+            if (level === 'A-Level') {
+                const best3 = evaluated.slice(0, 3);
+                let ptsSum = 0;
+                best3.forEach(b => ptsSum += b.points);
+                stu.points = ptsSum;
+
+                if (ptsSum >= 3 && ptsSum <= 9) stu.division = 'Division I';
+                else if (ptsSum <= 12) stu.division = 'Division II';
+                else if (ptsSum <= 17) stu.division = 'Division III';
+                else if (ptsSum <= 19) stu.division = 'Division IV';
+                else stu.division = 'Division 0';
+            } else if (level === 'Primary') {
+                const avg = totalSum / evaluated.length;
+                stu.points = Math.round(avg * 10) / 10;
+                if (avg >= 81) stu.division = 'Grade A';
+                else if (avg >= 61) stu.division = 'Grade B';
+                else if (avg >= 41) stu.division = 'Grade C';
+                else if (avg >= 21) stu.division = 'Grade D';
+                else stu.division = 'Grade E';
+            } else {
+                // O-Level: Top 7 subjects
+                const best7 = evaluated.slice(0, 7);
+                let ptsSum = 0;
+                best7.forEach(b => ptsSum += b.points);
+                stu.points = ptsSum;
+
+                if (ptsSum >= 7 && ptsSum <= 17 && passCountDOrBetter >= 2) stu.division = 'Division I';
+                else if (ptsSum <= 21 && passCountDOrBetter >= 2) stu.division = 'Division II';
+                else if (ptsSum <= 25 && passCountDOrBetter >= 2) stu.division = 'Division III';
+                else if (ptsSum <= 34) stu.division = 'Division IV';
+                else stu.division = 'Division 0';
+            }
+        }
+
+        function recalculateAllRosterPerformanceAndRanks() {
+            if (!sheetData || !sheetData.roster) return;
+
+            sheetData.roster.forEach(stu => {
+                computeStudentGrading(stu);
+                
+                const lblTotal = document.getElementById(`row-total-${stu.student_id}`);
+                const lblPts = document.getElementById(`row-points-${stu.student_id}`);
+                const lblDiv = document.getElementById(`row-div-${stu.student_id}`);
+
+                if (lblTotal) lblTotal.textContent = stu.total_score || 0;
+                if (lblPts) lblPts.textContent = stu.points || 0;
+                if (lblDiv) lblDiv.innerHTML = renderDivBadge(stu.division);
+            });
+
+            // Competition Ranking based on total_score descending
+            const ranked = [...sheetData.roster].sort((a, b) => (b.total_score || 0) - (a.total_score || 0));
+            let currentRank = 1;
+            ranked.forEach((rStu, idx) => {
+                if (idx > 0 && (rStu.total_score || 0) < (ranked[idx - 1].total_score || 0)) {
+                    currentRank = idx + 1;
+                }
+                rStu.rank_position = (rStu.total_score > 0) ? currentRank : '-';
+                
+                const lblPos = document.getElementById(`row-pos-${rStu.student_id}`);
+                if (lblPos) lblPos.textContent = rStu.rank_position;
             });
         }
 
@@ -1162,17 +1287,8 @@
             if (!stu.subject_scores) stu.subject_scores = {};
             stu.subject_scores[subCode] = numVal;
 
-            // Calculate student total score
-            let sum = 0;
-            for (let k in stu.subject_scores) {
-                if (stu.subject_scores[k] !== null && stu.subject_scores[k] !== undefined) {
-                    sum += parseFloat(stu.subject_scores[k]);
-                }
-            }
-            stu.total_score = Math.round(sum * 10) / 10;
-            const lblTotal = document.getElementById(`row-total-${stuId}`);
-            if (lblTotal) lblTotal.textContent = stu.total_score;
-
+            // Live recalculation of Points, Division, and Position
+            recalculateAllRosterPerformanceAndRanks();
             recalculateGridStats();
             triggerAutosave();
         }
