@@ -312,24 +312,18 @@
                             style="display: none; align-items: center; gap: 6px; flex-wrap: wrap;">
                             <!-- Assessment Type Dropdown Filter (Next to Class Filter) -->
                             <select id="gridAssessmentFilter" class="compact-select"
-                                style="max-width: 180px; font-weight: 700; color: #1e293b;" title="Assessment Type"
-                                onchange="handleAssessmentFilterChange()">
-                                <option value="exam_t1" data-term="Term 1">✓ First Term Exam (100%)</option>
-                                <option value="exam_t2" data-term="Term 2">✓ Second Term Exam (100%)</option>
+                                style="max-width: 180px; font-weight: 700; color: #1e293b;" title="Assessment Type">
+                                <option value="exam_t1" data-term="Term 1">First Term Exam (100%)</option>
+                                <option value="exam_t2" data-term="Term 2">Second Term Exam (100%)</option>
                             </select>
 
                             <!-- Classroom / Roster Filter Dropdown -->
                             <select id="gridClassFilter" class="compact-select"
                                 style="max-width: 175px; font-weight: 700; color: #064e3b; background: #f0fdf4; border-color: #a7f3d0;"
-                                title="Class / Roster Filter" onchange="handleClassFilterChange()">
+                                title="Class / Roster Filter">
                                 <!-- Dynamic class streams -->
                             </select>
 
-                            <button id="btnNectaCamsModal" class="btn btn-outline btn-sm"
-                                style="font-weight: 800; display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 11px; padding: 1px 9px; color: #047857; border-color: #a7f3d0; background: #f0fdf4;"
-                                onclick="openNectaCamsModal()">
-                                <span>🎓</span> NECTA CAMS
-                            </button>
                             <button id="btnPrintBroadsheet" class="btn btn-outline btn-sm"
                                 style="font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 11px; padding: 1px 8px;">
                                 <span>🖨️</span> Print
@@ -496,12 +490,9 @@
 
         let currentScopes = null;
         let activeBroadsheetData = null;
-        let currentYearPage = 0;
         const YEARS_PER_PAGE = 10;
 
         document.addEventListener('DOMContentLoaded', async () => {
-            await loadScopes();
-
             document.getElementById('btnPrintBroadsheet').addEventListener('click', () => window.print());
             document.getElementById('btnExportCSV').addEventListener('click', exportToCSV);
             document.getElementById('gridClassFilter').addEventListener('change', handleClassFilterChange);
@@ -550,7 +541,6 @@
                 if (data.success) {
                     currentScopes = data;
                     renderYearsStep();
-                    populateAssessmentFilterDropdown();
                 }
             } catch (e) {
                 console.error(e);
@@ -570,22 +560,21 @@
             let t2Id = t2Exam ? t2Exam.id : 'exam_t2';
 
             selAssess.innerHTML = `
-                <option value="${t1Id}" data-term="Term 1" ${selectedTerm === 'Term 1' ? 'selected' : ''}>✓ First Term Exam (100%)</option>
-                <option value="${t2Id}" data-term="Term 2" ${selectedTerm === 'Term 2' ? 'selected' : ''}>✓ Second Term Exam (100%)</option>
+                <option value="${t1Id}" data-term="Term 1" ${selectedTerm === 'Term 1' ? 'selected' : ''}>First Term Exam (100%)</option>
+                <option value="${t2Id}" data-term="Term 2" ${selectedTerm === 'Term 2' ? 'selected' : ''}>Second Term Exam (100%)</option>
             `;
 
-            selectedAssessmentType = (selectedTerm === 'Term 2') ? String(t2Id) : String(t1Id);
-            selAssess.value = selectedAssessmentType;
+            selAssess.value = (selectedTerm === 'Term 2') ? String(t2Id) : String(t1Id);
         }
 
         function handleAssessmentFilterChange() {
             const selAssess = document.getElementById('gridAssessmentFilter');
             if (!selAssess || selAssess.selectedIndex < 0) return;
             const selectedOpt = selAssess.options[selAssess.selectedIndex];
-            const optTerm = (selectedOpt && selectedOpt.getAttribute('data-term')) ? selectedOpt.getAttribute('data-term') : (selAssess.value.includes('t2') ? 'Term 2' : 'Term 1');
+            const optTerm = selectedOpt.getAttribute('data-term') || 'Term 1';
 
-            selectedAssessmentType = selAssess.value;
             selectedTerm = optTerm;
+            selectedAssessmentType = selAssess.value;
 
             const qs = selectedClassroomId ? `classroom_id=${selectedClassroomId}` : `grade_id=${selectedGradeId}`;
             window.history.pushState({}, '', `records.html?${qs}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}`);
