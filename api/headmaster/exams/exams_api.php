@@ -309,7 +309,7 @@ try {
             $assessmentTypeId = $assessmentTypes[0]['id'] ?? '1';
         }
 
-        // Fetch lock status for classroom
+        // Fetch lock / submission status for classroom
         $stmtLocks = $conn->prepare("
             SELECT subject_code, is_locked, locked_at, locked_by
             FROM marks_entry_locks
@@ -322,8 +322,9 @@ try {
             $locksMap[$lr['subject_code']] = $lr;
         }
 
+        $isClassSubmitted = isset($locksMap['__ALL__']) || (!empty($locksMap) && count($locksMap) >= count($allSubjects));
         $isSingleSubject = (!empty($subjectCode) && $subjectCode !== 'all');
-        $isLocked = $isSingleSubject ? isset($locksMap[$subjectCode]) : false;
+        $isLocked = $isSingleSubject ? isset($locksMap[$subjectCode]) : $isClassSubmitted;
 
         // Student Roster
         if ($classroomId > 0) {
@@ -482,6 +483,8 @@ try {
             'term' => $term,
             'level_type' => $levelTypeKey,
             'is_locked' => $isLocked,
+            'is_submitted' => $isClassSubmitted,
+            'status' => $isClassSubmitted ? 'submitted' : 'draft',
             'locks_map' => $locksMap,
             'grading_scales' => $scales,
             'assessment_types' => $assessmentTypes,
@@ -501,6 +504,7 @@ try {
         $year = trim($input['year'] ?? date('Y'));
         $term = trim($input['term'] ?? 'Term 1');
         $assessmentTypeId = trim($input['assessment_type_id'] ?? '');
+        $status = trim($input['status'] ?? 'draft'); // 'draft' or 'submitted'
         $marksList = $input['marks'] ?? [];
         $isMultiSubject = !empty($input['is_multi_subject']) || ($subjectCode === 'all');
         $entryMode = trim($input['entry_mode'] ?? 'raw'); // 'raw' (0-100) or 'weighted' (0-maxWeight)
@@ -508,6 +512,23 @@ try {
         if ((!$classroomId && !$gradeId) || empty($assessmentTypeId) || !is_array($marksList)) {
             echo json_encode(['success' => false, 'message' => 'Classroom or Grade, Assessment Type, and Marks entries are required.']);
             exit();
+        }
+
+        // Handle submit / draft lock state
+        if ($status === 'submitted') {
+            $stmtLock = $conn->prepare("
+                INSERT INTO marks_entry_locks (school_id, academic_year, term, classroom_id, subject_code, is_locked, locked_at, locked_by)
+                VALUES (?, ?, ?, ?, '__ALL__', 1, NOW(), ?)
+                ON DUPLICATE KEY UPDATE is_locked = 1, locked_at = NOW(), locked_by = VALUES(locked_by)
+            ");
+            $stmtLock->execute([$schoolId, $year, $term, $classroomId, $userId]);
+        } elseif ($status === 'draft') {
+            $stmtUnlock = $conn->prepare("
+                UPDATE marks_entry_locks
+                SET is_locked = 0, updated_at = NOW()
+                WHERE school_id = ? AND academic_year = ? AND term = ? AND classroom_id = ?
+            ");
+            $stmtUnlock->execute([$schoolId, $year, $term, $classroomId]);
         }
 
         // Fetch max weight limit for assessment type

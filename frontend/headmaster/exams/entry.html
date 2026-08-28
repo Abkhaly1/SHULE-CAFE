@@ -342,6 +342,47 @@
             border-color: #064e3b;
         }
 
+        /* Draft & Submit Status Button Styles */
+        .status-btn-draft {
+            background: #ffffff;
+            color: #64748b;
+            border: 1px solid #cbd5e1;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .status-btn-draft:hover {
+            background: #fef3c7;
+            color: #b45309;
+            border-color: #fde68a;
+        }
+        .status-btn-draft.active {
+            background: #fef3c7 !important;
+            color: #b45309 !important;
+            border-color: #f59e0b !important;
+            box-shadow: 0 1px 2px rgba(245, 158, 11, 0.2);
+            font-weight: 800;
+        }
+
+        .status-btn-submit {
+            background: #ffffff;
+            color: #64748b;
+            border: 1px solid #cbd5e1;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .status-btn-submit:hover {
+            background: #ecfdf5;
+            color: #047857;
+            border-color: #a7f3d0;
+        }
+        .status-btn-submit.active {
+            background: #059669 !important;
+            color: #ffffff !important;
+            border-color: #047857 !important;
+            box-shadow: 0 1px 3px rgba(5, 150, 105, 0.3);
+            font-weight: 800;
+        }
+
         /* Slim Footer Summary Ribbon */
         .grid-summary-ribbon {
             display: flex;
@@ -431,14 +472,19 @@
                             </div>
 
                             <!-- Autosave Status Badge -->
-                            <span id="autosaveStatusBadge" style="font-size: 11px; font-weight: 700; color: #047857; display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; background: #ecfdf5; border-radius: 4px; border: 1px solid #a7f3d0;" title="Automatic background saving enabled">
+                            <span id="autosaveStatusBadge" style="font-size: 11px; font-weight: 700; color: #047857; display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; background: #ecfdf5; border-radius: 4px; border: 1px solid #a7f3d0;" title="Automatic background saving enabled">
                                 <span>✅</span> All changes saved
                             </span>
 
-                            <!-- Save Button -->
-                            <button id="btnSaveMarks" class="btn btn-primary" style="font-weight: 800; display: inline-flex; align-items: center; gap: 4px; padding: 1px 12px; height: 24px; font-size: 11px; border-radius: 4px;">
-                                <span>💾</span> Save Marks
-                            </button>
+                            <!-- Draft & Submit Status Controls -->
+                            <div style="display: inline-flex; align-items: center; gap: 3px; background: #f8fafc; padding: 1px 2px; border-radius: 5px; border: 1px solid #cbd5e1;">
+                                <button id="btnStatusDraft" class="btn btn-sm status-btn-draft active" style="font-size: 10.5px; font-weight: 700; height: 22px; padding: 1px 7px; border-radius: 4px; display: inline-flex; align-items: center; gap: 3px;" onclick="setSheetStatus('draft')" title="Marks are currently saved in draft / working state">
+                                    <span>📝</span> Draft
+                                </button>
+                                <button id="btnStatusSubmit" class="btn btn-sm status-btn-submit" style="font-size: 10.5px; font-weight: 700; height: 22px; padding: 1px 7px; border-radius: 4px; display: inline-flex; align-items: center; gap: 3px;" onclick="setSheetStatus('submitted')" title="Submit and finalize marks for this assessment">
+                                    <span>🚀</span> Submit
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -924,13 +970,14 @@
                     document.getElementById('statGridMaxWeight').textContent = `${maxAssessmentWeight}%`;
 
                     const lockNotice = document.getElementById('lockNotice');
-                    if (data.is_locked) {
+                    if (data.is_locked || data.is_submitted) {
                         lockNotice.style.display = 'block';
-                        document.getElementById('btnSaveMarks').disabled = true;
                     } else {
                         lockNotice.style.display = 'none';
-                        document.getElementById('btnSaveMarks').disabled = false;
                     }
+
+                    currentSheetStatus = data.status || (data.is_submitted ? 'submitted' : 'draft');
+                    updateStatusButtonsUI();
 
                     renderGridTable();
                     recalculateGridStats();
@@ -1371,17 +1418,43 @@
             document.getElementById('statGridPassRate').textContent = `${passPct}%`;
         }
 
+        let currentSheetStatus = 'draft';
+
+        function updateStatusButtonsUI() {
+            const btnDraft = document.getElementById('btnStatusDraft');
+            const btnSubmit = document.getElementById('btnStatusSubmit');
+            if (!btnDraft || !btnSubmit) return;
+
+            if (currentSheetStatus === 'submitted') {
+                btnDraft.classList.remove('active');
+                btnSubmit.classList.add('active');
+                btnSubmit.innerHTML = '<span>✅</span> Submitted';
+            } else {
+                btnSubmit.classList.remove('active');
+                btnDraft.classList.add('active');
+                btnSubmit.innerHTML = '<span>🚀</span> Submit';
+            }
+        }
+
+        async function setSheetStatus(newStatus) {
+            if (newStatus === 'submitted' && currentSheetStatus !== 'submitted') {
+                if (!confirm('Are you sure you want to submit and finalize marks for this assessment?')) {
+                    return;
+                }
+            }
+
+            currentSheetStatus = newStatus;
+            updateStatusButtonsUI();
+
+            await saveGridMarks(true);
+            showToast(newStatus === 'submitted' ? 'Marks finalized and submitted!' : 'Marks updated to Draft mode.', 'success');
+        }
+
         async function saveGridMarks(silent = false) {
             if (!selectedClassroomId && !selectedGradeId) return;
 
             const assessmentTypeId = document.getElementById('gridAssessmentType').value;
             const subjectCode = (currentMode === 'single') ? document.getElementById('gridSubjectSelect').value : 'all';
-
-            const btn = document.getElementById('btnSaveMarks');
-            if (!silent) {
-                btn.disabled = true;
-                btn.innerHTML = '<span>⏳</span> Saving...';
-            }
 
             const payloadMarks = [];
 
@@ -1424,6 +1497,7 @@
                         year: selectedYear,
                         term: selectedTerm,
                         assessment_type_id: assessmentTypeId,
+                        status: currentSheetStatus,
                         is_multi_subject: (currentMode === 'all'),
                         entry_mode: 'raw',
                         marks: payloadMarks
@@ -1447,11 +1521,6 @@
                 updateAutosaveBadge('offline');
                 if (!silent) {
                     showToast('Saved to local backup (Offline).', 'warning');
-                }
-            } finally {
-                if (!silent) {
-                    btn.disabled = false;
-                    btn.innerHTML = '<span>💾</span> Save Marks';
                 }
             }
         }
