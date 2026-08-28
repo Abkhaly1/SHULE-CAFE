@@ -143,10 +143,13 @@ try {
             }
         }
 
+        require_once __DIR__ . '/../grading/GradingManager.php';
+        $gradingManager = new GradingManager($conn);
+
         $marks = array_values($groupedMarks);
         usort($marks, function($a, $b) { return strcmp($a['subject_name'], $b['subject_name']); });
 
-        // Fetch dynamic grading scale
+        // Fetch dynamic education level
         $levelType = 'O-Level';
         if ($alloc) {
             $stmtLevel = $conn->prepare("
@@ -161,56 +164,26 @@ try {
                 $levelType = $res;
             }
         }
-        $stmtScales = $conn->prepare("SELECT min_mark, max_mark, grade, remark FROM grading_scales WHERE level_type = :ltype ORDER BY min_mark DESC");
-        $stmtScales->execute([':ltype' => $levelType]);
-        $scales = $stmtScales->fetchAll(PDO::FETCH_ASSOC);
-        if (empty($scales)) {
-            $stmtScales->execute([':ltype' => 'O-Level']);
-            $scales = $stmtScales->fetchAll(PDO::FETCH_ASSOC);
+        $levelType = $gradingManager->normalizeLevelType($levelType);
+
+        $subjectMarksMap = [];
+        foreach ($marks as $m) {
+            $subjectMarksMap[$m['subject_code']] = floatval($m['total_score']);
         }
 
-        $totalSum = 0;
-        $totalPoints = 0;
+        $perf = $gradingManager->calculateStudentPerformance($levelType, $subjectMarksMap);
+
         $processedMarks = [];
-
         foreach ($marks as $m) {
-            $score = floatval($m['total_score']);
-            $totalSum += $score;
-
-            $grade = '-';
-            $remark = '-';
-            $pts = 5; // Default worst points
-            foreach ($scales as $idx => $sc) {
-                if ($score >= floatval($sc['min_mark']) && $score <= floatval($sc['max_mark'])) {
-                    $grade = $sc['grade'];
-                    $remark = $sc['remark'];
-                    $pts = $idx + 1; // Basic point assumption based on order
-                    break;
-                }
-            }
-            if ($grade === '-' && !empty($scales)) {
-                $lowest = end($scales);
-                $grade = $lowest['grade'];
-                $remark = $lowest['remark'];
-                $pts = count($scales);
-            }
-
-            $totalPoints += $pts;
-            $m['grade']  = $grade;
-            $m['points'] = $pts;
-            $m['remark'] = $remark;
+            $sc = $m['subject_code'];
+            $gData = $gradingManager->getSubjectGrade($levelType, $m['total_score']);
+            $m['grade'] = $gData['grade'];
+            $m['points'] = $gData['points'];
+            $m['remark'] = $gData['remark'];
             $processedMarks[] = $m;
         }
 
         $subjectCount = count($processedMarks);
-        $gpaAvg = $subjectCount > 0 ? round($totalSum / $subjectCount, 1) : 0;
-
-        // Calculate NECTA Division (retained basic logic but fed with dynamic points)
-        if ($totalPoints <= 17 && $subjectCount >= 5)    $division = 'Division I';
-        elseif ($totalPoints <= 21 && $subjectCount >= 5) $division = 'Division II';
-        elseif ($totalPoints <= 25 && $subjectCount >= 5) $division = 'Division III';
-        elseif ($totalPoints <= 29 && $subjectCount >= 5) $division = 'Division IV';
-        else $division = 'Division 0';
 
         // Read-only safety lock rule: archived years cannot be modified
         $isReadOnly = ($year !== date('Y')) || ($alloc['year_status'] !== 'Active');
@@ -220,13 +193,15 @@ try {
             'student'      => $student,
             'allocation'   => $alloc,
             'year'         => $year,
+            'level_type'   => $levelType,
             'is_read_only' => $isReadOnly,
             'summary'      => [
-                'total_score'  => $totalSum,
+                'total_score'  => round($perf['total_evaluated_marks'] ?? 0, 1),
                 'subject_cnt'  => $subjectCount,
-                'gpa_avg'      => $gpaAvg,
-                'total_points' => $totalPoints,
-                'division'     => $division
+                'gpa_avg'      => $perf['average_score'],
+                'total_points' => $perf['total_points'],
+                'division'     => $perf['division'],
+                'remark'       => $perf['remark']
             ],
             'marks'        => $processedMarks
         ]);

@@ -2,6 +2,7 @@
 session_start();
 header('Content-Type: application/json; charset=UTF-8');
 require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../../grading/GradingManager.php';
 
 if (!isset($_SESSION['user_id']) && !isset($_GET['user_id'])) {
     http_response_code(403);
@@ -30,6 +31,8 @@ $year = trim($_GET['year'] ?? $input['year'] ?? date('Y'));
 $term = trim($_GET['term'] ?? $input['term'] ?? 'Term 1');
 if (in_array(strtolower($term), ['1', 'term1', 'term 1', 'first term', 'first'])) $term = 'Term 1';
 if (in_array(strtolower($term), ['2', 'term2', 'term 2', 'second term', 'second'])) $term = 'Term 2';
+
+$gradingManager = new GradingManager($conn);
 
 try {
     // Self-healing table migrations
@@ -75,25 +78,10 @@ try {
             exit();
         }
 
-        $levelType = $student['level_type'] ?: 'O-Level';
+        $levelType = $gradingManager->normalizeLevelType($student['level_type'] ?? 'O-Level');
 
-        // Fetch grading scale rules
-        $stmtScales = $conn->prepare("SELECT min_mark, max_mark, grade, remark, points FROM grading_scales WHERE level_type = ? ORDER BY min_mark DESC");
-        $stmtScales->execute([$levelType]);
-        $scales = $stmtScales->fetchAll(PDO::FETCH_ASSOC);
-
-        if (empty($scales)) {
-            $scales = [
-                ['min_mark' => 75, 'max_mark' => 100, 'grade' => 'A', 'points' => 1, 'remark' => 'Excellent'],
-                ['min_mark' => 65, 'max_mark' => 74.99, 'grade' => 'B', 'points' => 2, 'remark' => 'Very Good'],
-                ['min_mark' => 45, 'max_mark' => 64.99, 'grade' => 'C', 'points' => 3, 'remark' => 'Good'],
-                ['min_mark' => 30, 'max_mark' => 44.99, 'grade' => 'D', 'points' => 4, 'remark' => 'Satisfactory'],
-                ['min_mark' => 0,  'max_mark' => 29.99, 'grade' => 'F', 'points' => 5, 'remark' => 'Fail']
-            ];
-        }
-
-        // Helper to process marks for a specific term
-        $processTermMarks = function($targetTerm) use ($conn, $schoolId, $studentId, $year, $scales, $levelType) {
+        // Helper to process marks for a specific term using GradingManager
+        $processTermMarks = function($targetTerm) use ($conn, $studentId, $year, $levelType, $gradingManager) {
             $stmtM = $conn->prepare("
                 SELECT me.subject_code, COALESCE(s.name, me.subject_code) AS subject_name,
                        COALESCE(me.score, me.raw_score, 0) AS score
@@ -105,57 +93,43 @@ try {
             $stmtM->execute([$studentId, $year, $targetTerm]);
             $rawRows = $stmtM->fetchAll(PDO::FETCH_ASSOC);
 
-            $items = [];
-            $totalScore = 0;
-            $totalPoints = 0;
-
+            $subjectMarksMap = [];
+            $subjectNamesMap = [];
             foreach ($rawRows as $r) {
-                $score = floatval($r['score']);
-                $totalScore += $score;
+                $sc = $r['subject_code'];
+                $subjectMarksMap[$sc] = floatval($r['score']);
+                $subjectNamesMap[$sc] = $r['subject_name'];
+            }
 
-                $mGrade = 'F';
-                $mRemark = 'Fail';
-                $mPoints = 5;
+            $perf = $gradingManager->calculateStudentPerformance($levelType, $subjectMarksMap);
 
-                foreach ($scales as $sc) {
-                    if ($score >= floatval($sc['min_mark']) && $score <= floatval($sc['max_mark'])) {
-                        $mGrade = $sc['grade'];
-                        $mRemark = $sc['remark'];
-                        $mPoints = intval($sc['points']);
-                        break;
-                    }
-                }
-
-                $totalPoints += $mPoints;
+            $items = [];
+            foreach ($perf['all_subjects'] as $sub) {
+                $sc = $sub['subject'];
                 $items[] = [
-                    'subject_code' => $r['subject_code'],
-                    'subject_name' => $r['subject_name'],
-                    'score' => round($score, 1),
-                    'grade' => $mGrade,
-                    'points' => $mPoints,
-                    'remark' => $mRemark
+                    'subject_code' => $sc,
+                    'subject_name' => $subjectNamesMap[$sc] ?? $sc,
+                    'score' => round($sub['mark'], 1),
+                    'grade' => $sub['grade'],
+                    'points' => $sub['points'],
+                    'remark' => $sub['remark']
                 ];
             }
 
             $subCount = count($items);
-            $avg = $subCount > 0 ? round($totalScore / $subCount, 2) : 0;
-
-            // Division calculation
-            $stmtDiv = $conn->prepare("SELECT division_name, remark FROM division_scales WHERE level_type = ? AND ? BETWEEN min_points AND max_points LIMIT 1");
-            $stmtDiv->execute([$levelType, $totalPoints]);
-            $divRow = $stmtDiv->fetch(PDO::FETCH_ASSOC);
-            $division = $divRow ? $divRow['division_name'] : ($subCount > 0 ? ($avg >= 45 ? 'Division III' : 'Division IV') : '-');
 
             return [
                 'term' => $targetTerm,
                 'has_marks' => ($subCount > 0),
                 'subjects' => $items,
                 'summary' => [
-                    'total_score' => round($totalScore, 1),
-                    'average_score' => $avg,
-                    'total_points' => $totalPoints,
-                    'division' => $division,
-                    'subject_count' => $subCount
+                    'total_score' => round($perf['total_evaluated_marks'] ?? 0, 1),
+                    'average_score' => $perf['average_score'],
+                    'total_points' => $perf['total_points'],
+                    'division' => $perf['division'],
+                    'remark' => $perf['remark'],
+                    'subject_count' => $subCount,
+                    'top_subjects_count' => $perf['top_subjects_count']
                 ]
             ];
         };
@@ -163,16 +137,33 @@ try {
         $t1Data = $processTermMarks('Term 1');
         $t2Data = $processTermMarks('Term 2');
 
-        // Annual Cumulative Metrics
-        $annualAvg = 0;
-        if ($t1Data['has_marks'] && $t2Data['has_marks']) {
-            $annualAvg = round(($t1Data['summary']['average_score'] + $t2Data['summary']['average_score']) / 2, 2);
-        } elseif ($t1Data['has_marks']) {
-            $annualAvg = $t1Data['summary']['average_score'];
-        } elseif ($t2Data['has_marks']) {
-            $annualAvg = $t2Data['summary']['average_score'];
+        // Annual Cumulative Performance calculation (per-subject annual average, then evaluate through GradingManager)
+        $annualSubjectMarks = [];
+        $allSubjectCodes = array_unique(array_merge(
+            array_column($t1Data['subjects'], 'subject_code'),
+            array_column($t2Data['subjects'], 'subject_code')
+        ));
+
+        foreach ($allSubjectCodes as $code) {
+            $s1 = null;
+            $s2 = null;
+            foreach ($t1Data['subjects'] as $sub) {
+                if ($sub['subject_code'] === $code) { $s1 = $sub['score']; break; }
+            }
+            foreach ($t2Data['subjects'] as $sub) {
+                if ($sub['subject_code'] === $code) { $s2 = $sub['score']; break; }
+            }
+
+            if ($s1 !== null && $s2 !== null) {
+                $annualSubjectMarks[$code] = round(($s1 + $s2) / 2, 1);
+            } elseif ($s2 !== null) {
+                $annualSubjectMarks[$code] = $s2;
+            } elseif ($s1 !== null) {
+                $annualSubjectMarks[$code] = $s1;
+            }
         }
 
+        $annualPerf = $gradingManager->calculateStudentPerformance($levelType, $annualSubjectMarks);
         $activeTermData = ($term === 'Term 2') ? $t2Data : $t1Data;
 
         // Fetch Form Master Comment
@@ -189,14 +180,18 @@ try {
             'student' => $student,
             'year' => $year,
             'term' => $term,
+            'level_type' => $levelType,
             'term1_results' => $t1Data,
             'term2_results' => $t2Data,
             'annual_summary' => [
                 'term1_avg' => $t1Data['summary']['average_score'],
                 'term2_avg' => $t2Data['summary']['average_score'],
-                'annual_average' => $annualAvg,
-                'overall_points' => $activeTermData['summary']['total_points'],
-                'overall_division' => $activeTermData['summary']['division']
+                'annual_average' => $annualPerf['average_score'],
+                'overall_points' => $annualPerf['total_points'],
+                'overall_division' => $annualPerf['division'],
+                'overall_remark' => $annualPerf['remark'],
+                'active_term_division' => $activeTermData['summary']['division'],
+                'active_term_points' => $activeTermData['summary']['total_points']
             ],
             // Backwards compatibility keys
             'subject_marks' => $activeTermData['subjects'],

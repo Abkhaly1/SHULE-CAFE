@@ -728,9 +728,10 @@
 
         function renderReportCardData(data) {
             const stu = data.student || {};
+            const lvl = data.level_type || 'O-Level';
             document.getElementById('valStudentName').textContent = stu.full_name || 'Student Name';
             document.getElementById('valRegNo').textContent = stu.user_code || '-';
-            document.getElementById('valClassroom').textContent = `${stu.classroom_name || 'Classroom'} (${stu.level_type || 'O-Level'})`;
+            document.getElementById('valClassroom').textContent = `${stu.classroom_name || 'Classroom'} (${lvl})`;
             document.getElementById('valSession').textContent = `${data.year} Academic Session`;
 
             // Annual Summary Banner
@@ -739,6 +740,40 @@
             document.getElementById('sumT2Avg').textContent = annual.term2_avg ? `${annual.term2_avg}%` : '-';
             document.getElementById('sumAnnualAvg').textContent = annual.annual_average ? `${annual.annual_average}%` : '-';
             document.getElementById('sumDivision').textContent = annual.overall_division || 'Division I';
+
+            // Dynamic Level-Specific Benchmark Reference
+            const scaleContainer = document.getElementById('scalesListContainer');
+            if (lvl === 'Primary') {
+                scaleContainer.innerHTML = `
+                    <span>A: 81–100% (High Distinction / 1 Pt)</span>
+                    <span>B: 61–80% (Distinction / 2 Pts)</span>
+                    <span>C: 41–60% (Average Pass / 3 Pts)</span>
+                    <span>D: 21–40% (Marginal Pass / 4 Pts)</span>
+                    <span>E: 0–20% (Fail / 5 Pts)</span>
+                    <span style="color:#064e3b;font-weight:800;">• Criteria: Best 5 Core Subjects Aggregate</span>
+                `;
+            } else if (lvl === 'A-Level') {
+                scaleContainer.innerHTML = `
+                    <span>A: 80–100% (1 Pt)</span>
+                    <span>B: 70–79% (2 Pts)</span>
+                    <span>C: 60–69% (3 Pts)</span>
+                    <span>D: 50–59% (4 Pts)</span>
+                    <span>E: 40–49% (5 Pts)</span>
+                    <span>S: 35–39% (6 Pts)</span>
+                    <span>F: 0–34% (7 Pts)</span>
+                    <span style="color:#064e3b;font-weight:800;">• Criteria: Top 3 Principal Combination Subjects</span>
+                `;
+            } else {
+                // O-Level
+                scaleContainer.innerHTML = `
+                    <span>A: 75–100% (Excellent / 1 Pt)</span>
+                    <span>B: 65–74% (Very Good / 2 Pts)</span>
+                    <span>C: 45–64% (Good / 3 Pts)</span>
+                    <span>D: 30–44% (Satisfactory / 4 Pts)</span>
+                    <span>F: 0–29% (Fail / 5 Pts)</span>
+                    <span style="color:#064e3b;font-weight:800;">• Criteria: Top 7 Best Subjects NECTA Standard (Div I: 7–17 Pts, Div II: 18–21 Pts, Div III: 22–25 Pts)</span>
+                `;
+            }
 
             if (data.conduct_comment) {
                 document.getElementById('lblConductComment').textContent = data.conduct_comment;
@@ -783,6 +818,7 @@
         function renderUnifiedMatrix(container, data) {
             const t1Subs = (data.term1_results && data.term1_results.subjects) ? data.term1_results.subjects : [];
             const t2Subs = (data.term2_results && data.term2_results.subjects) ? data.term2_results.subjects : [];
+            const lvl = data.level_type || 'O-Level';
 
             // Index subjects by subject_code
             const allCodes = Array.from(new Set([
@@ -791,7 +827,7 @@
             ]));
 
             let rowsHtml = '';
-            let totalT1 = 0, totalT2 = 0, totalAnn = 0, totalAnnPts = 0;
+            let totalT1 = 0, totalT2 = 0, totalAnn = 0;
             let countT1 = 0, countT2 = 0, countAnn = 0;
 
             allCodes.forEach((code, idx) => {
@@ -810,14 +846,22 @@
                     t1Display = `${s1.score}% (${s1.grade})`;
                     t2Display = `${s2.score}% (${s2.grade})`;
                     annAvg = Math.round(((s1.score + s2.score) / 2) * 10) / 10;
-                    annGrade = (s2.score >= 75 || annAvg >= 75) ? 'A' : (annAvg >= 65 ? 'B' : (annAvg >= 45 ? 'C' : (annAvg >= 30 ? 'D' : 'F')));
-                    annPts = (annGrade === 'A') ? 1 : (annGrade === 'B' ? 2 : (annGrade === 'C' ? 3 : (annGrade === 'D' ? 4 : 5)));
+                    
+                    if (lvl === 'Primary') {
+                        annGrade = (annAvg >= 81) ? 'A' : (annAvg >= 61 ? 'B' : (annAvg >= 41 ? 'C' : (annAvg >= 21 ? 'D' : 'E')));
+                        annPts = (annGrade === 'A') ? 1 : (annGrade === 'B' ? 2 : (annGrade === 'C' ? 3 : (annGrade === 'D' ? 4 : 5)));
+                    } else if (lvl === 'A-Level') {
+                        annGrade = (annAvg >= 80) ? 'A' : (annAvg >= 70 ? 'B' : (annAvg >= 60 ? 'C' : (annAvg >= 50 ? 'D' : (annAvg >= 40 ? 'E' : (annAvg >= 35 ? 'S' : 'F')))));
+                        annPts = (annGrade === 'A') ? 1 : (annGrade === 'B' ? 2 : (annGrade === 'C' ? 3 : (annGrade === 'D' ? 4 : (annGrade === 'E' ? 5 : (annGrade === 'S' ? 6 : 7)))));
+                    } else {
+                        annGrade = (annAvg >= 75) ? 'A' : (annAvg >= 65 ? 'B' : (annAvg >= 45 ? 'C' : (annAvg >= 30 ? 'D' : 'F')));
+                        annPts = (annGrade === 'A') ? 1 : (annGrade === 'B' ? 2 : (annGrade === 'C' ? 3 : (annGrade === 'D' ? 4 : 5)));
+                    }
                     remark = s2.remark || s1.remark || 'Good Progress';
                     
                     totalT1 += s1.score; countT1++;
                     totalT2 += s2.score; countT2++;
                     totalAnn += annAvg; countAnn++;
-                    totalAnnPts += annPts;
                 } else if (s1) {
                     t1Display = `${s1.score}% (${s1.grade})`;
                     t2Display = '<span style="color:#94a3b8;font-style:italic;">Pending</span>';
@@ -827,7 +871,6 @@
                     remark = s1.remark;
                     totalT1 += s1.score; countT1++;
                     totalAnn += annAvg; countAnn++;
-                    totalAnnPts += annPts;
                 } else if (s2) {
                     t1Display = '<span style="color:#94a3b8;font-style:italic;">-</span>';
                     t2Display = `${s2.score}% (${s2.grade})`;
@@ -837,7 +880,6 @@
                     remark = s2.remark;
                     totalT2 += s2.score; countT2++;
                     totalAnn += annAvg; countAnn++;
-                    totalAnnPts += annPts;
                 }
 
                 rowsHtml += `
@@ -859,6 +901,7 @@
             const avgT2 = countT2 > 0 ? (totalT2 / countT2).toFixed(1) : '-';
             const avgAnn = countAnn > 0 ? (totalAnn / countAnn).toFixed(1) : '-';
             const annualDivision = (data.annual_summary && data.annual_summary.overall_division) || 'Division I';
+            const annualPts = (data.annual_summary && data.annual_summary.overall_points !== undefined) ? data.annual_summary.overall_points : '-';
 
             container.innerHTML = `
                 <table class="academic-table">
@@ -884,7 +927,7 @@
                             <td style="text-align:center; color:#065f46;">Avg: ${avgT1}%</td>
                             <td style="text-align:center; color:#1e40af;">Avg: ${avgT2}%</td>
                             <td style="text-align:center; font-weight:900; color:#0f172a;">${avgAnn}%</td>
-                            <td colspan="2" style="text-align:center; color:#064e3b;">${totalAnnPts} Pts</td>
+                            <td colspan="2" style="text-align:center; color:#064e3b;">${annualPts} Pts</td>
                             <td style="color:#064e3b; font-weight:800;">${annualDivision}</td>
                         </tr>
                     </tfoot>
