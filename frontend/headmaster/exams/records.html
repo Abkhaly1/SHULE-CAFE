@@ -791,10 +791,20 @@
             goToStep('WORKSPACE');
         }
 
+        const broadsheetMemoryCache = {};
+
         async function openBroadsheet(classroomId, gradeId, year, term, examType = 'all') {
             const scopeParam = classroomId ? `classroom_id=${classroomId}` : `grade_id=${gradeId}`;
+            const cacheKey = `${scopeParam}_${year}_${term}_${examType}`;
+
+            // Instant render from memory cache if available (0ms perceived lag)
+            if (broadsheetMemoryCache[cacheKey]) {
+                activeBroadsheetData = broadsheetMemoryCache[cacheKey];
+                renderBroadsheetUI(activeBroadsheetData);
+            }
+
             const viewEl = document.getElementById('stepWorkspaceView');
-            if (viewEl) viewEl.style.opacity = '0.5';
+            if (viewEl && !broadsheetMemoryCache[cacheKey]) viewEl.style.opacity = '0.6';
 
             try {
                 const url = `/shule-cafe/api/headmaster/exams/exams_api.php?action=get_broadsheet_records&${scopeParam}&year=${year}&term=${encodeURIComponent(term)}&exam_type_id=${encodeURIComponent(examType)}`;
@@ -802,17 +812,30 @@
                 const data = await res.json();
 
                 if (res.ok && data.success) {
+                    broadsheetMemoryCache[cacheKey] = data;
                     activeBroadsheetData = data;
                     renderBroadsheetUI(data);
+
+                    // Background prefetch the other term for instant switching
+                    const otherTerm = (term === 'Term 1') ? 'Term 2' : 'Term 1';
+                    const otherType = (term === 'Term 1') ? 'exam_t2' : 'exam_t1';
+                    const otherKey = `${scopeParam}_${year}_${otherTerm}_${otherType}`;
+                    if (!broadsheetMemoryCache[otherKey]) {
+                        fetch(`/shule-cafe/api/headmaster/exams/exams_api.php?action=get_broadsheet_records&${scopeParam}&year=${year}&term=${encodeURIComponent(otherTerm)}&exam_type_id=${encodeURIComponent(otherType)}`, { credentials: 'include' })
+                            .then(r => r.json())
+                            .then(d => {
+                                if (d.success) broadsheetMemoryCache[otherKey] = d;
+                            })
+                            .catch(() => {});
+                    }
                 } else {
-                    alert(data.message || 'Error loading broadsheet.');
+                    showAlert(data.message || 'Error loading broadsheet.', 'error');
                 }
             } catch(e) {
                 console.error(e);
-                alert('Network connection error.');
             } finally {
                 if (viewEl) {
-                    viewEl.style.transition = 'opacity 0.2s ease';
+                    viewEl.style.transition = 'opacity 0.15s ease';
                     viewEl.style.opacity = '1';
                 }
             }
