@@ -1566,20 +1566,6 @@
             showToast('Internet connection restored. Syncing marks...', 'info');
             saveGridMarks(true);
         });
-
-        function showToast(msg, type = 'info') {
-            const box = document.getElementById('gridToastBox');
-            const toast = document.createElement('div');
-            let bg = type === 'success' ? '#064e3b' : (type === 'error' ? '#991b1b' : (type === 'warning' ? '#d97706' : '#1e40af'));
-            toast.style.cssText = `background:${bg}; color:white; padding:8px 14px; border-radius:6px; font-weight:700; font-size:12px; margin-top:6px; box-shadow:0 3px 10px rgba(0,0,0,0.16); display:flex; align-items:center; gap:6px;`;
-            toast.innerHTML = `<span>${type === 'success' ? '✅' : (type === 'error' ? '⚠️' : 'ℹ️')}</span> <span>${msg}</span>`;
-            box.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
     </script>
 </body>
 </html>
