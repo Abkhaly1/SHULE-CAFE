@@ -306,9 +306,6 @@
                                 <!-- Dynamic class streams -->
                             </select>
 
-                            <button id="btnNectaCamsModal" class="btn btn-outline btn-sm" style="font-weight: 800; display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 11px; padding: 1px 9px; color: #047857; border-color: #a7f3d0; background: #f0fdf4;" onclick="openNectaCamsModal()">
-                                <span>🎓</span> NECTA CAMS
-                            </button>
                             <button id="btnPrintBroadsheet" class="btn btn-outline btn-sm" style="font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 11px; padding: 1px 8px;">
                                 <span>🖨️</span> Print
                             </button>
@@ -397,10 +394,6 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
-
-                            <div id="bestSubjectBadge" class="badge" style="background: white; color: #065f46; border: 1.5px solid #059669; padding: 2px 7px; font-size: 10.5px; font-weight: 800;">
-                                🏆 Best Subject: Loading...
                             </div>
                         </div>
 
@@ -852,10 +845,15 @@
             document.getElementById('topSumTotal').textContent = data.total_students;
             document.getElementById('topSumPassRate').textContent = `${data.class_pass_rate_percent}%`;
 
-            if (data.best_subject) {
-                document.getElementById('bestSubjectBadge').innerHTML = `🏆 Best: <strong>${data.best_subject.name}</strong> (Avg: ${data.best_subject.average}, Pass: ${data.best_subject.pass_rate_percent}%)`;
-            } else {
-                document.getElementById('bestSubjectBadge').textContent = 'No evaluated subjects yet';
+            // Sync dropdown select state to active data term
+            const selAssess = document.getElementById('gridAssessmentFilter');
+            if (selAssess) {
+                for (let i = 0; i < selAssess.options.length; i++) {
+                    if (selAssess.options[i].getAttribute('data-term') === data.term) {
+                        selAssess.selectedIndex = i;
+                        break;
+                    }
+                }
             }
 
             const thead = document.getElementById('broadsheetThead');
@@ -903,8 +901,9 @@
                         if (gradeObj) {
                             const gColor = getGradeColor(gradeObj.grade);
                             rowHtml += `
-                                <td style="text-align: center;" title="Score: ${gradeObj.mark}">
-                                    <strong style="color: ${gColor}; font-size: 11.5px;">${gradeObj.grade}</strong>
+                                <td style="text-align: center; padding: 3px 2px;" title="Mark: ${gradeObj.mark} (${gradeObj.grade})">
+                                    <strong style="color: ${gColor}; font-size: 12.5px; line-height: 1.1; display: block;">${gradeObj.grade}</strong>
+                                    <span style="font-size: 10px; font-weight: 700; color: #64748b; line-height: 1;">${gradeObj.mark}</span>
                                 </td>
                             `;
                         } else {
