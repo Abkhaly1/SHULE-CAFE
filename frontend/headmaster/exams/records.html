@@ -490,6 +490,8 @@
             });
 
             const urlParams = new URLSearchParams(window.location.search);
+            await loadScopes();
+
             if (urlParams.get('classroom_id')) {
                 selectedClassroomId = parseInt(urlParams.get('classroom_id')) || 0;
                 selectedYear = urlParams.get('year') || '2026';
@@ -639,6 +641,11 @@
                 populateAssessmentFilterDropdown();
                 populateClassFilterDropdown();
                 
+                const selAssess = document.getElementById('gridAssessmentFilter');
+                if (selAssess && selAssess.value) {
+                    selectedAssessmentType = selAssess.value;
+                }
+
                 const qs = selectedClassroomId ? `classroom_id=${selectedClassroomId}` : `grade_id=${selectedGradeId}`;
                 window.history.pushState({}, '', `records.html?${qs}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}`);
                 openBroadsheet(selectedClassroomId, selectedGradeId, selectedYear, selectedTerm, selectedAssessmentType);

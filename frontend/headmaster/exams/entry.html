@@ -427,6 +427,11 @@
                                 </span>
                             </div>
 
+                            <!-- Autosave Status Badge -->
+                            <span id="autosaveStatusBadge" style="font-size: 11px; font-weight: 700; color: #047857; display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; background: #ecfdf5; border-radius: 4px; border: 1px solid #a7f3d0;" title="Automatic background saving enabled">
+                                <span>✅</span> All changes saved
+                            </span>
+
                             <!-- Save Button -->
                             <button id="btnSaveMarks" class="btn btn-primary" style="font-weight: 800; display: inline-flex; align-items: center; gap: 4px; padding: 1px 12px; height: 24px; font-size: 11px; border-radius: 4px;">
                                 <span>💾</span> Save Marks
@@ -913,6 +918,9 @@
                     sheetData = data;
                     activeSubjects = data.subjects || [];
 
+                    // Restore any locally cached marks if present
+                    restoreMarksFromLocalStorage();
+
                     document.getElementById('pageHeading').innerHTML = `<span>✍️ ${data.classroom.classroom_name} ‹ ${selectedTerm} ${selectedYear}</span>`;
 
                     const activeTypeObj = (data.assessment_types || []).find(t => String(t.id) === String(assessmentTypeId));
@@ -928,16 +936,22 @@
                         document.getElementById('btnSaveMarks').disabled = false;
                     }
 
-                    const lblMax = document.getElementById('lblModeMaxWeight');
-                    if (lblMax) lblMax.textContent = maxAssessmentWeight;
-
                     renderGridTable();
                     recalculateGridStats();
+                    updateAutosaveBadge('saved');
                 } else {
                     showToast(data.message || 'Error loading student roster.', 'error');
                 }
             } catch(e) {
-                showToast('Network communication error.', 'error');
+                // Offline fallback: try to load from local storage
+                restoreMarksFromLocalStorage();
+                if (sheetData && sheetData.roster) {
+                    renderGridTable();
+                    recalculateGridStats();
+                    updateAutosaveBadge('offline');
+                } else {
+                    showToast('Network offline. Check connection.', 'error');
+                }
             }
         }
 
@@ -1041,6 +1055,82 @@
             });
         }
 
+        let autosaveTimer = null;
+
+        function getStorageKey() {
+            const scope = selectedClassroomId ? `cls_${selectedClassroomId}` : `grd_${selectedGradeId}`;
+            return `shule_marks_backup_${scope}_${selectedYear}_${selectedTerm}_${currentMode}`;
+        }
+
+        function backupMarksToLocalStorage() {
+            try {
+                if (!sheetData || !sheetData.roster) return;
+                const backupData = {
+                    year: selectedYear,
+                    term: selectedTerm,
+                    mode: currentMode,
+                    roster: sheetData.roster,
+                    saved_at: new Date().toISOString()
+                };
+                localStorage.setItem(getStorageKey(), JSON.stringify(backupData));
+            } catch(e) {}
+        }
+
+        function restoreMarksFromLocalStorage() {
+            try {
+                const raw = localStorage.getItem(getStorageKey());
+                if (!raw) return;
+                const backup = JSON.parse(raw);
+                if (backup && backup.roster && sheetData && sheetData.roster) {
+                    backup.roster.forEach(bStu => {
+                        const s = sheetData.roster.find(st => String(st.student_id) === String(bStu.student_id));
+                        if (s && bStu.subject_scores) {
+                            if (!s.subject_scores) s.subject_scores = {};
+                            for (let sc in bStu.subject_scores) {
+                                if (bStu.subject_scores[sc] !== null && bStu.subject_scores[sc] !== undefined) {
+                                    if (s.subject_scores[sc] === null || s.subject_scores[sc] === undefined || s.subject_scores[sc] === '') {
+                                        s.subject_scores[sc] = bStu.subject_scores[sc];
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch(e) {}
+        }
+
+        function triggerAutosave() {
+            backupMarksToLocalStorage();
+            updateAutosaveBadge('saving');
+
+            if (autosaveTimer) clearTimeout(autosaveTimer);
+            autosaveTimer = setTimeout(() => {
+                saveGridMarks(true);
+            }, 600);
+        }
+
+        function updateAutosaveBadge(status) {
+            const badge = document.getElementById('autosaveStatusBadge');
+            if (!badge) return;
+
+            if (status === 'saving') {
+                badge.style.background = '#fef3c7';
+                badge.style.color = '#92400e';
+                badge.style.borderColor = '#fde68a';
+                badge.innerHTML = `<span>⏳</span> Autosaving...`;
+            } else if (status === 'saved') {
+                badge.style.background = '#ecfdf5';
+                badge.style.color = '#047857';
+                badge.style.borderColor = '#a7f3d0';
+                badge.innerHTML = `<span>✅</span> All changes saved`;
+            } else if (status === 'offline') {
+                badge.style.background = '#fff7ed';
+                badge.style.color = '#c2410c';
+                badge.style.borderColor = '#fed7aa';
+                badge.innerHTML = `<span>💾</span> Saved locally (Offline)`;
+            }
+        }
+
         function handleCellScoreChange(e) {
             const input = e.target;
             const stuId = input.getAttribute('data-student-id');
@@ -1087,9 +1177,11 @@
                 }
             }
             stu.total_score = Math.round(sum * 10) / 10;
-            document.getElementById(`row-total-${stuId}`).textContent = stu.total_score;
+            const lblTotal = document.getElementById(`row-total-${stuId}`);
+            if (lblTotal) lblTotal.textContent = stu.total_score;
 
             recalculateGridStats();
+            triggerAutosave();
         }
 
         function handleGridKeyboardNav(e) {
@@ -1167,15 +1259,17 @@
             document.getElementById('statGridPassRate').textContent = `${passPct}%`;
         }
 
-        async function saveGridMarks() {
+        async function saveGridMarks(silent = false) {
             if (!selectedClassroomId && !selectedGradeId) return;
 
             const assessmentTypeId = document.getElementById('gridAssessmentType').value;
             const subjectCode = (currentMode === 'single') ? document.getElementById('gridSubjectSelect').value : 'all';
 
             const btn = document.getElementById('btnSaveMarks');
-            btn.disabled = true;
-            btn.innerHTML = '<span>⏳</span> Saving...';
+            if (!silent) {
+                btn.disabled = true;
+                btn.innerHTML = '<span>⏳</span> Saving...';
+            }
 
             const payloadMarks = [];
 
@@ -1219,25 +1313,41 @@
                         term: selectedTerm,
                         assessment_type_id: assessmentTypeId,
                         is_multi_subject: (currentMode === 'all'),
-                        entry_mode: currentRawWeightedMode,
+                        entry_mode: 'raw',
                         marks: payloadMarks
                     })
                 });
 
                 const data = await res.json();
                 if (res.ok && data.success) {
-                    showToast(data.message || 'Saved successfully!', 'success');
-                    setTimeout(autoLoadSheet, 400);
+                    backupMarksToLocalStorage();
+                    updateAutosaveBadge('saved');
+                    if (!silent) {
+                        showToast(data.message || 'Saved successfully!', 'success');
+                    }
                 } else {
-                    showToast(data.message || 'Error saving marks.', 'error');
+                    updateAutosaveBadge('offline');
+                    if (!silent) {
+                        showToast(data.message || 'Error saving marks.', 'error');
+                    }
                 }
             } catch(e) {
-                showToast('Network error.', 'error');
+                updateAutosaveBadge('offline');
+                if (!silent) {
+                    showToast('Saved to local backup (Offline).', 'warning');
+                }
             } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<span>💾</span> Save Marks';
+                if (!silent) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>💾</span> Save Marks';
+                }
             }
         }
+
+        window.addEventListener('online', () => {
+            showToast('Internet connection restored. Syncing marks...', 'info');
+            saveGridMarks(true);
+        });
 
         function showToast(msg, type = 'info') {
             const box = document.getElementById('gridToastBox');

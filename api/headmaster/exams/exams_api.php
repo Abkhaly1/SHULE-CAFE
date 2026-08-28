@@ -393,8 +393,22 @@ try {
 
             foreach ($allSubjects as $sub) {
                 $sc = $sub['code'];
-                $scoreVal = isset($stuAllSubjects[$sc][$assessmentTypeId]) ? floatval($stuAllSubjects[$sc][$assessmentTypeId]) : null;
-                $rawScoreVal = isset($stuRawSubjects[$sc][$assessmentTypeId]) ? floatval($stuRawSubjects[$sc][$assessmentTypeId]) : null;
+                $scoreVal = null;
+                $rawScoreVal = null;
+
+                if (isset($stuAllSubjects[$sc][$assessmentTypeId])) {
+                    $scoreVal = floatval($stuAllSubjects[$sc][$assessmentTypeId]);
+                } elseif (!empty($stuAllSubjects[$sc])) {
+                    $scoreVal = floatval(reset($stuAllSubjects[$sc]));
+                }
+
+                if (isset($stuRawSubjects[$sc][$assessmentTypeId])) {
+                    $rawScoreVal = floatval($stuRawSubjects[$sc][$assessmentTypeId]);
+                } elseif (!empty($stuRawSubjects[$sc])) {
+                    $rawScoreVal = floatval(reset($stuRawSubjects[$sc]));
+                } elseif ($scoreVal !== null) {
+                    $rawScoreVal = $scoreVal;
+                }
                 
                 $subjectScores[$sc] = $scoreVal;
                 $rawSubjectScores[$sc] = $rawScoreVal;
@@ -786,21 +800,15 @@ try {
                 } else {
                     if (isset($scores[$examTypeId])) {
                         $marksMatrix[$sid][$scode] = round($scores[$examTypeId], 1);
+                    } elseif (!empty($scores)) {
+                        $marksMatrix[$sid][$scode] = round(reset($scores), 1);
                     }
                 }
             }
         }
 
-        // Filter subject list to only subjects that have evaluated marks or are core
-        $evaluatedSubjects = [];
-        foreach ($allSubjects as $sub) {
-            if (isset($activeSubjectsPresent[$sub['code']])) {
-                $evaluatedSubjects[] = $sub;
-            }
-        }
-        if (empty($evaluatedSubjects)) {
-            $evaluatedSubjects = array_slice($allSubjects, 0, 8);
-        }
+        // Always display full curriculum subject matrix for the grade/classroom broadsheet
+        $evaluatedSubjects = $allSubjects;
 
         // Compute performance for each student using GradingManager
         $broadsheetRows = [];
