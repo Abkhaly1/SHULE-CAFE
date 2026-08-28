@@ -391,19 +391,9 @@
                             </h1>
                         </div>
 
-                        <!-- Right: Single-Row Controls (Entry Mode, Mode, Subject, Assessment, Class Filter, Save) -->
+                        <!-- Right: Single-Row Controls (Mode, Subject, Assessment, Class Filter, Save) -->
                         <div id="gridControlHeader" style="display: none; align-items: center; gap: 6px; flex-wrap: wrap;">
                             
-                            <!-- Dual-Entry Mode Switcher (Raw vs Weighted) -->
-                            <div style="background: #f1f5f9; padding: 2px; border-radius: 4px; display: inline-flex; gap: 2px;" title="Entry Input Mode: Raw Paper Score vs Pre-Reduced Weighted">
-                                <button id="btnEntryModeRaw" class="mode-toggle-btn active" onclick="switchRawWeightedMode('raw')">
-                                    <span>📊 Raw (0–100)</span>
-                                </button>
-                                <button id="btnEntryModeWeighted" class="mode-toggle-btn" onclick="switchRawWeightedMode('weighted')">
-                                    <span>⚖️ Weighted (0–<span id="lblModeMaxWeight">70</span>)</span>
-                                </button>
-                            </div>
-
                             <!-- Mode Toggle -->
                             <div style="background: #f1f5f9; padding: 2px; border-radius: 4px; display: inline-flex; gap: 2px;">
                                 <button id="btnModeAll" class="mode-toggle-btn active" onclick="switchEntryMode('all')">
@@ -644,15 +634,12 @@
             
             let t1Exam = allAssess.find(a => (a.term === 'Term 1' || !a.term) && (a.is_terminal == 1 || (a.name && a.name.toLowerCase().includes('first'))));
             let t2Exam = allAssess.find(a => a.term === 'Term 2' && (a.is_terminal == 1 || (a.name && a.name.toLowerCase().includes('second'))));
-            let caType = allAssess.find(a => (a.name && a.name.toLowerCase().includes('continuous')) || a.is_terminal == 0);
 
             let t1Id = t1Exam ? t1Exam.id : 'exam_t1';
             let t2Id = t2Exam ? t2Exam.id : 'exam_t2';
-            let caId = caType ? caType.id : 'ca';
 
-            selType.innerHTML += `<option value="${t1Id}" data-term="Term 1" ${!isTerm2 ? 'selected' : ''}>First Term Exam (70%)</option>`;
-            selType.innerHTML += `<option value="${t2Id}" data-term="Term 2" ${isTerm2 ? 'selected' : ''}>Second Term Exam (70%)</option>`;
-            selType.innerHTML += `<option value="${caId}" data-term="${selectedTerm}">Continuous Assessment (CA) (30%)</option>`;
+            selType.innerHTML += `<option value="${t1Id}" data-term="Term 1" ${!isTerm2 ? 'selected' : ''}>First Term Exam (100%)</option>`;
+            selType.innerHTML += `<option value="${t2Id}" data-term="Term 2" ${isTerm2 ? 'selected' : ''}>Second Term Exam (100%)</option>`;
         }
 
         function handleAssessmentTypeChange() {
@@ -954,28 +941,12 @@
             }
         }
 
-        let currentRawWeightedMode = 'raw'; // 'raw' or 'weighted'
-
-        function switchRawWeightedMode(mode) {
-            currentRawWeightedMode = mode;
-            const btnRaw = document.getElementById('btnEntryModeRaw');
-            const btnWeighted = document.getElementById('btnEntryModeWeighted');
-            if (btnRaw) btnRaw.classList.toggle('active', mode === 'raw');
-            if (btnWeighted) btnWeighted.classList.toggle('active', mode === 'weighted');
-
-            renderGridTable();
-            recalculateGridStats();
-            showToast(`Switched entry mode to ${mode.toUpperCase()} marks.`, 'info');
-        }
-
         function renderGridTable() {
             const thead = document.getElementById('gridThead');
             const tbody = document.getElementById('gridTbody');
 
             const isMulti = (currentMode === 'all');
             const targetSubjects = isMulti ? activeSubjects : activeSubjects.filter(s => s.code === document.getElementById('gridSubjectSelect').value);
-            const isRaw = (currentRawWeightedMode === 'raw');
-            const inputMax = isRaw ? 100 : maxAssessmentWeight;
 
             let thHtml = `
                 <tr>
@@ -985,11 +956,10 @@
             `;
 
             targetSubjects.forEach(sub => {
-                const subHeaderLabel = isRaw ? `(Raw ➔ ${maxAssessmentWeight}%)` : `(${maxAssessmentWeight}%)`;
                 thHtml += `
                     <th style="min-width: 68px; text-align: center;" title="${sub.name}">
                         <div>${sub.code}</div>
-                        <div style="font-size: 9px; font-weight: 700; opacity: 0.9; color: #a7f3d0;">${subHeaderLabel}</div>
+                        <div style="font-size: 9.5px; font-weight: 700; opacity: 0.9; color: #a7f3d0;">(100%)</div>
                     </th>
                 `;
             });
@@ -1018,41 +988,25 @@
                     <td class="sticky-col-name">${stu.full_name}</td>
                 `;
 
-                if (!stu.raw_subject_scores) stu.raw_subject_scores = {};
                 if (!stu.subject_scores) stu.subject_scores = {};
 
                 targetSubjects.forEach((sub, cIdx) => {
                     const sc = sub.code;
                     let val = '';
-                    
-                    if (isRaw) {
-                        if (stu.raw_subject_scores[sc] !== null && stu.raw_subject_scores[sc] !== undefined) {
-                            val = stu.raw_subject_scores[sc];
-                        } else if (stu.subject_scores[sc] !== null && stu.subject_scores[sc] !== undefined) {
-                            val = (maxAssessmentWeight > 0) ? Math.round((parseFloat(stu.subject_scores[sc]) / maxAssessmentWeight) * 1000) / 10 : stu.subject_scores[sc];
-                            stu.raw_subject_scores[sc] = val;
-                        }
-                    } else {
-                        if (stu.subject_scores[sc] !== null && stu.subject_scores[sc] !== undefined) {
-                            val = stu.subject_scores[sc];
-                        } else if (stu.raw_subject_scores[sc] !== null && stu.raw_subject_scores[sc] !== undefined) {
-                            val = Math.round((parseFloat(stu.raw_subject_scores[sc]) * (maxAssessmentWeight / 100.0)) * 10) / 10;
-                            stu.subject_scores[sc] = val;
-                        }
+                    if (stu.subject_scores[sc] !== null && stu.subject_scores[sc] !== undefined) {
+                        val = stu.subject_scores[sc];
+                    } else if (stu.raw_subject_scores && stu.raw_subject_scores[sc] !== null && stu.raw_subject_scores[sc] !== undefined) {
+                        val = stu.raw_subject_scores[sc];
+                        stu.subject_scores[sc] = val;
                     }
 
                     const numVal = (val !== '') ? parseFloat(val) : null;
-                    const isFail = (numVal !== null && ((isRaw && numVal < 30) || (!isRaw && (numVal / maxAssessmentWeight) < 0.3)));
+                    const isFail = (numVal !== null && numVal < 30);
                     const hasVal = (numVal !== null);
-
-                    const tooltipText = (numVal !== null)
-                        ? (isRaw ? `Raw: ${numVal}/100 ➔ Weighted: ${Math.round((numVal * (maxAssessmentWeight / 100.0)) * 10) / 10}/${maxAssessmentWeight}`
-                                 : `Weighted: ${numVal}/${maxAssessmentWeight} ➔ Normalized: ${(maxAssessmentWeight > 0) ? Math.round((numVal / maxAssessmentWeight) * 1000) / 10 : numVal}/100`)
-                        : '';
 
                     rowHtml += `
                         <td style="text-align: center;">
-                            <input type="number" step="0.5" min="0" max="${inputMax}"
+                            <input type="number" step="0.5" min="0" max="100"
                                 class="grid-score-input ${hasVal ? 'has-score' : ''} ${isFail ? 'fail-score' : ''}"
                                 data-student-id="${stu.student_id}"
                                 data-subject-code="${sc}"
@@ -1060,7 +1014,7 @@
                                 data-col="${cIdx}"
                                 value="${val !== '' ? val : ''}"
                                 placeholder="-"
-                                title="${tooltipText}"
+                                title="${numVal !== null ? 'Score: ' + numVal + '/100' : ''}"
                                 onwheel="event.preventDefault()"
                                 ${sheetData.is_locked ? 'disabled' : ''}>
                         </td>
@@ -1092,8 +1046,6 @@
             const stuId = input.getAttribute('data-student-id');
             const subCode = input.getAttribute('data-subject-code');
             const rawVal = input.value.trim();
-            const isRaw = (currentRawWeightedMode === 'raw');
-            const inputMax = isRaw ? 100 : maxAssessmentWeight;
 
             let numVal = rawVal !== '' ? parseFloat(rawVal) : null;
 
@@ -1101,43 +1053,31 @@
                 if (numVal < 0) {
                     numVal = 0;
                     input.value = 0;
-                } else if (numVal > inputMax) {
-                    numVal = inputMax;
-                    input.value = inputMax;
-                    showToast(`Maximum score is ${inputMax}`, 'warning');
+                } else if (numVal > 100) {
+                    numVal = 100;
+                    input.value = 100;
+                    showToast('Maximum score is 100', 'warning');
                 }
             }
 
-            const isFail = (numVal !== null && ((isRaw && numVal < 30) || (!isRaw && (numVal / maxAssessmentWeight) < 0.3)));
+            const isFail = (numVal !== null && numVal < 30);
 
             if (rawVal === '') {
                 input.className = 'grid-score-input';
                 input.title = '';
             } else if (isFail) {
                 input.className = 'grid-score-input fail-score has-score';
+                input.title = `Score: ${numVal}/100`;
             } else {
                 input.className = 'grid-score-input has-score';
+                input.title = `Score: ${numVal}/100`;
             }
 
             const stu = sheetData.roster.find(s => String(s.student_id) === String(stuId));
             if (!stu) return;
 
-            if (!stu.raw_subject_scores) stu.raw_subject_scores = {};
             if (!stu.subject_scores) stu.subject_scores = {};
-
-            if (isRaw) {
-                const rawScore = numVal;
-                const weightedScore = (rawScore !== null) ? Math.round((rawScore * (maxAssessmentWeight / 100.0)) * 10) / 10 : null;
-                stu.raw_subject_scores[subCode] = rawScore;
-                stu.subject_scores[subCode] = weightedScore;
-                input.title = (rawScore !== null) ? `Raw: ${rawScore}/100 ➔ Weighted: ${weightedScore}/${maxAssessmentWeight}` : '';
-            } else {
-                const weightedScore = numVal;
-                const rawScore = (weightedScore !== null && maxAssessmentWeight > 0) ? Math.round(((weightedScore / maxAssessmentWeight) * 100.0) * 10) / 10 : weightedScore;
-                stu.subject_scores[subCode] = weightedScore;
-                stu.raw_subject_scores[subCode] = rawScore;
-                input.title = (weightedScore !== null) ? `Weighted: ${weightedScore}/${maxAssessmentWeight} ➔ Normalized: ${rawScore}/100` : '';
-            }
+            stu.subject_scores[subCode] = numVal;
 
             // Calculate student total score
             let sum = 0;

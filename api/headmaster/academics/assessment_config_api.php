@@ -34,15 +34,13 @@ try {
 
         if (empty($t1)) {
             $t1 = [
-                ['id' => null, 'name' => 'Continuous Assessment (CA)', 'weight_percent' => 30.00, 'is_terminal' => 0],
-                ['id' => null, 'name' => 'First Term Exam', 'weight_percent' => 70.00, 'is_terminal' => 1]
+                ['id' => null, 'name' => 'First Term Exam', 'weight_percent' => 100.00, 'is_terminal' => 1]
             ];
         }
 
         if (empty($t2)) {
             $t2 = [
-                ['id' => null, 'name' => 'Continuous Assessment (CA)', 'weight_percent' => 30.00, 'is_terminal' => 0],
-                ['id' => null, 'name' => 'Second Term Exam', 'weight_percent' => 70.00, 'is_terminal' => 1]
+                ['id' => null, 'name' => 'Second Term Exam', 'weight_percent' => 100.00, 'is_terminal' => 1]
             ];
         }
 
@@ -170,12 +168,11 @@ try {
             $totalWeight += floatval($t['weight_percent']);
         }
 
-        // Default profile if empty - Standard First / Second Term Exam + Continuous Assessment
+        // Default profile if empty - Standard First / Second Term Exam (100%)
         if (empty($types)) {
             $examName = ($term === 'Term 2') ? 'Second Term Exam' : 'First Term Exam';
             $types = [
-                ['id' => null, 'name' => 'Continuous Assessment (CA)', 'weight_percent' => 30.00, 'is_terminal' => 0],
-                ['id' => null, 'name' => $examName, 'weight_percent' => 70.00, 'is_terminal' => 1]
+                ['id' => null, 'name' => $examName, 'weight_percent' => 100.00, 'is_terminal' => 1]
             ];
             $totalWeight = 100.00;
         }

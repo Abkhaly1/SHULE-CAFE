@@ -149,10 +149,8 @@ try {
 
         if (empty($allTypes)) {
             $allTypes = [
-                ['id' => 'ca_t1', 'name' => 'Continuous Assessment (CA)', 'weight_percent' => 30.00, 'is_terminal' => 0, 'term' => 'Term 1'],
-                ['id' => 'exam_t1', 'name' => 'First Term Exam', 'weight_percent' => 70.00, 'is_terminal' => 1, 'term' => 'Term 1'],
-                ['id' => 'ca_t2', 'name' => 'Continuous Assessment (CA)', 'weight_percent' => 30.00, 'is_terminal' => 0, 'term' => 'Term 2'],
-                ['id' => 'exam_t2', 'name' => 'Second Term Exam', 'weight_percent' => 70.00, 'is_terminal' => 1, 'term' => 'Term 2']
+                ['id' => 'exam_t1', 'name' => 'First Term Exam', 'weight_percent' => 100.00, 'is_terminal' => 1, 'term' => 'Term 1'],
+                ['id' => 'exam_t2', 'name' => 'Second Term Exam', 'weight_percent' => 100.00, 'is_terminal' => 1, 'term' => 'Term 2']
             ];
         }
 
@@ -298,9 +296,9 @@ try {
         $assessmentTypes = $stmtTypes->fetchAll(PDO::FETCH_ASSOC);
 
         if (empty($assessmentTypes)) {
+            $examName = ($term === 'Term 2') ? 'Second Term Exam' : 'First Term Exam';
             $assessmentTypes = [
-                ['id' => '1', 'name' => 'Continuous Assessment (CA)', 'weight_percent' => 30.00, 'is_terminal' => 0],
-                ['id' => '2', 'name' => 'Terminal Examination', 'weight_percent' => 70.00, 'is_terminal' => 1]
+                ['id' => '1', 'name' => $examName, 'weight_percent' => 100.00, 'is_terminal' => 1, 'term' => $term]
             ];
         }
 

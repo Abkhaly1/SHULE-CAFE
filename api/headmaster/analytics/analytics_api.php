@@ -56,112 +56,112 @@ try {
         $stmtScales->execute([$levelType]);
         $scales = $stmtScales->fetchAll(PDO::FETCH_ASSOC);
 
-        // Fetch assessment types for dynamic table headers
-        $stmtTypes = $conn->prepare("SELECT id, name, weight_percent, is_terminal, term, academic_year FROM assessment_types WHERE school_id = ? AND academic_year = ? ORDER BY id ASC");
-        $stmtTypes->execute([$schoolId, $year]);
-        $allTypes = $stmtTypes->fetchAll(PDO::FETCH_ASSOC);
-        $assessmentTypes = [];
-        if (!empty($allTypes)) {
-            foreach ($allTypes as $t) {
-                if (!empty($t['term'])) {
-                    $t['name'] = $t['name'] . ' (' . $t['term'] . ')';
-                }
-                $assessmentTypes[] = $t;
-            }
+        if (empty($scales)) {
+            $scales = [
+                ['min_mark' => 75, 'max_mark' => 100, 'grade' => 'A', 'points' => 1, 'remark' => 'Excellent'],
+                ['min_mark' => 65, 'max_mark' => 74.99, 'grade' => 'B', 'points' => 2, 'remark' => 'Very Good'],
+                ['min_mark' => 45, 'max_mark' => 64.99, 'grade' => 'C', 'points' => 3, 'remark' => 'Good'],
+                ['min_mark' => 30, 'max_mark' => 44.99, 'grade' => 'D', 'points' => 4, 'remark' => 'Satisfactory'],
+                ['min_mark' => 0,  'max_mark' => 29.99, 'grade' => 'F', 'points' => 5, 'remark' => 'Fail']
+            ];
         }
 
-        // Fetch dynamic marks
-        $stmtMarks = $conn->prepare("
-            SELECT me.subject_code, COALESCE(s.name, me.subject_code) AS subject_name,
-                   me.assessment_type_id, me.score
-            FROM marks_entry_dynamic me
-            LEFT JOIN subjects s ON me.subject_code = s.code
-            WHERE me.school_id = ? AND me.student_id = ? AND me.academic_year = ? AND me.term = ?
-        ");
-        $stmtMarks->execute([$schoolId, $studentId, $year, $term]);
-        $dynamicMarks = $stmtMarks->fetchAll(PDO::FETCH_ASSOC);
-
-        $groupedMarks = [];
-        foreach ($dynamicMarks as $dm) {
-            $sc = $dm['subject_code'];
-            if (!isset($groupedMarks[$sc])) {
-                $groupedMarks[$sc] = [
-                    'subject_code' => $sc,
-                    'subject_name' => $dm['subject_name'],
-                    'scores' => [],
-                    'total_score' => 0
-                ];
-            }
-            $groupedMarks[$sc]['scores'][$dm['assessment_type_id']] = floatval($dm['score']);
-            $groupedMarks[$sc]['total_score'] += floatval($dm['score']);
-        }
-
-        // Fallback to legacy marks_entry if no dynamic marks found
-        if (empty($groupedMarks)) {
-            $stmtLegacy = $conn->prepare("
+        // Helper to process marks for a specific term
+        $processTermMarks = function($targetTerm) use ($conn, $schoolId, $studentId, $year, $scales, $levelType) {
+            $stmtM = $conn->prepare("
                 SELECT me.subject_code, COALESCE(s.name, me.subject_code) AS subject_name,
-                       COALESCE(me.continuous_assessment_mark, 0) AS ca_mark,
-                       COALESCE(me.terminal_mark, 0) AS terminal_mark
-                FROM marks_entry me
+                       COALESCE(me.score, me.raw_score, 0) AS score
+                FROM marks_entry_dynamic me
                 LEFT JOIN subjects s ON me.subject_code = s.code
                 WHERE me.school_id = ? AND me.student_id = ? AND me.academic_year = ? AND me.term = ?
+                ORDER BY subject_name ASC
             ");
-            $stmtLegacy->execute([$schoolId, $studentId, $year, $term]);
-            $legacyMarks = $stmtLegacy->fetchAll(PDO::FETCH_ASSOC);
-            foreach ($legacyMarks as $lm) {
-                $groupedMarks[$lm['subject_code']] = [
-                    'subject_code' => $lm['subject_code'],
-                    'subject_name' => $lm['subject_name'],
-                    'scores' => ['ca' => floatval($lm['ca_mark']), 'terminal' => floatval($lm['terminal_mark'])],
-                    'total_score' => floatval($lm['ca_mark']) + floatval($lm['terminal_mark'])
-                ];
+            $stmtM->execute([$schoolId, $studentId, $year, $targetTerm]);
+            $rawRows = $stmtM->fetchAll(PDO::FETCH_ASSOC);
+
+            // Fallback to legacy marks_entry if no dynamic marks
+            if (empty($rawRows)) {
+                $stmtLeg = $conn->prepare("
+                    SELECT me.subject_code, COALESCE(s.name, me.subject_code) AS subject_name,
+                           COALESCE(me.terminal_mark, me.continuous_assessment_mark, 0) AS score
+                    FROM marks_entry me
+                    LEFT JOIN subjects s ON me.subject_code = s.code
+                    WHERE me.school_id = ? AND me.student_id = ? AND me.academic_year = ? AND me.term = ?
+                    ORDER BY subject_name ASC
+                ");
+                $stmtLeg->execute([$schoolId, $studentId, $year, $targetTerm]);
+                $rawRows = $stmtLeg->fetchAll(PDO::FETCH_ASSOC);
             }
-            if (!empty($groupedMarks)) {
-                $assessmentTypes = [
-                    ['id' => 'ca', 'name' => 'CA Mark', 'weight_percent' => 40],
-                    ['id' => 'terminal', 'name' => 'Terminal Exam', 'weight_percent' => 60]
-                ];
-            }
-        }
 
-        $subjectMarks = array_values($groupedMarks);
-        usort($subjectMarks, function($a, $b) { return strcmp($a['subject_name'], $b['subject_name']); });
+            $items = [];
+            $totalScore = 0;
+            $totalPoints = 0;
 
-        $totalPoints = 0;
-        $totalScores = 0;
-        $subjectCount = count($subjectMarks);
+            foreach ($rawRows as $r) {
+                $score = floatval($r['score']);
+                $totalScore += $score;
 
-        foreach ($subjectMarks as &$m) {
-            $total = floatval($m['total_score']);
-            $m['total_score'] = round($total, 2);
-            $totalScores += $total;
+                $mGrade = 'F';
+                $mRemark = 'Fail';
+                $mPoints = 5;
 
-            $mGrade = 'F';
-            $mRemark = 'Fail';
-            $mPoints = 7;
-
-            foreach ($scales as $sc) {
-                if ($total >= floatval($sc['min_mark']) && $total <= floatval($sc['max_mark'])) {
-                    $mGrade = $sc['grade'];
-                    $mRemark = $sc['remark'];
-                    $mPoints = intval($sc['points']);
-                    break;
+                foreach ($scales as $sc) {
+                    if ($score >= floatval($sc['min_mark']) && $score <= floatval($sc['max_mark'])) {
+                        $mGrade = $sc['grade'];
+                        $mRemark = $sc['remark'];
+                        $mPoints = intval($sc['points']);
+                        break;
+                    }
                 }
+
+                $totalPoints += $mPoints;
+                $items[] = [
+                    'subject_code' => $r['subject_code'],
+                    'subject_name' => $r['subject_name'],
+                    'score' => round($score, 1),
+                    'grade' => $mGrade,
+                    'points' => $mPoints,
+                    'remark' => $mRemark
+                ];
             }
 
-            $m['grade'] = $mGrade;
-            $m['remark'] = $mRemark;
-            $m['points'] = $mPoints;
-            $totalPoints += $mPoints;
+            $subCount = count($items);
+            $avg = $subCount > 0 ? round($totalScore / $subCount, 2) : 0;
+
+            // Division calculation
+            $stmtDiv = $conn->prepare("SELECT division_name, remark FROM division_scales WHERE level_type = ? AND ? BETWEEN min_points AND max_points LIMIT 1");
+            $stmtDiv->execute([$levelType, $totalPoints]);
+            $divRow = $stmtDiv->fetch(PDO::FETCH_ASSOC);
+            $division = $divRow ? $divRow['division_name'] : ($subCount > 0 ? ($avg >= 45 ? 'Division III' : 'Division IV') : '-');
+
+            return [
+                'term' => $targetTerm,
+                'has_marks' => ($subCount > 0),
+                'subjects' => $items,
+                'summary' => [
+                    'total_score' => round($totalScore, 1),
+                    'average_score' => $avg,
+                    'total_points' => $totalPoints,
+                    'division' => $division,
+                    'subject_count' => $subCount
+                ]
+            ];
+        };
+
+        $t1Data = $processTermMarks('Term 1');
+        $t2Data = $processTermMarks('Term 2');
+
+        // Annual Cumulative Metrics
+        $annualAvg = 0;
+        if ($t1Data['has_marks'] && $t2Data['has_marks']) {
+            $annualAvg = round(($t1Data['summary']['average_score'] + $t2Data['summary']['average_score']) / 2, 2);
+        } elseif ($t1Data['has_marks']) {
+            $annualAvg = $t1Data['summary']['average_score'];
+        } elseif ($t2Data['has_marks']) {
+            $annualAvg = $t2Data['summary']['average_score'];
         }
 
-        // Calculate division result from division_scales
-        $stmtDiv = $conn->prepare("SELECT division_name, remark FROM division_scales WHERE level_type = ? AND ? BETWEEN min_points AND max_points LIMIT 1");
-        $stmtDiv->execute([$levelType, $totalPoints]);
-        $divRow = $stmtDiv->fetch(PDO::FETCH_ASSOC);
-        $divisionResult = $divRow ? $divRow['division_name'] : 'Division IV';
-
-        $gpa = $subjectCount > 0 ? round($totalScores / $subjectCount, 2) : 0;
+        $activeTermData = ($term === 'Term 2') ? $t2Data : $t1Data;
 
         // Fetch Form Master Comment
         $stmtComment = $conn->prepare("SELECT conduct_comment FROM student_report_comments WHERE school_id = ? AND academic_year = ? AND term = ? AND student_id = ? LIMIT 1");
@@ -173,14 +173,18 @@ try {
             'student' => $student,
             'year' => $year,
             'term' => $term,
-            'assessment_types' => $assessmentTypes,
-            'subject_marks' => $subjectMarks,
-            'summary' => [
-                'total_points' => $totalPoints,
-                'division' => $divisionResult,
-                'gpa_average' => $gpa,
-                'subject_count' => $subjectCount
+            'term1_results' => $t1Data,
+            'term2_results' => $t2Data,
+            'annual_summary' => [
+                'term1_avg' => $t1Data['summary']['average_score'],
+                'term2_avg' => $t2Data['summary']['average_score'],
+                'annual_average' => $annualAvg,
+                'overall_points' => $activeTermData['summary']['total_points'],
+                'overall_division' => $activeTermData['summary']['division']
             ],
+            // Backwards compatibility keys
+            'subject_marks' => $activeTermData['subjects'],
+            'summary' => $activeTermData['summary'],
             'conduct_comment' => $conductComment
         ]);
         exit();

@@ -95,46 +95,72 @@
                 <div class="report-card-container">
                     <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #f1f5f9;padding-bottom:14px;margin-bottom:16px;">
                         <div>
-                            <h3 style="margin:0;font-size:16px;font-weight:800;color:var(--c-text-primary);" id="reportCardTitle">Academic Report Card</h3>
+                            <h3 style="margin:0;font-size:16px;font-weight:800;color:var(--c-text-primary);" id="reportCardTitle">Annual Academic Report Card</h3>
                             <div style="font-size:12px;color:var(--c-text-muted);margin-top:2px;" id="reportClassroomInfo">Class Registered: Loading…</div>
                         </div>
                         <div id="yearStatusBadge"></div>
                     </div>
 
-                    <table class="report-table">
-                        <thead>
-                            <tr>
-                                <th>Subject Code</th>
-                                <th>Subject Name</th>
-                                <th>CA Mark (40%)</th>
-                                <th>Terminal Mark (60%)</th>
-                                <th>Total Score (100%)</th>
-                                <th>Grade</th>
-                                <th>Points</th>
-                                <th>Remarks</th>
-                            </tr>
-                        </thead>
-                        <tbody id="marksTableBody">
-                            <tr><td colspan="8" style="text-align:center;padding:24px;color:var(--c-text-muted);">No academic marks recorded for this academic year.</td></tr>
-                        </tbody>
-                    </table>
+                    <!-- First Term Table -->
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 8px 0; font-size: 13.5px; font-weight: 800; color: #065f46; background: #f0fdf4; padding: 6px 12px; border-radius: 6px; border-left: 4px solid #059669;">
+                            📘 First Term Examination Results (100%)
+                        </h4>
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 80px;">Code</th>
+                                    <th>Subject Name</th>
+                                    <th style="width: 100px; text-align: center;">Score (100%)</th>
+                                    <th style="width: 70px; text-align: center;">Grade</th>
+                                    <th style="width: 70px; text-align: center;">Points</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody id="marksTableBodyT1">
+                                <tr><td colspan="6" style="text-align:center;padding:16px;color:var(--c-text-muted);">No First Term marks recorded.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Second Term Table -->
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 8px 0; font-size: 13.5px; font-weight: 800; color: #1e40af; background: #eff6ff; padding: 6px 12px; border-radius: 6px; border-left: 4px solid #2563eb;">
+                            📗 Second Term Examination Results (100%)
+                        </h4>
+                        <table class="report-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 80px;">Code</th>
+                                    <th>Subject Name</th>
+                                    <th style="width: 100px; text-align: center;">Score (100%)</th>
+                                    <th style="width: 70px; text-align: center;">Grade</th>
+                                    <th style="width: 70px; text-align: center;">Points</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody id="marksTableBodyT2">
+                                <tr><td colspan="6" style="text-align:center;padding:16px;color:var(--c-text-muted);">No Second Term marks recorded.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
 
                     <div class="summary-grid">
                         <div class="summary-card">
-                            <div class="val" id="sumTotalScore">0.0</div>
-                            <div class="lbl">Total Score</div>
+                            <div class="val" id="sumT1Avg">0.0%</div>
+                            <div class="lbl">Term 1 Average</div>
                         </div>
                         <div class="summary-card">
-                            <div class="val" id="sumGpaAvg">0.0%</div>
-                            <div class="lbl">Average Score (GPA)</div>
+                            <div class="val" id="sumT2Avg">0.0%</div>
+                            <div class="lbl">Term 2 Average</div>
                         </div>
-                        <div class="summary-card">
-                            <div class="val" id="sumTotalPoints">0</div>
-                            <div class="lbl">Total Points</div>
+                        <div class="summary-card" style="border-color:#2563eb;background:#eff6ff;">
+                            <div class="val" id="sumAnnualAvg" style="color:#1e40af;">0.0%</div>
+                            <div class="lbl" style="color:#1e40af;">Annual Average (GPA)</div>
                         </div>
                         <div class="summary-card" style="border-color:#059669;background:#ecfdf5;">
                             <div class="val" id="sumDivision" style="color:#059669;">Division I</div>
-                            <div class="lbl" style="color:#047857;">NECTA Division</div>
+                            <div class="lbl" style="color:#047857;">Annual Division</div>
                         </div>
                     </div>
                 </div>
@@ -188,55 +214,61 @@ async function loadTimelineAndReport() {
 
 async function loadReportForYear(year) {
     selectedYear = year;
-    const resR = await fetch(`/shule-cafe/api/reports/student_report_card.php?action=get_report&student_id=${currentStudentId}&year=${year}`);
-    const dataR = await resR.json();
+    try {
+        const resR = await fetch(`/shule-cafe/api/headmaster/analytics/analytics_api.php?action=student_report_card&student_id=${currentStudentId}&year=${year}`, { credentials: 'include' });
+        const dataR = await resR.json();
 
-    if (!dataR.success) {
-        alert(dataR.message || 'Failed to load report card.');
+        if (!dataR.success) {
+            alert(dataR.message || 'Failed to load report card.');
+            return;
+        }
+
+        const student = dataR.student || {};
+        const annual = dataR.annual_summary || {};
+
+        document.getElementById('reportCardTitle').textContent = `Annual Academic Report Card — Year ${year}`;
+        document.getElementById('reportClassroomInfo').textContent = `Class: ${student.classroom_name || 'N/A'} · Level: ${student.level_type || 'O-Level'}`;
+
+        // Status Badge
+        const badgeEl = document.getElementById('yearStatusBadge');
+        badgeEl.innerHTML = `<span style="background:#d1fae5;color:#065f46;padding:6px 14px;border-radius:20px;font-weight:800;font-size:12px;">Active Academic Record</span>`;
+
+        // Render Term 1 Marks
+        renderTermCardTable('marksTableBodyT1', dataR.term1_results);
+
+        // Render Term 2 Marks
+        renderTermCardTable('marksTableBodyT2', dataR.term2_results);
+
+        // Summary Card Stats
+        document.getElementById('sumT1Avg').textContent = annual.term1_avg ? `${annual.term1_avg}%` : '-';
+        document.getElementById('sumT2Avg').textContent = annual.term2_avg ? `${annual.term2_avg}%` : '-';
+        document.getElementById('sumAnnualAvg').textContent = annual.annual_average ? `${annual.annual_average}%` : '-';
+        document.getElementById('sumDivision').textContent = annual.overall_division || 'Division I';
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+function renderTermCardTable(tbodyId, termData) {
+    const tbody = document.getElementById(tbodyId);
+    if (!tbody) return;
+    const subjects = (termData && termData.subjects) ? termData.subjects : [];
+
+    if (subjects.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:14px;color:var(--c-text-muted);font-style:italic;">No marks recorded for this term.</td></tr>`;
         return;
     }
 
-    const { allocation, is_read_only, summary, marks } = dataR;
-
-    // Header & Read-Only Banner
-    document.getElementById('reportCardTitle').textContent = `Academic Report Card — Year ${year}`;
-    document.getElementById('reportClassroomInfo').textContent = `Grade: ${allocation.grade_name || 'N/A'} · Room: ${allocation.classroom_name || 'N/A'}`;
-
-    const banner = document.getElementById('readOnlyBanner');
-    if (is_read_only) {
-        banner.style.display = 'flex';
-        document.getElementById('readOnlyYear').textContent = year;
-    } else {
-        banner.style.display = 'none';
-    }
-
-    // Status Badge
-    const badgeEl = document.getElementById('yearStatusBadge');
-    const st = allocation.year_status || 'Active';
-    const bg = st === 'Repeated' ? '#fef9c3' : st === 'Promoted' ? '#d1fae5' : '#e0f2fe';
-    const clr = st === 'Repeated' ? '#92400e' : st === 'Promoted' ? '#065f46' : '#0369a1';
-    badgeEl.innerHTML = `<span style="background:${bg};color:${clr};padding:6px 14px;border-radius:20px;font-weight:800;font-size:12px;">Year Status: ${st}</span>`;
-
-    // Render Marks
-    const tbody = document.getElementById('marksTableBody');
-    tbody.innerHTML = marks.map(m => `
+    tbody.innerHTML = subjects.map(m => `
         <tr>
             <td style="font-weight:700;color:var(--c-text-muted);">${m.subject_code}</td>
             <td style="font-weight:700;">${m.subject_name}</td>
-            <td>${m.ca_mark}%</td>
-            <td>${m.terminal_mark}%</td>
-            <td style="font-weight:800;color:var(--c-text-primary);">${m.total_score}%</td>
-            <td><span class="grade-badge grade-${m.grade}">${m.grade}</span></td>
-            <td style="font-weight:700;">${m.points}</td>
-            <td style="font-size:12px;color:var(--c-text-muted);">${m.remark}</td>
+            <td style="text-align:center;font-weight:800;color:var(--c-text-primary);">${m.score}%</td>
+            <td style="text-align:center;"><span class="grade-badge grade-${m.grade}">${m.grade}</span></td>
+            <td style="text-align:center;font-weight:700;">${m.points}</td>
+            <td style="font-size:12px;color:var(--c-text-muted);font-style:italic;">${m.remark}</td>
         </tr>
     `).join('');
-
-    // Summary Card Stats
-    document.getElementById('sumTotalScore').textContent  = summary.total_score;
-    document.getElementById('sumGpaAvg').textContent      = `${summary.gpa_avg}%`;
-    document.getElementById('sumTotalPoints').textContent  = summary.total_points;
-    document.getElementById('sumDivision').textContent     = summary.division;
 }
 
 function onYearSwitch(newYear) {

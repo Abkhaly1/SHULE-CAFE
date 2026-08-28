@@ -526,22 +526,16 @@
             selAssess.innerHTML = '';
 
             const isTerm2 = (selectedTerm === 'Term 2');
-
-            selAssess.innerHTML += `<option value="all" ${selectedAssessmentType === 'all' ? 'selected' : ''}>✓ Average Assessment (30% CA + 70% Exam)</option>`;
-
             const allAssess = (currentScopes && currentScopes.assessment_types) ? currentScopes.assessment_types : [];
             
             let t1Exam = allAssess.find(a => (a.term === 'Term 1' || !a.term) && (a.is_terminal == 1 || (a.name && a.name.toLowerCase().includes('first'))));
             let t2Exam = allAssess.find(a => a.term === 'Term 2' && (a.is_terminal == 1 || (a.name && a.name.toLowerCase().includes('second'))));
-            let caType = allAssess.find(a => (a.name && a.name.toLowerCase().includes('continuous')) || a.is_terminal == 0);
 
             let t1Id = t1Exam ? t1Exam.id : 'exam_t1';
             let t2Id = t2Exam ? t2Exam.id : 'exam_t2';
-            let caId = caType ? caType.id : 'ca';
 
-            selAssess.innerHTML += `<option value="${t1Id}" data-term="Term 1" ${(!isTerm2 && selectedAssessmentType === String(t1Id)) ? 'selected' : ''}>✓ First Term Exam (70%)</option>`;
-            selAssess.innerHTML += `<option value="${t2Id}" data-term="Term 2" ${(isTerm2 && selectedAssessmentType === String(t2Id)) ? 'selected' : ''}>✓ Second Term Exam (70%)</option>`;
-            selAssess.innerHTML += `<option value="${caId}" data-term="${selectedTerm}" ${(selectedAssessmentType === String(caId)) ? 'selected' : ''}>✓ Continuous Assessment (CA) (30%)</option>`;
+            selAssess.innerHTML += `<option value="${t1Id}" data-term="Term 1" ${!isTerm2 ? 'selected' : ''}>✓ First Term Exam (100%)</option>`;
+            selAssess.innerHTML += `<option value="${t2Id}" data-term="Term 2" ${isTerm2 ? 'selected' : ''}>✓ Second Term Exam (100%)</option>`;
         }
 
         function handleAssessmentFilterChange() {

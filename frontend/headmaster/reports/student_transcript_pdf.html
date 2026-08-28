@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
    ====================================================================
-   SHULE CAFE - PROPRIETARY ACADEMIC TRANSCRIPT & REPORT CARD SYSTEM
+   SHULE CAFE - PROPRIETARY ANNUAL ACADEMIC TRANSCRIPT & REPORT CARD SYSTEM
    Copyright (c) 2026 SHULE CAFE. All Rights Reserved.
    100% English Directive Enforced
    ====================================================================
@@ -10,7 +10,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Official Academic Transcript & Report Card ‹ SHULE CAFE</title>
+    <title>Official Academic Transcript & Annual Progress Report ‹ SHULE CAFE</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,7 +44,7 @@
 
         .no-print-toolbar {
             width: 100%;
-            max-width: 820px;
+            max-width: 860px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -91,7 +91,7 @@
         /* ── TRANSCRIPT SHEET ────────────────────────────────────────── */
         .transcript-sheet {
             width: 100%;
-            max-width: 820px;
+            max-width: 860px;
             background: white;
             padding: 36px 44px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
@@ -107,9 +107,9 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: 58px;
+            font-size: 54px;
             font-weight: 900;
-            color: rgba(4, 120, 87, 0.035);
+            color: rgba(4, 120, 87, 0.032);
             white-space: nowrap;
             user-select: none;
             pointer-events: none;
@@ -129,20 +129,20 @@
             align-items: center;
             justify-content: space-between;
             border-bottom: 2.5px solid #064e3b;
-            padding-bottom: 16px;
-            margin-bottom: 20px;
+            padding-bottom: 14px;
+            margin-bottom: 16px;
         }
 
         .school-crest {
-            width: 72px;
-            height: 72px;
+            width: 68px;
+            height: 68px;
             border-radius: 50%;
             background: #ecfdf5;
             border: 2px solid #059669;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 34px;
+            font-size: 32px;
         }
 
         .school-meta {
@@ -152,7 +152,7 @@
         }
 
         .school-meta h1 {
-            font-size: 20px;
+            font-size: 19px;
             font-weight: 900;
             color: #064e3b;
             text-transform: uppercase;
@@ -165,18 +165,18 @@
             font-weight: 700;
             color: #059669;
             font-style: italic;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
         }
 
         .school-meta .contact-line {
-            font-size: 11px;
+            font-size: 10.5px;
             color: #64748b;
             font-weight: 600;
         }
 
         .report-title-badge {
             text-align: center;
-            margin-bottom: 18px;
+            margin-bottom: 16px;
         }
 
         .report-title-badge span {
@@ -185,7 +185,7 @@
             color: white;
             padding: 4px 18px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11.5px;
             font-weight: 800;
             letter-spacing: 1px;
             text-transform: uppercase;
@@ -195,13 +195,13 @@
         .student-info-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 8px 24px;
+            gap: 6px 24px;
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 6px;
-            padding: 12px 18px;
-            margin-bottom: 20px;
-            font-size: 12.5px;
+            padding: 10px 16px;
+            margin-bottom: 18px;
+            font-size: 12px;
         }
 
         .info-row {
@@ -213,7 +213,7 @@
             font-weight: 700;
             color: #64748b;
             text-transform: uppercase;
-            font-size: 11px;
+            font-size: 10.5px;
         }
 
         .info-val {
@@ -221,26 +221,59 @@
             color: #0f172a;
         }
 
+        /* Section Heading */
+        .term-section-heading {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 6px 6px 0 0;
+            margin-top: 14px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .term-1-heading {
+            background: #f0fdf4;
+            color: #065f46;
+            border: 1px solid #bbf7d0;
+            border-bottom: none;
+        }
+
+        .term-2-heading {
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+            border-bottom: none;
+        }
+
         /* Grades Table */
         .academic-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
-            font-size: 12.5px;
+            margin-bottom: 14px;
+            font-size: 12px;
         }
 
         .academic-table th {
-            background: #064e3b;
             color: white;
-            padding: 7px 10px;
-            font-size: 11px;
+            padding: 6px 10px;
+            font-size: 10.5px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             text-align: left;
         }
 
+        .academic-table.t1-table th {
+            background: #065f46;
+        }
+
+        .academic-table.t2-table th {
+            background: #1e40af;
+        }
+
         .academic-table td {
-            padding: 8px 10px;
+            padding: 6px 10px;
             border-bottom: 1px solid #e2e8f0;
         }
 
@@ -248,9 +281,16 @@
             background: #f8fafc;
         }
 
+        .academic-table tfoot td {
+            padding: 8px 10px;
+            font-weight: 800;
+            background: #f1f5f9;
+            border-top: 1.5px solid #cbd5e1;
+        }
+
         .grade-badge {
             display: inline-block;
-            padding: 2px 8px;
+            padding: 1px 7px;
             border-radius: 4px;
             font-weight: 900;
             font-size: 11px;
@@ -267,26 +307,26 @@
         .summary-banner {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin: 16px 0;
         }
 
         .sum-card {
             background: #ecfdf5;
             border: 1px solid #a7f3d0;
             border-radius: 6px;
-            padding: 10px;
+            padding: 8px 6px;
             text-align: center;
         }
 
         .sum-card .num {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 900;
             color: #064e3b;
         }
 
         .sum-card .label {
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 800;
             text-transform: uppercase;
             color: #047857;
@@ -298,23 +338,23 @@
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 6px;
-            padding: 10px 14px;
-            margin-bottom: 24px;
+            padding: 8px 12px;
+            margin-bottom: 16px;
         }
 
         .scales-heading {
-            font-size: 10.5px;
+            font-size: 10px;
             font-weight: 800;
             text-transform: uppercase;
             color: #64748b;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .scales-list {
             display: flex;
-            gap: 16px;
+            gap: 14px;
             flex-wrap: wrap;
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 700;
             color: #334155;
         }
@@ -323,9 +363,9 @@
         .signatures-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 36px;
-            margin-top: 30px;
-            padding-top: 18px;
+            gap: 32px;
+            margin-top: 20px;
+            padding-top: 14px;
             border-top: 1.5px dashed #cbd5e1;
         }
 
@@ -337,18 +377,18 @@
             width: 100%;
             height: 1px;
             background: #94a3b8;
-            margin: 40px auto 6px;
+            margin: 32px auto 6px;
         }
 
         .sig-title {
-            font-size: 11.5px;
+            font-size: 11px;
             font-weight: 800;
             color: #334155;
             text-transform: uppercase;
         }
 
         .sig-date {
-            font-size: 10px;
+            font-size: 9.5px;
             color: #64748b;
             font-weight: 600;
             margin-top: 2px;
@@ -366,7 +406,7 @@
             .transcript-sheet {
                 box-shadow: none;
                 border: none;
-                padding: 10px 20px;
+                padding: 10px 14px;
                 max-width: 100%;
             }
         }
@@ -377,7 +417,7 @@
     <!-- Top Action Toolbar (Hidden in Print) -->
     <div class="no-print-toolbar">
         <div>
-            <span style="font-weight: 800; font-size: 14px; color: #064e3b;">📄 Official Student Transcript</span>
+            <span style="font-weight: 800; font-size: 14px; color: #064e3b;">📄 Official Annual Academic Transcript</span>
         </div>
         <div style="display: flex; gap: 8px;">
             <button class="btn btn-outline" onclick="window.history.back()">⬅ Back</button>
@@ -398,13 +438,13 @@
                     <div class="motto" id="lblSchoolMotto">"Excellence in Academic and Moral Integrity"</div>
                     <div class="contact-line" id="lblSchoolContact">P.O. Box 100, Dar es Salaam, Tanzania • Email: info@shulecafe.com</div>
                 </div>
-                <div style="width: 72px; text-align: right; font-size: 11px; font-weight: 800; color: #047857;">
+                <div style="width: 72px; text-align: right; font-size: 10.5px; font-weight: 800; color: #047857;">
                     REG NO:<br><span id="lblSchoolRegNo" style="color: #0f172a;">TZ-99201</span>
                 </div>
             </div>
 
             <div class="report-title-badge">
-                <span id="lblReportCycle">ACADEMIC PROGRESS REPORT & TRANSCRIPT</span>
+                <span id="lblReportCycle">ANNUAL ACADEMIC PROGRESS REPORT & TRANSCRIPT</span>
             </div>
 
             <!-- Student Profile -->
@@ -422,56 +462,106 @@
                     <span class="info-val" id="valClassroom">Loading...</span>
                 </div>
                 <div class="info-row">
-                    <span class="info-label">Academic Session:</span>
-                    <span class="info-val" id="valSession">2026 • Term 1</span>
+                    <span class="info-label">Academic Year:</span>
+                    <span class="info-val" id="valSession">2026 Academic Session</span>
                 </div>
             </div>
 
-            <!-- Academic Scores Table -->
-            <table class="academic-table">
+            <!-- ── TABLE 1: FIRST TERM EXAMINATION RESULTS ────────────────────── -->
+            <div class="term-section-heading term-1-heading">
+                <span>📘 FIRST TERM EXAMINATION RESULTS (OUT OF 100%)</span>
+                <span id="lblT1Status">Recorded</span>
+            </div>
+            <table class="academic-table t1-table">
                 <thead>
                     <tr>
-                        <th style="width: 40px;">S/N</th>
-                        <th style="width: 80px;">Code</th>
+                        <th style="width: 35px;">S/N</th>
+                        <th style="width: 75px;">Code</th>
                         <th>Subject Name</th>
-                        <th style="width: 80px; text-align: center;">Score (%)</th>
-                        <th style="width: 60px; text-align: center;">Grade</th>
-                        <th style="width: 60px; text-align: center;">Points</th>
-                        <th>Subject Teacher Remarks</th>
+                        <th style="width: 85px; text-align: center;">Score (%)</th>
+                        <th style="width: 55px; text-align: center;">Grade</th>
+                        <th style="width: 55px; text-align: center;">Points</th>
+                        <th>Teacher Remarks</th>
                     </tr>
                 </thead>
-                <tbody id="transcriptTbody">
-                    <tr><td colspan="7" style="text-align: center; padding: 20px;">Loading student marks...</td></tr>
+                <tbody id="tbodyTerm1">
+                    <tr><td colspan="7" style="text-align: center; padding: 14px; color: #64748b;">Loading Term 1 marks...</td></tr>
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" style="text-align: right; color: #065f46;">TERM 1 TOTAL & AVERAGE:</td>
+                        <td style="text-align: center; color: #065f46;" id="tfootT1Score">-</td>
+                        <td style="text-align: center;" id="tfootT1Grade">-</td>
+                        <td style="text-align: center;" id="tfootT1Points">-</td>
+                        <td id="tfootT1Div" style="color: #065f46;">Division: -</td>
+                    </tr>
+                </tfoot>
             </table>
 
-            <!-- Summary Statistical Cards -->
+            <!-- ── TABLE 2: SECOND TERM EXAMINATION RESULTS ───────────────────── -->
+            <div class="term-section-heading term-2-heading">
+                <span>📗 SECOND TERM EXAMINATION RESULTS (OUT OF 100%)</span>
+                <span id="lblT2Status">Recorded</span>
+            </div>
+            <table class="academic-table t2-table">
+                <thead>
+                    <tr>
+                        <th style="width: 35px;">S/N</th>
+                        <th style="width: 75px;">Code</th>
+                        <th>Subject Name</th>
+                        <th style="width: 85px; text-align: center;">Score (%)</th>
+                        <th style="width: 55px; text-align: center;">Grade</th>
+                        <th style="width: 55px; text-align: center;">Points</th>
+                        <th>Teacher Remarks</th>
+                    </tr>
+                </thead>
+                <tbody id="tbodyTerm2">
+                    <tr><td colspan="7" style="text-align: center; padding: 14px; color: #64748b;">Loading Term 2 marks...</td></tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" style="text-align: right; color: #1e40af;">TERM 2 TOTAL & AVERAGE:</td>
+                        <td style="text-align: center; color: #1e40af;" id="tfootT2Score">-</td>
+                        <td style="text-align: center;" id="tfootT2Grade">-</td>
+                        <td style="text-align: center;" id="tfootT2Points">-</td>
+                        <td id="tfootT2Div" style="color: #1e40af;">Division: -</td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <!-- ── ANNUAL CUMULATIVE SUMMARY BANNER ──────────────────────────── -->
             <div class="summary-banner">
                 <div class="sum-card">
-                    <div class="num" id="sumTotalMarks">-</div>
-                    <div class="label">Total Marks</div>
+                    <div class="num" id="sumT1Avg">-</div>
+                    <div class="label">Term 1 Average</div>
                 </div>
                 <div class="sum-card">
-                    <div class="num" id="sumAverage">-</div>
-                    <div class="label">Average %</div>
+                    <div class="num" id="sumT2Avg">-</div>
+                    <div class="label">Term 2 Average</div>
                 </div>
-                <div class="sum-card">
-                    <div class="num" id="sumPoints">-</div>
-                    <div class="label">Total Points</div>
+                <div class="sum-card" style="background: #eff6ff; border-color: #93c5fd;">
+                    <div class="num" style="color: #1e40af;" id="sumAnnualAvg">-</div>
+                    <div class="label" style="color: #1e40af;">Annual Average</div>
                 </div>
                 <div class="sum-card">
                     <div class="num" id="sumDivision">-</div>
-                    <div class="label">Division</div>
+                    <div class="label">Annual Division</div>
                 </div>
                 <div class="sum-card">
-                    <div class="num" id="sumPosition">-</div>
-                    <div class="label">Class Position</div>
+                    <div class="num" id="sumPosition">1st</div>
+                    <div class="label">Annual Position</div>
                 </div>
+            </div>
+
+            <!-- Form Master Conduct Comment -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 12px; margin-bottom: 14px; font-size: 11px;">
+                <strong style="color: #334155;">Conduct & Character Assessment:</strong>
+                <span id="lblConductComment" style="color: #475569; font-style: italic; margin-left: 4px;">Demonstrates good behavior and consistent academic effort.</span>
             </div>
 
             <!-- Grading Scale Benchmark Reference -->
             <div class="scales-box">
-                <div class="scales-heading">Official Grading Benchmark Key:</div>
+                <div class="scales-heading">Official National Grading Benchmark Key:</div>
                 <div class="scales-list" id="scalesListContainer">
                     <span>A: 75–100% (Excellent / 1 Pt)</span>
                     <span>B: 65–74% (Very Good / 2 Pts)</span>
@@ -502,15 +592,15 @@
             const urlParams = new URLSearchParams(window.location.search);
             const studentId = urlParams.get('student_id') || '';
             const year = urlParams.get('year') || '2026';
-            const term = urlParams.get('term') || 'Term 1';
 
             if (!studentId) {
-                document.getElementById('transcriptTbody').innerHTML = `<tr><td colspan="7" style="text-align:center;color:#dc2626;padding:20px;">No student ID specified.</td></tr>`;
+                document.getElementById('tbodyTerm1').innerHTML = `<tr><td colspan="7" style="text-align:center;color:#dc2626;padding:14px;">No student ID specified.</td></tr>`;
+                document.getElementById('tbodyTerm2').innerHTML = `<tr><td colspan="7" style="text-align:center;color:#dc2626;padding:14px;">No student ID specified.</td></tr>`;
                 return;
             }
 
             try {
-                const res = await fetch(`/shule-cafe/api/headmaster/analytics/analytics_api.php?action=student_report_card&student_id=${studentId}&year=${year}&term=${encodeURIComponent(term)}`, {
+                const res = await fetch(`/shule-cafe/api/headmaster/analytics/analytics_api.php?action=student_report_card&student_id=${studentId}&year=${year}`, {
                     credentials: 'include'
                 });
                 const data = await res.json();
@@ -520,56 +610,72 @@
                     document.getElementById('valStudentName').textContent = stu.full_name;
                     document.getElementById('valRegNo').textContent = stu.user_code || '-';
                     document.getElementById('valClassroom').textContent = `${stu.classroom_name || 'Classroom'} (${stu.level_type || 'O-Level'})`;
-                    document.getElementById('valSession').textContent = `${year} • ${term}`;
+                    document.getElementById('valSession').textContent = `${year} Academic Session`;
 
-                    const subjects = data.report_card || [];
-                    const tbody = document.getElementById('transcriptTbody');
-                    tbody.innerHTML = '';
+                    // Render Term 1 Table
+                    renderTableSection('Term 1', data.term1_results, 'tbodyTerm1', 'tfootT1Score', 'tfootT1Grade', 'tfootT1Points', 'tfootT1Div');
 
-                    let totalScore = 0;
-                    let totalPoints = 0;
-                    let evaluatedCount = 0;
+                    // Render Term 2 Table
+                    renderTableSection('Term 2', data.term2_results, 'tbodyTerm2', 'tfootT2Score', 'tfootT2Grade', 'tfootT2Points', 'tfootT2Div');
 
-                    subjects.forEach((sub, idx) => {
-                        const scoreVal = sub.total_score !== undefined ? sub.total_score : (sub.score || 0);
-                        const grade = sub.grade || 'F';
-                        const points = sub.points || 5;
-                        const remark = sub.remark || '-';
+                    // Render Annual Summary
+                    const annual = data.annual_summary || {};
+                    document.getElementById('sumT1Avg').textContent = annual.term1_avg ? `${annual.term1_avg}%` : '-';
+                    document.getElementById('sumT2Avg').textContent = annual.term2_avg ? `${annual.term2_avg}%` : '-';
+                    document.getElementById('sumAnnualAvg').textContent = annual.annual_average ? `${annual.annual_average}%` : '-';
+                    document.getElementById('sumDivision').textContent = annual.overall_division || 'Division I';
 
-                        totalScore += scoreVal;
-                        totalPoints += points;
-                        evaluatedCount++;
-
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td style="font-weight: 700; color: #64748b;">${idx + 1}</td>
-                            <td style="font-weight: 800; color: #0f172a;">${sub.subject_code}</td>
-                            <td style="font-weight: 700; color: #334155;">${sub.subject_name}</td>
-                            <td style="text-align: center; font-weight: 800; color: #064e3b;">${scoreVal}%</td>
-                            <td style="text-align: center;"><span class="grade-badge grade-${grade}">${grade}</span></td>
-                            <td style="text-align: center; font-weight: 800;">${points}</td>
-                            <td style="font-size: 11.5px; color: #475569; font-style: italic;">${remark}</td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-
-                    const avg = evaluatedCount > 0 ? Math.round((totalScore / evaluatedCount) * 10) / 10 : 0;
-                    document.getElementById('sumTotalMarks').textContent = totalScore;
-                    document.getElementById('sumAverage').textContent = `${avg}%`;
-                    document.getElementById('sumPoints').textContent = data.summary?.total_points || totalPoints;
-                    document.getElementById('sumDivision').textContent = data.summary?.division || 'Division I';
-                    document.getElementById('sumPosition').textContent = data.summary?.class_position || '1';
+                    if (data.conduct_comment) {
+                        document.getElementById('lblConductComment').textContent = data.conduct_comment;
+                    }
 
                     const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
                     document.getElementById('sigDate1').textContent = `Date: ${today}`;
                     document.getElementById('sigDate2').textContent = `Date: ${today}`;
                 } else {
-                    document.getElementById('transcriptTbody').innerHTML = `<tr><td colspan="7" style="text-align:center;color:#dc2626;padding:20px;">${data.message || 'Error loading report card.'}</td></tr>`;
+                    document.getElementById('tbodyTerm1').innerHTML = `<tr><td colspan="7" style="text-align:center;color:#dc2626;padding:14px;">${data.message || 'Error loading report card.'}</td></tr>`;
+                    document.getElementById('tbodyTerm2').innerHTML = `<tr><td colspan="7" style="text-align:center;color:#dc2626;padding:14px;">${data.message || 'Error loading report card.'}</td></tr>`;
                 }
             } catch (e) {
-                document.getElementById('transcriptTbody').innerHTML = `<tr><td colspan="7" style="text-align:center;color:#dc2626;padding:20px;">Network communication error.</td></tr>`;
+                document.getElementById('tbodyTerm1').innerHTML = `<tr><td colspan="7" style="text-align:center;color:#dc2626;padding:14px;">Network communication error.</td></tr>`;
+                document.getElementById('tbodyTerm2').innerHTML = `<tr><td colspan="7" style="text-align:center;color:#dc2626;padding:14px;">Network communication error.</td></tr>`;
             }
         });
+
+        function renderTableSection(termName, termData, tbodyId, footScoreId, footGradeId, footPtsId, footDivId) {
+            const tbody = document.getElementById(tbodyId);
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const subjects = (termData && termData.subjects) ? termData.subjects : [];
+
+            if (subjects.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:12px; color:#64748b; font-style:italic;">No ${termName} examination marks recorded.</td></tr>`;
+                return;
+            }
+
+            subjects.forEach((sub, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: 700; color: #64748b;">${idx + 1}</td>
+                    <td style="font-weight: 800; color: #0f172a;">${sub.subject_code}</td>
+                    <td style="font-weight: 700; color: #334155;">${sub.subject_name}</td>
+                    <td style="text-align: center; font-weight: 800; color: #064e3b;">${sub.score}%</td>
+                    <td style="text-align: center;"><span class="grade-badge grade-${sub.grade}">${sub.grade}</span></td>
+                    <td style="text-align: center; font-weight: 800;">${sub.points}</td>
+                    <td style="font-size: 11px; color: #475569; font-style: italic;">${sub.remark}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            if (termData.summary) {
+                const s = termData.summary;
+                document.getElementById(footScoreId).textContent = `Avg: ${s.average_score}%`;
+                document.getElementById(footGradeId).textContent = `Total: ${s.total_score}`;
+                document.getElementById(footPtsId).textContent = `${s.total_points} Pts`;
+                document.getElementById(footDivId).textContent = `Division: ${s.division}`;
+            }
+        }
     </script>
 </body>
 </html>

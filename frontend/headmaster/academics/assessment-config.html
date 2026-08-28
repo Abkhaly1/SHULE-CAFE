@@ -139,14 +139,14 @@
                         <!-- Quick Presets Banner -->
                         <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                             <div>
-                                <strong style="font-size: 13px; color: #0f172a; display: block; margin-bottom: 2px;">⚡ Default Institutional Evaluation Standard:</strong>
+                                <strong style="font-size: 13px; color: #0f172a; display: block; margin-bottom: 2px;">⚡ Standard Academic Year Assessment Structure:</strong>
                                 <span style="font-size: 12px; color: #64748b; font-weight: 600;">
-                                    Each term combines <strong>30% Continuous Assessment (CA)</strong> + <strong>70% Terminal Examination</strong> = <strong>100%</strong> standalone term grade.
+                                    Terminal exam marks are recorded out of <strong>100%</strong> for <strong>First Term Exam</strong> and <strong>Second Term Exam</strong> of each academic year.
                                 </span>
                             </div>
                             <div style="display: flex; gap: 8px;">
                                 <button class="btn btn-outline btn-sm" onclick="applyGlobalStandardPreset()" style="background: #ecfdf5; color: #065f46; border-color: #a7f3d0; font-weight: 800; font-size: 12px; padding: 6px 14px;">
-                                    <span>🔄</span> Apply 30% CA + 70% Exam to Whole Year
+                                    <span>🔄</span> Apply 100% Terminal Exams (Term 1 & Term 2)
                                 </button>
                             </div>
                         </div>
@@ -428,13 +428,11 @@
 
         function applyGlobalStandardPreset() {
             renderTermRows('Term 1', [
-                { name: 'Continuous Assessment (CA)', weight_percent: 30.00, is_terminal: 0 },
-                { name: 'First Term Exam', weight_percent: 70.00, is_terminal: 1 }
+                { name: 'First Term Exam', weight_percent: 100.00, is_terminal: 1 }
             ]);
 
             renderTermRows('Term 2', [
-                { name: 'Continuous Assessment (CA)', weight_percent: 30.00, is_terminal: 0 },
-                { name: 'Second Term Exam', weight_percent: 70.00, is_terminal: 1 }
+                { name: 'Second Term Exam', weight_percent: 100.00, is_terminal: 1 }
             ]);
         }
 
