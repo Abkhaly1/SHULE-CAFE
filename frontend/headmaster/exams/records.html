@@ -824,18 +824,13 @@
 
         const broadsheetMemoryCache = {};
 
-        async function openBroadsheet(classroomId, gradeId, year, term, examType = 'all') {
+        async function openBroadsheet(classroomId, gradeId, year, term, examType = '') {
             const scopeParam = classroomId ? `classroom_id=${classroomId}` : `grade_id=${gradeId}`;
-            const cacheKey = `${scopeParam}_${year}_${term}_${examType}`;
-
-            // Instant render from memory cache if available (0ms perceived lag)
-            if (broadsheetMemoryCache[cacheKey]) {
-                activeBroadsheetData = broadsheetMemoryCache[cacheKey];
-                renderBroadsheetUI(activeBroadsheetData);
-            }
-
             const viewEl = document.getElementById('stepWorkspaceView');
-            if (viewEl && !broadsheetMemoryCache[cacheKey]) viewEl.style.opacity = '0.6';
+            if (viewEl) {
+                viewEl.style.display = 'block';
+                viewEl.style.opacity = '0.5';
+            }
 
             try {
                 const url = `/shule-cafe/api/headmaster/exams/exams_api.php?action=get_broadsheet_records&${scopeParam}&year=${year}&term=${encodeURIComponent(term)}&exam_type_id=${encodeURIComponent(examType)}`;
@@ -843,22 +838,8 @@
                 const data = await res.json();
 
                 if (res.ok && data.success) {
-                    broadsheetMemoryCache[cacheKey] = data;
                     activeBroadsheetData = data;
                     renderBroadsheetUI(data);
-
-                    // Background prefetch the other term for instant switching
-                    const otherTerm = (term === 'Term 1') ? 'Term 2' : 'Term 1';
-                    const otherType = (term === 'Term 1') ? 'exam_t2' : 'exam_t1';
-                    const otherKey = `${scopeParam}_${year}_${otherTerm}_${otherType}`;
-                    if (!broadsheetMemoryCache[otherKey]) {
-                        fetch(`/shule-cafe/api/headmaster/exams/exams_api.php?action=get_broadsheet_records&${scopeParam}&year=${year}&term=${encodeURIComponent(otherTerm)}&exam_type_id=${encodeURIComponent(otherType)}`, { credentials: 'include' })
-                            .then(r => r.json())
-                            .then(d => {
-                                if (d.success) broadsheetMemoryCache[otherKey] = d;
-                            })
-                            .catch(() => { });
-                    }
                 } else {
                     showAlert(data.message || 'Error loading broadsheet.', 'error');
                 }
@@ -882,6 +863,17 @@
             document.getElementById('topSumDiv0').textContent = data.division_summary['Division 0'] || 0;
             document.getElementById('topSumTotal').textContent = data.total_students;
             document.getElementById('topSumPassRate').textContent = `${data.class_pass_rate_percent}%`;
+
+            // Sync dropdown select state to active data term
+            const selAssess = document.getElementById('gridAssessmentFilter');
+            if (selAssess) {
+                for (let i = 0; i < selAssess.options.length; i++) {
+                    if (selAssess.options[i].getAttribute('data-term') === data.term) {
+                        selAssess.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
 
             const bestBadge = document.getElementById('bestSubjectBadge');
             if (bestBadge) {
