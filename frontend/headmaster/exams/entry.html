@@ -691,18 +691,37 @@
 
             const allAssess = (currentScopes && currentScopes.assessment_types) ? currentScopes.assessment_types : [];
             
-            let t1Exam = allAssess.find(a => (a.term === 'Term 1' || !a.term) && (a.is_terminal == 1 || (a.name && a.name.toLowerCase().includes('first'))));
-            let t2Exam = allAssess.find(a => a.term === 'Term 2' && (a.is_terminal == 1 || (a.name && a.name.toLowerCase().includes('second'))));
+            let t1Assessments = allAssess.filter(a => a.term === 'Term 1' || (!a.term && !a.name.toLowerCase().includes('second')));
+            let t2Assessments = allAssess.filter(a => a.term === 'Term 2' || (a.name && a.name.toLowerCase().includes('second')));
 
-            let t1Id = t1Exam ? t1Exam.id : 'exam_t1';
-            let t2Id = t2Exam ? t2Exam.id : 'exam_t2';
+            let optionsHtml = '';
+            if (t1Assessments.length > 0) {
+                t1Assessments.forEach(a => {
+                    const isSel = (selectedTerm === 'Term 1');
+                    optionsHtml += `<option value="${a.id}" data-term="Term 1" ${isSel ? 'selected' : ''}>${a.name} (${Math.round(a.weight_percent || 100)}%)</option>`;
+                });
+            } else {
+                optionsHtml += `<option value="exam_t1" data-term="Term 1" ${selectedTerm === 'Term 1' ? 'selected' : ''}>First Term Exam (100%)</option>`;
+            }
 
-            selType.innerHTML = `
-                <option value="${t1Id}" data-term="Term 1" ${selectedTerm === 'Term 1' ? 'selected' : ''}>First Term Exam (100%)</option>
-                <option value="${t2Id}" data-term="Term 2" ${selectedTerm === 'Term 2' ? 'selected' : ''}>Second Term Exam (100%)</option>
-            `;
+            if (t2Assessments.length > 0) {
+                t2Assessments.forEach(a => {
+                    const isSel = (selectedTerm === 'Term 2');
+                    optionsHtml += `<option value="${a.id}" data-term="Term 2" ${isSel ? 'selected' : ''}>${a.name} (${Math.round(a.weight_percent || 100)}%)</option>`;
+                });
+            } else {
+                optionsHtml += `<option value="exam_t2" data-term="Term 2" ${selectedTerm === 'Term 2' ? 'selected' : ''}>Second Term Exam (100%)</option>`;
+            }
 
-            selType.value = (selectedTerm === 'Term 2') ? String(t2Id) : String(t1Id);
+            selType.innerHTML = optionsHtml;
+
+            // Set the active value to match selectedTerm
+            for (let i = 0; i < selType.options.length; i++) {
+                if (selType.options[i].getAttribute('data-term') === selectedTerm) {
+                    selType.selectedIndex = i;
+                    break;
+                }
+            }
         }
 
         function handleAssessmentTypeChange() {
@@ -793,6 +812,7 @@
                 renderGradesStep();
             } else if (step === 'WORKSPACE') {
                 backLabel.textContent = 'Back to Grades';
+                populateAssessmentTypeDropdown();
                 populateClassFilterDropdown();
                 
                 const qs = selectedClassroomId ? `classroom_id=${selectedClassroomId}` : `grade_id=${selectedGradeId}`;
@@ -851,13 +871,14 @@
         function setTermSelection(term) {
             selectedTerm = term;
             document.querySelectorAll('.term-pill-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.textContent === term);
+                btn.classList.toggle('active', btn.textContent.trim() === term);
             });
         }
 
         function renderLevelsStep() {
             if (!currentScopes) return;
             document.getElementById('step2YearBadge').textContent = selectedYear;
+            setTermSelection(selectedTerm);
             const container = document.getElementById('levelsGridContainer');
             container.innerHTML = '';
 

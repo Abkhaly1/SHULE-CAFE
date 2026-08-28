@@ -197,6 +197,8 @@ try {
         $subjectCode = trim($_GET['subject_code'] ?? 'all');
         $year = trim($_GET['year'] ?? date('Y'));
         $term = trim($_GET['term'] ?? 'Term 1');
+        if (in_array(strtolower($term), ['1', 'term1', 'term 1', 'first term', 'first'])) $term = 'Term 1';
+        if (in_array(strtolower($term), ['2', 'term2', 'term 2', 'second term', 'second'])) $term = 'Term 2';
         $assessmentTypeId = trim($_GET['assessment_type_id'] ?? '');
 
         if (!$classroomId && !$gradeId) {
@@ -503,6 +505,8 @@ try {
         $subjectCode = trim($input['subject_code'] ?? 'all');
         $year = trim($input['year'] ?? date('Y'));
         $term = trim($input['term'] ?? 'Term 1');
+        if (in_array(strtolower($term), ['1', 'term1', 'term 1', 'first term', 'first'])) $term = 'Term 1';
+        if (in_array(strtolower($term), ['2', 'term2', 'term 2', 'second term', 'second'])) $term = 'Term 2';
         $assessmentTypeId = trim($input['assessment_type_id'] ?? '');
         $status = trim($input['status'] ?? 'draft'); // 'draft' or 'submitted'
         $marksList = $input['marks'] ?? [];
@@ -659,6 +663,8 @@ try {
         $gradeId = intval($_GET['grade_id'] ?? 0);
         $year = trim($_GET['year'] ?? date('Y'));
         $term = trim($_GET['term'] ?? 'Term 1');
+        if (in_array(strtolower($term), ['1', 'term1', 'term 1', 'first term', 'first'])) $term = 'Term 1';
+        if (in_array(strtolower($term), ['2', 'term2', 'term 2', 'second term', 'second'])) $term = 'Term 2';
         $examTypeId = trim($_GET['exam_type_id'] ?? 'all'); // 'all' or specific assessment_type_id
 
         if (!$classroomId && !$gradeId) {
@@ -967,6 +973,8 @@ try {
         $gradeId = intval($_GET['grade_id'] ?? 0);
         $year = trim($_GET['year'] ?? date('Y'));
         $term = trim($_GET['term'] ?? 'Term 1');
+        if (in_array(strtolower($term), ['1', 'term1', 'term 1', 'first term', 'first'])) $term = 'Term 1';
+        if (in_array(strtolower($term), ['2', 'term2', 'term 2', 'second term', 'second'])) $term = 'Term 2';
 
         if (!$classroomId && !$gradeId) {
             echo json_encode(['success' => false, 'message' => 'Classroom ID or Grade ID is required.']);
