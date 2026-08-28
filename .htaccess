@@ -10,9 +10,16 @@ Options -Indexes
     RewriteRule ^(.*),+$ /shule-cafe/$1 [R=301,L]
 </IfModule>
 
-# Security Headers
+# Security & Zero-Stale-Cache Headers
 <IfModule mod_headers.c>
     Header set X-Content-Type-Options "nosniff"
     Header set X-Frame-Options "SAMEORIGIN"
     Header set X-XSS-Protection "1; mode=block"
+
+    # Prevent aggressive browser caching on HTML, JS, JSON, and PHP files
+    <FilesMatch "\.(html|htm|js|json|php)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
 </IfModule>
