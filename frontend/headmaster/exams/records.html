@@ -551,12 +551,17 @@
                             </select>
 
                             <button id="btnPrintBroadsheet" class="btn btn-outline btn-sm"
-                                style="font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 11px; padding: 1px 8px;">
+                                style="font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 11px; padding: 1px 8px;" title="Print Official Broadsheet">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
                                 Print
                             </button>
+                            <button id="btnExportExcel" class="btn btn-outline btn-sm"
+                                style="font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 11px; padding: 1px 8px; color: #065f46; border-color: #a7f3d0; background: #ecfdf5;" title="Export Formatted Excel Spreadsheet">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+                                Excel
+                            </button>
                             <button id="btnExportCSV" class="btn btn-outline btn-sm"
-                                style="font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 11px; padding: 1px 8px;">
+                                style="font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 11px; padding: 1px 8px;" title="Export Flat CSV File">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                                 CSV
                             </button>
@@ -778,6 +783,7 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('btnPrintBroadsheet').addEventListener('click', () => window.print());
+            document.getElementById('btnExportExcel').addEventListener('click', exportToExcel);
             document.getElementById('btnExportCSV').addEventListener('click', exportToCSV);
             document.getElementById('gridClassFilter').addEventListener('change', handleClassFilterChange);
             document.getElementById('gridAssessmentFilter').addEventListener('change', handleAssessmentFilterChange);
@@ -1403,6 +1409,243 @@
             const safeClass = activeBroadsheetData.class_info.classroom_name.replace(/[^a-zA-Z0-9_-]/g, '_');
             link.href = URL.createObjectURL(blob);
             link.setAttribute('download', `broadsheet_${safeClass}_${activeBroadsheetData.term}_${activeBroadsheetData.year}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function exportToExcel() {
+            if (!activeBroadsheetData || activeBroadsheetData.broadsheet.length === 0) {
+                alert('No broadsheet records to export.');
+                return;
+            }
+
+            const data = activeBroadsheetData;
+            const schName = (data.school && data.school.name) ? data.school.name : 'OFFICIAL EXAMINATION CENTER';
+            const selAssess = document.getElementById('gridAssessmentFilter');
+            const assessName = (selAssess && selAssess.options[selAssess.selectedIndex]) ? selAssess.options[selAssess.selectedIndex].text : 'Continuous Assessment';
+            const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+            const totalCols = 3 + data.subjects.length + 3; // S/N + RegNo + Name + Subjects + Points + Div + Pos
+
+            let html = `
+                <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+                <head>
+                    <!--[if gte mso 9]>
+                    <xml>
+                        <x:ExcelWorkbook>
+                            <x:ExcelWorksheets>
+                                <x:ExcelWorksheet>
+                                    <x:Name>Broadsheet Results</x:Name>
+                                    <x:WorksheetOptions>
+                                        <x:DisplayGridlines/>
+                                        <x:Print>
+                                            <x:ValidPrinterInfo/>
+                                            <x:Orientation>Landscape</x:Orientation>
+                                        </x:Print>
+                                    </x:WorksheetOptions>
+                                </x:ExcelWorksheet>
+                            </x:ExcelWorksheets>
+                        </x:ExcelWorkbook>
+                    </xml>
+                    <![endif]-->
+                    <meta http-equiv="content-type" content="application/vnd.ms-excel; charset=UTF-8">
+                    <style>
+                        table { border-collapse: collapse; font-family: Calibri, Arial, sans-serif; }
+                        .sch-header { font-size: 16pt; font-weight: bold; background-color: #064e3b; color: #ffffff; text-align: center; height: 38px; border: 1px solid #064e3b; }
+                        .rep-header { font-size: 12pt; font-weight: bold; background-color: #ecfdf5; color: #064e3b; text-align: center; height: 26px; border: 1px solid #a7f3d0; }
+                        .meta-bar { font-size: 10pt; font-weight: bold; background-color: #f8fafc; color: #334155; border: 1px solid #cbd5e1; height: 22px; }
+                        .sec-hdr { font-size: 11pt; font-weight: bold; background-color: #0f172a; color: #ffffff; padding: 6px; border: 1px solid #0f172a; }
+                        .th-main { background-color: #064e3b; color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #000000; font-size: 10pt; height: 24px; }
+                        .th-sub { background-color: #1e293b; color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #000000; font-size: 10pt; height: 24px; }
+                        .td-center { border: 1px solid #cbd5e1; text-align: center; font-size: 10pt; height: 20px; mso-number-format: "\\@"; }
+                        .td-left { border: 1px solid #cbd5e1; text-align: left; font-size: 10pt; padding-left: 6px; height: 20px; font-weight: bold; }
+                        .td-bold-center { border: 1px solid #cbd5e1; text-align: center; font-size: 10pt; font-weight: bold; height: 20px; }
+                        .div-th { background-color: #064e3b; color: #ffffff; font-weight: bold; text-align: center; border: 1px solid #000000; font-size: 10pt; height: 22px; }
+                        .div-td { border: 1px solid #cbd5e1; text-align: center; font-size: 10.5pt; font-weight: bold; height: 22px; }
+                        .sig-cell { border: none; font-size: 10pt; font-weight: bold; color: #334155; height: 28px; }
+                    </style>
+                </head>
+                <body>
+                    <table>
+                        <!-- COLUMN DEFINITIONS WITH OPTIMAL WIDTHS -->
+                        <col width="45">
+                        <col width="110">
+                        <col width="230">
+            `;
+
+            data.subjects.forEach(() => {
+                html += `<col width="75">`;
+            });
+            html += `
+                        <col width="55">
+                        <col width="65">
+                        <col width="55">
+
+                        <!-- 1. OFFICIAL SCHOOL BANNER -->
+                        <tr>
+                            <td colspan="${totalCols}" class="sch-header">${schName.toUpperCase()}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="${totalCols}" class="rep-header">OFFICIAL EXAMINATION BROADSHEET • ${assessName.toUpperCase()}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="${totalCols}" class="meta-bar">
+                                &nbsp;Class/Grade: <strong>${data.class_info.classroom_name}</strong> &nbsp;|&nbsp; 
+                                Academic Year: <strong>${data.year}</strong> &nbsp;|&nbsp; 
+                                Term: <strong>${data.term}</strong> &nbsp;|&nbsp; 
+                                Total Candidates: <strong>${data.total_students}</strong> &nbsp;|&nbsp; 
+                                Overall Pass Rate: <strong>${data.class_pass_rate_percent}%</strong> &nbsp;|&nbsp; 
+                                Export Date: <strong>${today}</strong>
+                            </td>
+                        </tr>
+                        <tr><td colspan="${totalCols}" style="height: 10px;"></td></tr>
+
+                        <!-- 2. DIVISION PERFORMANCE SUMMARY -->
+                        <tr>
+                            <td colspan="${totalCols}" class="sec-hdr">DIVISION PERFORMANCE MATRIX</td>
+                        </tr>
+                        <tr>
+                            <td class="div-th" style="background-color: #15803d; color: white;">Div I</td>
+                            <td class="div-th" style="background-color: #1d4ed8; color: white;">Div II</td>
+                            <td class="div-th" style="background-color: #b45309; color: white;">Div III</td>
+                            <td class="div-th" style="background-color: #c2410c; color: white;">Div IV</td>
+                            <td class="div-th" style="background-color: #dc2626; color: white;">Div 0</td>
+                            <td class="div-th" style="background-color: #043d2e; color: white;">Total Sat</td>
+                            <td class="div-th" style="background-color: #043d2e; color: white;">Pass Rate %</td>
+                            <td colspan="${totalCols - 7}"></td>
+                        </tr>
+                        <tr>
+                            <td class="div-td" style="color: #15803d; background-color: #f0fdf4;">${data.division_summary['Division I'] || 0}</td>
+                            <td class="div-td" style="color: #1d4ed8; background-color: #eff6ff;">${data.division_summary['Division II'] || 0}</td>
+                            <td class="div-td" style="color: #b45309; background-color: #fffbeb;">${data.division_summary['Division III'] || 0}</td>
+                            <td class="div-td" style="color: #c2410c; background-color: #fff7ed;">${data.division_summary['Division IV'] || 0}</td>
+                            <td class="div-td" style="color: #dc2626; background-color: #fef2f2;">${data.division_summary['Division 0'] || 0}</td>
+                            <td class="div-td" style="font-weight: 900; background-color: #f8fafc;">${data.total_students}</td>
+                            <td class="div-td" style="font-weight: 900; color: #064e3b; background-color: #ecfdf5;">${data.class_pass_rate_percent}%</td>
+                            <td colspan="${totalCols - 7}"></td>
+                        </tr>
+                        <tr><td colspan="${totalCols}" style="height: 12px;"></td></tr>
+
+                        <!-- 3. CANDIDATE EXAMINATION RESULTS MASTER BROADSHEET -->
+                        <tr>
+                            <td colspan="${totalCols}" class="sec-hdr">CANDIDATE EXAMINATION RESULTS BROADSHEET</td>
+                        </tr>
+                        <tr>
+                            <th class="th-main" style="width: 45px;">S/N</th>
+                            <th class="th-main" style="width: 110px;">Reg No</th>
+                            <th class="th-main" style="width: 230px; text-align: left; padding-left: 6px;">Candidate Full Name</th>
+            `;
+
+            data.subjects.forEach(sub => {
+                html += `<th class="th-main" style="width: 75px;" title="${sub.name}">${sub.code}</th>`;
+            });
+
+            html += `
+                            <th class="th-main" style="width: 55px; background-color: #065f46;">Points</th>
+                            <th class="th-main" style="width: 65px; background-color: #065f46;">Division</th>
+                            <th class="th-main" style="width: 55px;">Pos</th>
+                        </tr>
+            `;
+
+            data.broadsheet.forEach((stu, idx) => {
+                html += `
+                    <tr>
+                        <td class="td-center" style="font-weight: bold; color: #64748b;">${idx + 1}</td>
+                        <td class="td-center">${stu.user_code || '-'}</td>
+                        <td class="td-left">${stu.full_name}</td>
+                `;
+
+                data.subjects.forEach(sub => {
+                    const g = stu.subject_scores ? stu.subject_scores[sub.code] : null;
+                    if (g) {
+                        html += `<td class="td-bold-center">${g.mark} (${g.grade})</td>`;
+                    } else {
+                        html += `<td class="td-center" style="color: #cbd5e1;">-</td>`;
+                    }
+                });
+
+                html += `
+                        <td class="td-bold-center" style="background-color: #f8fafc;">${stu.points}</td>
+                        <td class="td-bold-center">${stu.division}</td>
+                        <td class="td-bold-center" style="color: #059669;">${stu.position || '-'}</td>
+                    </tr>
+                `;
+            });
+
+            html += `<tr><td colspan="${totalCols}" style="height: 12px;"></td></tr>`;
+
+            // 4. SUBJECT PERFORMANCE SUMMARY TABLE
+            if (data.subject_rankings && data.subject_rankings.length > 0) {
+                html += `
+                    <tr>
+                        <td colspan="${totalCols}" class="sec-hdr">SUBJECT PERFORMANCE & RANKINGS SUMMARY</td>
+                    </tr>
+                    <tr>
+                        <th class="th-sub" style="width: 45px;">S/N</th>
+                        <th class="th-sub" style="width: 110px;">Subject Code</th>
+                        <th class="th-sub" style="width: 230px; text-align: left; padding-left: 6px;">Subject Name</th>
+                        <th class="th-sub">Registered</th>
+                        <th class="th-sub">Sat</th>
+                        <th class="th-sub" style="background-color: #15803d;">A</th>
+                        <th class="th-sub" style="background-color: #1d4ed8;">B</th>
+                        <th class="th-sub" style="background-color: #b45309;">C</th>
+                        <th class="th-sub" style="background-color: #c2410c;">D</th>
+                        <th class="th-sub" style="background-color: #dc2626;">F</th>
+                        <th class="th-sub" style="background-color: #043d2e;">Pass %</th>
+                        <th colspan="${Math.max(0, totalCols - 11)}"></th>
+                    </tr>
+                `;
+
+                data.subject_rankings.forEach((sRank, sIdx) => {
+                    const g = sRank.grades || { 'A': 0, 'B': 0, 'C': 0, 'D': 0, 'F': 0 };
+                    html += `
+                        <tr>
+                            <td class="td-center" style="font-weight: bold; color: #64748b;">${sIdx + 1}</td>
+                            <td class="td-bold-center">${sRank.code}</td>
+                            <td class="td-left">${sRank.name}</td>
+                            <td class="td-center">${data.total_students}</td>
+                            <td class="td-bold-center" style="color: #059669;">${sRank.evaluated_count}</td>
+                            <td class="td-bold-center" style="color: #15803d; background-color: #f0fdf4;">${g.A || 0}</td>
+                            <td class="td-bold-center" style="color: #1d4ed8; background-color: #eff6ff;">${g.B || 0}</td>
+                            <td class="td-bold-center" style="color: #b45309; background-color: #fffbeb;">${g.C || 0}</td>
+                            <td class="td-bold-center" style="color: #c2410c; background-color: #fff7ed;">${g.D || 0}</td>
+                            <td class="td-bold-center" style="color: #dc2626; background-color: #fef2f2;">${g.F || 0}</td>
+                            <td class="td-bold-center" style="color: #064e3b; background-color: #ecfdf5;">${sRank.pass_rate_percent}%</td>
+                            <td colspan="${Math.max(0, totalCols - 11)}"></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            html += `
+                        <tr><td colspan="${totalCols}" style="height: 20px;"></td></tr>
+                        <!-- 5. VERIFICATION SIGNATURES -->
+                        <tr>
+                            <td colspan="4" class="sig-cell" style="border-bottom: 1px solid #000;">Class Teacher Signature:</td>
+                            <td></td>
+                            <td colspan="4" class="sig-cell" style="border-bottom: 1px solid #000;">Academic Dean / Exam Officer:</td>
+                            <td></td>
+                            <td colspan="4" class="sig-cell" style="border-bottom: 1px solid #000;">Head of School & Stamp:</td>
+                            <td colspan="${Math.max(0, totalCols - 14)}"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="font-size: 9pt; color: #64748b;">Date: ${today}</td>
+                            <td></td>
+                            <td colspan="4" style="font-size: 9pt; color: #64748b;">Date: ${today}</td>
+                            <td></td>
+                            <td colspan="4" style="font-size: 9pt; color: #64748b;">Date: ${today}</td>
+                            <td colspan="${Math.max(0, totalCols - 14)}"></td>
+                        </tr>
+                    </table>
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+            const link = document.createElement('a');
+            const safeClass = data.class_info.classroom_name.replace(/[^a-zA-Z0-9_-]/g, '_');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', `broadsheet_${safeClass}_${data.term}_${data.year}.xls`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
