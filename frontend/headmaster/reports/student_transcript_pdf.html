@@ -692,23 +692,25 @@
 
             const t1 = data.term1_results || {};
             const t2 = data.term2_results || {};
-            const hasT1 = t1.has_marks || (t1.subjects && t1.subjects.length > 0);
-            const hasT2 = t2.has_marks || (t2.subjects && t2.subjects.length > 0);
+            const hasT1 = Boolean(t1.has_marks || (t1.subjects && t1.subjects.length > 0));
+            const hasT2 = Boolean(t2.has_marks || (t2.subjects && t2.subjects.length > 0));
+            const totalPages = (hasT1 && hasT2) ? 3 : 2;
 
             // PAGE 1: TERM 1 OFFICIAL REPORT CARD (If student has Term 1 marks or as first page)
             if (hasT1 || (!hasT1 && !hasT2)) {
-                const p1 = createTermPageElement(data, 'Term 1', t1, 1);
+                const p1 = createTermPageElement(data, 'Term 1', t1, 1, totalPages);
                 wrapper.appendChild(p1);
             }
 
             // PAGE 2: TERM 2 OFFICIAL REPORT CARD (If student has Term 2 marks)
             if (hasT2) {
-                const p2 = createTermPageElement(data, 'Term 2', t2, 2);
+                const pageNum = hasT1 ? 2 : 1;
+                const p2 = createTermPageElement(data, 'Term 2', t2, pageNum, totalPages);
                 wrapper.appendChild(p2);
             }
 
             // FINAL PAGE: ANNUAL CUMULATIVE TRANSCRIPT & GRAPHICAL ANALYSIS OF RESULTS TRENDS
-            const pFinal = createFinalTrendsPageElement(data);
+            const pFinal = createFinalTrendsPageElement(data, totalPages);
             wrapper.appendChild(pFinal);
 
             // Render Charts after DOM elements are fully attached
@@ -718,7 +720,7 @@
         /**
          * GENERATES A SINGLE OFFICIAL TERM TRANSCRIPT PAGE (A4 SHEET)
          */
-        function createTermPageElement(data, termName, termData, pageNum) {
+        function createTermPageElement(data, termName, termData, pageNum, totalPages = 3) {
             const stu = data.student || {};
             const sch = data.school || {};
             const lvl = data.level_type || 'O-Level';
@@ -874,7 +876,7 @@
                         <div class="sig-box">
                             <div class="sig-line"></div>
                             <div class="sig-title">Head of School & Official Stamp</div>
-                            <div class="sig-date">Date: ${today} • Page ${pageNum} of ${hasT2 ? '3' : '2'}</div>
+                            <div class="sig-date">Date: ${today} • Page ${pageNum} of ${totalPages}</div>
                         </div>
                     </div>
                 </div>
@@ -885,7 +887,7 @@
         /**
          * GENERATES THE FINAL PAGE: ANNUAL CUMULATIVE TRANSCRIPT & GRAPHICAL ANALYSIS OF RESULTS TRENDS
          */
-        function createFinalTrendsPageElement(data) {
+        function createFinalTrendsPageElement(data, totalPages = 3) {
             const stu = data.student || {};
             const sch = data.school || {};
             const lvl = data.level_type || 'O-Level';
@@ -1110,7 +1112,7 @@
                         <div class="sig-box">
                             <div class="sig-line"></div>
                             <div class="sig-title">Head of School & Official Seal / Stamp</div>
-                            <div class="sig-date">Date: ${today} • Final Transcript Sheet</div>
+                            <div class="sig-date">Date: ${today} • Page ${totalPages} of ${totalPages} (Final Trends)</div>
                         </div>
                     </div>
                 </div>
