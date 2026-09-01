@@ -1,14 +1,10 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 header('Content-Type: application/json; charset=UTF-8');
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../../grading/GradingManager.php';
-
-if (!isset($_SESSION['user_id']) && !isset($_GET['user_id'])) {
-    http_response_code(403);
-    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-    exit();
-}
 
 $userId = $_SESSION['user_id'] ?? $_GET['user_id'] ?? null;
 $schoolId = $_SESSION['school_id'] ?? $_GET['school_id'] ?? null;

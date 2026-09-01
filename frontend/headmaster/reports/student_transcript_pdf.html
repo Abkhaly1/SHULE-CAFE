@@ -654,22 +654,33 @@
                 const res = await fetch(`/shule-cafe/api/headmaster/analytics/analytics_api.php?action=student_report_card&student_id=${encodeURIComponent(studentId)}&year=${encodeURIComponent(year)}`, {
                     credentials: 'include'
                 });
-                const data = await res.json();
+                
+                const rawText = await res.text();
+                let data = null;
+                try {
+                    data = JSON.parse(rawText);
+                } catch (parseErr) {
+                    throw new Error("Invalid server response: " + rawText.substring(0, 150));
+                }
 
                 if (res.ok && data.success) {
                     reportData = data;
                     renderAllTranscriptPages(data);
                 } else {
                     document.getElementById('transcriptPagesWrapper').innerHTML = `
-                        <div style="text-align:center; color:#dc2626; padding:30px; font-weight:700; background:white; border-radius:8px;">
-                            ${data.message || 'Error loading student transcript.'}
+                        <div style="text-align:center; color:#dc2626; padding:30px; font-weight:700; background:white; border-radius:8px; border:1px solid #fee2e2;">
+                            <div style="font-size:16px; margin-bottom:6px;">Error Loading Transcript</div>
+                            <div style="font-size:13px; color:#64748b;">${data.message || 'Unable to retrieve student transcript.'}</div>
+                            <button class="btn btn-outline btn-sm" onclick="location.reload()" style="margin-top:14px;">Retry</button>
                         </div>
                     `;
                 }
             } catch (e) {
                 document.getElementById('transcriptPagesWrapper').innerHTML = `
-                    <div style="text-align:center; color:#dc2626; padding:30px; font-weight:700; background:white; border-radius:8px;">
-                        Network communication error while loading transcript.
+                    <div style="text-align:center; color:#dc2626; padding:30px; font-weight:700; background:white; border-radius:8px; border:1px solid #fee2e2;">
+                        <div style="font-size:16px; margin-bottom:6px;">Communication Error</div>
+                        <div style="font-size:13px; color:#64748b;">${e.message || 'Network communication error while loading transcript.'}</div>
+                        <button class="btn btn-outline btn-sm" onclick="location.reload()" style="margin-top:14px;">Retry</button>
                     </div>
                 `;
             }
