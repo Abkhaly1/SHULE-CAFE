@@ -440,3 +440,21 @@ app-topbar {
     margin-top: 2px !important;
     letter-spacing: 0.3px !important;
 }
+
+/* ─── GLOBAL PRINT MEDIA OVERRIDES ─────────────────────────────────── */
+@media print {
+    .no-print,
+    app-sidebar,
+    .app-sidebar,
+    app-topbar,
+    .app-topbar,
+    app-breadcrumb,
+    .sidebar-drawer,
+    .modal-overlay {
+        display: none !important;
+        visibility: hidden !important;
+        width: 0 !important;
+        height: 0 !important;
+    }
+}
+
