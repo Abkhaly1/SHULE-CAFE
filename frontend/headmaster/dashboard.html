@@ -90,84 +90,6 @@
                         subtitle="Real-time overview of school operations, student enrollment, and academic progress.">
                     </app-page-header>
 
-                    <!-- SCHOOL READINESS CHECKLIST WIDGET -->
-                    <div id="setupChecklistContainer" class="card" style="padding: 16px 20px; margin-top: 12px; margin-bottom: 16px; border: 1px solid var(--c-border-light); background: #ffffff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: none;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <div style="width: 32px; height: 32px; border-radius: 50%; background: #ecfdf5; color: #047857; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; flex-shrink: 0;">🚀</div>
-                                <div>
-                                    <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #0f172a;">School Operational Readiness Checklist</h3>
-                                    <p style="margin: 2px 0 0 0; font-size: 12px; color: #64748b;">Complete these 4 setup steps to fully initialize school operations and unlock teacher scoresheets.</p>
-                                </div>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="text-align: right;">
-                                    <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.3px;">Readiness Progress</div>
-                                    <div style="font-size: 13px; font-weight: 800; color: #047857;" id="checklistProgressText">0 / 4 Steps Done (0%)</div>
-                                </div>
-                                <button type="button" class="btn btn-sm btn-outline" onclick="toggleChecklistWidget()" style="font-size: 11px; font-weight: 700; padding: 4px 10px; border-color: #cbd5e1; color: #475569;" id="btnToggleChecklist">Minimize ➖</button>
-                            </div>
-                        </div>
-
-                        <!-- Progress Bar -->
-                        <div style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin-bottom: 14px;">
-                            <div id="checklistProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #10b981, #059669); transition: width 0.4s ease;"></div>
-                        </div>
-
-                        <!-- 4 Step Cards Grid -->
-                        <div id="checklistCardsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px;">
-                            
-                            <!-- Step 1: Classroom Streams -->
-                            <div id="stepCard1" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
-                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
-                                    <div style="font-weight: 800; font-size: 12px; color: #0f172a; display: flex; align-items: center; gap: 6px;">
-                                        <span>🏫</span> 1. Classroom Streams
-                                    </div>
-                                    <span id="stepBadge1" class="badge badge-warning" style="font-size: 10px; font-weight: 700; padding: 2px 6px;">⚠️ Setup</span>
-                                </div>
-                                <div style="font-size: 11px; color: #64748b; margin-bottom: 10px;" id="stepDesc1">Create Grade streams (e.g. Form 1 Stream A).</div>
-                                <a href="classrooms/index.html" class="btn btn-primary btn-sm" id="stepBtn1" style="font-size: 11px; font-weight: 800; text-align: center; text-decoration: none; padding: 4px 8px; display: block;">Setup Streams ➔</a>
-                            </div>
-
-                            <!-- Step 2: Subject Allocations -->
-                            <div id="stepCard2" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
-                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
-                                    <div style="font-weight: 800; font-size: 12px; color: #0f172a; display: flex; align-items: center; gap: 6px;">
-                                        <span>📚</span> 2. Subject Allocations
-                                    </div>
-                                    <span id="stepBadge2" class="badge badge-warning" style="font-size: 10px; font-weight: 700; padding: 2px 6px;">⚠️ Setup</span>
-                                </div>
-                                <div style="font-size: 11px; color: #64748b; margin-bottom: 10px;" id="stepDesc2">Assign subjects to teaching staff.</div>
-                                <a href="academics/index.html" class="btn btn-primary btn-sm" id="stepBtn2" style="font-size: 11px; font-weight: 800; text-align: center; text-decoration: none; padding: 4px 8px; display: block;">Assign Subjects ➔</a>
-                            </div>
-
-                            <!-- Step 3: Student Enrollment -->
-                            <div id="stepCard3" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
-                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
-                                    <div style="font-weight: 800; font-size: 12px; color: #0f172a; display: flex; align-items: center; gap: 6px;">
-                                        <span>👥</span> 3. Student Enrollment
-                                    </div>
-                                    <span id="stepBadge3" class="badge badge-warning" style="font-size: 10px; font-weight: 700; padding: 2px 6px;">⚠️ Setup</span>
-                                </div>
-                                <div style="font-size: 11px; color: #64748b; margin-bottom: 10px;" id="stepDesc3">Import students and allocate to streams.</div>
-                                <a href="classrooms/index.html" class="btn btn-primary btn-sm" id="stepBtn3" style="font-size: 11px; font-weight: 800; text-align: center; text-decoration: none; padding: 4px 8px; display: block;">Enroll Students ➔</a>
-                            </div>
-
-                            <!-- Step 4: Class Timetables -->
-                            <div id="stepCard4" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
-                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
-                                    <div style="font-weight: 800; font-size: 12px; color: #0f172a; display: flex; align-items: center; gap: 6px;">
-                                        <span>📅</span> 4. Class Timetables
-                                    </div>
-                                    <span id="stepBadge4" class="badge badge-warning" style="font-size: 10px; font-weight: 700; padding: 2px 6px;">⚠️ Setup</span>
-                                </div>
-                                <div style="font-size: 11px; color: #64748b; margin-bottom: 10px;" id="stepDesc4">Build &amp; publish class timetables.</div>
-                                <a href="timetable/index.html" class="btn btn-primary btn-sm" id="stepBtn4" style="font-size: 11px; font-weight: 800; text-align: center; text-decoration: none; padding: 4px 8px; display: block;">Build Timetable ➔</a>
-                            </div>
-
-                        </div>
-                    </div>
-                    
                     <!-- Summary Cards Grid -->
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 16px; margin-top: 12px;">
                         
@@ -309,7 +231,6 @@
                     document.getElementById('statTeachers').textContent = (stats.total_teachers || 0).toLocaleString();
                     document.getElementById('statClasses').textContent = (stats.total_classes || 0).toLocaleString();
                     document.getElementById('statParents').textContent = (stats.total_parents || 0).toLocaleString();
-                    renderChecklist(stats);
 
                     const actContainer = document.getElementById('activitiesList');
                     if (actContainer) {
@@ -336,73 +257,6 @@
                 console.error("Error loading headmaster stats:", err);
             }
         });
-
-        function renderChecklist(stats) {
-            const container = document.getElementById('setupChecklistContainer');
-            if (!container) return;
-
-            const streamsDone = (stats.total_classes || 0) > 0;
-            const subAllocDone = (stats.total_sub_allocations || 0) > 0;
-            const studentsDone = (stats.total_students || 0) > 0;
-            const timetablesDone = (stats.total_timetables || 0) > 0;
-
-            let completedCount = 0;
-            if (streamsDone) completedCount++;
-            if (subAllocDone) completedCount++;
-            if (studentsDone) completedCount++;
-            if (timetablesDone) completedCount++;
-
-            const pct = Math.round((completedCount / 4) * 100);
-            document.getElementById('checklistProgressText').textContent = `${completedCount} / 4 Steps Done (${pct}%)`;
-            document.getElementById('checklistProgressBar').style.width = `${pct}%`;
-
-            updateStepCard(1, streamsDone);
-            updateStepCard(2, subAllocDone);
-            updateStepCard(3, studentsDone);
-            updateStepCard(4, timetablesDone);
-
-            const isHidden = localStorage.getItem('hideSetupChecklist') === 'true';
-            if (!isHidden || completedCount < 4) {
-                container.style.display = 'block';
-                if (completedCount === 4) {
-                    document.getElementById('checklistCardsGrid').style.display = 'none';
-                    document.getElementById('btnToggleChecklist').textContent = 'Expand ➕';
-                }
-            }
-        }
-
-        function updateStepCard(stepNum, isDone) {
-            const card = document.getElementById(`stepCard${stepNum}`);
-            const badge = document.getElementById(`stepBadge${stepNum}`);
-            const btn = document.getElementById(`stepBtn${stepNum}`);
-
-            if (isDone && card && badge && btn) {
-                card.style.background = '#f0fdf4';
-                card.style.borderColor = '#bbf7d0';
-                badge.className = 'badge badge-success';
-                badge.style.fontSize = '10px';
-                badge.textContent = '✅ Completed';
-                btn.className = 'btn btn-outline btn-sm';
-                btn.style.color = '#15803d';
-                btn.style.borderColor = '#86efac';
-                btn.style.fontSize = '11px';
-                btn.textContent = 'View Setup ➔';
-            }
-        }
-
-        function toggleChecklistWidget() {
-            const grid = document.getElementById('checklistCardsGrid');
-            const btn = document.getElementById('btnToggleChecklist');
-            if (grid.style.display === 'none') {
-                grid.style.display = 'grid';
-                btn.textContent = 'Minimize ➖';
-                localStorage.setItem('hideSetupChecklist', 'false');
-            } else {
-                grid.style.display = 'none';
-                btn.textContent = 'Expand ➕';
-                localStorage.setItem('hideSetupChecklist', 'true');
-            }
-        }
     </script>
 </body>
 </html>
