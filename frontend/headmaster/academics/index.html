@@ -78,6 +78,10 @@
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                                 <span>Master Subjects</span>
                             </button>
+                            <button class="workspace-tab" data-target="combinations" style="display:inline-flex; align-items:center; gap:6px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                                <span>A-Level Combinations</span>
+                            </button>
                         </app-workspace-tabs>
 
                         <!-- ── TAB 1: SYSTEM GRADE TIERS & CURRICULUM ── -->
@@ -102,14 +106,16 @@
                                         <thead>
                                             <tr>
                                                 <th style="width: 50px; text-align: center;">#</th>
+                                                <th style="width: 110px;">Course Code</th>
+                                                <th style="width: 80px;">Abbr</th>
                                                 <th>Grade / Standard Class</th>
-                                                <th style="width: 180px;">Education Level</th>
-                                                <th style="width: 240px;">Curriculum Subjects</th>
+                                                <th style="width: 140px;">Education Level</th>
+                                                <th style="width: 220px;">Curriculum Subjects</th>
                                                 <th style="text-align: right; width: 170px;">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tblGradesBody">
-                                            <tr><td colspan="5" style="text-align:center; padding:24px; color:#64748b;">Loading grade tiers...</td></tr>
+                                            <tr><td colspan="7" style="text-align:center; padding:24px; color:#64748b;">Loading grade tiers...</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -125,7 +131,7 @@
                                             Education Levels
                                         </h3>
                                         <p style="color: var(--c-text-secondary); margin: 2px 0 0 0; font-size: 12px;">
-                                            Active education tiers registered for your school. You can activate any additional level configured by Shule Cafe Admin below.
+                                            Active education tiers registered for your school with official course identifiers.
                                         </p>
                                     </div>
                                 </div>
@@ -135,15 +141,17 @@
                                         <thead>
                                             <tr>
                                                 <th style="width: 50px; text-align: center;">#</th>
+                                                <th style="width: 110px;">Course Code</th>
+                                                <th style="width: 80px;">Abbr</th>
                                                 <th>Education Level</th>
-                                                <th style="width: 160px;">Level Code</th>
-                                                <th style="width: 220px;">Grade Coverage Range</th>
-                                                <th style="width: 150px; text-align: center;">Status</th>
-                                                <th style="text-align: right; width: 200px;">Action</th>
+                                                <th style="width: 130px;">Level Code</th>
+                                                <th style="width: 180px;">Grade Coverage</th>
+                                                <th style="width: 140px; text-align: center;">Status</th>
+                                                <th style="text-align: right; width: 220px;">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tblLevelsBody">
-                                            <tr><td colspan="6" style="text-align:center; padding:24px; color:#64748b;">Loading education levels...</td></tr>
+                                            <tr><td colspan="8" style="text-align:center; padding:24px; color:#64748b;">Loading education levels...</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -159,7 +167,7 @@
                                             Approved Master Subjects
                                         </h3>
                                         <p style="color: var(--c-text-secondary); margin: 2px 0 0 0; font-size: 12px;">
-                                            Curriculum subject pool available for active education levels in your school.
+                                            Curriculum subject pool with official NECTA course codes, abbreviations, and categories.
                                         </p>
                                     </div>
                                     <div id="subjectLevelFilterContainer" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
@@ -170,14 +178,51 @@
                                         <thead>
                                             <tr>
                                                 <th style="width: 50px; text-align: center;">#</th>
+                                                <th style="width: 120px;">Course Code</th>
+                                                <th style="width: 90px;">Abbr</th>
                                                 <th>Subject Name</th>
-                                                <th style="width: 160px;">Subject Code</th>
-                                                <th style="width: 200px;">Education Level</th>
-                                                <th style="width: 120px; text-align: center;">Status</th>
+                                                <th style="width: 180px;">Category</th>
+                                                <th style="width: 130px;">Education Level</th>
+                                                <th style="width: 100px; text-align: center;">Status</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tblSubjectsBody">
-                                            <tr><td colspan="5" style="text-align:center; padding:24px; color:#64748b;">Loading master subjects...</td></tr>
+                                            <tr><td colspan="7" style="text-align:center; padding:24px; color:#64748b;">Loading master subjects...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </app-workspace-content>
+
+                        <!-- ── TAB 4: A-LEVEL COMBINATIONS ── -->
+                        <app-workspace-content tab-id="combinations">
+                            <div class="card" style="padding: 0; overflow: hidden; border-radius: 12px; box-shadow: var(--shadow-sm); border: 1px solid #e2e8f0;">
+                                <div style="padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; background: #fff; flex-wrap: wrap; gap: 10px;">
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: var(--c-text-primary);">
+                                            National A-Level Combinations Catalog
+                                        </h3>
+                                        <p style="color: var(--c-text-secondary); margin: 2px 0 0 0; font-size: 12px;">
+                                            Official Tanzania Advanced Level High School 3-Principal subject combinations.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="academics-table">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 50px; text-align: center;">#</th>
+                                                <th style="width: 110px;">Course Code</th>
+                                                <th style="width: 90px;">Abbr</th>
+                                                <th>Combination Name</th>
+                                                <th style="width: 180px;">Academic Stream</th>
+                                                <th style="width: 240px;">Principal Subjects</th>
+                                                <th style="width: 120px;">Subsidiaries</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tblCombinationsBody">
+                                            <tr><td colspan="7" style="text-align:center; padding:24px; color:#64748b;">Loading combinations...</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -221,6 +266,7 @@
                     renderGradesTable();
                     renderLevelsTable();
                     renderSubjectsTable();
+                    renderCombinationsTable();
                 } else {
                     console.error("API Error:", result);
                     document.getElementById('tblGradesBody').innerHTML = '<tr><td colspan="5" style="text-align:center; padding:24px; color:crimson;">Failed to load academic data. Please refresh.</td></tr>';
@@ -275,11 +321,11 @@
 
             let allGrades = portalData.grades || [];
             if (selectedFilterLevel !== 'ALL') {
-                allGrades = allGrades.filter(g => g.level_code === selectedFilterLevel || (selectedFilterLevel === 'PRIM' && g.level_code === 'PRIMARY'));
+                allGrades = allGrades.filter(g => g.level_code === selectedFilterLevel);
             }
 
             if (allGrades.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:24px; color:#64748b;">No grade tiers registered for this filter.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:24px; color:#64748b;">No grade tiers registered for this filter.</td></tr>';
                 return;
             }
 
@@ -296,6 +342,16 @@
                 html += `
                     <tr>
                         <td style="text-align:center; font-weight:700; color:#64748b;">${idx + 1}</td>
+                        <td>
+                            <span class="badge" style="background:#eff6ff; color:#1e40af; font-family:monospace; font-weight:800; font-size:11.5px; border:1px solid #bfdbfe; padding:3px 7px;">
+                                ${g.course_code || ('CLS-' + g.id)}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge" style="background:#f8fafc; color:#334155; font-weight:800; font-size:11.5px; border:1px solid #cbd5e1; padding:3px 7px;">
+                                ${g.abbr || g.grade_name}
+                            </span>
+                        </td>
                         <td>
                             <div style="font-weight:800; font-size:14px; color:#0f172a;">${g.grade_name}</div>
                             <div style="font-size:11px; color:#64748b; margin-top:2px;">${g.level_name || 'General'}</div>
@@ -326,7 +382,7 @@
             // Combine master education levels to show both registered and available levels
             const masterLevels = portalData ? (portalData.master_education_levels || portalData.education_levels || []) : [];
             if (masterLevels.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px; color:#64748b;">No education levels found in system catalog.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:24px; color:#64748b;">No education levels found in system catalog.</td></tr>';
                 return;
             }
 
@@ -358,6 +414,16 @@
                     <tr>
                         <td style="text-align:center; font-weight:700; color:#64748b;">${idx + 1}</td>
                         <td>
+                            <span class="badge" style="background:#eff6ff; color:#1e40af; font-family:monospace; font-weight:800; font-size:11.5px; border:1px solid #bfdbfe; padding:3px 7px;">
+                                ${lvl.course_code || lvl.level_code}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge" style="background:#f8fafc; color:#334155; font-weight:800; font-size:11.5px; border:1px solid #cbd5e1; padding:3px 7px;">
+                                ${lvl.abbr || lvl.level_code}
+                            </span>
+                        </td>
+                        <td>
                             <div style="font-weight:800; font-size:14px; color:#0f172a; display:flex; align-items:center; gap:8px;">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                                 <span>${lvl.level_name}</span>
@@ -384,13 +450,13 @@
             const tbody = document.getElementById('tblSubjectsBody');
             if (!tbody) return;
 
-            let subjects = portalData ? (portalData.approved_subjects || []) : [];
+            let subjects = portalData ? (portalData.master_subjects || portalData.approved_subjects || []) : [];
             if (selectedSubjectFilter !== 'ALL') {
-                subjects = subjects.filter(s => s.level_code === selectedSubjectFilter || (selectedSubjectFilter === 'PRIM' && s.level_code === 'PRIMARY') || s.level_code === 'ALL');
+                subjects = subjects.filter(s => s.level_code === selectedSubjectFilter || s.level_code === 'ALL');
             }
 
             if (subjects.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:24px; color:#64748b;">No approved master subjects found for this level.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:24px; color:#64748b;">No master subjects found for this filter.</td></tr>';
                 return;
             }
 
@@ -400,12 +466,20 @@
                     <tr>
                         <td style="text-align:center; font-weight:700; color:#64748b;">${idx + 1}</td>
                         <td>
-                            <div style="font-weight:800; font-size:14px; color:#0f172a;">${s.subject_name}</div>
+                            <span class="badge" style="background:#eff6ff; color:#1e40af; font-family:monospace; font-weight:800; font-size:11.5px; border:1px solid #bfdbfe; padding:3px 7px;">
+                                ${s.course_code || s.subject_code || s.code}
+                            </span>
                         </td>
                         <td>
-                            <span class="badge" style="background:#f1f5f9; color:#475569; font-weight:700; font-size:11px; padding:4px 8px;">
-                                ${s.subject_code}
+                            <span class="badge" style="background:#f8fafc; color:#334155; font-weight:800; font-size:11.5px; border:1px solid #cbd5e1; padding:3px 7px;">
+                                ${s.abbr || s.subject_code || s.code}
                             </span>
+                        </td>
+                        <td>
+                            <div style="font-weight:800; font-size:14px; color:#0f172a;">${s.name || s.subject_name}</div>
+                        </td>
+                        <td style="color:#475569; font-size:12px; font-weight:600;">
+                            ${s.category || (s.is_core ? 'Core Mandatory' : 'Elective')}
                         </td>
                         <td>
                             <span class="badge" style="background:#eff6ff; color:#1d4ed8; font-weight:700; font-size:11px; padding:4px 8px; border:1px solid #bfdbfe;">
@@ -414,6 +488,62 @@
                         </td>
                         <td style="text-align:center;">
                             <span class="badge badge-success" style="font-weight:700; font-size:11px; padding:4px 8px;">Active</span>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        function renderCombinationsTable() {
+            const tbody = document.getElementById('tblCombinationsBody');
+            if (!tbody) return;
+
+            let combinations = portalData ? (portalData.combinations || []) : [];
+            if (combinations.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:24px; color:#64748b;">No A-Level combinations found in national catalog.</td></tr>';
+                return;
+            }
+
+            let html = '';
+            combinations.forEach((c, idx) => {
+                const principalsBadges = (c.principals || []).map(p => 
+                    `<span class="badge" style="background:#dbeafe; color:#1e40af; font-weight:700; font-size:10.5px; padding:2px 6px;">${p}</span>`
+                ).join(' ');
+
+                const subsBadges = (c.subsidiaries || ['GS']).map(sb => 
+                    `<span class="badge" style="background:#f1f5f9; color:#475569; font-weight:700; font-size:10.5px; padding:2px 6px;">${sb}</span>`
+                ).join(' ');
+
+                html += `
+                    <tr>
+                        <td style="text-align:center; font-weight:700; color:#64748b;">${idx + 1}</td>
+                        <td>
+                            <span class="badge" style="background:#eff6ff; color:#1e40af; font-family:monospace; font-weight:800; font-size:12px; border:1px solid #bfdbfe; padding:3px 8px;">
+                                ${c.course_code || c.code}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge" style="background:#f8fafc; color:#0f172a; font-weight:800; font-size:12px; border:1px solid #cbd5e1; padding:3px 8px;">
+                                ${c.abbr || c.code}
+                            </span>
+                        </td>
+                        <td>
+                            <div style="font-weight:800; font-size:14px; color:#0f172a;">${c.name}</div>
+                        </td>
+                        <td style="color:#475569; font-size:12px; font-weight:700;">
+                            ${c.stream || 'General'}
+                        </td>
+                        <td>
+                            <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                                ${principalsBadges}
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                                ${subsBadges}
+                            </div>
                         </td>
                     </tr>
                 `;

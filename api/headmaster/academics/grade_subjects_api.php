@@ -168,11 +168,21 @@ try {
                 $isCore     = $isAssigned ? intval($dbAssignedMap[$code]) : 1;
             }
 
+            $details = json_decode($ls['details'] ?? '{}', true) ?? [];
+            $abbr = $details['abbr'] ?? $code;
+            $courseCode = $details['course_code'] ?? $code;
+            $category = $details['category'] ?? '';
+
             $item = [
                 'subject_code' => $code,
                 'subject_name' => $ls['subject_name'],
-                'is_assigned'   => $isAssigned,
-                'is_core'       => $isCore
+                'abbr'         => $abbr,
+                'course_code'  => $courseCode,
+                'category'     => $category,
+                'is_assigned'  => $isAssigned,
+                'is_core'      => $isCore,
+                'is_subsidiary'=> !empty($details['is_subsidiary']),
+                'is_principal' => !empty($details['is_principal'])
             ];
 
             $subjectChecklist[] = $item;
@@ -181,7 +191,12 @@ try {
                 $finalAssigned[] = [
                     'subject_code' => $code,
                     'subject_name' => $ls['subject_name'],
-                    'is_core'       => $isCore
+                    'abbr'         => $abbr,
+                    'course_code'  => $courseCode,
+                    'category'     => $category,
+                    'is_core'      => $isCore,
+                    'is_subsidiary'=> !empty($details['is_subsidiary']),
+                    'is_principal' => !empty($details['is_principal'])
                 ];
             }
         }
@@ -191,10 +206,38 @@ try {
         $stmtSiblings->execute([$levelId]);
         $siblingGrades = $stmtSiblings->fetchAll(PDO::FETCH_ASSOC);
 
+        // Fetch combinations if A-Level
+        $combinations = [];
+        if ($levelCode === 'A-LEVEL') {
+            $stmtCmb = $conn->prepare("
+                SELECT id, name, code, description, details
+                FROM academic_templates
+                WHERE type = 'combination' AND level_code = 'A-LEVEL'
+                ORDER BY code ASC
+            ");
+            $stmtCmb->execute();
+            $rawCmbs = $stmtCmb->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($rawCmbs as $rc) {
+                $cDetails = json_decode($rc['details'] ?? '{}', true) ?? [];
+                $combinations[] = [
+                    'id' => $rc['id'],
+                    'name' => $rc['name'],
+                    'code' => $rc['code'],
+                    'abbr' => $cDetails['abbr'] ?? $rc['code'],
+                    'course_code' => $cDetails['course_code'] ?? '',
+                    'stream' => $cDetails['stream'] ?? '',
+                    'principals' => $cDetails['principals'] ?? [],
+                    'subsidiaries' => $cDetails['subsidiaries'] ?? [],
+                    'career_pathways' => $cDetails['career_pathways'] ?? []
+                ];
+            }
+        }
+
         echo json_encode([
             "success"            => true,
             "grade"              => $grade,
             "sibling_grades"     => $siblingGrades,
+            "combinations"       => $combinations,
             "academic_year"      => $year,
             "assigned_subjects"  => $finalAssigned,
             "subject_checklist"  => $subjectChecklist

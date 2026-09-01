@@ -123,7 +123,15 @@ try {
         CASE 
             WHEN el.code = 'A-LEVEL' THEN 'Form 5 – Form 6'
             ELSE 'Form 1 – Form 4'
-        END AS range_text
+        END AS range_text,
+        CASE 
+            WHEN el.code = 'A-LEVEL' THEN 'A-LVL'
+            ELSE 'O-LVL'
+        END AS abbr,
+        CASE 
+            WHEN el.code = 'A-LEVEL' THEN '002-ADV'
+            ELSE '001-SEC'
+        END AS course_code
         FROM education_levels el
         WHERE el.code IN ('O-LEVEL', 'A-LEVEL')
         ORDER BY el.id ASC
@@ -134,7 +142,51 @@ try {
     }
     unset($ml);
 
-    // ── 3. Fetch School Approved Subjects ──
+    // ── 3. Fetch Master Templates (Subjects & Combinations) ──
+    $stmtTpls = $conn->query("
+        SELECT id, type, name, code, level_code, description, details
+        FROM academic_templates
+        WHERE type IN ('subject', 'combination', 'class')
+        ORDER BY type ASC, code ASC
+    ")->fetchAll(PDO::FETCH_ASSOC);
+
+    $masterSubjects = [];
+    $combinations = [];
+    $classDetailsMap = [];
+
+    foreach ($stmtTpls as $t) {
+        $details = json_decode($t['details'] ?? '{}', true) ?? [];
+        if ($t['type'] === 'subject') {
+            $masterSubjects[] = [
+                'id' => $t['id'],
+                'name' => $t['name'],
+                'code' => $t['code'],
+                'abbr' => $details['abbr'] ?? $t['code'],
+                'course_code' => $details['course_code'] ?? $t['code'],
+                'level_code' => $t['level_code'],
+                'category' => $details['category'] ?? '',
+                'is_core' => !empty($details['is_core']),
+                'is_subsidiary' => !empty($details['is_subsidiary']),
+                'is_principal' => !empty($details['is_principal'])
+            ];
+        } elseif ($t['type'] === 'combination') {
+            $combinations[] = [
+                'id' => $t['id'],
+                'name' => $t['name'],
+                'code' => $t['code'],
+                'abbr' => $details['abbr'] ?? $t['code'],
+                'course_code' => $details['course_code'] ?? '',
+                'stream' => $details['stream'] ?? '',
+                'principals' => $details['principals'] ?? [],
+                'subsidiaries' => $details['subsidiaries'] ?? [],
+                'career_pathways' => $details['career_pathways'] ?? []
+            ];
+        } elseif ($t['type'] === 'class') {
+            $classDetailsMap[strtoupper(trim($t['name']))] = $details;
+        }
+    }
+
+    // ── 4. Fetch School Approved Subjects ──
     $stmtSubjects = $conn->prepare("
         SELECT sas.id, sas.subject_code, sas.subject_name, sas.level_code, sas.status
         FROM school_approved_subjects sas
@@ -169,17 +221,35 @@ try {
         }
     }
 
-    // ── 4. Fetch System Grades Filtered By Active Registered Education Levels ──
+    // ── 5. Fetch System Grades Filtered By Active Registered Education Levels ──
     $inCodes = "'" . implode("','", array_map('addslashes', $activeCodesNorm)) . "'";
     $grades = $conn->query("
-        SELECT g.id, g.level_id, g.name AS grade_name, g.order_seq, el.name AS level_name, el.code AS level_code
+        SELECT g.id, g.level_id, g.name AS grade_name, g.order_seq, el.name AS level_name, el.code AS level_code,
+        CASE 
+            WHEN g.name = 'Form 1' THEN 'F1'
+            WHEN g.name = 'Form 2' THEN 'F2'
+            WHEN g.name = 'Form 3' THEN 'F3'
+            WHEN g.name = 'Form 4' THEN 'F4'
+            WHEN g.name = 'Form 5' THEN 'F5'
+            WHEN g.name = 'Form 6' THEN 'F6'
+            ELSE CONCAT('G', g.order_seq)
+        END AS abbr,
+        CASE 
+            WHEN g.name = 'Form 1' THEN 'SEC-F1'
+            WHEN g.name = 'Form 2' THEN 'SEC-F2'
+            WHEN g.name = 'Form 3' THEN 'SEC-F3'
+            WHEN g.name = 'Form 4' THEN 'SEC-F4'
+            WHEN g.name = 'Form 5' THEN 'ADV-F5'
+            WHEN g.name = 'Form 6' THEN 'ADV-F6'
+            ELSE CONCAT('CLS-', g.id)
+        END AS course_code
         FROM grades g
         JOIN education_levels el ON g.level_id = el.id
-        WHERE el.code IN ($inCodes) OR (el.code = 'PRIMARY' AND 'PRIM' IN ($inCodes))
+        WHERE el.code IN ($inCodes)
         ORDER BY el.id ASC, g.order_seq ASC
     ")->fetchAll(PDO::FETCH_ASSOC);
 
-    // ── 5. Fetch Grade Subjects Curriculum Map ──
+    // ── 6. Fetch Grade Subjects Curriculum Map ──
     $stmtGS = $conn->prepare("
         SELECT gs.id, gs.grade_id, gs.subject_code, gs.subject_name, gs.is_core
         FROM grade_subjects gs
@@ -195,29 +265,6 @@ try {
         $gradeSubjectsMap[$gs['grade_id']][] = $gs;
     }
 
-    // Auto-map template subjects for grades if grade_subjects is empty
-    if (empty($allGradeSubjects)) {
-        // Look up class templates in academic_templates
-        $classTpls = $conn->query("
-            SELECT name, details, level_code FROM academic_templates WHERE type = 'class'
-        ")->fetchAll(PDO::FETCH_ASSOC);
-
-        $tplDetailsMap = [];
-        foreach ($classTpls as $ct) {
-            $details = json_decode($ct['details'] ?? '{}', true);
-            if (!empty($details['assigned_subjects'])) {
-                $tplDetailsMap[strtoupper(trim($ct['name']))] = $details['assigned_subjects'];
-            }
-        }
-
-        foreach ($grades as $g) {
-            $gNameUpper = strtoupper(trim($g['grade_name']));
-            if (isset($tplDetailsMap[$gNameUpper])) {
-                $gradeSubjectsMap[$g['id']] = $tplDetailsMap[$gNameUpper];
-            }
-        }
-    }
-
     echo json_encode([
         "success" => true,
         "school_id" => $schoolId,
@@ -225,7 +272,9 @@ try {
         "master_education_levels" => $masterLevels,
         "grades" => $grades,
         "grade_subjects" => $gradeSubjectsMap,
-        "approved_subjects" => $subjects
+        "approved_subjects" => $subjects,
+        "master_subjects" => $masterSubjects,
+        "combinations" => $combinations
     ]);
 
 } catch (PDOException $e) {

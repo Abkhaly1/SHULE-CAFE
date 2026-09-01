@@ -176,7 +176,6 @@ class GradingManager {
             ];
         }
 
-        // Sort subjects by points ASC (Best performance first: 1 pt is better than 5 pts)
         usort($evaluatedSubjects, function($a, $b) {
             if ($a['points'] === $b['points']) {
                 return $b['mark'] <=> $a['mark']; // Tie-breaker: higher mark first
@@ -191,7 +190,11 @@ class GradingManager {
             // A-Level: Filter out subsidiary subjects (GS, BAM) when calculating 3-Principal points
             $principalSubjects = array_filter($evaluatedSubjects, function($s) {
                 $sc = strtoupper(trim($s['subject']));
-                return !in_array($sc, ['GS', 'BAM', 'GENERAL STUDIES', 'BASIC APPLIED MATHEMATICS']);
+                $subsidiaryCodes = [
+                    'GS', 'BAM', '111-GS', '112-BAM', '111/GS', '112/BAM', 'GS-A', 'BAM-A',
+                    '111', '112', 'GENERAL STUDIES', 'BASIC APPLIED MATHEMATICS'
+                ];
+                return !in_array($sc, $subsidiaryCodes);
             });
 
             // If not enough distinct principal subjects found, use evaluated subjects

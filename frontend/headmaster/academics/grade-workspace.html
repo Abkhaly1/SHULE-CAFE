@@ -142,14 +142,16 @@
                             <table style="width:100%;border-collapse:collapse;font-size:13px;">
                                 <thead>
                                     <tr style="background:var(--c-bg-subtle);border-bottom:2px solid var(--c-border-light);text-align:left;">
-                                        <th style="padding:12px;">Subject Code</th>
+                                        <th style="padding:12px;width:110px;">Course Code</th>
+                                        <th style="padding:12px;width:90px;">Abbr</th>
                                         <th style="padding:12px;">Subject Name</th>
-                                        <th style="padding:12px;text-align:center;width:220px;">Curriculum Type</th>
-                                        <th style="padding:12px;text-align:right;width:100px;">Action</th>
+                                        <th style="padding:12px;width:160px;">Category</th>
+                                        <th style="padding:12px;text-align:center;width:190px;">Curriculum Status</th>
+                                        <th style="padding:12px;text-align:right;width:90px;">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody id="gradeSubjectsBody">
-                                    <tr><td colspan="4" style="text-align:center;padding:24px;color:var(--c-text-muted);">Loading active grade subjects…</td></tr>
+                                    <tr><td colspan="6" style="text-align:center;padding:24px;color:var(--c-text-muted);">Loading active grade subjects…</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -174,7 +176,7 @@
 
     <!-- ── POPUP MODAL: SELECT SUBJECTS TO ADD ────────────────────────── -->
     <div id="modalAddGradeSubjects" class="modal-backdrop">
-        <div class="modal-box">
+        <div class="modal-box" style="max-width: 640px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:10px;">
                     <div style="width:36px; height:36px; border-radius:50%; background:#ecfdf5; color:#059669; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:800;">
@@ -182,22 +184,32 @@
                     </div>
                     <div>
                         <h3 style="margin:0; font-size:16px; font-weight:800; color:#0f172a;">Select Subjects for Grade Curriculum</h3>
-                        <div style="font-size:12px; color:#64748b;">Select from approved Super Admin subject master templates</div>
+                        <div style="font-size:12px; color:#64748b;">Search by subject name, abbreviation or official course code</div>
                     </div>
                 </div>
                 <button type="button" onclick="closeAddSubjectsModal()" class="btn btn-outline btn-sm" style="border:none; font-size:18px;">✕</button>
             </div>
 
+            <!-- Quick Combination Presets for A-Level -->
+            <div id="pnlCombinationPresets" style="display:none; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:10px 12px; margin-bottom:10px;">
+                <div style="font-size:11px; font-weight:800; color:#475569; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">
+                    ⚡ Quick Combination Auto-Select (A-Level):
+                </div>
+                <div id="combinationPresetPills" style="display:flex; flex-wrap:wrap; gap:6px;">
+                    <!-- Dynamically loaded combination buttons -->
+                </div>
+            </div>
+
             <div style="position:relative; margin-bottom:8px;">
-                <input type="text" id="txtSearchModalSubjects" placeholder="Search subject by name or code..." class="form-control" style="font-size:13px; padding-left:32px;" oninput="filterModalSubjects()">
+                <input type="text" id="txtSearchModalSubjects" placeholder="Search by name, code (e.g. 131, 031), or abbreviation (e.g. PHY-A, CIV)..." class="form-control" style="font-size:13px; padding-left:32px;" oninput="filterModalSubjects()">
                 <span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:14px;">🔍</span>
             </div>
 
-            <div class="modal-body-scroll" id="modalSubjectsListBody">
+            <div class="modal-body-scroll" id="modalSubjectsListBody" style="max-height:340px;">
                 <!-- Loaded dynamically -->
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; padding-top:10px; border-top:1px solid #e2e8f0;">
                 <span style="font-size:12px; color:#64748b;" id="lblModalSelectedCount">0 selected</span>
                 <div style="display:flex; gap:8px;">
                     <button type="button" onclick="closeAddSubjectsModal()" class="btn btn-outline btn-sm">Cancel</button>
@@ -216,7 +228,8 @@
         let currentGradeId = '';
         let currentLevelCode = 'O-LEVEL';
         let fullSubjectChecklist = []; // Master list from API
-        let activeAssignedSubjects = []; // Currently assigned in main table: [{ subject_code, subject_name, is_core }]
+        let activeAssignedSubjects = []; // Currently assigned in main table: [{ subject_code, subject_name, abbr, course_code, category, is_core }]
+        let availableCombinations = []; // A-Level combinations
         let tempModalSelection = []; // Temporary subject_codes checked in modal
 
         function showToast(message, isError = false) {
@@ -266,6 +279,7 @@
                 $('#lblLevelGradesRange').text(levelRangeText);
 
                 fullSubjectChecklist = data.subject_checklist || [];
+                availableCombinations = data.combinations || [];
 
                 // Filter initial assigned subjects
                 activeAssignedSubjects = fullSubjectChecklist
@@ -273,6 +287,9 @@
                     .map(s => ({
                         subject_code: s.subject_code,
                         subject_name: s.subject_name,
+                        abbr: s.abbr || s.subject_code,
+                        course_code: s.course_code || s.subject_code,
+                        category: s.category || '',
                         is_core: s.is_core ? 1 : 0
                     }));
 
@@ -297,12 +314,12 @@
             if (activeAssignedSubjects.length === 0) {
                 tbody.html(`
                     <tr>
-                        <td colspan="4" style="text-align:center; padding:36px; color:#64748b;">
+                        <td colspan="6" style="text-align:center; padding:36px; color:#64748b;">
                             <div style="margin-bottom:8px;">
                                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                             </div>
                             <div style="font-weight:700; color:#334155;">No subjects added to this grade curriculum yet.</div>
-                            <div style="font-size:12px; margin-top:2px;">Click <strong>"Add Subjects to Grade Curriculum"</strong> to select subjects from the Super Admin template.</div>
+                            <div style="font-size:12px; margin-top:2px;">Click <strong>"Add Subjects"</strong> to select subjects from the Super Admin template.</div>
                         </td>
                     </tr>
                 `);
@@ -315,15 +332,25 @@
 
                 html += `
                     <tr style="border-bottom:1px solid var(--c-border-light);">
-                        <td style="padding:12px;font-weight:800;font-size:14px;color:var(--c-text-primary);">
-                            ${sbj.subject_code}
+                        <td style="padding:12px;">
+                            <span class="badge" style="background:#eff6ff; color:#1e40af; font-family:monospace; font-weight:800; font-size:12px; border:1px solid #bfdbfe; padding:3px 8px;">
+                                ${sbj.course_code || sbj.subject_code}
+                            </span>
                         </td>
-                        <td style="padding:12px;font-weight:700;font-size:14px;">
-                            ${sbj.subject_name}
+                        <td style="padding:12px;">
+                            <span class="badge" style="background:#f8fafc; color:#334155; font-weight:800; font-size:12px; border:1px solid #cbd5e1; padding:3px 8px;">
+                                ${sbj.abbr || sbj.subject_code}
+                            </span>
+                        </td>
+                        <td style="padding:12px;">
+                            <div style="font-weight:800; font-size:13.5px; color:var(--c-text-primary);">${sbj.subject_name}</div>
+                        </td>
+                        <td style="padding:12px; color:#64748b; font-size:12px; font-weight:600;">
+                            ${sbj.category || 'Standard'}
                         </td>
                         <td style="padding:12px;text-align:center;">
                             <label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;">
-                                <input type="checkbox" class="chk-gw-core" onchange="toggleSubjectCore('${sbj.subject_code}', this.checked)" ${isCore ? 'checked' : ''} style="width:16px;height:16px;">
+                                <input type="checkbox" class="chk-gw-core" onchange="toggleSubjectCore('${sbj.subject_code}', this.checked)" ${isCore ? 'checked' : ''} style="width:16px;height:16px; accent-color:#059669;">
                                 <span style="color:${isCore ? '#15803d' : '#1e40af'};">${isCore ? 'Core Mandatory' : 'Optional Elective'}</span>
                             </label>
                         </td>
@@ -364,12 +391,46 @@
         function openAddSubjectsModal() {
             tempModalSelection = [];
             $('#txtSearchModalSubjects').val('');
+
+            // Render Combination Presets if A-Level
+            if (currentLevelCode === 'A-LEVEL' && availableCombinations && availableCombinations.length > 0) {
+                $('#pnlCombinationPresets').show();
+                let cmbHtml = availableCombinations.map(c => `
+                    <button type="button" class="btn btn-outline btn-sm" style="font-weight:800; font-size:11px; padding:3px 8px; border-color:#cbd5e1; background:#fff;" title="${c.name} (${(c.principals || []).join(', ')})" onclick="selectCombinationPreset('${c.code}')">
+                        ${c.abbr || c.code}
+                    </button>
+                `).join('');
+                $('#combinationPresetPills').html(cmbHtml);
+            } else {
+                $('#pnlCombinationPresets').hide();
+            }
+
             renderModalSubjectsList();
             $('#modalAddGradeSubjects').css('display', 'flex');
         }
 
         function closeAddSubjectsModal() {
             $('#modalAddGradeSubjects').hide();
+        }
+
+        function selectCombinationPreset(cmbCode) {
+            const cmb = availableCombinations.find(c => c.code === cmbCode);
+            if (!cmb) return;
+
+            const targets = [...(cmb.principals || []), '111-GS', 'GS', ...(cmb.subsidiaries || [])];
+            targets.forEach(tCode => {
+                const match = fullSubjectChecklist.find(s => 
+                    s.subject_code === tCode || 
+                    s.abbr === tCode || 
+                    s.course_code === tCode ||
+                    s.subject_code.endsWith(tCode)
+                );
+                if (match && !tempModalSelection.includes(match.subject_code)) {
+                    tempModalSelection.push(match.subject_code);
+                }
+            });
+
+            renderModalSubjectsList();
         }
 
         function renderModalSubjectsList() {
@@ -379,7 +440,10 @@
             if (query) {
                 list = list.filter(s => 
                     (s.subject_name || '').toLowerCase().includes(query) ||
-                    (s.subject_code || '').toLowerCase().includes(query)
+                    (s.subject_code || '').toLowerCase().includes(query) ||
+                    (s.abbr || '').toLowerCase().includes(query) ||
+                    (s.course_code || '').toLowerCase().includes(query) ||
+                    (s.category || '').toLowerCase().includes(query)
                 );
             }
 
@@ -392,17 +456,20 @@
             const html = list.map(sbj => {
                 const isSelected = tempModalSelection.includes(sbj.subject_code);
                 return `
-                    <div class="modal-subject-item ${isSelected ? 'selected' : ''}" onclick="toggleModalSubjectSelection('${sbj.subject_code}', this)">
+                    <div class="modal-subject-item ${isSelected ? 'selected' : ''}" onclick="toggleModalSubjectSelection('${sbj.subject_code}', this)" style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:6px; cursor:pointer; background:${isSelected ? '#f0fdf4' : '#fff'};">
                         <div style="display:flex; align-items:center; gap:10px;">
-                            <input type="checkbox" value="${sbj.subject_code}" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleModalSubjectCheckbox('${sbj.subject_code}', this);">
+                            <input type="checkbox" value="${sbj.subject_code}" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleModalSubjectCheckbox('${sbj.subject_code}', this);" style="width:16px; height:16px; accent-color:#059669;">
                             <div>
-                                <div style="font-weight:800; font-size:13px; color:#0f172a;">${sbj.subject_name}</div>
-                                <div style="font-size:11px; color:#64748b;">Code: <strong>${sbj.subject_code}</strong></div>
+                                <div style="font-weight:800; font-size:13.5px; color:#0f172a;">${sbj.subject_name}</div>
+                                <div style="font-size:11px; color:#64748b; margin-top:2px; display:flex; gap:6px; align-items:center;">
+                                    <span class="badge" style="background:#eff6ff; color:#1e40af; font-family:monospace; font-weight:700; font-size:10px; padding:2px 6px;">Course: ${sbj.course_code || sbj.subject_code}</span>
+                                    <span class="badge" style="background:#f8fafc; color:#334155; font-weight:700; font-size:10px; padding:2px 6px;">Abbr: ${sbj.abbr || sbj.subject_code}</span>
+                                </div>
                             </div>
                         </div>
                         <div>
-                            <span class="badge" style="background:#f1f5f9; color:#475569; font-weight:700; font-size:11px;">
-                                ${sbj.is_core ? 'Core Template' : 'Elective Template'}
+                            <span class="badge" style="background:#f1f5f9; color:#475569; font-weight:700; font-size:11px; padding:4px 8px;">
+                                ${sbj.category || (sbj.is_core ? 'Core' : 'Elective')}
                             </span>
                         </div>
                     </div>
