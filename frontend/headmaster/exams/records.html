@@ -331,7 +331,7 @@
             .print-broadsheet-header {
                 display: block !important;
                 width: 100% !important;
-                border-bottom: 2px solid #064e3b !important;
+                border-bottom: 2px solid #000000 !important;
                 padding-bottom: 5px !important;
                 margin-bottom: 6px !important;
                 page-break-inside: avoid !important;
@@ -340,43 +340,51 @@
                 break-after: avoid !important;
             }
 
-            /* DIVISION SUMMARY MATRIX */
+            .print-broadsheet-header h2,
+            .print-broadsheet-header div {
+                color: #000000 !important;
+            }
+
+            /* DIVISION SUMMARY MATRIX: PURE MONOCHROME WITH CRISP MARGINS */
             .summary-matrix-table {
                 width: 100% !important;
                 margin-bottom: 6px !important;
                 border-collapse: collapse !important;
+                border: 1px solid #000000 !important;
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
             }
 
             .summary-matrix-table th {
-                background: #064e3b !important;
-                color: #ffffff !important;
-                padding: 3px 5px !important;
+                background: #f1f5f9 !important;
+                color: #000000 !important;
+                padding: 4px 6px !important;
                 font-size: 9.5px !important;
                 font-weight: 800 !important;
-                border: 1px solid #022c22 !important;
+                border: 1px solid #000000 !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
 
             .summary-matrix-table td {
-                padding: 3px 5px !important;
+                padding: 4px 6px !important;
                 font-size: 10px !important;
-                font-weight: 700 !important;
-                border: 1px solid #cbd5e1 !important;
+                font-weight: 800 !important;
+                border: 1px solid #000000 !important;
+                background: #ffffff !important;
+                color: #000000 !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
 
-            /* MASTER BROADSHEET TABLE: FULL-WIDTH, NO ROW CLIPPING */
+            /* MASTER BROADSHEET TABLE: FULL-WIDTH, MONOCHROME, CRISP BORDERS, NO ROW CLIPPING */
             .broadsheet-table-box {
                 display: block !important;
                 width: 100% !important;
                 max-height: none !important;
                 overflow: visible !important;
-                border: 1px solid #94a3b8 !important;
-                border-radius: 2px !important;
+                border: 1px solid #000000 !important;
+                border-radius: 0 !important;
                 margin-bottom: 8px !important;
                 box-shadow: none !important;
             }
@@ -387,6 +395,7 @@
                 border-collapse: collapse !important;
                 table-layout: auto !important;
                 font-size: 9.5px !important;
+                border: 1px solid #000000 !important;
                 page-break-inside: auto !important;
                 break-inside: auto !important;
             }
@@ -396,13 +405,13 @@
             }
 
             .broadsheet-table thead th {
-                background: #064e3b !important;
-                color: #ffffff !important;
+                background: #f1f5f9 !important;
+                color: #000000 !important;
                 position: static !important;
-                padding: 3.5px 4px !important;
+                padding: 4px 6px !important;
                 font-size: 9px !important;
                 font-weight: 800 !important;
-                border: 1px solid #022c22 !important;
+                border: 1px solid #000000 !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
                 white-space: nowrap !important;
@@ -416,15 +425,29 @@
             }
 
             .broadsheet-table td {
-                padding: 3px 4px !important;
+                padding: 4px 6px !important;
                 font-size: 9px !important;
-                border: 1px solid #cbd5e1 !important;
+                border: 1px solid #000000 !important;
                 position: static !important;
                 background: #ffffff !important;
+                color: #000000 !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
                 word-break: normal !important;
                 white-space: nowrap !important;
+            }
+
+            .broadsheet-table td strong {
+                color: #000000 !important;
+                font-weight: 800 !important;
+            }
+
+            .broadsheet-table td .badge {
+                background: transparent !important;
+                color: #000000 !important;
+                font-weight: 800 !important;
+                padding: 0 !important;
+                border: none !important;
             }
 
             /* SUBJECT EXAMINATIONS SUMMARY */
@@ -432,17 +455,18 @@
                 width: 100% !important;
                 border-collapse: collapse !important;
                 font-size: 9.5px !important;
+                border: 1px solid #000000 !important;
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
             }
 
             .subj-summary-table thead th {
-                background: #0f172a !important;
-                color: #ffffff !important;
-                padding: 3px 4px !important;
+                background: #f1f5f9 !important;
+                color: #000000 !important;
+                padding: 4px 6px !important;
                 font-size: 9px !important;
                 font-weight: 800 !important;
-                border: 1px solid #020617 !important;
+                border: 1px solid #000000 !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
@@ -453,9 +477,11 @@
             }
 
             .subj-summary-table td {
-                padding: 2.5px 4px !important;
+                padding: 3.5px 6px !important;
                 font-size: 9px !important;
-                border: 1px solid #cbd5e1 !important;
+                border: 1px solid #000000 !important;
+                background: #ffffff !important;
+                color: #000000 !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
@@ -467,9 +493,13 @@
                 align-items: center !important;
                 margin-top: 10px !important;
                 padding-top: 8px !important;
-                border-top: 1px dashed #94a3b8 !important;
+                border-top: 1px dashed #000000 !important;
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
+            }
+
+            .print-signatures-row div {
+                color: #000000 !important;
             }
         }
     </style>
@@ -598,20 +628,20 @@
                     <div id="stepWorkspaceView" style="display: none;">
 
                         <!-- Print-Only Official Broadsheet Header (Visible only on print) -->
-                        <div class="print-broadsheet-header" style="display: none; border-bottom: 2px solid #064e3b; padding-bottom: 6px; margin-bottom: 8px;">
+                        <div class="print-broadsheet-header" style="display: none; border-bottom: 2px solid #000000; padding-bottom: 5px; margin-bottom: 6px;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div style="display: flex; align-items: center; gap: 10px;">
-                                    <div style="width: 36px; height: 36px; border-radius: 50%; background: #ecfdf5; border: 2px solid #059669; display: flex; align-items: center; justify-content: center;">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#064e3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                                    <div style="width: 34px; height: 34px; border-radius: 50%; background: #f8fafc; border: 1.5px solid #0f172a; display: flex; align-items: center; justify-content: center;">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
                                     </div>
                                     <div>
-                                        <h2 id="printSchoolName" style="margin: 0; font-size: 15px; font-weight: 900; color: #064e3b; text-transform: uppercase; letter-spacing: 0.5px;">SHULE CAFE SECONDARY SCHOOL</h2>
-                                        <div id="printReportTitle" style="font-size: 11px; font-weight: 800; color: #0f172a; margin-top: 1px;">OFFICIAL CONTINUOUS ASSESSMENT RESULTS BROADSHEET</div>
+                                        <h2 id="printSchoolName" style="margin: 0; font-size: 14.5px; font-weight: 900; color: #000000; text-transform: uppercase; letter-spacing: 0.5px;"></h2>
+                                        <div id="printReportTitle" style="font-size: 11px; font-weight: 800; color: #000000; margin-top: 1px;">OFFICIAL CONTINUOUS ASSESSMENT RESULTS BROADSHEET</div>
                                     </div>
                                 </div>
-                                <div style="text-align: right; font-size: 10.5px; font-weight: 700; color: #475569;">
-                                    <div id="printScopeMeta" style="color: #064e3b; font-weight: 800; font-size: 11px;">Form 1 • Term 1 2026</div>
-                                    <div id="printDateStamp" style="font-size: 9.5px; color: #64748b; margin-top: 2px;">Official Examination Record</div>
+                                <div style="text-align: right; font-size: 10.5px; font-weight: 700; color: #000000;">
+                                    <div id="printScopeMeta" style="color: #000000; font-weight: 800; font-size: 11px;"></div>
+                                    <div id="printDateStamp" style="font-size: 9.5px; color: #000000; margin-top: 2px;"></div>
                                 </div>
                             </div>
                         </div>
@@ -1166,8 +1196,8 @@
 
             // Sync print header elements
             const schNameEl = document.getElementById('printSchoolName');
-            if (schNameEl && data.school && data.school.name) {
-                schNameEl.textContent = data.school.name;
+            if (schNameEl) {
+                schNameEl.textContent = (data.school && data.school.name) ? data.school.name : 'OFFICIAL EXAMINATION CENTER';
             }
             const repTitleEl = document.getElementById('printReportTitle');
             if (repTitleEl) {
@@ -1216,9 +1246,8 @@
                         <td style="text-align: center; font-weight: 700; color: #64748b;">${idx + 1}</td>
                         <td style="font-weight: 700; color: #475569;">${stu.user_code || '-'}</td>
                         <td style="font-weight: 800;">
-                            <a href="/shule-cafe/frontend/headmaster/reports/student_transcript_pdf.html?student_id=${stu.student_id}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}" target="_blank" style="color: #064e3b; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Click to view/print official transcript">
+                            <a href="/shule-cafe/frontend/headmaster/reports/student_transcript_pdf.html?student_id=${stu.student_id}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}" target="_blank" style="color: inherit; text-decoration: none;" title="Click to view/print official transcript">
                                 <span>${stu.full_name}</span>
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.6;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                             </a>
                         </td>
                     `;
@@ -1307,31 +1336,73 @@
                 return;
             }
 
-            const subjs = activeBroadsheetData.subjects.map(s => s.code);
-            let csv = ['S/N,Reg No,Full Name,' + subjs.join(',') + ',Points,Division,Pos'];
+            const schName = (activeBroadsheetData.school && activeBroadsheetData.school.name) ? activeBroadsheetData.school.name : 'OFFICIAL EXAMINATION CENTER';
+            const selAssess = document.getElementById('gridAssessmentFilter');
+            const assessName = (selAssess && selAssess.options[selAssess.selectedIndex]) ? selAssess.options[selAssess.selectedIndex].text : 'Continuous Assessment';
+            const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+            let lines = [];
+            // 1. School & Report Header Block
+            lines.push(`"${schName.toUpperCase()}"`);
+            lines.push(`"OFFICIAL EXAMINATION BROADSHEET - ${assessName.toUpperCase()}"`);
+            lines.push(`"Class/Grade: ${activeBroadsheetData.class_info.classroom_name}","Academic Year: ${activeBroadsheetData.year}","Term: ${activeBroadsheetData.term}","Export Date: ${today}"`);
+            lines.push(`"Total Candidates: ${activeBroadsheetData.total_students}","Class Overall Pass Rate: ${activeBroadsheetData.class_pass_rate_percent}%"`);
+            lines.push("");
+
+            // 2. Division Summary Block
+            lines.push('"--- DIVISION PERFORMANCE SUMMARY ---"');
+            lines.push('"Division I","Division II","Division III","Division IV","Division 0","Total Candidates","Pass Rate %"');
+            const div = activeBroadsheetData.division_summary || {};
+            lines.push(`"${div['Division I'] || 0}","${div['Division II'] || 0}","${div['Division III'] || 0}","${div['Division IV'] || 0}","${div['Division 0'] || 0}","${activeBroadsheetData.total_students}","${activeBroadsheetData.class_pass_rate_percent}%"`);
+            lines.push("");
+
+            // 3. Student Results Master Broadsheet
+            lines.push('"--- CANDIDATE EXAMINATION RESULTS ---"');
+            const subjs = activeBroadsheetData.subjects.map(s => `"${s.code}"`);
+            lines.push('"S/N","Registration No","Full Name",' + subjs.join(',') + ',"Points","Division","Position"');
 
             activeBroadsheetData.broadsheet.forEach((stu, idx) => {
                 const subScores = activeBroadsheetData.subjects.map(s => {
                     const g = stu.subject_scores ? stu.subject_scores[s.code] : null;
-                    return g ? `${g.mark} (${g.grade})` : '-';
+                    return g ? `"${g.mark} (${g.grade})"` : '"-"';
                 });
 
                 const row = [
-                    idx + 1,
-                    `"${stu.user_code || ''}"`,
-                    `"${stu.full_name}"`,
-                    subScores.join(','),
-                    stu.points,
+                    `"${idx + 1}"`,
+                    `"${stu.user_code || '-'}"`,
+                    `"${(stu.full_name || '').replace(/"/g, '""')}"`,
+                    ...subScores,
+                    `"${stu.points}"`,
                     `"${stu.division}"`,
-                    stu.position || '-'
+                    `"${stu.position || '-'}"`
                 ];
-                csv.push(row.join(','));
+                lines.push(row.join(','));
             });
+            lines.push("");
 
-            const blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            // 4. Subject Performance Rankings
+            if (activeBroadsheetData.subject_rankings && activeBroadsheetData.subject_rankings.length > 0) {
+                lines.push('"--- SUBJECT PERFORMANCE SUMMARY ---"');
+                lines.push('"S/N","Subject Code","Subject Name","Registered","Sat","A","B","C","D","F","Pass %"');
+                activeBroadsheetData.subject_rankings.forEach((sRank, sIdx) => {
+                    const g = sRank.grades || { 'A': 0, 'B': 0, 'C': 0, 'D': 0, 'F': 0 };
+                    lines.push(`"${sIdx + 1}","${sRank.code}","${(sRank.name || '').replace(/"/g, '""')}","${activeBroadsheetData.total_students}","${sRank.evaluated_count}","${g.A || 0}","${g.B || 0}","${g.C || 0}","${g.D || 0}","${g.F || 0}","${sRank.pass_rate_percent}%"`);
+                });
+                lines.push("");
+            }
+
+            // 5. Official Verification Signatures
+            lines.push('"--- OFFICIAL VERIFICATION & CERTIFICATION ---"');
+            lines.push(`"Class Teacher Signature: ___________________________","Date: ${today}"`);
+            lines.push(`"Academic Dean Signature: ___________________________","Date: ${today}"`);
+            lines.push(`"Head of School / Official Stamp: ___________________","Date: ${today}"`);
+
+            const csvContent = lines.join('\r\n');
+            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
+            const safeClass = activeBroadsheetData.class_info.classroom_name.replace(/[^a-zA-Z0-9_-]/g, '_');
             link.href = URL.createObjectURL(blob);
-            link.setAttribute('download', `broadsheet_${activeBroadsheetData.class_info.classroom_name}_${activeBroadsheetData.term}_${activeBroadsheetData.year}.csv`);
+            link.setAttribute('download', `broadsheet_${safeClass}_${activeBroadsheetData.term}_${activeBroadsheetData.year}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);

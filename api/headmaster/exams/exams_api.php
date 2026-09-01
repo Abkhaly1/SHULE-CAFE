@@ -672,6 +672,14 @@ try {
             exit();
         }
 
+        // Fetch School Info
+        $stmtSch = $conn->prepare("SELECT name, necta_no, motto, region, district FROM schools WHERE id = ? LIMIT 1");
+        $stmtSch->execute([$schoolId]);
+        $schoolInfo = $stmtSch->fetch(PDO::FETCH_ASSOC);
+        if (!$schoolInfo || empty($schoolInfo['name'])) {
+            $schoolInfo = ['name' => 'Official Examination Center', 'necta_no' => '', 'motto' => ''];
+        }
+
         // Classroom & Level information
         $classInfo = null;
         if ($classroomId > 0) {
@@ -950,6 +958,7 @@ try {
 
         echo json_encode([
             'success' => true,
+            'school' => $schoolInfo,
             'class_info' => $classInfo,
             'year' => $year,
             'term' => $term,
