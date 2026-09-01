@@ -9,8 +9,216 @@
     <link rel="stylesheet" href="../../css/layout.css">
     <link rel="stylesheet" href="../../css/headmaster-theme.css">
     
+    <!-- Chart.js for interactive analytics charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="../../layouts/global-layout.js"></script>
     <script type="module" src="../../js/auth/auth-guard.js"></script>
+
+    <style>
+        /* Compact Workspace Styles */
+        .workspace-header-banner {
+            background: linear-gradient(135deg, #064e3b 0%, #047857 100%);
+            color: #ffffff;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-top: 10px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            box-shadow: 0 4px 14px rgba(6, 78, 59, 0.15);
+        }
+        .workspace-header-title {
+            margin: 0 0 4px;
+            font-size: 20px;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .workspace-header-subtitle {
+            margin: 0;
+            font-size: 12.5px;
+            color: rgba(255, 255, 255, 0.85);
+        }
+        .filter-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .filter-select {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.95);
+            color: #0f172a;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+        .filter-select:hover {
+            background: #ffffff;
+            border-color: #ffffff;
+        }
+
+        /* Stat KPI Cards */
+        .stat-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .kpi-card {
+            background: #ffffff;
+            border: 1px solid var(--c-border-light);
+            border-radius: 8px;
+            padding: 10px 14px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .kpi-accent {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+        .kpi-title {
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: var(--c-text-muted);
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .kpi-val {
+            font-size: 18px;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.2;
+        }
+        .kpi-sub {
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        /* Tab Panels and Chart Containers */
+        .analytics-card {
+            background: #ffffff;
+            border: 1px solid var(--c-border-light);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+        .analytics-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .analytics-card-title {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--c-text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .chart-box {
+            position: relative;
+            width: 100%;
+            height: 280px;
+        }
+        .chart-box-tall {
+            position: relative;
+            width: 100%;
+            height: 340px;
+        }
+
+        /* Compact Tables */
+        .compact-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+            margin: 0;
+        }
+        .compact-table th {
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            padding: 9px 12px;
+            border-bottom: 1px solid var(--c-border-light);
+            text-align: left;
+        }
+        .compact-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--c-text-primary);
+        }
+        .compact-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        /* Gender Cards */
+        .gender-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .gender-card {
+            border-radius: 8px;
+            padding: 14px 16px;
+            border: 1px solid;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .gender-card-male {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+        .gender-card-female {
+            background: #fdf2f8;
+            border-color: #fbcfe8;
+        }
+        .progress-track {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 0, 0, 0.08);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 0.5s ease;
+        }
+    </style>
 </head>
 <body>
     <div class="app-layout">
@@ -20,133 +228,655 @@
             <app-topbar username="Headmaster Portal"></app-topbar>
             
             <main class="app-content-wrapper">
-                <div class="app-content">
+                <div class="app-content" style="padding: 12px 20px;">
+                    
                     <app-breadcrumb path="Headmaster, Comparative Analytics"></app-breadcrumb>
 
-                    <div class="card" style="margin-top: 14px; padding: 24px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 24px;">
-                            <div>
-                                <h1 style="margin: 0 0 6px; font-size: 22px; font-weight: 800; color: var(--c-text-primary);">📈 Comparative Grade-Wide Performance Board</h1>
-                                <p style="margin: 0; font-size: 13px; color: var(--c-text-muted);">
-                                    Headmaster analytics workspace comparing pass rates and average scores across streams and gender cohorts.
-                                </p>
-                            </div>
-                            <div style="display: flex; gap: 10px; align-items: center;">
-                                <select id="selTerm" class="form-control" style="width: 140px; font-weight: 700;">
-                                    <option value="Term 1" selected>Term 1</option>
-                                    <option value="Term 2">Term 2</option>
-                                </select>
-                                <select id="selYear" class="form-control" style="width: 110px; font-weight: 700;">
-                                    <script>
-                                        const _yr = new Date().getFullYear();
-                                        document.write(`<option value="${_yr}" selected>${_yr}</option>`);
-                                        document.write(`<option value="${_yr-1}">${_yr-1}</option>`);
-                                        document.write(`<option value="${_yr-2}">${_yr-2}</option>`);
-                                    </script>
-                                </select>
-                            </div>
+                    <!-- HEADER BANNER WITH COMPACT FILTERS -->
+                    <div class="workspace-header-banner">
+                        <div>
+                            <h1 class="workspace-header-title">📈 Comparative Grade-Wide Analytics Board</h1>
+                            <p class="workspace-header-subtitle">Executive academic insights, stream benchmarks, gender cohorts, and subject performance metrics.</p>
                         </div>
-
-                        <!-- Gender Performance Cards (Task 4.3) -->
-                        <h2 style="font-size: 16px; font-weight: 800; color: #064e3b; margin-bottom: 14px;">👫 Gender Cohort Pass Rate Comparison</h2>
-                        <div id="genderContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 30px;">
-                            <!-- Gender Cards -->
-                        </div>
-
-                        <!-- Stream Comparison Table (Task 4.3) -->
-                        <h2 style="font-size: 16px; font-weight: 800; color: #064e3b; margin-bottom: 14px;">🏫 Classroom Stream Comparison Matrix</h2>
-                        <div style="border: 1px solid var(--c-border-light); border-radius: 10px; overflow: hidden;">
-                            <table class="table" style="width: 100%; margin: 0; font-size: 13px; border-collapse: collapse;">
-                                <thead>
-                                    <tr style="background: #064e3b; color: white;">
-                                        <th style="padding: 12px 16px;">Classroom Stream</th>
-                                        <th style="padding: 12px 16px;">Grade Level Tier</th>
-                                        <th style="padding: 12px 16px; text-align: center;">Total Evaluated Marks</th>
-                                        <th style="padding: 12px 16px; text-align: center;">Passed Marks (>=45)</th>
-                                        <th style="padding: 12px 16px; text-align: center;">Overall Pass Rate %</th>
-                                        <th style="padding: 12px 16px; text-align: center;">Average Stream Score</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="streamRows">
-                                    <!-- Stream Rows -->
-                                </tbody>
-                            </table>
+                        <div class="filter-toolbar">
+                            <select id="selGrade" class="filter-select" title="Select Grade Level">
+                                <option value="0">All Grade Levels</option>
+                            </select>
+                            <select id="selTerm" class="filter-select" title="Select Academic Term">
+                                <option value="Term 1" selected>Term 1</option>
+                                <option value="Term 2">Term 2</option>
+                            </select>
+                            <select id="selYear" class="filter-select" title="Select Academic Year">
+                                <script>
+                                    const _curYr = new Date().getFullYear();
+                                    document.write(`<option value="${_curYr}" selected>${_curYr}</option>`);
+                                    document.write(`<option value="${_curYr-1}">${_curYr-1}</option>`);
+                                    document.write(`<option value="${_curYr-2}">${_curYr-2}</option>`);
+                                </script>
+                            </select>
+                            <button type="button" class="btn btn-sm btn-outline" onclick="window.print()" style="background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.4); color: white; font-weight: 700; font-size: 11px; padding: 6px 12px;">
+                                🖨️ Print
+                            </button>
                         </div>
                     </div>
+
+                    <!-- TOP EXECUTIVE STAT KPI STRIP (4 SLIM CARDS) -->
+                    <div class="stat-card-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-accent" style="background: linear-gradient(90deg, #10b981, #059669);"></div>
+                            <div class="kpi-title">
+                                <span>Overall Pass Rate</span>
+                                <span>🟢</span>
+                            </div>
+                            <div class="kpi-val" id="kpiPassRate">0.0%</div>
+                            <div class="kpi-sub" style="color: #059669;" id="kpiPassSub">Threshold: ≥ 45 Marks</div>
+                        </div>
+
+                        <div class="kpi-card">
+                            <div class="kpi-accent" style="background: linear-gradient(90deg, #3b82f6, #1d4ed8);"></div>
+                            <div class="kpi-title">
+                                <span>School Average Mark</span>
+                                <span>📊</span>
+                            </div>
+                            <div class="kpi-val" id="kpiAvgScore">0.0 / 100</div>
+                            <div class="kpi-sub" style="color: #1d4ed8;" id="kpiAvgSub">Calculated Average</div>
+                        </div>
+
+                        <div class="kpi-card">
+                            <div class="kpi-accent" style="background: linear-gradient(90deg, #8b5cf6, #6d28d9);"></div>
+                            <div class="kpi-title">
+                                <span>Evaluated Records</span>
+                                <span>📝</span>
+                            </div>
+                            <div class="kpi-val" id="kpiEvaluations">0</div>
+                            <div class="kpi-sub" style="color: #6d28d9;" id="kpiEvalSub">Marks Scored</div>
+                        </div>
+
+                        <div class="kpi-card">
+                            <div class="kpi-accent" style="background: linear-gradient(90deg, #f59e0b, #d97706);"></div>
+                            <div class="kpi-title">
+                                <span>Top Stream</span>
+                                <span>🏆</span>
+                            </div>
+                            <div class="kpi-val" id="kpiTopStream" style="font-size: 15px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">-</div>
+                            <div class="kpi-sub" style="color: #d97706;" id="kpiStreamCount">0 Total Streams</div>
+                        </div>
+                    </div>
+
+                    <!-- ── WORKSPACE WITH SECONDARY SIDEBAR ────────────────────────────────── -->
+                    <div class="workspace-with-sidebar" style="background: #ffffff; border: 1px solid var(--c-border-light); border-radius: 10px; overflow: hidden; min-height: 520px;">
+                        
+                        <!-- Secondary Sidebar: Subpage Navigation -->
+                        <div class="secondary-sidebar" style="background: #f8fafc; border-right: 1px solid var(--c-border-light); width: 220px; flex-shrink: 0; padding: 14px 10px;">
+                            <div class="secondary-sidebar-nav" style="display: flex; flex-direction: column; gap: 4px;">
+                                <button class="active" id="tabbtn-overview" onclick="switchTab('overview')">
+                                    <span class="icon" style="color: #3b82f6;">📊</span> Executive Overview
+                                </button>
+                                <button id="tabbtn-streams" onclick="switchTab('streams')">
+                                    <span class="icon" style="color: #10b981;">🏫</span> Classroom Streams
+                                </button>
+                                <button id="tabbtn-gender" onclick="switchTab('gender')">
+                                    <span class="icon" style="color: #ec4899;">👫</span> Gender Cohorts
+                                </button>
+                                <button id="tabbtn-subjects" onclick="switchTab('subjects')">
+                                    <span class="icon" style="color: #f59e0b;">📚</span> Subject Trends
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Main Content Container -->
+                        <div class="workspace-main-content" style="padding: 16px 20px; background: #ffffff;">
+
+                            <!-- ── SUBPAGE 1: EXECUTIVE OVERVIEW ────────────────────────── -->
+                            <div id="panel-overview">
+                                <div class="analytics-card">
+                                    <div class="analytics-card-header">
+                                        <h3 class="analytics-card-title">📊 Academic Benchmark Comparison</h3>
+                                        <span style="font-size: 11px; font-weight: 700; color: var(--c-text-muted);">Pass Rate % vs Average Mark by Stream</span>
+                                    </div>
+                                    <div class="chart-box">
+                                        <canvas id="chartOverview"></canvas>
+                                    </div>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                    <div class="analytics-card" style="margin-bottom: 0;">
+                                        <div class="analytics-card-header" style="margin-bottom: 10px;">
+                                            <h4 class="analytics-card-title" style="font-size: 13px;">🏆 Performance Highlights</h4>
+                                        </div>
+                                        <div id="overviewHighlights" style="font-size: 12.5px; color: var(--c-text-secondary); display: flex; flex-direction: column; gap: 8px;">
+                                            Loading highlights...
+                                        </div>
+                                    </div>
+
+                                    <div class="analytics-card" style="margin-bottom: 0;">
+                                        <div class="analytics-card-header" style="margin-bottom: 10px;">
+                                            <h4 class="analytics-card-title" style="font-size: 13px;">⚠️ Academic Focus Areas</h4>
+                                        </div>
+                                        <div id="overviewFocusAreas" style="font-size: 12.5px; color: var(--c-text-secondary); display: flex; flex-direction: column; gap: 8px;">
+                                            Loading focus areas...
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ── SUBPAGE 2: CLASSROOM STREAMS ─────────────────────────── -->
+                            <div id="panel-streams" style="display: none;">
+                                <div class="analytics-card">
+                                    <div class="analytics-card-header">
+                                        <h3 class="analytics-card-title">🏫 Classroom Stream Rank & Score Distribution</h3>
+                                        <span style="font-size: 11px; font-weight: 700; color: var(--c-text-muted);">Stream Average Score Ranking</span>
+                                    </div>
+                                    <div class="chart-box">
+                                        <canvas id="chartStreams"></canvas>
+                                    </div>
+                                </div>
+
+                                <div class="analytics-card" style="margin-bottom: 0; padding: 0; overflow: hidden;">
+                                    <div style="padding: 12px 16px; border-bottom: 1px solid var(--c-border-light); background: #f8fafc; display: flex; justify-content: space-between; align-items: center;">
+                                        <h3 class="analytics-card-title" style="font-size: 13px;">📋 Classroom Stream Comparison Matrix</h3>
+                                        <span id="streamCountBadge" class="badge badge-primary" style="font-size: 11px; font-weight: 700;">0 Streams</span>
+                                    </div>
+                                    <div style="overflow-x: auto;">
+                                        <table class="compact-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Classroom Stream</th>
+                                                    <th>Grade Level Tier</th>
+                                                    <th style="text-align: center;">Evaluated Marks</th>
+                                                    <th style="text-align: center;">Passed (≥45)</th>
+                                                    <th style="text-align: center;">Overall Pass Rate</th>
+                                                    <th style="text-align: center;">Average Score</th>
+                                                    <th style="text-align: right;">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="streamRows">
+                                                <tr><td colspan="7" style="text-align: center; padding: 20px; color: var(--c-text-muted);">Loading stream evaluation data...</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ── SUBPAGE 3: GENDER COHORTS ─────────────────────────────── -->
+                            <div id="panel-gender" style="display: none;">
+                                
+                                <!-- Gender Cohort Summary Cards -->
+                                <div class="gender-grid" id="genderCardsGrid">
+                                    <!-- Dynamic Male / Female Cards -->
+                                </div>
+
+                                <div class="analytics-card" style="margin-bottom: 0;">
+                                    <div class="analytics-card-header">
+                                        <h3 class="analytics-card-title">👫 Gender Performance & Equity Comparison</h3>
+                                        <span style="font-size: 11px; font-weight: 700; color: var(--c-text-muted);">Comparative Pass Rate & Average Scores</span>
+                                    </div>
+                                    <div class="chart-box">
+                                        <canvas id="chartGender"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ── SUBPAGE 4: SUBJECT TRENDS ─────────────────────────────── -->
+                            <div id="panel-subjects" style="display: none;">
+                                <div class="analytics-card">
+                                    <div class="analytics-card-header">
+                                        <h3 class="analytics-card-title">📚 Departmental Subject Pass Rate Ranking</h3>
+                                        <span style="font-size: 11px; font-weight: 700; color: var(--c-text-muted);">Ranked from highest to lowest score</span>
+                                    </div>
+                                    <div class="chart-box-tall">
+                                        <canvas id="chartSubjects"></canvas>
+                                    </div>
+                                </div>
+
+                                <div class="analytics-card" style="margin-bottom: 0; padding: 0; overflow: hidden;">
+                                    <div style="padding: 12px 16px; border-bottom: 1px solid var(--c-border-light); background: #f8fafc; display: flex; justify-content: space-between; align-items: center;">
+                                        <h3 class="analytics-card-title" style="font-size: 13px;">📊 Subject Performance & Intervention Matrix</h3>
+                                        <span id="subjectCountBadge" class="badge badge-primary" style="font-size: 11px; font-weight: 700;">0 Subjects</span>
+                                    </div>
+                                    <div style="overflow-x: auto;">
+                                        <table class="compact-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Subject Code</th>
+                                                    <th>Subject Name</th>
+                                                    <th style="text-align: center;">Total Evaluated</th>
+                                                    <th style="text-align: center;">Passed (≥45)</th>
+                                                    <th style="text-align: center;">Pass Rate %</th>
+                                                    <th style="text-align: center;">Average Score</th>
+                                                    <th style="text-align: center;">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="subjectRows">
+                                                <tr><td colspan="7" style="text-align: center; padding: 20px; color: var(--c-text-muted);">Loading subject trends...</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
                 </div>
             </main>
         </div>
     </div>
 
+    <!-- SCRIPT FOR SUBPAGE NAVIGATION & CHART.JS VISUALIZATION -->
     <script>
+        let currentAnalyticsData = null;
+        let activeTab = 'overview';
+
+        // Chart instances map
+        const chartInstances = {};
+
         document.addEventListener('DOMContentLoaded', () => {
             loadAnalytics();
+            document.getElementById('selGrade').addEventListener('change', loadAnalytics);
             document.getElementById('selTerm').addEventListener('change', loadAnalytics);
             document.getElementById('selYear').addEventListener('change', loadAnalytics);
         });
 
+        function switchTab(tabId) {
+            activeTab = tabId;
+            const tabs = ['overview', 'streams', 'gender', 'subjects'];
+            
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tabbtn-${t}`);
+                const panel = document.getElementById(`panel-${t}`);
+                if (btn && panel) {
+                    if (t === tabId) {
+                        btn.classList.add('active');
+                        panel.style.display = 'block';
+                    } else {
+                        btn.classList.remove('active');
+                        panel.style.display = 'none';
+                    }
+                }
+            });
+
+            // Re-render chart for the active tab to ensure proper canvas sizing
+            if (currentAnalyticsData) {
+                renderTabContent(tabId, currentAnalyticsData);
+            }
+        }
+
+        window.switchTab = switchTab;
+
         async function loadAnalytics() {
             const year = document.getElementById('selYear').value;
             const term = document.getElementById('selTerm').value;
-            const genderBox = document.getElementById('genderContainer');
-            const streamBox = document.getElementById('streamRows');
-
-            genderBox.innerHTML = '<div style="padding:20px;">Loading gender cohort metrics...</div>';
-            streamBox.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">Loading stream comparison data...</td></tr>';
+            const gradeId = document.getElementById('selGrade').value;
 
             try {
-                const res = await fetch(`/shule-cafe/api/headmaster/analytics/analytics_api.php?action=comparative_analytics&year=${year}&term=${encodeURIComponent(term)}`, { credentials: 'include' });
+                const res = await fetch(`/shule-cafe/api/headmaster/analytics/analytics_api.php?action=comparative_analytics&year=${year}&term=${encodeURIComponent(term)}&grade_id=${gradeId}`, { credentials: 'include' });
+                if (res.status === 401 || res.status === 403) {
+                    window.location.href = '/shule-cafe/frontend/auth/login.html';
+                    return;
+                }
                 const data = await res.json();
-                if (res.ok && data.success) {
-                    // Render Gender Analytics Cards
-                    const genders = data.gender_analytics || [];
-                    genderBox.innerHTML = '';
-                    if (genders.length === 0) {
-                        genderBox.innerHTML = '<div style="padding:20px; color:var(--c-text-muted);">No evaluation data available.</div>';
-                    } else {
-                        genders.forEach(g => {
-                            const isMale = g.gender.includes('Male');
-                            const borderCol = isMale ? '#3b82f6' : '#ec4899';
-                            const bgCol     = isMale ? '#eff6ff' : '#fdf2f8';
+                if (data && data.success) {
+                    currentAnalyticsData = data;
+                    
+                    // Populate Grade Dropdown if first load
+                    populateGradesDropdown(data.grade_levels || []);
 
-                            genderBox.innerHTML += `
-                                <div style="background: ${bgCol}; border: 2px solid ${borderCol}; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 8px;">
-                                    <div style="font-size: 13px; font-weight: 800; color: #0f172a;">${isMale ? '👦' : '👧'} ${g.gender} Cohort</div>
-                                    <div style="font-size: 28px; font-weight: 900; color: ${borderCol};">${g.pass_rate_percent}% <span style="font-size: 13px; font-weight: 700; color: #475569;">Pass Rate</span></div>
-                                    <div style="font-size: 12px; color: #475569; font-weight: 700;">
-                                        Average Score: <strong>${g.average_score} / 100</strong> | Passed: <strong>${g.pass_entries} / ${g.total_entries}</strong>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                    }
+                    // Render Top KPI Cards
+                    renderKPIs(data.summary_kpis || {});
 
-                    // Render Stream Analytics Rows
-                    const streams = data.stream_analytics || [];
-                    streamBox.innerHTML = '';
-                    if (streams.length === 0) {
-                        streamBox.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px; color:var(--c-text-muted);">No stream evaluation data available.</td></tr>';
-                    } else {
-                        streams.forEach(st => {
-                            const tr = document.createElement('tr');
-                            tr.style.borderBottom = '1px solid #f1f5f9';
-                            tr.innerHTML = `
-                                <td style="padding: 12px 16px; font-weight: 800; color: #0f172a;">${st.classroom_name}</td>
-                                <td style="padding: 12px 16px; font-weight: 700; color: #475569;">${st.grade_name || '-'}</td>
-                                <td style="padding: 12px 16px; text-align: center;">${st.total_entries}</td>
-                                <td style="padding: 12px 16px; text-align: center; font-weight: 700; color: #047857;">${st.pass_entries}</td>
-                                <td style="padding: 12px 16px; text-align: center;">
-                                    <span class="badge ${st.pass_rate_percent >= 60 ? 'badge-success' : 'badge-danger'}" style="font-size: 12px; font-weight: 800; padding: 4px 10px;">${st.pass_rate_percent}% Pass</span>
-                                </td>
-                                <td style="padding: 12px 16px; text-align: center; font-weight: 800; color: #0f172a;">${st.average_score}</td>
-                            `;
-                            streamBox.appendChild(tr);
-                        });
+                    // Render current active tab content
+                    renderTabContent(activeTab, data);
+                } else {
+                    console.error("Failed to load analytics:", data.message);
+                }
+            } catch (err) {
+                console.error("Network error loading analytics:", err);
+            }
+        }
+
+        function populateGradesDropdown(grades) {
+            const sel = document.getElementById('selGrade');
+            const curVal = sel.value;
+            if (sel.options.length <= 1 && grades.length > 0) {
+                grades.forEach(g => {
+                    const opt = document.createElement('option');
+                    opt.value = g.id;
+                    opt.textContent = g.name;
+                    sel.appendChild(opt);
+                });
+                sel.value = curVal;
+            }
+        }
+
+        function renderKPIs(kpis) {
+            document.getElementById('kpiPassRate').textContent = `${kpis.overall_pass_rate || 0}%`;
+            document.getElementById('kpiAvgScore').textContent = `${kpis.overall_average_score || 0} / 100`;
+            document.getElementById('kpiEvaluations').textContent = (kpis.total_evaluations || 0).toLocaleString();
+            document.getElementById('kpiTopStream').textContent = kpis.top_performing_stream || 'None Yet';
+            document.getElementById('kpiStreamCount').textContent = `${kpis.total_streams || 0} Evaluated Streams`;
+        }
+
+        function renderTabContent(tabId, data) {
+            if (tabId === 'overview') {
+                renderOverviewTab(data);
+            } else if (tabId === 'streams') {
+                renderStreamsTab(data);
+            } else if (tabId === 'gender') {
+                renderGenderTab(data);
+            } else if (tabId === 'subjects') {
+                renderSubjectsTab(data);
+            }
+        }
+
+        /* ── RENDER OVERVIEW TAB ─────────────────────────────────────── */
+        function renderOverviewTab(data) {
+            const streams = data.stream_analytics || [];
+            const labels = streams.map(s => s.classroom_name);
+            const passRates = streams.map(s => s.pass_rate_percent);
+            const avgScores = streams.map(s => s.average_score);
+
+            renderChart('chartOverview', {
+                type: 'bar',
+                data: {
+                    labels: labels.length > 0 ? labels : ['No Streams'],
+                    datasets: [
+                        {
+                            label: 'Pass Rate %',
+                            data: passRates.length > 0 ? passRates : [0],
+                            backgroundColor: 'rgba(16, 185, 129, 0.75)',
+                            borderColor: '#059669',
+                            borderWidth: 1.5,
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Average Score (/100)',
+                            data: avgScores.length > 0 ? avgScores : [0],
+                            backgroundColor: 'rgba(59, 130, 246, 0.75)',
+                            borderColor: '#2563eb',
+                            borderWidth: 1.5,
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100, ticks: { font: { size: 11, weight: '600' } } },
+                        x: { ticks: { font: { size: 11, weight: '700' } } }
+                    },
+                    plugins: {
+                        legend: { position: 'top', labels: { boxWidth: 12, font: { weight: '700' } } }
                     }
                 }
-            } catch(e) {
-                streamBox.innerHTML = '<tr><td colspan="6" style="text-align:center; color:crimson; padding:20px;">Network connection error.</td></tr>';
+            });
+
+            // Highlights
+            const topStreams = [...streams].sort((a,b) => b.pass_rate_percent - a.pass_rate_percent);
+            const hlBox = document.getElementById('overviewHighlights');
+            if (topStreams.length > 0) {
+                const best = topStreams[0];
+                hlBox.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 16px;">🥇</span>
+                        <div><strong>Top Stream:</strong> ${best.classroom_name} leading with <strong>${best.pass_rate_percent}%</strong> pass rate.</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 16px;">📈</span>
+                        <div><strong>School Benchmark:</strong> Overall average mark stands at <strong>${data.summary_kpis?.overall_average_score || 0}/100</strong>.</div>
+                    </div>
+                `;
+            } else {
+                hlBox.innerHTML = '<div style="color: var(--c-text-muted);">No evaluation data recorded for this term yet.</div>';
             }
+
+            // Focus Areas
+            const focusBox = document.getElementById('overviewFocusAreas');
+            const lowStreams = [...streams].filter(s => s.pass_rate_percent < 50 && s.total_entries > 0);
+            if (lowStreams.length > 0) {
+                focusBox.innerHTML = lowStreams.map(s => `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 16px;">⚠️</span>
+                        <div><strong>${s.classroom_name}:</strong> Pass rate is at <strong>${s.pass_rate_percent}%</strong> (${s.pass_entries}/${s.total_entries} passed).</div>
+                    </div>
+                `).join('');
+            } else {
+                focusBox.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 16px;">✅</span>
+                        <div>All evaluated streams meet baseline academic standards (≥50% pass rate).</div>
+                    </div>
+                `;
+            }
+        }
+
+        /* ── RENDER CLASSROOM STREAMS TAB ────────────────────────────── */
+        function renderStreamsTab(data) {
+            const streams = data.stream_analytics || [];
+            document.getElementById('streamCountBadge').textContent = `${streams.length} Stream(s)`;
+
+            const sortedStreams = [...streams].sort((a,b) => b.average_score - a.average_score);
+            const labels = sortedStreams.map(s => s.classroom_name);
+            const scores = sortedStreams.map(s => s.average_score);
+
+            renderChart('chartStreams', {
+                type: 'bar',
+                data: {
+                    labels: labels.length > 0 ? labels : ['No Streams'],
+                    datasets: [{
+                        label: 'Average Score (/100)',
+                        data: scores.length > 0 ? scores : [0],
+                        backgroundColor: scores.map(sc => sc >= 60 ? 'rgba(16, 185, 129, 0.8)' : (sc >= 45 ? 'rgba(59, 130, 246, 0.8)' : 'rgba(239, 68, 68, 0.8)')),
+                        borderColor: '#0f172a',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: { beginAtZero: true, max: 100, ticks: { font: { size: 11, weight: '600' } } },
+                        y: { ticks: { font: { size: 11, weight: '700' } } }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            // Stream Table Rows
+            const tbody = document.getElementById('streamRows');
+            if (streams.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: var(--c-text-muted);">No classroom streams evaluated yet.</td></tr>';
+            } else {
+                tbody.innerHTML = streams.map(st => {
+                    const badgeClass = st.pass_rate_percent >= 70 ? 'badge-success' : (st.pass_rate_percent >= 50 ? 'badge-warning' : 'badge-danger');
+                    return `
+                        <tr>
+                            <td style="font-weight: 800; color: #0f172a;">${st.classroom_name}</td>
+                            <td style="font-weight: 600; color: #475569;">${st.grade_name || '-'}</td>
+                            <td style="text-align: center; font-weight: 600;">${st.total_entries}</td>
+                            <td style="text-align: center; font-weight: 700; color: #047857;">${st.pass_entries}</td>
+                            <td style="text-align: center;">
+                                <span class="badge ${badgeClass}" style="font-size: 11px; font-weight: 800; padding: 3px 8px;">${st.pass_rate_percent}%</span>
+                            </td>
+                            <td style="text-align: center; font-weight: 800; color: #0f172a;">${st.average_score}</td>
+                            <td style="text-align: right;">
+                                <a href="../classrooms/workspace.html?id=${st.classroom_id}" class="btn btn-sm btn-outline" style="font-size: 11px; font-weight: 700; padding: 3px 8px; text-decoration: none;">
+                                    View Ledger ➔
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        /* ── RENDER GENDER COHORTS TAB ────────────────────────────────── */
+        function renderGenderTab(data) {
+            const genders = data.gender_analytics || [];
+            const grid = document.getElementById('genderCardsGrid');
+
+            if (genders.length === 0) {
+                grid.innerHTML = '<div style="padding: 16px; color: var(--c-text-muted);">No gender evaluation records found.</div>';
+            } else {
+                grid.innerHTML = genders.map(g => {
+                    const isMale = g.gender.includes('Male');
+                    const cardClass = isMale ? 'gender-card-male' : 'gender-card-female';
+                    const fillCol = isMale ? '#3b82f6' : '#ec4899';
+                    const textColor = isMale ? '#1d4ed8' : '#be185d';
+                    const icon = isMale ? '👦' : '👧';
+
+                    return `
+                        <div class="gender-card ${cardClass}">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="font-weight: 800; font-size: 13px; color: #0f172a;">${icon} ${g.gender} Cohort</div>
+                                <span style="font-size: 11px; font-weight: 700; color: ${textColor};">${g.pass_entries} / ${g.total_entries} Passed</span>
+                            </div>
+                            <div style="font-size: 24px; font-weight: 900; color: ${textColor}; margin: 2px 0;">
+                                ${g.pass_rate_percent}% <span style="font-size: 12px; font-weight: 700; color: #64748b;">Pass Rate</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-bar-fill" style="width: ${g.pass_rate_percent}%; background: ${fillCol};"></div>
+                            </div>
+                            <div style="font-size: 11.5px; color: #475569; font-weight: 700; margin-top: 4px;">
+                                Average Score: <strong>${g.average_score} / 100</strong>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Gender Comparative Chart
+            const labels = genders.map(g => g.gender);
+            const passRates = genders.map(g => g.pass_rate_percent);
+            const avgScores = genders.map(g => g.average_score);
+
+            renderChart('chartGender', {
+                type: 'bar',
+                data: {
+                    labels: labels.length > 0 ? labels : ['No Data'],
+                    datasets: [
+                        {
+                            label: 'Pass Rate %',
+                            data: passRates.length > 0 ? passRates : [0],
+                            backgroundColor: ['rgba(59, 130, 246, 0.75)', 'rgba(236, 72, 153, 0.75)'],
+                            borderColor: ['#2563eb', '#db2777'],
+                            borderWidth: 1.5,
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Average Score (/100)',
+                            data: avgScores.length > 0 ? avgScores : [0],
+                            backgroundColor: ['rgba(96, 165, 250, 0.5)', 'rgba(244, 114, 182, 0.5)'],
+                            borderColor: ['#3b82f6', '#ec4899'],
+                            borderWidth: 1.5,
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100, ticks: { font: { size: 11, weight: '600' } } },
+                        x: { ticks: { font: { size: 12, weight: '700' } } }
+                    },
+                    plugins: {
+                        legend: { position: 'top', labels: { boxWidth: 12, font: { weight: '700' } } }
+                    }
+                }
+            });
+        }
+
+        /* ── RENDER SUBJECT TRENDS TAB ────────────────────────────────── */
+        function renderSubjectsTab(data) {
+            const subjects = data.subject_analytics || [];
+            document.getElementById('subjectCountBadge').textContent = `${subjects.length} Subject(s)`;
+
+            const sortedSubjects = [...subjects].sort((a,b) => b.average_score - a.average_score);
+            const labels = sortedSubjects.map(s => s.subject_name || s.subject_code);
+            const scores = sortedSubjects.map(s => s.average_score);
+            const passRates = sortedSubjects.map(s => s.pass_rate_percent);
+
+            renderChart('chartSubjects', {
+                type: 'bar',
+                data: {
+                    labels: labels.length > 0 ? labels : ['No Subjects'],
+                    datasets: [
+                        {
+                            label: 'Average Mark',
+                            data: scores.length > 0 ? scores : [0],
+                            backgroundColor: 'rgba(245, 158, 11, 0.75)',
+                            borderColor: '#d97706',
+                            borderWidth: 1.5,
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Pass Rate %',
+                            data: passRates.length > 0 ? passRates : [0],
+                            backgroundColor: 'rgba(16, 185, 129, 0.75)',
+                            borderColor: '#059669',
+                            borderWidth: 1.5,
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100, ticks: { font: { size: 11, weight: '600' } } },
+                        x: { ticks: { font: { size: 11, weight: '700' }, maxRotation: 45, minRotation: 0 } }
+                    },
+                    plugins: {
+                        legend: { position: 'top', labels: { boxWidth: 12, font: { weight: '700' } } }
+                    }
+                }
+            });
+
+            // Subject Table Rows
+            const tbody = document.getElementById('subjectRows');
+            if (subjects.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 20px; color: var(--c-text-muted);">No subject evaluation data available.</td></tr>';
+            } else {
+                tbody.innerHTML = subjects.map(s => {
+                    const isGood = s.pass_rate_percent >= 70;
+                    const isMod  = s.pass_rate_percent >= 50 && s.pass_rate_percent < 70;
+                    const badgeClass = isGood ? 'badge-success' : (isMod ? 'badge-warning' : 'badge-danger');
+                    const statusText = isGood ? '🟢 On Track' : (isMod ? '🟡 Moderate' : '🔴 Focus Needed');
+
+                    return `
+                        <tr>
+                            <td style="font-weight: 800; color: #0f172a;">${s.subject_code}</td>
+                            <td style="font-weight: 700; color: #1e293b;">${s.subject_name}</td>
+                            <td style="text-align: center; font-weight: 600;">${s.total_entries}</td>
+                            <td style="text-align: center; font-weight: 700; color: #047857;">${s.pass_entries}</td>
+                            <td style="text-align: center;">
+                                <span class="badge ${badgeClass}" style="font-size: 11px; font-weight: 800; padding: 3px 8px;">${s.pass_rate_percent}%</span>
+                            </td>
+                            <td style="text-align: center; font-weight: 800; color: #0f172a;">${s.average_score}</td>
+                            <td style="text-align: center; font-size: 11px; font-weight: 700;">${statusText}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        /* ── HELPER: DESTROY & RECREATE CHART INSTANCE ────────────────── */
+        function renderChart(canvasId, config) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+
+            if (chartInstances[canvasId]) {
+                chartInstances[canvasId].destroy();
+            }
+
+            const ctx = canvas.getContext('2d');
+            chartInstances[canvasId] = new Chart(ctx, config);
         }
     </script>
 </body>

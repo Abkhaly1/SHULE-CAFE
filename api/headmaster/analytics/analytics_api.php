@@ -333,6 +333,22 @@ try {
     if ($action === 'comparative_analytics') {
         $gradeId = intval($_GET['grade_id'] ?? $input['grade_id'] ?? 0);
 
+        // Fetch available grade levels for the active school
+        $stmtGrades = $conn->prepare("
+            SELECT DISTINCT g.id, g.name 
+            FROM grades g
+            JOIN classrooms c ON c.grade_id = g.id
+            WHERE c.school_id = ?
+            ORDER BY g.order_seq ASC, g.id ASC
+        ");
+        $stmtGrades->execute([$schoolId]);
+        $gradeLevels = $stmtGrades->fetchAll(PDO::FETCH_ASSOC);
+
+        if (empty($gradeLevels)) {
+            $stmtAllGrades = $conn->query("SELECT id, name FROM grades ORDER BY order_seq ASC, id ASC LIMIT 10");
+            $gradeLevels = $stmtAllGrades->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        }
+
         // Fetch streams in grade or all streams if grade_id = 0
         $stmtStreams = $conn->prepare("
             SELECT c.id AS classroom_id, c.classroom_name, g.name AS grade_name
@@ -346,6 +362,9 @@ try {
 
         // Stream Comparison: Stream => Pass Rate % and Average Score
         $streamAnalytics = [];
+        $topStreamName = null;
+        $topStreamRate = -1;
+
         foreach ($streams as $st) {
             $cid = $st['classroom_id'];
             $stmtStats = $conn->prepare("
@@ -363,6 +382,11 @@ try {
             $pass = intval($stats['pass_entries']);
             $passRate = $tot > 0 ? round(($pass / $tot) * 100, 1) : 0;
             $avgScore = round(floatval($stats['avg_score']), 1);
+
+            if ($tot > 0 && $passRate > $topStreamRate) {
+                $topStreamRate = $passRate;
+                $topStreamName = $st['classroom_name'] . " (" . $passRate . "%)";
+            }
 
             $streamAnalytics[] = [
                 'classroom_id' => $cid,
@@ -401,6 +425,7 @@ try {
 
             $genderAnalytics[] = [
                 'gender' => $gLabel,
+                'normalized_key' => strtolower($gr['normalized_gender']),
                 'total_entries' => $tot,
                 'pass_entries' => $pass,
                 'pass_rate_percent' => $passRate,
@@ -408,12 +433,79 @@ try {
             ];
         }
 
+        // Subject Analytics: Per-subject pass rates and averages
+        $stmtSubjects = $conn->prepare("
+            SELECT me.subject_code, COALESCE(s.name, me.subject_code) AS subject_name,
+                   COUNT(*) AS total_entries,
+                   SUM(CASE WHEN me.score >= 45 THEN 1 ELSE 0 END) AS pass_entries,
+                   AVG(me.score) AS avg_score
+            FROM marks_entry_dynamic me
+            JOIN users u ON me.student_id = u.id
+            LEFT JOIN subjects s ON me.subject_code = s.code
+            LEFT JOIN student_classroom_allocations sca ON me.student_id = sca.student_id
+            LEFT JOIN classrooms c ON sca.classroom_id = c.id
+            WHERE me.academic_year = ? AND me.term = ? AND (? = 0 OR c.grade_id = ? OR u.grade_id = ?)
+            GROUP BY me.subject_code, s.name
+            ORDER BY avg_score DESC
+        ");
+        $stmtSubjects->execute([$year, $term, $gradeId, $gradeId, $gradeId]);
+        $subjectRows = $stmtSubjects->fetchAll(PDO::FETCH_ASSOC);
+
+        $subjectAnalytics = [];
+        foreach ($subjectRows as $sr) {
+            $tot = intval($sr['total_entries']);
+            $pass = intval($sr['pass_entries']);
+            $passRate = $tot > 0 ? round(($pass / $tot) * 100, 1) : 0;
+            $avgScore = round(floatval($sr['avg_score']), 1);
+
+            $subjectAnalytics[] = [
+                'subject_code' => $sr['subject_code'],
+                'subject_name' => $sr['subject_name'],
+                'total_entries' => $tot,
+                'pass_entries' => $pass,
+                'pass_rate_percent' => $passRate,
+                'average_score' => $avgScore
+            ];
+        }
+
+        // Overall Aggregate Summary KPIs
+        $stmtOverall = $conn->prepare("
+            SELECT COUNT(*) AS total_entries,
+                   SUM(CASE WHEN me.score >= 45 THEN 1 ELSE 0 END) AS pass_entries,
+                   AVG(me.score) AS avg_score
+            FROM marks_entry_dynamic me
+            JOIN users u ON me.student_id = u.id
+            LEFT JOIN student_classroom_allocations sca ON me.student_id = sca.student_id
+            LEFT JOIN classrooms c ON sca.classroom_id = c.id
+            WHERE me.academic_year = ? AND me.term = ? AND (? = 0 OR c.grade_id = ? OR u.grade_id = ?)
+        ");
+        $stmtOverall->execute([$year, $term, $gradeId, $gradeId, $gradeId]);
+        $overallStats = $stmtOverall->fetch(PDO::FETCH_ASSOC);
+
+        $totOverall = intval($overallStats['total_entries'] ?? 0);
+        $passOverall = intval($overallStats['pass_entries'] ?? 0);
+        $overallPassRate = $totOverall > 0 ? round(($passOverall / $totOverall) * 100, 1) : 0;
+        $overallAvgScore = round(floatval($overallStats['avg_score'] ?? 0), 1);
+
+        $summaryKPIs = [
+            'total_evaluations' => $totOverall,
+            'pass_evaluations' => $passOverall,
+            'overall_pass_rate' => $overallPassRate,
+            'overall_average_score' => $overallAvgScore,
+            'top_performing_stream' => $topStreamName ?: 'None Yet',
+            'total_streams' => count($streams)
+        ];
+
         echo json_encode([
             'success' => true,
             'year' => $year,
             'term' => $term,
+            'grade_id' => $gradeId,
+            'grade_levels' => $gradeLevels,
+            'summary_kpis' => $summaryKPIs,
             'stream_analytics' => $streamAnalytics,
-            'gender_analytics' => $genderAnalytics
+            'gender_analytics' => $genderAnalytics,
+            'subject_analytics' => $subjectAnalytics
         ]);
         exit();
     }
