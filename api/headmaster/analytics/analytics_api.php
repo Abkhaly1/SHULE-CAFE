@@ -166,17 +166,36 @@ try {
         $annualPerf = $gradingManager->calculateStudentPerformance($levelType, $annualSubjectMarks);
         $activeTermData = ($term === 'Term 2') ? $t2Data : $t1Data;
 
-        // Fetch Form Master Comment
-        $conductComment = 'Demonstrates good behavior and consistent academic effort.';
+        // Fetch School details
+        $stmtSch = $conn->prepare("SELECT name, motto, email, phone, address, region, registration_number, logo FROM schools WHERE id = ? LIMIT 1");
+        $stmtSch->execute([$schoolId]);
+        $schoolInfo = $stmtSch->fetch(PDO::FETCH_ASSOC) ?: [
+            'name' => 'SHULE CAFE SECONDARY SCHOOL',
+            'motto' => '"Excellence in Academic and Moral Integrity"',
+            'email' => 'info@shulecafe.com',
+            'phone' => '+255 700 000 000',
+            'address' => 'P.O. Box 100',
+            'region' => 'Tanzania',
+            'registration_number' => 'TZ-REG-99201'
+        ];
+
+        // Fetch conduct comments map for all terms
+        $commentsMap = [];
         try {
-            $stmtComment = $conn->prepare("SELECT conduct_comment FROM student_report_comments WHERE academic_year = ? AND term = ? AND student_id = ? LIMIT 1");
-            $stmtComment->execute([$year, $term, $studentId]);
-            $cRes = $stmtComment->fetchColumn();
-            if (!empty($cRes)) $conductComment = $cRes;
+            $stmtComments = $conn->prepare("SELECT term, conduct_comment FROM student_report_comments WHERE academic_year = ? AND student_id = ?");
+            $stmtComments->execute([$year, $studentId]);
+            $cRows = $stmtComments->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($cRows as $cr) {
+                $commentsMap[$cr['term']] = $cr['conduct_comment'];
+            }
         } catch (Exception $ce) {}
+
+        $t1Data['conduct_comment'] = $commentsMap['Term 1'] ?? 'Demonstrates good behavior and consistent academic effort.';
+        $t2Data['conduct_comment'] = $commentsMap['Term 2'] ?? 'Demonstrates commendable discipline and active academic participation.';
 
         echo json_encode([
             'success' => true,
+            'school' => $schoolInfo,
             'student' => $student,
             'year' => $year,
             'term' => $term,
@@ -196,7 +215,7 @@ try {
             // Backwards compatibility keys
             'subject_marks' => $activeTermData['subjects'],
             'summary' => $activeTermData['summary'],
-            'conduct_comment' => $conductComment
+            'conduct_comment' => $commentsMap[$term] ?? $t1Data['conduct_comment']
         ]);
         exit();
     }

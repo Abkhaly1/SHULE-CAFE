@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <!--
    ====================================================================
-   SHULE CAFE - PROPRIETARY ANNUAL ACADEMIC TRANSCRIPT & REPORT CARD SYSTEM
+   SHULE CAFE - OFFICIAL MULTI-PAGE ACADEMIC TRANSCRIPT & REPORT SYSTEM
    Copyright (c) 2026 SHULE CAFE. All Rights Reserved.
+   Architecture: One Term Per Page + Final Graphical Trends Analysis Page
    100% English Directive Enforced
    ====================================================================
 -->
@@ -15,6 +16,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js for High-DPI Graphical Analysis of Results Trends -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root {
@@ -36,7 +40,7 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background: #f1f5f9;
             color: var(--c-text-dark);
-            padding: 20px;
+            padding: 20px 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -122,16 +126,34 @@
             background: #f8fafc;
         }
 
-        /* ── TRANSCRIPT SHEET CONTAINER ────────────────────────────────── */
-        .transcript-sheet {
+        /* ── MULTI-PAGE TRANSCRIPT SHEET (A4 STANDARDS) ────────────────── */
+        .pages-wrapper {
             width: 100%;
             max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .transcript-page {
+            width: 100%;
             background: white;
             padding: 28px 36px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             border-radius: 4px;
             position: relative;
             border: 1px solid #e2e8f0;
+            min-height: 297mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            page-break-after: always !important;
+            break-after: page !important;
+        }
+
+        .transcript-page:last-child {
+            page-break-after: auto !important;
+            break-after: auto !important;
         }
 
         /* Watermark */
@@ -140,7 +162,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-30deg);
-            font-size: 50px;
+            font-size: 46px;
             font-weight: 900;
             color: rgba(4, 120, 87, 0.028);
             white-space: nowrap;
@@ -154,30 +176,34 @@
         .content-layer {
             position: relative;
             z-index: 2;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            justify-content: space-between;
         }
 
-        /* Official Header */
+        /* Official School Header */
         .school-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 2px solid #064e3b;
             padding-bottom: 10px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
         }
 
         .school-crest {
-            width: 56px;
-            height: 56px;
+            width: 54px;
+            height: 54px;
             border-radius: 50%;
             background: #ecfdf5;
             border: 2px solid #059669;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
+            font-size: 26px;
         }
 
         .school-meta {
@@ -187,7 +213,7 @@
         }
 
         .school-meta h1 {
-            font-size: 17.5px;
+            font-size: 17px;
             font-weight: 900;
             color: #064e3b;
             text-transform: uppercase;
@@ -196,7 +222,7 @@
         }
 
         .school-meta .motto {
-            font-size: 10.5px;
+            font-size: 10px;
             font-weight: 700;
             color: #059669;
             font-style: italic;
@@ -204,14 +230,14 @@
         }
 
         .school-meta .contact-line {
-            font-size: 10px;
+            font-size: 9.5px;
             color: #64748b;
             font-weight: 600;
         }
 
         .report-title-badge {
             text-align: center;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
         }
@@ -222,7 +248,7 @@
             color: white;
             padding: 3px 16px;
             border-radius: 20px;
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 800;
             letter-spacing: 0.8px;
             text-transform: uppercase;
@@ -236,9 +262,9 @@
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 6px;
-            padding: 8px 14px;
-            margin-bottom: 12px;
-            font-size: 11.5px;
+            padding: 7px 12px;
+            margin-bottom: 10px;
+            font-size: 11px;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
         }
@@ -253,7 +279,7 @@
             font-weight: 700;
             color: #64748b;
             text-transform: uppercase;
-            font-size: 10px;
+            font-size: 9.5px;
         }
 
         .info-val {
@@ -261,34 +287,21 @@
             color: #0f172a;
         }
 
-        /* ── ACADEMIC TABLES & MATRIX ─────────────────────────────────── */
+        /* ── ACADEMIC TABLES ──────────────────────────────────────────── */
         .academic-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 10px;
-            font-size: 11.5px;
-            page-break-inside: auto;
-            break-inside: auto;
+            margin-bottom: 8px;
+            font-size: 11px;
         }
 
         .academic-table thead {
             display: table-header-group !important;
         }
 
-        .academic-table tfoot {
-            display: table-footer-group !important;
-            page-break-inside: avoid !important;
-            break-inside: avoid !important;
-        }
-
-        .academic-table tr {
-            page-break-inside: avoid !important;
-            break-inside: avoid !important;
-        }
-
         .academic-table th {
             padding: 5px 8px;
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.4px;
@@ -330,11 +343,11 @@
         }
 
         .academic-table tfoot td {
-            padding: 6px 8px;
+            padding: 5px 8px;
             font-weight: 800;
             background: #f1f5f9;
             border-top: 2px solid #94a3b8;
-            font-size: 11px;
+            font-size: 10.5px;
         }
 
         .grade-badge {
@@ -342,7 +355,7 @@
             padding: 1px 6px;
             border-radius: 4px;
             font-weight: 900;
-            font-size: 10.5px;
+            font-size: 10px;
             text-align: center;
         }
 
@@ -357,7 +370,7 @@
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 6px;
-            margin: 10px 0;
+            margin: 8px 0;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
         }
@@ -366,18 +379,18 @@
             background: #ecfdf5;
             border: 1px solid #a7f3d0;
             border-radius: 6px;
-            padding: 6px 4px;
+            padding: 5px 4px;
             text-align: center;
         }
 
         .sum-card .num {
-            font-size: 14.5px;
+            font-size: 13.5px;
             font-weight: 900;
             color: #064e3b;
         }
 
         .sum-card .label {
-            font-size: 9px;
+            font-size: 8.5px;
             font-weight: 800;
             text-transform: uppercase;
             color: #047857;
@@ -389,9 +402,9 @@
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 6px;
-            padding: 6px 10px;
-            margin-bottom: 8px;
-            font-size: 10.5px;
+            padding: 5px 8px;
+            margin-bottom: 6px;
+            font-size: 10px;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
         }
@@ -400,25 +413,25 @@
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 6px;
-            padding: 6px 10px;
-            margin-bottom: 10px;
+            padding: 5px 8px;
+            margin-bottom: 8px;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
         }
 
         .scales-heading {
-            font-size: 9.5px;
+            font-size: 9px;
             font-weight: 800;
             text-transform: uppercase;
             color: #64748b;
-            margin-bottom: 3px;
+            margin-bottom: 2px;
         }
 
         .scales-list {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
-            font-size: 10px;
+            font-size: 9.5px;
             font-weight: 700;
             color: #334155;
         }
@@ -427,9 +440,9 @@
         .signatures-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
-            margin-top: 10px;
-            padding-top: 10px;
+            gap: 20px;
+            margin-top: 8px;
+            padding-top: 8px;
             border-top: 1.5px dashed #cbd5e1;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
@@ -443,67 +456,83 @@
             width: 100%;
             height: 1px;
             background: #94a3b8;
-            margin: 22px auto 4px;
+            margin: 18px auto 3px;
         }
 
         .sig-title {
-            font-size: 10.5px;
+            font-size: 9.5px;
             font-weight: 800;
             color: #334155;
             text-transform: uppercase;
         }
 
         .sig-date {
-            font-size: 9px;
+            font-size: 8.5px;
             color: #64748b;
             font-weight: 600;
             margin-top: 1px;
         }
 
-        /* Section Headings for Separate Mode */
-        .term-section-heading {
+        /* ── GRAPHICAL ANALYSIS SECTION (FINAL PAGE) ──────────────────── */
+        .trends-charts-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 10px;
+            margin: 8px 0;
+        }
+
+        .trend-chart-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 8px 10px;
+        }
+
+        .trend-chart-header {
+            font-size: 10px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 5px 10px;
-            border-radius: 5px 5px 0 0;
-            margin-top: 10px;
-            font-size: 11px;
-            font-weight: 800;
+        }
+
+        .trend-chart-canvas-box {
+            position: relative;
+            width: 100%;
+            height: 175px;
+        }
+
+        .verdict-box {
+            background: #f0fdf4;
+            border: 1.5px solid #86efac;
+            border-radius: 6px;
+            padding: 6px 10px;
+            margin: 6px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             page-break-inside: avoid !important;
             break-inside: avoid !important;
         }
 
-        .term-1-heading {
-            background: #f0fdf4;
-            color: #065f46;
-            border: 1px solid #bbf7d0;
-            border-bottom: none;
-        }
-
-        .term-2-heading {
-            background: #eff6ff;
-            color: #1e40af;
-            border: 1px solid #bfdbfe;
-            border-bottom: none;
-        }
-
         /* ── DENSITY SCALING MODES ────────────────────────────────────── */
-        .density-compact .academic-table td { padding: 3px 6px; font-size: 10.5px; }
-        .density-compact .academic-table th { padding: 4px 6px; font-size: 9.5px; }
-        .density-compact .student-info-grid { padding: 6px 12px; margin-bottom: 8px; }
-        .density-compact .summary-banner { margin: 8px 0; }
-        .density-compact .sig-line { margin: 18px auto 3px; }
+        .density-compact .academic-table td { padding: 3px 6px; font-size: 10px; }
+        .density-compact .academic-table th { padding: 4px 6px; font-size: 9px; }
+        .density-compact .trend-chart-canvas-box { height: 160px; }
+        .density-compact .sig-line { margin: 14px auto 2px; }
 
-        .density-relaxed .academic-table td { padding: 6px 10px; font-size: 12px; }
-        .density-relaxed .academic-table th { padding: 6px 10px; font-size: 10.5px; }
-        .density-relaxed .sig-line { margin: 30px auto 6px; }
+        .density-relaxed .academic-table td { padding: 6px 8px; font-size: 11.5px; }
+        .density-relaxed .academic-table th { padding: 6px 8px; font-size: 10px; }
+        .density-relaxed .trend-chart-canvas-box { height: 190px; }
+        .density-relaxed .sig-line { margin: 24px auto 4px; }
 
         /* ── BULLETPROOF PRINT MEDIA STYLING ──────────────────────────── */
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 8mm 10mm 8mm 10mm;
+                margin: 6mm 8mm 6mm 8mm;
             }
 
             html, body {
@@ -519,12 +548,27 @@
                 display: none !important;
             }
 
-            .transcript-sheet {
+            .pages-wrapper {
+                gap: 0 !important;
+                max-width: 100% !important;
+                width: 100% !important;
+            }
+
+            .transcript-page {
                 box-shadow: none !important;
                 border: none !important;
                 padding: 0 !important;
+                margin: 0 !important;
                 max-width: 100% !important;
                 width: 100% !important;
+                min-height: 278mm !important;
+                page-break-after: always !important;
+                break-after: page !important;
+            }
+
+            .transcript-page:last-child {
+                page-break-after: auto !important;
+                break-after: auto !important;
             }
 
             .school-header,
@@ -534,27 +578,8 @@
             .conduct-box,
             .scales-box,
             .signatures-grid,
-            .term-section-heading {
-                page-break-inside: avoid !important;
-                break-inside: avoid !important;
-            }
-
-            .academic-table {
-                page-break-inside: auto;
-                break-inside: auto;
-            }
-
-            .academic-table thead {
-                display: table-header-group !important;
-            }
-
-            .academic-table tfoot {
-                display: table-footer-group !important;
-                page-break-inside: avoid !important;
-                break-inside: avoid !important;
-            }
-
-            .academic-table tr {
+            .verdict-box,
+            .trend-chart-card {
                 page-break-inside: avoid !important;
                 break-inside: avoid !important;
             }
@@ -566,21 +591,23 @@
     <!-- Top Action Toolbar (Hidden in Print) -->
     <div class="no-print-toolbar">
         <div class="toolbar-title">
-            <span>📄 Official Annual Academic Transcript</span>
+            <span>📄 Official Student Academic Transcript System</span>
         </div>
         <div class="toolbar-controls">
-            <!-- Dynamic Layout View Switcher -->
-            <label style="font-size: 11px; font-weight: 700; color: #475569;">Layout:</label>
-            <select id="selLayoutMode" class="ctrl-select" onchange="switchLayoutMode(this.value)">
-                <option value="unified" selected>Unified Annual Matrix (1-Page Anti-Break)</option>
-                <option value="separated">Separated Terms (Detailed Stack)</option>
-                <option value="sidebyside">Side-by-Side Dual Terms</option>
+            
+            <!-- Page View Selector -->
+            <label style="font-size: 11px; font-weight: 700; color: #475569;">Page View:</label>
+            <select id="selPageView" class="ctrl-select" onchange="filterPageViews(this.value)">
+                <option value="all" selected>All Pages (One Term Per Page + Trends)</option>
+                <option value="term1">Term 1 Page Only</option>
+                <option value="term2">Term 2 Page Only</option>
+                <option value="trends">Final Trends Analysis Page Only</option>
             </select>
 
             <!-- Density / Fit Control -->
             <label style="font-size: 11px; font-weight: 700; color: #475569;">Density:</label>
             <select id="selDensity" class="ctrl-select" onchange="switchDensity(this.value)">
-                <option value="density-compact" selected>Compact (A4 Auto-Fit)</option>
+                <option value="density-compact" selected>Compact (A4 Optimized)</option>
                 <option value="density-normal">Normal</option>
                 <option value="density-relaxed">Relaxed</option>
             </select>
@@ -590,114 +617,17 @@
         </div>
     </div>
 
-    <!-- Official Transcript Sheet -->
-    <div class="transcript-sheet" id="transcriptSheetContainer">
-        <div class="watermark-bg" id="txtWatermark">OFFICIAL TRANSCRIPT</div>
-
-        <div class="content-layer">
-            <!-- Header -->
-            <div class="school-header">
-                <div class="school-crest">🎓</div>
-                <div class="school-meta">
-                    <h1 id="lblSchoolName">SHULE CAFE SECONDARY SCHOOL</h1>
-                    <div class="motto" id="lblSchoolMotto">"Excellence in Academic and Moral Integrity"</div>
-                    <div class="contact-line" id="lblSchoolContact">P.O. Box 100, Dar es Salaam, Tanzania • Email: info@shulecafe.com</div>
-                </div>
-                <div style="width: 76px; text-align: right; font-size: 10px; font-weight: 800; color: #047857;">
-                    REG NO:<br><span id="lblSchoolRegNo" style="color: #0f172a; font-size: 11px;">TZ-99201</span>
-                </div>
-            </div>
-
-            <div class="report-title-badge">
-                <span id="lblReportCycle">ANNUAL ACADEMIC PROGRESS REPORT & TRANSCRIPT</span>
-            </div>
-
-            <!-- Student Profile -->
-            <div class="student-info-grid">
-                <div class="info-row">
-                    <span class="info-label">Full Student Name:</span>
-                    <span class="info-val" id="valStudentName">Loading...</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Student Reg No:</span>
-                    <span class="info-val" id="valRegNo">Loading...</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Classroom / Grade:</span>
-                    <span class="info-val" id="valClassroom">Loading...</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Academic Year:</span>
-                    <span class="info-val" id="valSession">2026 Academic Session</span>
-                </div>
-            </div>
-
-            <!-- ── DYNAMIC CONTAINER FOR ACADEMIC TABLES ───────────────────────── -->
-            <div id="academicTablesContainer">
-                <!-- Dynamically rendered according to selLayoutMode -->
-            </div>
-
-            <!-- ── ANNUAL CUMULATIVE SUMMARY BANNER ──────────────────────────── -->
-            <div class="summary-banner">
-                <div class="sum-card">
-                    <div class="num" id="sumT1Avg">-</div>
-                    <div class="label">Term 1 Average</div>
-                </div>
-                <div class="sum-card">
-                    <div class="num" id="sumT2Avg">-</div>
-                    <div class="label">Term 2 Average</div>
-                </div>
-                <div class="sum-card" style="background: #eff6ff; border-color: #93c5fd;">
-                    <div class="num" style="color: #1e40af;" id="sumAnnualAvg">-</div>
-                    <div class="label" style="color: #1e40af;">Annual Average</div>
-                </div>
-                <div class="sum-card">
-                    <div class="num" id="sumDivision">-</div>
-                    <div class="label">Annual Division</div>
-                </div>
-                <div class="sum-card">
-                    <div class="num" id="sumPosition">1st</div>
-                    <div class="label">Annual Position</div>
-                </div>
-            </div>
-
-            <!-- Form Master Conduct Comment -->
-            <div class="conduct-box">
-                <strong style="color: #334155;">Conduct & Character Assessment:</strong>
-                <span id="lblConductComment" style="color: #475569; font-style: italic; margin-left: 4px;">Demonstrates good behavior and consistent academic effort.</span>
-            </div>
-
-            <!-- Grading Scale Benchmark Reference -->
-            <div class="scales-box">
-                <div class="scales-heading">Official National Grading Benchmark Key:</div>
-                <div class="scales-list" id="scalesListContainer">
-                    <span>A: 75–100% (Excellent / 1 Pt)</span>
-                    <span>B: 65–74% (Very Good / 2 Pts)</span>
-                    <span>C: 45–64% (Good / 3 Pts)</span>
-                    <span>D: 30–44% (Satisfactory / 4 Pts)</span>
-                    <span>F: 0–29% (Fail / 5 Pts)</span>
-                </div>
-            </div>
-
-            <!-- Signatures Section -->
-            <div class="signatures-grid">
-                <div class="sig-box">
-                    <div class="sig-line"></div>
-                    <div class="sig-title">Class Teacher Signature</div>
-                    <div class="sig-date" id="sigDate1">Date: _______________</div>
-                </div>
-                <div class="sig-box">
-                    <div class="sig-line"></div>
-                    <div class="sig-title">Head of School & Official Stamp</div>
-                    <div class="sig-date" id="sigDate2">Date: _______________</div>
-                </div>
-            </div>
+    <!-- Multi-Page Sheet Wrapper -->
+    <div class="pages-wrapper" id="transcriptPagesWrapper">
+        <div style="text-align:center; padding: 40px; color: #64748b; font-weight: 700;">
+            Loading official student transcript and performance trends...
         </div>
     </div>
 
+    <!-- MAIN TRANSCRIPT GENERATION ENGINE -->
     <script>
-        let currentReportData = null;
-        let currentLayout = 'unified'; // 'unified' | 'separated' | 'sidebyside'
+        let reportData = null;
+        let chartInstances = {};
 
         document.addEventListener('DOMContentLoaded', async () => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -705,7 +635,11 @@
             const year = urlParams.get('year') || '2026';
 
             if (!studentId) {
-                document.getElementById('academicTablesContainer').innerHTML = `<div style="text-align:center;color:#dc2626;padding:20px;font-weight:700;">No student ID specified in query parameters.</div>`;
+                document.getElementById('transcriptPagesWrapper').innerHTML = `
+                    <div style="text-align:center; color:#dc2626; padding:30px; font-weight:700; background:white; border-radius:8px;">
+                        No student ID specified in query parameters.
+                    </div>
+                `;
                 return;
             }
 
@@ -716,137 +650,253 @@
                 const data = await res.json();
 
                 if (res.ok && data.success) {
-                    currentReportData = data;
-                    renderReportCardData(data);
+                    reportData = data;
+                    renderAllTranscriptPages(data);
                 } else {
-                    document.getElementById('academicTablesContainer').innerHTML = `<div style="text-align:center;color:#dc2626;padding:20px;font-weight:700;">${data.message || 'Error loading student transcript.'}</div>`;
+                    document.getElementById('transcriptPagesWrapper').innerHTML = `
+                        <div style="text-align:center; color:#dc2626; padding:30px; font-weight:700; background:white; border-radius:8px;">
+                            ${data.message || 'Error loading student transcript.'}
+                        </div>
+                    `;
                 }
             } catch (e) {
-                document.getElementById('academicTablesContainer').innerHTML = `<div style="text-align:center;color:#dc2626;padding:20px;font-weight:700;">Network communication error while loading transcript.</div>`;
+                document.getElementById('transcriptPagesWrapper').innerHTML = `
+                    <div style="text-align:center; color:#dc2626; padding:30px; font-weight:700; background:white; border-radius:8px;">
+                        Network communication error while loading transcript.
+                    </div>
+                `;
             }
         });
 
-        function renderReportCardData(data) {
-            const stu = data.student || {};
-            const lvl = data.level_type || 'O-Level';
-            document.getElementById('valStudentName').textContent = stu.full_name || 'Student Name';
-            document.getElementById('valRegNo').textContent = stu.user_code || '-';
-            document.getElementById('valClassroom').textContent = `${stu.classroom_name || 'Classroom'} (${lvl})`;
-            document.getElementById('valSession').textContent = `${data.year} Academic Session`;
+        function renderAllTranscriptPages(data) {
+            const wrapper = document.getElementById('transcriptPagesWrapper');
+            wrapper.innerHTML = '';
 
-            // Annual Summary Banner
-            const annual = data.annual_summary || {};
-            document.getElementById('sumT1Avg').textContent = annual.term1_avg ? `${annual.term1_avg}%` : '-';
-            document.getElementById('sumT2Avg').textContent = annual.term2_avg ? `${annual.term2_avg}%` : '-';
-            document.getElementById('sumAnnualAvg').textContent = annual.annual_average ? `${annual.annual_average}%` : '-';
-            document.getElementById('sumDivision').textContent = annual.overall_division || 'Division I';
+            const t1 = data.term1_results || {};
+            const t2 = data.term2_results || {};
+            const hasT1 = t1.has_marks || (t1.subjects && t1.subjects.length > 0);
+            const hasT2 = t2.has_marks || (t2.subjects && t2.subjects.length > 0);
 
-            // Dynamic Level-Specific Benchmark Reference
-            const scaleContainer = document.getElementById('scalesListContainer');
-            if (lvl === 'Primary') {
-                scaleContainer.innerHTML = `
-                    <span>A: 81–100% (High Distinction / 1 Pt)</span>
-                    <span>B: 61–80% (Distinction / 2 Pts)</span>
-                    <span>C: 41–60% (Average Pass / 3 Pts)</span>
-                    <span>D: 21–40% (Marginal Pass / 4 Pts)</span>
-                    <span>E: 0–20% (Fail / 5 Pts)</span>
-                    <span style="color:#064e3b;font-weight:800;">• Criteria: Best 5 Core Subjects Aggregate</span>
-                `;
-            } else if (lvl === 'A-Level') {
-                scaleContainer.innerHTML = `
-                    <span>A: 80–100% (1 Pt)</span>
-                    <span>B: 70–79% (2 Pts)</span>
-                    <span>C: 60–69% (3 Pts)</span>
-                    <span>D: 50–59% (4 Pts)</span>
-                    <span>E: 40–49% (5 Pts)</span>
-                    <span>S: 35–39% (6 Pts)</span>
-                    <span>F: 0–34% (7 Pts)</span>
-                    <span style="color:#064e3b;font-weight:800;">• Criteria: Top 3 Principal Combination Subjects</span>
-                `;
-            } else {
-                // O-Level
-                scaleContainer.innerHTML = `
-                    <span>A: 75–100% (Excellent / 1 Pt)</span>
-                    <span>B: 65–74% (Very Good / 2 Pts)</span>
-                    <span>C: 45–64% (Good / 3 Pts)</span>
-                    <span>D: 30–44% (Satisfactory / 4 Pts)</span>
-                    <span>F: 0–29% (Fail / 5 Pts)</span>
-                    <span style="color:#064e3b;font-weight:800;">• Criteria: Top 7 Best Subjects NECTA Standard (Div I: 7–17 Pts, Div II: 18–21 Pts, Div III: 22–25 Pts)</span>
-                `;
+            // PAGE 1: TERM 1 OFFICIAL REPORT CARD (If student has Term 1 marks or as first page)
+            if (hasT1 || (!hasT1 && !hasT2)) {
+                const p1 = createTermPageElement(data, 'Term 1', t1, 1);
+                wrapper.appendChild(p1);
             }
 
-            if (data.conduct_comment) {
-                document.getElementById('lblConductComment').textContent = data.conduct_comment;
+            // PAGE 2: TERM 2 OFFICIAL REPORT CARD (If student has Term 2 marks)
+            if (hasT2) {
+                const p2 = createTermPageElement(data, 'Term 2', t2, 2);
+                wrapper.appendChild(p2);
             }
 
-            const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-            document.getElementById('sigDate1').textContent = `Date: ${today}`;
-            document.getElementById('sigDate2').textContent = `Date: ${today}`;
+            // FINAL PAGE: ANNUAL CUMULATIVE TRANSCRIPT & GRAPHICAL ANALYSIS OF RESULTS TRENDS
+            const pFinal = createFinalTrendsPageElement(data);
+            wrapper.appendChild(pFinal);
 
-            // Render according to active layout mode
-            renderAcademicLayout();
-        }
-
-        function switchLayoutMode(mode) {
-            currentLayout = mode;
-            if (currentReportData) {
-                renderAcademicLayout();
-            }
-        }
-
-        function switchDensity(densityClass) {
-            document.body.classList.remove('density-compact', 'density-normal', 'density-relaxed');
-            document.body.classList.add(densityClass);
-        }
-
-        function renderAcademicLayout() {
-            if (!currentReportData) return;
-            const container = document.getElementById('academicTablesContainer');
-
-            if (currentLayout === 'unified') {
-                renderUnifiedMatrix(container, currentReportData);
-            } else if (currentLayout === 'sidebyside') {
-                renderSideBySideLayout(container, currentReportData);
-            } else {
-                renderSeparatedLayout(container, currentReportData);
-            }
+            // Render Charts after DOM elements are fully attached
+            renderTrendsCharts(data);
         }
 
         /**
-         * MODE 1: UNIFIED ANNUAL PROGRESS MATRIX (ANTI-BREAK 1-PAGE FIT)
+         * GENERATES A SINGLE OFFICIAL TERM TRANSCRIPT PAGE (A4 SHEET)
          */
-        function renderUnifiedMatrix(container, data) {
+        function createTermPageElement(data, termName, termData, pageNum) {
+            const stu = data.student || {};
+            const sch = data.school || {};
+            const lvl = data.level_type || 'O-Level';
+            const subs = termData.subjects || [];
+            const sum = termData.summary || {};
+            const isTerm1 = termName === 'Term 1';
+            const termTitleBadge = isTerm1 ? 'FIRST TERM OFFICIAL ACADEMIC PROGRESS REPORT & SCORE SHEET' : 'SECOND TERM OFFICIAL ACADEMIC PROGRESS REPORT & SCORE SHEET';
+            const thClass = isTerm1 ? 'th-t1' : 'th-t2';
+            const accentColor = isTerm1 ? '#065f46' : '#1e40af';
+            const conduct = termData.conduct_comment || 'Demonstrates good behavior and consistent academic effort.';
+            const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+            let rowsHtml = '';
+            subs.forEach((s, idx) => {
+                rowsHtml += `
+                    <tr>
+                        <td style="font-weight:700; color:#64748b; text-align:center; width:28px;">${idx + 1}</td>
+                        <td style="font-weight:800; color:#0f172a; width:65px;">${s.subject_code}</td>
+                        <td style="font-weight:700; color:#334155;">${s.subject_name}</td>
+                        <td style="text-align:center; font-weight:900; color:${accentColor}; width:85px;">${s.score}%</td>
+                        <td style="text-align:center; width:50px;"><span class="grade-badge grade-${s.grade}">${s.grade}</span></td>
+                        <td style="text-align:center; font-weight:800; width:45px;">${s.points}</td>
+                        <td style="font-size:10px; color:#475569; font-style:italic;">${s.remark || 'Good Progress'}</td>
+                    </tr>
+                `;
+            });
+
+            if (subs.length === 0) {
+                rowsHtml = `<tr><td colspan="7" style="text-align:center; padding:18px; color:#64748b;">No recorded marks found for ${termName}.</td></tr>`;
+            }
+
+            const pageDiv = document.createElement('div');
+            pageDiv.className = 'transcript-page';
+            pageDiv.id = `page-${isTerm1 ? 'term1' : 'term2'}`;
+            pageDiv.innerHTML = `
+                <div class="watermark-bg">OFFICIAL TRANSCRIPT</div>
+                
+                <div class="content-layer">
+                    <div>
+                        <!-- Header -->
+                        <div class="school-header">
+                            <div class="school-crest">🎓</div>
+                            <div class="school-meta">
+                                <h1>${sch.name || 'SHULE CAFE SECONDARY SCHOOL'}</h1>
+                                <div class="motto">${sch.motto || '"Excellence in Academic and Moral Integrity"'}</div>
+                                <div class="contact-line">${sch.address || 'P.O. Box 100, Dar es Salaam'} • Tel: ${sch.phone || '+255 700 000 000'} • Email: ${sch.email || 'info@shulecafe.com'}</div>
+                            </div>
+                            <div style="width: 76px; text-align: right; font-size: 9.5px; font-weight: 800; color: #047857;">
+                                REG NO:<br><span style="color: #0f172a; font-size: 11px;">${sch.registration_number || 'TZ-99201'}</span>
+                            </div>
+                        </div>
+
+                        <!-- Report Cycle Badge -->
+                        <div class="report-title-badge">
+                            <span>${termTitleBadge}</span>
+                        </div>
+
+                        <!-- Student Identity Grid -->
+                        <div class="student-info-grid">
+                            <div class="info-row">
+                                <span class="info-label">Full Student Name:</span>
+                                <span class="info-val">${stu.full_name || 'Student Name'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Student Reg No:</span>
+                                <span class="info-val">${stu.user_code || '-'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Classroom / Grade:</span>
+                                <span class="info-val">${stu.classroom_name || 'Grade-Wide'} (${lvl})</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Academic Session:</span>
+                                <span class="info-val">${data.year} Session • ${termName}</span>
+                            </div>
+                        </div>
+
+                        <!-- Term Score Table -->
+                        <table class="academic-table">
+                            <thead>
+                                <tr>
+                                    <th class="${thClass}" style="width:28px; text-align:center;">S/N</th>
+                                    <th class="${thClass}" style="width:65px;">Code</th>
+                                    <th class="${thClass}">Subject Curriculum Title</th>
+                                    <th class="${thClass}" style="text-align:center; width:85px;">Score (%)</th>
+                                    <th class="${thClass}" style="text-align:center; width:50px;">Grade</th>
+                                    <th class="${thClass}" style="text-align:center; width:45px;">Points</th>
+                                    <th class="${thClass}">Teacher Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rowsHtml}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" style="text-align:right; color:#0f172a;">${termName.toUpperCase()} AGGREGATE TOTAL & AVERAGE:</td>
+                                    <td style="text-align:center; color:${accentColor};">Avg: ${sum.average_score || 0}%</td>
+                                    <td style="text-align:center; font-size:10px;">Tot: ${sum.total_score || 0}</td>
+                                    <td style="text-align:center; color:${accentColor};">${sum.total_points || 0} Pts</td>
+                                    <td style="color:${accentColor}; font-weight:800;">${sum.division || 'Division I'} (${sum.remark || 'Passed'})</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <!-- Summary Banner -->
+                        <div class="summary-banner">
+                            <div class="sum-card">
+                                <div class="num">${sum.total_score || 0}</div>
+                                <div class="label">Total Marks</div>
+                            </div>
+                            <div class="sum-card">
+                                <div class="num">${sum.average_score || 0}%</div>
+                                <div class="label">Term Average</div>
+                            </div>
+                            <div class="sum-card">
+                                <div class="num">${sum.total_points || 0} Pts</div>
+                                <div class="label">Total Points</div>
+                            </div>
+                            <div class="sum-card" style="background:#f0fdf4; border-color:#86efac;">
+                                <div class="num" style="color:#047857;">${sum.division || 'Div I'}</div>
+                                <div class="label" style="color:#047857;">Term Division</div>
+                            </div>
+                            <div class="sum-card">
+                                <div class="num">1st</div>
+                                <div class="label">Class Standing</div>
+                            </div>
+                        </div>
+
+                        <!-- Conduct Box -->
+                        <div class="conduct-box">
+                            <strong style="color: #334155;">Conduct & Character Assessment (${termName}):</strong>
+                            <span style="color: #475569; font-style: italic; margin-left: 4px;">${conduct}</span>
+                        </div>
+
+                        <!-- Benchmark Key -->
+                        <div class="scales-box">
+                            <div class="scales-heading">Official National Grading Benchmark (${lvl}):</div>
+                            <div class="scales-list">
+                                ${renderScalesHtml(lvl)}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Signatures Section -->
+                    <div class="signatures-grid">
+                        <div class="sig-box">
+                            <div class="sig-line"></div>
+                            <div class="sig-title">Class Teacher Signature & Date</div>
+                            <div class="sig-date">Date: ${today}</div>
+                        </div>
+                        <div class="sig-box">
+                            <div class="sig-line"></div>
+                            <div class="sig-title">Head of School & Official Stamp</div>
+                            <div class="sig-date">Date: ${today} • Page ${pageNum} of ${hasT2 ? '3' : '2'}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return pageDiv;
+        }
+
+        /**
+         * GENERATES THE FINAL PAGE: ANNUAL CUMULATIVE TRANSCRIPT & GRAPHICAL ANALYSIS OF RESULTS TRENDS
+         */
+        function createFinalTrendsPageElement(data) {
+            const stu = data.student || {};
+            const sch = data.school || {};
+            const lvl = data.level_type || 'O-Level';
             const t1Subs = (data.term1_results && data.term1_results.subjects) ? data.term1_results.subjects : [];
             const t2Subs = (data.term2_results && data.term2_results.subjects) ? data.term2_results.subjects : [];
-            const lvl = data.level_type || 'O-Level';
+            const annual = data.annual_summary || {};
+            const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
-            // Index subjects by subject_code
+            // Index all unique subjects
             const allCodes = Array.from(new Set([
                 ...t1Subs.map(s => s.subject_code),
                 ...t2Subs.map(s => s.subject_code)
             ]));
 
             let rowsHtml = '';
-            let totalT1 = 0, totalT2 = 0, totalAnn = 0;
-            let countT1 = 0, countT2 = 0, countAnn = 0;
+            let totalAnn = 0, countAnn = 0;
 
             allCodes.forEach((code, idx) => {
                 const s1 = t1Subs.find(s => s.subject_code === code);
                 const s2 = t2Subs.find(s => s.subject_code === code);
                 const name = (s1 && s1.subject_name) || (s2 && s2.subject_name) || code;
 
-                let t1Display = '-';
-                let t2Display = '-';
+                let t1Score = s1 ? `${s1.score}%` : '-';
+                let t2Score = s2 ? `${s2.score}%` : '-';
                 let annAvg = 0;
                 let annGrade = 'F';
                 let annPts = 5;
                 let remark = 'Satisfactory';
 
                 if (s1 && s2) {
-                    t1Display = `${s1.score}% (${s1.grade})`;
-                    t2Display = `${s2.score}% (${s2.grade})`;
                     annAvg = Math.round(((s1.score + s2.score) / 2) * 10) / 10;
-                    
                     if (lvl === 'Primary') {
                         annGrade = (annAvg >= 81) ? 'A' : (annAvg >= 61 ? 'B' : (annAvg >= 41 ? 'C' : (annAvg >= 21 ? 'D' : 'E')));
                         annPts = (annGrade === 'A') ? 1 : (annGrade === 'B' ? 2 : (annGrade === 'C' ? 3 : (annGrade === 'D' ? 4 : 5)));
@@ -857,28 +907,13 @@
                         annGrade = (annAvg >= 75) ? 'A' : (annAvg >= 65 ? 'B' : (annAvg >= 45 ? 'C' : (annAvg >= 30 ? 'D' : 'F')));
                         annPts = (annGrade === 'A') ? 1 : (annGrade === 'B' ? 2 : (annGrade === 'C' ? 3 : (annGrade === 'D' ? 4 : 5)));
                     }
-                    remark = s2.remark || s1.remark || 'Good Progress';
-                    
-                    totalT1 += s1.score; countT1++;
-                    totalT2 += s2.score; countT2++;
+                    remark = s2.remark || s1.remark || 'Consistent Effort';
                     totalAnn += annAvg; countAnn++;
                 } else if (s1) {
-                    t1Display = `${s1.score}% (${s1.grade})`;
-                    t2Display = '<span style="color:#94a3b8;font-style:italic;">Pending</span>';
-                    annAvg = s1.score;
-                    annGrade = s1.grade;
-                    annPts = s1.points;
-                    remark = s1.remark;
-                    totalT1 += s1.score; countT1++;
+                    annAvg = s1.score; annGrade = s1.grade; annPts = s1.points; remark = s1.remark;
                     totalAnn += annAvg; countAnn++;
                 } else if (s2) {
-                    t1Display = '<span style="color:#94a3b8;font-style:italic;">-</span>';
-                    t2Display = `${s2.score}% (${s2.grade})`;
-                    annAvg = s2.score;
-                    annGrade = s2.grade;
-                    annPts = s2.points;
-                    remark = s2.remark;
-                    totalT2 += s2.score; countT2++;
+                    annAvg = s2.score; annGrade = s2.grade; annPts = s2.points; remark = s2.remark;
                     totalAnn += annAvg; countAnn++;
                 }
 
@@ -886,242 +921,344 @@
                     <tr>
                         <td style="font-weight:700; color:#64748b; text-align:center; width:28px;">${idx + 1}</td>
                         <td style="font-weight:800; color:#0f172a; width:65px;">${code}</td>
-                        <td style="font-weight:700; color:#334155; min-width:140px;">${name}</td>
-                        <td style="text-align:center; font-weight:800; color:#065f46; width:95px;">${t1Display}</td>
-                        <td style="text-align:center; font-weight:800; color:#1e40af; width:95px;">${t2Display}</td>
+                        <td style="font-weight:700; color:#334155;">${name}</td>
+                        <td style="text-align:center; font-weight:800; color:#065f46; width:75px;">${t1Score}</td>
+                        <td style="text-align:center; font-weight:800; color:#1e40af; width:75px;">${t2Score}</td>
                         <td style="text-align:center; font-weight:900; color:#0f172a; width:75px;">${annAvg ? annAvg + '%' : '-'}</td>
                         <td style="text-align:center; width:45px;"><span class="grade-badge grade-${annGrade}">${annGrade}</span></td>
                         <td style="text-align:center; font-weight:800; width:40px;">${annPts}</td>
-                        <td style="font-size:10.5px; color:#475569; font-style:italic;">${remark}</td>
+                        <td style="font-size:10px; color:#475569; font-style:italic;">${remark}</td>
                     </tr>
                 `;
             });
 
-            const avgT1 = countT1 > 0 ? (totalT1 / countT1).toFixed(1) : '-';
-            const avgT2 = countT2 > 0 ? (totalT2 / countT2).toFixed(1) : '-';
-            const avgAnn = countAnn > 0 ? (totalAnn / countAnn).toFixed(1) : '-';
-            const annualDivision = (data.annual_summary && data.annual_summary.overall_division) || 'Division I';
-            const annualPts = (data.annual_summary && data.annual_summary.overall_points !== undefined) ? data.annual_summary.overall_points : '-';
-
-            container.innerHTML = `
-                <table class="academic-table">
-                    <thead>
-                        <tr>
-                            <th class="th-main" style="width:28px; text-align:center;">S/N</th>
-                            <th class="th-main" style="width:65px;">Code</th>
-                            <th class="th-main">Subject Title</th>
-                            <th class="th-t1" style="text-align:center; width:95px;">Term 1 (100%)</th>
-                            <th class="th-t2" style="text-align:center; width:95px;">Term 2 (100%)</th>
-                            <th class="th-ann" style="text-align:center; width:75px;">Annual Avg</th>
-                            <th class="th-ann" style="text-align:center; width:45px;">Grade</th>
-                            <th class="th-ann" style="text-align:center; width:40px;">Pts</th>
-                            <th class="th-ann">Progress Assessment</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${rowsHtml || '<tr><td colspan="9" style="text-align:center;padding:12px;color:#64748b;">No recorded marks found.</td></tr>'}
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="3" style="text-align:right; color:#0f172a;">ANNUAL CUMULATIVE TOTAL & AVERAGE:</td>
-                            <td style="text-align:center; color:#065f46;">Avg: ${avgT1}%</td>
-                            <td style="text-align:center; color:#1e40af;">Avg: ${avgT2}%</td>
-                            <td style="text-align:center; font-weight:900; color:#0f172a;">${avgAnn}%</td>
-                            <td colspan="2" style="text-align:center; color:#064e3b;">${annualPts} Pts</td>
-                            <td style="color:#064e3b; font-weight:800;">${annualDivision}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            `;
-        }
-
-        /**
-         * MODE 2: SEPARATED DETAILED TERMS (STACKED WITH ANTI-BREAK)
-         */
-        function renderSeparatedLayout(container, data) {
-            const t1Subs = (data.term1_results && data.term1_results.subjects) ? data.term1_results.subjects : [];
-            const t2Subs = (data.term2_results && data.term2_results.subjects) ? data.term2_results.subjects : [];
-
-            let t1Rows = '', t2Rows = '';
-
-            t1Subs.forEach((sub, idx) => {
-                t1Rows += `
-                    <tr>
-                        <td style="font-weight:700; color:#64748b; text-align:center; width:30px;">${idx + 1}</td>
-                        <td style="font-weight:800; color:#0f172a; width:70px;">${sub.subject_code}</td>
-                        <td style="font-weight:700; color:#334155;">${sub.subject_name}</td>
-                        <td style="text-align:center; font-weight:800; color:#065f46; width:80px;">${sub.score}%</td>
-                        <td style="text-align:center; width:50px;"><span class="grade-badge grade-${sub.grade}">${sub.grade}</span></td>
-                        <td style="text-align:center; font-weight:800; width:50px;">${sub.points}</td>
-                        <td style="font-size:10.5px; color:#475569; font-style:italic;">${sub.remark}</td>
-                    </tr>
-                `;
-            });
-
-            t2Subs.forEach((sub, idx) => {
-                t2Rows += `
-                    <tr>
-                        <td style="font-weight:700; color:#64748b; text-align:center; width:30px;">${idx + 1}</td>
-                        <td style="font-weight:800; color:#0f172a; width:70px;">${sub.subject_code}</td>
-                        <td style="font-weight:700; color:#334155;">${sub.subject_name}</td>
-                        <td style="text-align:center; font-weight:800; color:#1e40af; width:80px;">${sub.score}%</td>
-                        <td style="text-align:center; width:50px;"><span class="grade-badge grade-${sub.grade}">${sub.grade}</span></td>
-                        <td style="text-align:center; font-weight:800; width:50px;">${sub.points}</td>
-                        <td style="font-size:10.5px; color:#475569; font-style:italic;">${sub.remark}</td>
-                    </tr>
-                `;
-            });
-
-            const t1Sum = data.term1_results?.summary || {};
-            const t2Sum = data.term2_results?.summary || {};
-
-            container.innerHTML = `
-                <div class="term-section-heading term-1-heading">
-                    <span>📘 FIRST TERM EXAMINATION RESULTS (OUT OF 100%)</span>
-                    <span>Recorded</span>
-                </div>
-                <table class="academic-table">
-                    <thead>
-                        <tr>
-                            <th class="th-t1" style="width:30px; text-align:center;">S/N</th>
-                            <th class="th-t1" style="width:70px;">Code</th>
-                            <th class="th-t1">Subject Name</th>
-                            <th class="th-t1" style="width:80px; text-align:center;">Score (%)</th>
-                            <th class="th-t1" style="width:50px; text-align:center;">Grade</th>
-                            <th class="th-t1" style="width:50px; text-align:center;">Points</th>
-                            <th class="th-t1">Teacher Remarks</th>
-                        </tr>
-                    </thead>
-                    <tbody>${t1Rows || '<tr><td colspan="7" style="text-align:center;padding:10px;color:#64748b;">No Term 1 marks recorded.</td></tr>'}</tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="3" style="text-align:right; color:#065f46;">TERM 1 TOTAL & AVERAGE:</td>
-                            <td style="text-align:center; color:#065f46;">Avg: ${t1Sum.average_score || '-'}%</td>
-                            <td style="text-align:center;">Total: ${t1Sum.total_score || '-'}</td>
-                            <td style="text-align:center;">${t1Sum.total_points || '-'} Pts</td>
-                            <td style="color:#065f46;">Division: ${t1Sum.division || '-'}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-
-                <div class="term-section-heading term-2-heading">
-                    <span>📗 SECOND TERM EXAMINATION RESULTS (OUT OF 100%)</span>
-                    <span>Recorded</span>
-                </div>
-                <table class="academic-table">
-                    <thead>
-                        <tr>
-                            <th class="th-t2" style="width:30px; text-align:center;">S/N</th>
-                            <th class="th-t2" style="width:70px;">Code</th>
-                            <th class="th-t2">Subject Name</th>
-                            <th class="th-t2" style="width:80px; text-align:center;">Score (%)</th>
-                            <th class="th-t2" style="width:50px; text-align:center;">Grade</th>
-                            <th class="th-t2" style="width:50px; text-align:center;">Points</th>
-                            <th class="th-t2">Teacher Remarks</th>
-                        </tr>
-                    </thead>
-                    <tbody>${t2Rows || '<tr><td colspan="7" style="text-align:center;padding:10px;color:#64748b;">No Term 2 marks recorded.</td></tr>'}</tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="3" style="text-align:right; color:#1e40af;">TERM 2 TOTAL & AVERAGE:</td>
-                            <td style="text-align:center; color:#1e40af;">Avg: ${t2Sum.average_score || '-'}%</td>
-                            <td style="text-align:center;">Total: ${t2Sum.total_score || '-'}</td>
-                            <td style="text-align:center;">${t2Sum.total_points || '-'} Pts</td>
-                            <td style="color:#1e40af;">Division: ${t2Sum.division || '-'}</td>
-                        </tr>
-                    </tfoot>
-                </table>
-            `;
-        }
-
-        /**
-         * MODE 3: SIDE-BY-SIDE 2-COLUMN DUAL LAYOUT
-         */
-        function renderSideBySideLayout(container, data) {
-            const t1Subs = (data.term1_results && data.term1_results.subjects) ? data.term1_results.subjects : [];
-            const t2Subs = (data.term2_results && data.term2_results.subjects) ? data.term2_results.subjects : [];
-
-            let t1Rows = '', t2Rows = '';
-
-            t1Subs.forEach((sub, idx) => {
-                t1Rows += `
-                    <tr>
-                        <td style="font-weight:700; color:#64748b; text-align:center;">${idx + 1}</td>
-                        <td style="font-weight:800;">${sub.subject_code}</td>
-                        <td style="text-align:center; font-weight:800; color:#065f46;">${sub.score}%</td>
-                        <td style="text-align:center;"><span class="grade-badge grade-${sub.grade}">${sub.grade}</span></td>
-                        <td style="text-align:center; font-weight:800;">${sub.points}</td>
-                    </tr>
-                `;
-            });
-
-            t2Subs.forEach((sub, idx) => {
-                t2Rows += `
-                    <tr>
-                        <td style="font-weight:700; color:#64748b; text-align:center;">${idx + 1}</td>
-                        <td style="font-weight:800;">${sub.subject_code}</td>
-                        <td style="text-align:center; font-weight:800; color:#1e40af;">${sub.score}%</td>
-                        <td style="text-align:center;"><span class="grade-badge grade-${sub.grade}">${sub.grade}</span></td>
-                        <td style="text-align:center; font-weight:800;">${sub.points}</td>
-                    </tr>
-                `;
-            });
-
-            const t1Sum = data.term1_results?.summary || {};
-            const t2Sum = data.term2_results?.summary || {};
-
-            container.innerHTML = `
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px;">
+            const finalPageDiv = document.createElement('div');
+            finalPageDiv.className = 'transcript-page';
+            finalPageDiv.id = 'page-trends';
+            finalPageDiv.innerHTML = `
+                <div class="watermark-bg">ANNUAL TRANSCRIPT</div>
+                
+                <div class="content-layer">
                     <div>
-                        <div class="term-section-heading term-1-heading" style="margin-top:0;">
-                            <span>📘 Term 1 Results</span>
-                            <span>Avg: ${t1Sum.average_score || '-'}%</span>
+                        <!-- Official School Header -->
+                        <div class="school-header">
+                            <div class="school-crest">🎓</div>
+                            <div class="school-meta">
+                                <h1>${sch.name || 'SHULE CAFE SECONDARY SCHOOL'}</h1>
+                                <div class="motto">${sch.motto || '"Excellence in Academic and Moral Integrity"'}</div>
+                                <div class="contact-line">${sch.address || 'P.O. Box 100, Dar es Salaam'} • Tel: ${sch.phone || '+255 700 000 000'} • Email: ${sch.email || 'info@shulecafe.com'}</div>
+                            </div>
+                            <div style="width: 76px; text-align: right; font-size: 9.5px; font-weight: 800; color: #047857;">
+                                REG NO:<br><span style="color: #0f172a; font-size: 11px;">${sch.registration_number || 'TZ-99201'}</span>
+                            </div>
                         </div>
+
+                        <!-- Report Cycle Badge -->
+                        <div class="report-title-badge">
+                            <span style="background:#0f172a;">ANNUAL CUMULATIVE TRANSCRIPT & RESULTS TREND ANALYSIS</span>
+                        </div>
+
+                        <!-- Student Identity Grid -->
+                        <div class="student-info-grid">
+                            <div class="info-row">
+                                <span class="info-label">Full Student Name:</span>
+                                <span class="info-val">${stu.full_name || 'Student Name'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Student Reg No:</span>
+                                <span class="info-val">${stu.user_code || '-'}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Classroom / Grade:</span>
+                                <span class="info-val">${stu.classroom_name || 'Grade-Wide'} (${lvl})</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Academic Session:</span>
+                                <span class="info-val">${data.year} Annual Complete Assessment</span>
+                            </div>
+                        </div>
+
+                        <!-- Cumulative Multi-Term Subject Ledger Table -->
                         <table class="academic-table">
                             <thead>
                                 <tr>
-                                    <th class="th-t1" style="width:25px; text-align:center;">#</th>
-                                    <th class="th-t1">Code</th>
-                                    <th class="th-t1" style="width:55px; text-align:center;">Score</th>
-                                    <th class="th-t1" style="width:40px; text-align:center;">Grd</th>
-                                    <th class="th-t1" style="width:35px; text-align:center;">Pts</th>
+                                    <th class="th-main" style="width:28px; text-align:center;">S/N</th>
+                                    <th class="th-main" style="width:65px;">Code</th>
+                                    <th class="th-main">Subject Title</th>
+                                    <th class="th-t1" style="text-align:center; width:75px;">Term 1</th>
+                                    <th class="th-t2" style="text-align:center; width:75px;">Term 2</th>
+                                    <th class="th-ann" style="text-align:center; width:75px;">Annual Avg</th>
+                                    <th class="th-ann" style="text-align:center; width:45px;">Grade</th>
+                                    <th class="th-ann" style="text-align:center; width:40px;">Pts</th>
+                                    <th class="th-ann">Progress Assessment</th>
                                 </tr>
                             </thead>
-                            <tbody>${t1Rows || '<tr><td colspan="5" style="text-align:center;padding:10px;color:#64748b;">No Term 1 marks.</td></tr>'}</tbody>
+                            <tbody>
+                                ${rowsHtml || '<tr><td colspan="9" style="text-align:center;padding:12px;color:#64748b;">No recorded marks found.</td></tr>'}
+                            </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="2" style="font-size:10px;">Tot: ${t1Sum.total_score || '-'}</td>
-                                    <td colspan="3" style="text-align:right; font-size:10px; color:#065f46;">${t1Sum.division || '-'}</td>
+                                    <td colspan="3" style="text-align:right; color:#0f172a;">ANNUAL CUMULATIVE AVERAGE & DIVISION:</td>
+                                    <td style="text-align:center; color:#065f46;">${annual.term1_avg ? annual.term1_avg + '%' : '-'}</td>
+                                    <td style="text-align:center; color:#1e40af;">${annual.term2_avg ? annual.term2_avg + '%' : '-'}</td>
+                                    <td style="text-align:center; font-weight:900; color:#0f172a;">${annual.annual_average ? annual.annual_average + '%' : '-'}</td>
+                                    <td colspan="2" style="text-align:center; color:#064e3b;">${annual.overall_points !== undefined ? annual.overall_points + ' Pts' : '-'}</td>
+                                    <td style="color:#064e3b; font-weight:800;">${annual.overall_division || 'Division I'}</td>
                                 </tr>
                             </tfoot>
                         </table>
-                    </div>
-                    <div>
-                        <div class="term-section-heading term-2-heading" style="margin-top:0;">
-                            <span>📗 Term 2 Results</span>
-                            <span>Avg: ${t2Sum.average_score || '-'}%</span>
+
+                        <!-- Annual Summary Banner -->
+                        <div class="summary-banner">
+                            <div class="sum-card">
+                                <div class="num">${annual.term1_avg ? annual.term1_avg + '%' : '-'}</div>
+                                <div class="label">Term 1 Average</div>
+                            </div>
+                            <div class="sum-card">
+                                <div class="num">${annual.term2_avg ? annual.term2_avg + '%' : '-'}</div>
+                                <div class="label">Term 2 Average</div>
+                            </div>
+                            <div class="sum-card" style="background:#eff6ff; border-color:#93c5fd;">
+                                <div class="num" style="color:#1e40af;">${annual.annual_average ? annual.annual_average + '%' : '-'}</div>
+                                <div class="label" style="color:#1e40af;">Annual Average</div>
+                            </div>
+                            <div class="sum-card" style="background:#f0fdf4; border-color:#86efac;">
+                                <div class="num" style="color:#047857;">${annual.overall_division || 'Div I'}</div>
+                                <div class="label" style="color:#047857;">Final Division</div>
+                            </div>
+                            <div class="sum-card">
+                                <div class="num">1st</div>
+                                <div class="label">Annual Position</div>
+                            </div>
                         </div>
-                        <table class="academic-table">
-                            <thead>
-                                <tr>
-                                    <th class="th-t2" style="width:25px; text-align:center;">#</th>
-                                    <th class="th-t2">Code</th>
-                                    <th class="th-t2" style="width:55px; text-align:center;">Score</th>
-                                    <th class="th-t2" style="width:40px; text-align:center;">Grd</th>
-                                    <th class="th-t2" style="width:35px; text-align:center;">Pts</th>
-                                </tr>
-                            </thead>
-                            <tbody>${t2Rows || '<tr><td colspan="5" style="text-align:center;padding:10px;color:#64748b;">No Term 2 marks.</td></tr>'}</tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="2" style="font-size:10px;">Tot: ${t2Sum.total_score || '-'}</td>
-                                    <td colspan="3" style="text-align:right; font-size:10px; color:#1e40af;">${t2Sum.division || '-'}</td>
-                                </tr>
-                            </tfoot>
-                        </table>
+
+                        <!-- GRAPHICAL ANALYSIS OF RESULTS TRENDS (TWO VISUAL CHARTS) -->
+                        <div class="trends-charts-grid">
+                            <!-- Chart 1: Subject Progression Trend Chart -->
+                            <div class="trend-chart-card">
+                                <div class="trend-chart-header">
+                                    <span>📊 Subject Progression Trend (Term 1 vs Term 2)</span>
+                                    <span style="color:#64748b; font-size:9px;">Term Score Comparison</span>
+                                </div>
+                                <div class="trend-chart-canvas-box">
+                                    <canvas id="canvasSubjectProgression"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Chart 2: Competency & Performance Trajectory -->
+                            <div class="trend-chart-card">
+                                <div class="trend-chart-header">
+                                    <span>📈 Term Trajectory & Competency Profile</span>
+                                    <span style="color:#64748b; font-size:9px;">Average Trajectory</span>
+                                </div>
+                                <div class="trend-chart-canvas-box">
+                                    <canvas id="canvasPerformanceRadar"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Promotion Recommendation & Headmaster Verdict -->
+                        <div class="verdict-box">
+                            <div>
+                                <span style="font-size: 9.5px; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.3px;">Official Promotion Verdict & Academic Remark:</span>
+                                <div style="font-size: 11px; font-weight: 800; color: #14532d; margin-top: 1px;">
+                                    ✅ Promoted to the Next Grade Level in Good Standing (${annual.overall_division || 'Division I'}).
+                                </div>
+                            </div>
+                            <span class="badge badge-success" style="font-size: 10px; font-weight: 800; padding: 3px 8px; background: #059669; color: white; border-radius: 4px;">
+                                PROMOTED
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Signatures Section -->
+                    <div class="signatures-grid">
+                        <div class="sig-box">
+                            <div class="sig-line"></div>
+                            <div class="sig-title">Academic Registrar / Dean Signature</div>
+                            <div class="sig-date">Date: ${today}</div>
+                        </div>
+                        <div class="sig-box">
+                            <div class="sig-line"></div>
+                            <div class="sig-title">Head of School & Official Seal / Stamp</div>
+                            <div class="sig-date">Date: ${today} • Final Transcript Sheet</div>
+                        </div>
                     </div>
                 </div>
             `;
+            return finalPageDiv;
+        }
+
+        /**
+         * RENDERS THE CHARTS ON THE FINAL TRENDS ANALYSIS PAGE
+         */
+        function renderTrendsCharts(data) {
+            const t1Subs = (data.term1_results && data.term1_results.subjects) ? data.term1_results.subjects : [];
+            const t2Subs = (data.term2_results && data.term2_results.subjects) ? data.term2_results.subjects : [];
+
+            // All unique subject codes
+            const allCodes = Array.from(new Set([
+                ...t1Subs.map(s => s.subject_code),
+                ...t2Subs.map(s => s.subject_code)
+            ]));
+
+            const labels = allCodes.map(code => {
+                const s = t1Subs.find(x => x.subject_code === code) || t2Subs.find(x => x.subject_code === code);
+                return (s && s.subject_name) ? (s.subject_name.length > 12 ? s.subject_name.substring(0, 11) + '…' : s.subject_name) : code;
+            });
+
+            const t1Scores = allCodes.map(code => {
+                const s = t1Subs.find(x => x.subject_code === code);
+                return s ? s.score : 0;
+            });
+
+            const t2Scores = allCodes.map(code => {
+                const s = t2Subs.find(x => x.subject_code === code);
+                return s ? s.score : 0;
+            });
+
+            // Destroy previous instances if any
+            if (chartInstances['progression']) chartInstances['progression'].destroy();
+            if (chartInstances['radar']) chartInstances['radar'].destroy();
+
+            // 1. Subject-by-Subject Progression Bar Chart
+            const canvasProg = document.getElementById('canvasSubjectProgression');
+            if (canvasProg) {
+                const ctxProg = canvasProg.getContext('2d');
+                chartInstances['progression'] = new Chart(ctxProg, {
+                    type: 'bar',
+                    data: {
+                        labels: labels.length > 0 ? labels : ['No Subjects'],
+                        datasets: [
+                            {
+                                label: 'Term 1 Score (%)',
+                                data: t1Scores.length > 0 ? t1Scores : [0],
+                                backgroundColor: 'rgba(6, 95, 70, 0.85)',
+                                borderColor: '#064e3b',
+                                borderWidth: 1,
+                                borderRadius: 3
+                            },
+                            {
+                                label: 'Term 2 Score (%)',
+                                data: t2Scores.length > 0 ? t2Scores : [0],
+                                backgroundColor: 'rgba(30, 64, 175, 0.85)',
+                                borderColor: '#1e3a8a',
+                                borderWidth: 1,
+                                borderRadius: 3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: false,
+                        scales: {
+                            y: { beginAtZero: true, max: 100, ticks: { font: { size: 9, weight: '700' } } },
+                            x: { ticks: { font: { size: 9, weight: '700' }, maxRotation: 30, minRotation: 0 } }
+                        },
+                        plugins: {
+                            legend: { position: 'top', labels: { boxWidth: 10, font: { size: 9.5, weight: '700' } } }
+                        }
+                    }
+                });
+            }
+
+            // 2. Trajectory & Overall Performance Line/Bar Chart
+            const canvasRadar = document.getElementById('canvasPerformanceRadar');
+            if (canvasRadar) {
+                const ctxRadar = canvasRadar.getContext('2d');
+                const t1Avg = data.annual_summary?.term1_avg || 0;
+                const t2Avg = data.annual_summary?.term2_avg || 0;
+                const annAvg = data.annual_summary?.annual_average || 0;
+
+                chartInstances['radar'] = new Chart(ctxRadar, {
+                    type: 'line',
+                    data: {
+                        labels: ['Term 1', 'Term 2', 'Annual Avg'],
+                        datasets: [
+                            {
+                                label: 'Average Score (%)',
+                                data: [t1Avg, t2Avg, annAvg],
+                                borderColor: '#059669',
+                                backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                                borderWidth: 2.5,
+                                pointBackgroundColor: ['#065f46', '#1e40af', '#0f172a'],
+                                pointRadius: 5,
+                                fill: true,
+                                tension: 0.3
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: false,
+                        scales: {
+                            y: { beginAtZero: true, max: 100, ticks: { font: { size: 9, weight: '700' } } },
+                            x: { ticks: { font: { size: 10, weight: '800' } } }
+                        },
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+        }
+
+        /* ── HELPER: BENCHMARK KEY BY EDUCATION LEVEL ─────────────────── */
+        function renderScalesHtml(lvl) {
+            if (lvl === 'Primary') {
+                return `
+                    <span>A: 81–100% (High Distinction / 1 Pt)</span>
+                    <span>B: 61–80% (Distinction / 2 Pts)</span>
+                    <span>C: 41–60% (Average Pass / 3 Pts)</span>
+                    <span>D: 21–40% (Marginal Pass / 4 Pts)</span>
+                    <span>E: 0–20% (Fail / 5 Pts)</span>
+                    <span style="color:#064e3b;font-weight:800;">• Criteria: Core Best 5 Subjects</span>
+                `;
+            } else if (lvl === 'A-Level') {
+                return `
+                    <span>A: 80–100% (1 Pt)</span>
+                    <span>B: 70–79% (2 Pts)</span>
+                    <span>C: 60–69% (3 Pts)</span>
+                    <span>D: 50–59% (4 Pts)</span>
+                    <span>E: 40–49% (5 Pts)</span>
+                    <span>S: 35–39% (6 Pts)</span>
+                    <span>F: 0–34% (7 Pts)</span>
+                    <span style="color:#064e3b;font-weight:800;">• Principal Combination Key</span>
+                `;
+            } else {
+                return `
+                    <span>A: 75–100% (Excellent / 1 Pt)</span>
+                    <span>B: 65–74% (Very Good / 2 Pts)</span>
+                    <span>C: 45–64% (Good / 3 Pts)</span>
+                    <span>D: 30–44% (Satisfactory / 4 Pts)</span>
+                    <span>F: 0–29% (Fail / 5 Pts)</span>
+                    <span style="color:#064e3b;font-weight:800;">• Top 7 Best Subjects NECTA Standard</span>
+                `;
+            }
+        }
+
+        /* ── FILTER PAGE VIEWS (TOOLBAR TOGGLE) ───────────────────────── */
+        function filterPageViews(viewMode) {
+            const p1 = document.getElementById('page-term1');
+            const p2 = document.getElementById('page-term2');
+            const pTrends = document.getElementById('page-trends');
+
+            if (p1) p1.style.display = (viewMode === 'all' || viewMode === 'term1') ? 'flex' : 'none';
+            if (p2) p2.style.display = (viewMode === 'all' || viewMode === 'term2') ? 'flex' : 'none';
+            if (pTrends) pTrends.style.display = (viewMode === 'all' || viewMode === 'trends') ? 'flex' : 'none';
+
+            if (viewMode === 'all' || viewMode === 'trends') {
+                if (reportData) renderTrendsCharts(reportData);
+            }
+        }
+
+        /* ── SWITCH DENSITY SCALING ───────────────────────────────────── */
+        function switchDensity(densityClass) {
+            document.body.classList.remove('density-compact', 'density-normal', 'density-relaxed');
+            document.body.classList.add(densityClass);
+            if (reportData) renderTrendsCharts(reportData);
         }
     </script>
 </body>
