@@ -28,19 +28,21 @@
             border-color: var(--c-primary);
             box-shadow: 0 6px 16px rgba(0,0,0,0.06);
         }
-        .capacity-progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 8px 0;
+    <style>
+        .room-card-premium {
+            background: #ffffff;
+            border: 1px solid var(--c-border-light);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s ease;
         }
-        .capacity-progress-fill {
-            height: 100%;
-            background: #10b981;
-            border-radius: 4px;
-            transition: width 0.3s ease;
+        .room-card-premium:hover {
+            border-color: var(--c-primary);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.06);
         }
     </style>
 </head>
@@ -67,17 +69,26 @@
                         
                         <!-- Workspace Summary Stats -->
                         <app-workspace-stats>
-                            <app-workspace-stat id="cardRoomsCount" label="Configured Streams / Rooms" value="-"></app-workspace-stat>
-                            <app-workspace-stat id="cardCapacity" label="Total Capacity" value="-"></app-workspace-stat>
-                            <app-workspace-stat id="cardAllocated" label="Assigned Students" value="-"></app-workspace-stat>
+                            <app-workspace-stat id="cardRoomsCount" label="Active Streams" value="-"></app-workspace-stat>
+                            <app-workspace-stat id="cardGradeStudents" label="Total Grade Cohort" value="-"></app-workspace-stat>
+                            <app-workspace-stat id="cardAllocated" label="Allocated to Streams" value="-"></app-workspace-stat>
                             <app-workspace-stat id="cardUnassigned" label="Unassigned Pool" value="-"></app-workspace-stat>
                         </app-workspace-stats>
                         
                         <!-- Workspace Tabs -->
                         <app-workspace-tabs active-tab="rooms">
-                            <button class="workspace-tab" data-target="rooms">🏫 Classrooms & Streams Setup</button>
-                            <button class="workspace-tab" data-target="allocation">👥 Student Allocation Pool</button>
-                            <button class="workspace-tab" data-target="promotion">🎓 Promotion & Transition</button>
+                            <button class="workspace-tab" data-target="rooms" style="display:inline-flex; align-items:center; gap:6px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                <span>Classrooms & Streams Setup</span>
+                            </button>
+                            <button class="workspace-tab" data-target="allocation" style="display:inline-flex; align-items:center; gap:6px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                <span>Student Allocation Pool</span>
+                            </button>
+                            <button class="workspace-tab" data-target="promotion" style="display:inline-flex; align-items:center; gap:6px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                                <span>Promotion & Transition</span>
+                            </button>
                         </app-workspace-tabs>
                         
                         <!-- TAB 1: ROOMS & STREAMS SETUP -->
@@ -86,9 +97,12 @@
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid var(--c-border-light); padding-bottom: 16px; gap: 16px; flex-wrap: wrap;">
                                     <div>
                                         <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: var(--c-text-primary);" id="tabRoomsTitle">Classroom Streams Configuration</h3>
-                                        <p style="color: var(--c-text-secondary); margin: 3px 0 0 0; font-size: 12px;">Create classroom streams (e.g. Stream A, Stream B) and view rosters.</p>
+                                        <p style="color: var(--c-text-secondary); margin: 3px 0 0 0; font-size: 12px;">Create classroom streams (e.g. Stream A, Stream B, PCM, PCB) and manage rosters.</p>
                                     </div>
-                                    <button class="btn btn-primary" id="btnOpenAddRoomModal" style="font-weight: 800; font-size: 12px; padding: 6px 14px; border-radius: 6px; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(4,120,87,0.25);">➕ Create New Stream / Room</button>
+                                    <button class="btn btn-primary" id="btnOpenAddRoomModal" style="font-weight: 800; font-size: 12px; padding: 6px 14px; border-radius: 6px; white-space: nowrap; flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(4,120,87,0.25);">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                        <span>Create New Stream</span>
+                                    </button>
                                 </div>
 
                                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 300px)); gap: 16px;" id="roomsGridContainer">
@@ -102,7 +116,10 @@
                             <div class="card" style="padding: 22px 24px; margin: 12px 0 0 0; width: 100%;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--c-border-light); padding-bottom: 12px; margin-bottom: 14px; flex-wrap: wrap; gap: 12px;">
                                     <div>
-                                        <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: var(--c-text-primary);">👥 Student Allocation & Roster Workspace</h3>
+                                        <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: var(--c-text-primary); display:flex; align-items:center; gap:8px;">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                            <span>Student Allocation & Roster Workspace</span>
+                                        </h3>
                                         <p style="color: var(--c-text-secondary); margin: 2px 0 0 0; font-size: 12px;">Manage unassigned student pool, bulk allocate students into classroom streams, and view active stream rosters.</p>
                                     </div>
                                     <div style="display: flex; gap: 10px; align-items: center;">
@@ -120,7 +137,7 @@
                                                 <span id="unassignedCountBadge" class="badge badge-warning" style="font-weight: 800; font-size: 10px; padding: 2px 6px;">0 Pending</span>
                                             </div>
                                             <label style="font-size: 11px; font-weight: 700; color: #047857; cursor: pointer; display: flex; align-items: center; gap: 4px;">
-                                                <input type="checkbox" id="selectAllPoolCheckbox" style="cursor: pointer;"> Select All
+                                                <input type="checkbox" id="selectAllPoolCheckbox" style="cursor: pointer; width:15px; height:15px; accent-color:#059669;"> Select All
                                             </label>
                                         </div>
 
@@ -128,18 +145,22 @@
                                         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 10px;">
                                             <div style="font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 4px;">Select Target Stream &amp; Allocate:</div>
                                             <div style="display: flex; gap: 6px; align-items: center;">
-                                                <select id="targetStreamSelect" class="form-control" style="flex: 1; font-weight: 700; height: 32px; font-size: 12px;">
-                                                    <option value="">Select Target Stream Room...</option>
+                                                <select id="targetStreamSelect" class="form-control" style="flex: 1; font-weight: 700; height: 34px; font-size: 12px;">
+                                                    <option value="">Select Target Stream...</option>
                                                 </select>
-                                                <button id="btnAssignSelectedStudents" class="btn btn-primary" style="font-weight: 800; white-space: nowrap; height: 32px; padding: 0 12px; font-size: 12px; display: inline-flex; align-items: center; gap: 4px;">
-                                                    Assign Selected ➡️
+                                                <button id="btnAssignSelectedStudents" class="btn btn-primary" style="font-weight: 800; white-space: nowrap; height: 34px; padding: 0 14px; font-size: 12px; display: inline-flex; align-items: center; gap: 5px;">
+                                                    <span>Assign Selected</span>
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
                                                 </button>
                                             </div>
                                         </div>
 
                                         <!-- Filter Search Bar -->
-                                        <div style="margin-bottom: 8px;">
-                                            <input type="text" id="poolSearchInput" class="form-control" placeholder="🔍 Search unassigned students..." style="font-size: 12px; height: 32px;">
+                                        <div style="position:relative; margin-bottom: 8px;">
+                                            <input type="text" id="poolSearchInput" class="form-control" placeholder="Search unassigned students by name or code..." style="font-size: 12px; height: 32px; padding-left:28px;">
+                                            <span style="position:absolute; left:8px; top:50%; transform:translateY(-50%); color:#94a3b8; display:flex;">
+                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                            </span>
                                         </div>
 
                                         <div id="unassignedPoolContainer" style="flex: 1; max-height: 460px; min-height: 320px; overflow-y: auto; border: 1px solid var(--c-border-light); border-radius: 6px; background: #ffffff;">
@@ -160,13 +181,18 @@
                                         </div>
 
                                         <!-- Roster Search Bar -->
-                                        <div style="margin-bottom: 8px;">
-                                            <input type="text" id="rosterSearchInput" class="form-control" placeholder="🔍 Search enrolled roster..." style="font-size: 12px; height: 32px;">
+                                        <div style="position:relative; margin-bottom: 8px;">
+                                            <input type="text" id="rosterSearchInput" class="form-control" placeholder="Search enrolled roster..." style="font-size: 12px; height: 32px; padding-left:28px;">
+                                            <span style="position:absolute; left:8px; top:50%; transform:translateY(-50%); color:#94a3b8; display:flex;">
+                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                            </span>
                                         </div>
 
                                         <div id="rosterViewerContainer" style="flex: 1; max-height: 480px; min-height: 380px; overflow-y: auto; border: 1px solid var(--c-border-light); border-radius: 8px; background: #ffffff;">
                                             <div style="padding: 40px 20px; text-align: center; color: var(--c-text-muted);">
-                                                <div style="font-size: 32px; margin-bottom: 8px;">🏫</div>
+                                                <div style="margin-bottom: 8px; display:flex; justify-content:center;">
+                                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                                </div>
                                                 <div style="font-weight: 700;">Select a classroom stream above to view enrolled roster.</div>
                                             </div>
                                         </div>
@@ -177,19 +203,24 @@
                         </app-workspace-content>
                         
                         <!-- TAB 3: PROMOTION & TRANSITION -->
-                        <!-- TAB 3: PROMOTION & TRANSITION -->
                         <app-workspace-content tab-id="promotion">
                             <div class="card" style="padding: 22px; margin: 12px 0 0 0; width: 100%;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid var(--c-border-light); padding-bottom: 14px; gap: 16px; flex-wrap: wrap;">
                                     <div>
-                                        <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: var(--c-text-primary);" id="wsPromoTitle">🎓 END-OF-YEAR PROGRESSION BOARD</h3>
+                                        <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: var(--c-text-primary); display:flex; align-items:center; gap:8px;" id="wsPromoTitle">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                                            <span>End-of-Year Progression Board</span>
+                                        </h3>
                                         <p style="color: var(--c-text-secondary); margin: 2px 0 0 0; font-size: 12px;">Review automated GPA calculations, override actions, and execute batch promotion to next year streams.</p>
                                     </div>
                                     <div style="display: flex; gap: 8px; align-items: center;">
                                         <select id="wsPromoStreamSelect" class="form-control" style="font-weight: 700; width: 200px; height: 32px; font-size: 12px;">
                                             <option value="">Select Stream Room...</option>
                                         </select>
-                                        <button class="btn btn-outline" id="btnLoadWsPromo" style="font-weight: 700; font-size: 12px; height: 32px; padding: 0 12px;">🔄 Load Stream Students</button>
+                                        <button class="btn btn-outline" id="btnLoadWsPromo" style="font-weight: 700; font-size: 12px; height: 32px; padding: 0 12px; display:inline-flex; align-items:center; gap:4px;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                                            <span>Load Stream Students</span>
+                                        </button>
                                     </div>
                                 </div>
 
@@ -208,20 +239,16 @@
 
     <!-- Modal for Adding / Editing Classroom Stream -->
     <div id="roomModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
-        <div class="card" style="width: 100%; max-width: 480px; padding: var(--sp-6); background: white;">
-            <h3 style="margin-top: 0; margin-bottom: var(--sp-4);" id="roomModalTitle">Add Classroom Stream</h3>
+        <div class="card" style="width: 100%; max-width: 440px; padding: var(--sp-6); background: white; border-radius:12px;">
+            <h3 style="margin-top: 0; margin-bottom: var(--sp-4); font-size:16px; font-weight:800;" id="roomModalTitle">Add Classroom Stream</h3>
             <form id="roomForm">
-                <div class="form-group" style="margin-bottom: var(--sp-4);">
-                    <label class="form-label">Stream / Room Name <span style="color:var(--c-danger);">*</span></label>
-                    <input type="text" id="modal_room_name" class="form-control" placeholder="e.g. Form 1 A or Stream Blue" required>
-                </div>
                 <div class="form-group" style="margin-bottom: var(--sp-6);">
-                    <label class="form-label">Max Seating Capacity <span style="color:var(--c-danger);">*</span></label>
-                    <input type="number" id="modal_room_capacity" class="form-control" value="45" min="1" max="200" required>
+                    <label class="form-label" style="font-weight:700; font-size:13px;">Stream / Room Name <span style="color:var(--c-danger);">*</span></label>
+                    <input type="text" id="modal_room_name" class="form-control" placeholder="e.g. Form 1 Stream A or Form 5 PCM" required style="font-size:13px;">
                 </div>
                 <div style="display: flex; gap: var(--sp-2); justify-content: flex-end;">
-                    <button type="button" id="closeRoomModalBtn" class="btn btn-outline">Cancel</button>
-                    <button type="submit" class="btn btn-primary" style="font-weight: 700;">Save Classroom Stream</button>
+                    <button type="button" id="closeRoomModalBtn" class="btn btn-outline" style="font-weight:700;">Cancel</button>
+                    <button type="submit" class="btn btn-primary" style="font-weight: 700;">Save Stream</button>
                 </div>
             </form>
         </div>
@@ -247,7 +274,6 @@
             if (btnOpenAddRoomModal) btnOpenAddRoomModal.addEventListener('click', () => {
                 document.getElementById('roomModalTitle').textContent = `Add Classroom Stream for ${gradeInfo.grade_name || 'Grade'}`;
                 document.getElementById('modal_room_name').value = `${gradeInfo.grade_name || 'Grade'} Stream ${String.fromCharCode(65 + classroomsList.length)}`;
-                document.getElementById('modal_room_capacity').value = 45;
                 roomModal.style.display = 'flex';
             });
 
@@ -255,7 +281,6 @@
             roomForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const roomName = document.getElementById('modal_room_name').value.trim();
-                const capacity = parseInt(document.getElementById('modal_room_capacity').value) || 45;
 
                 try {
                     const res = await fetch('/shule-cafe/api/headmaster/classrooms/classrooms_api.php', {
@@ -266,8 +291,7 @@
                             action: 'save_classrooms',
                             grade_id: currentGradeId,
                             year: currentYear,
-                            classroom_names: [roomName],
-                            capacities: [capacity]
+                            classroom_names: [roomName]
                         })
                     });
                     const result = await res.json();
@@ -301,12 +325,11 @@
                         header.setAttribute('status', targetGrade.classroom_count > 0 ? 'Configured' : 'Setup Needed');
                         header.setAttribute('status-color', targetGrade.classroom_count > 0 ? 'success' : 'warning');
 
-                        // Calculate total seating capacity
-                        let totalCapacity = 0;
-                        classroomsList.forEach(c => { totalCapacity += parseInt(c.capacity || 0); });
+                        let totalAllocated = 0;
+                        classroomsList.forEach(c => { totalAllocated += parseInt(c.enrolled_count || 0); });
 
                         document.getElementById('cardRoomsCount').setAttribute('value', targetGrade.classroom_count.toString());
-                        document.getElementById('cardCapacity').setAttribute('value', totalCapacity.toLocaleString());
+                        document.getElementById('cardAllocated').setAttribute('value', totalAllocated.toLocaleString());
 
                         // Render Rooms Grid
                         renderRoomsGrid();
@@ -315,7 +338,7 @@
                         populateStreamSelects();
 
                         // Load Allocation Pool
-                        loadUnassignedPool();
+                        loadUnassignedPool(totalAllocated);
                     }
                 } catch (err) {
                     console.error("Failed to load grade workspace:", err);
@@ -332,7 +355,10 @@
                         <div style="padding: 30px; text-align: center; background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 12px; grid-column: 1 / -1;">
                             <h4 style="margin-top: 0; color: #475569;">No Classroom Streams Configured for ${gradeInfo.grade_name}</h4>
                             <p style="color: #64748b; font-size: 13px; margin-bottom: 16px;">Create streams (e.g. ${gradeInfo.grade_name} A, ${gradeInfo.grade_name} B) to start allocating students.</p>
-                            <button class="btn btn-primary" onclick="document.getElementById('btnOpenAddRoomModal').click();" style="font-weight: 700;">➕ Create First Stream</button>
+                            <button class="btn btn-primary" onclick="document.getElementById('btnOpenAddRoomModal').click();" style="font-weight: 700; display:inline-flex; align-items:center; gap:6px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                <span>Create First Stream</span>
+                            </button>
                         </div>
                     `;
                     return;
@@ -340,21 +366,30 @@
 
                 let html = '';
                 classroomsList.forEach(room => {
+                    const enrolled = parseInt(room.enrolled_count || 0);
                     html += `
-                        <div class="room-card-premium" style="max-width: 290px;">
+                        <div class="room-card-premium" style="max-width: 300px;">
                             <div>
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                      <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(2,132,199,0.3);">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="11" rx="2"/><path d="M7 8h10M7 11h5M12 15v4M9 19h6"/></svg>
                                      </div>
-                                    <span class="badge badge-success" style="font-weight: 700; font-size: 11px;">Active Stream</span>
+                                    <span class="badge ${enrolled > 0 ? 'badge-success' : 'badge-neutral'}" style="font-weight: 700; font-size: 11px; padding:3px 8px; border-radius:999px;">
+                                        ${enrolled} Enrolled
+                                    </span>
                                 </div>
                                 <h4 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 800; color: var(--c-text-primary);">${room.classroom_name}</h4>
-                                <div style="font-size: 12px; color: var(--c-text-muted); margin-bottom: 8px;">Active Classroom Stream</div>
+                                <div style="font-size: 12px; color: var(--c-text-muted); margin-bottom: 8px;">Classroom Stream</div>
                             </div>
                             <div style="margin-top: 10px; border-top: 1px solid var(--c-border-light); padding-top: 10px; display: flex; gap: 8px;">
-                                <button class="btn btn-outline btn-sm" style="flex: 1; font-weight: 700; font-size: 12px; padding: 4px 8px;" onclick="viewStreamRoster(${room.id})">👁️ View Roster</button>
-                                <button class="btn btn-outline btn-sm" style="color: #dc2626; border-color: #fca5a5; font-size: 12px; padding: 4px 8px;" onclick="deleteStreamRoom(${room.id}, '${room.classroom_name}')">🗑️ Delete</button>
+                                <button class="btn btn-outline btn-sm" style="flex: 1; font-weight: 700; font-size: 12px; padding: 5px 8px; display:inline-flex; align-items:center; justify-content:center; gap:4px;" onclick="viewStreamRoster(${room.id})">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    <span>View Roster</span>
+                                </button>
+                                <button class="btn btn-outline btn-sm" style="color: #dc2626; border-color: #fca5a5; font-size: 12px; padding: 5px 8px; display:inline-flex; align-items:center; gap:4px;" onclick="deleteStreamRoom(${room.id}, '${room.classroom_name}')">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                    <span>Delete</span>
+                                </button>
                             </div>
                         </div>
                     `;
@@ -368,13 +403,14 @@
                 const rosterSelect  = document.getElementById('rosterStreamSelect');
                 const promoSelect   = document.getElementById('wsPromoStreamSelect');
 
-                let options = '<option value="">Select Target Stream Room...</option>';
+                let options = '<option value="">Select Target Stream...</option>';
                 let rosterOptions = '<option value="">Select Stream...</option>';
                 let promoOptions = '<option value="">Select Stream Room...</option>';
 
                 classroomsList.forEach(r => {
-                    options += `<option value="${r.id}">${r.classroom_name}</option>`;
-                    rosterOptions += `<option value="${r.id}">${r.classroom_name}</option>`;
+                    const enrolled = parseInt(r.enrolled_count || 0);
+                    options += `<option value="${r.id}">${r.classroom_name} (${enrolled} enrolled)</option>`;
+                    rosterOptions += `<option value="${r.id}">${r.classroom_name} (${enrolled} enrolled)</option>`;
                     promoOptions += `<option value="${r.id}">${r.classroom_name}</option>`;
                 });
 
@@ -434,7 +470,7 @@
             }
 
             // Load Unassigned Student Pool
-            async function loadUnassignedPool() {
+            async function loadUnassignedPool(totalAllocated = 0) {
                 const container = document.getElementById('unassignedPoolContainer');
                 if (!container) return;
 
@@ -444,12 +480,16 @@
 
                     if (res.ok && result.success) {
                         const pool = result.pool || [];
-                        document.getElementById('cardUnassigned').setAttribute('value', pool.length.toString());
+                        const poolCount = pool.length;
+                        const totalCohort = (totalAllocated || 0) + poolCount;
+
+                        document.getElementById('cardGradeStudents').setAttribute('value', totalCohort.toLocaleString());
+                        document.getElementById('cardUnassigned').setAttribute('value', poolCount.toString());
                         const countBadge = document.getElementById('unassignedCountBadge');
-                        if (countBadge) countBadge.textContent = `${pool.length} Pending`;
+                        if (countBadge) countBadge.textContent = `${poolCount} Pending`;
 
                         if (pool.length === 0) {
-                            container.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--c-text-muted); font-size: 13px;">No unassigned students pending in this grade.</div>';
+                            container.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--c-text-muted); font-size: 13px;">All students in this grade cohort have been allocated to streams.</div>';
                             return;
                         }
 
@@ -457,11 +497,16 @@
                         pool.forEach(s => {
                             const nameLower = (s.full_name || '').toLowerCase();
                             const codeLower = (s.user_code || '').toLowerCase();
+                            const gender = (s.gender || '').toUpperCase();
+                            const isFemale = gender.startsWith('F');
+                            const genderBadge = gender ? `<span class="badge" style="font-size:10px; font-weight:800; padding:1px 5px; border-radius:4px; ${isFemale ? 'background:#fdf2f8; color:#be185d; border:1px solid #fbcfe8;' : 'background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe;'}">${isFemale ? 'F' : 'M'}</span>` : '';
+
                             html += `
                                 <div class="pool-item-row" data-name="${nameLower}" data-code="${codeLower}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: white; border-bottom: 1px solid var(--c-border-light); font-size: 13px; transition: background 0.12s ease;">
-                                    <label style="display: flex; align-items: center; gap: 10px; font-weight: 600; cursor: pointer; color: #0f172a;">
-                                        <input type="checkbox" class="pool-checkbox" value="${s.id}" style="width: 16px; height: 16px; cursor: pointer;">
+                                    <label style="display: flex; align-items: center; gap: 10px; font-weight: 600; cursor: pointer; color: #0f172a; flex:1;">
+                                        <input type="checkbox" class="pool-checkbox" value="${s.id}" style="width: 16px; height: 16px; cursor: pointer; accent-color:#059669;">
                                         <span>${s.full_name}</span>
+                                        ${genderBadge}
                                     </label>
                                     <span style="font-family: monospace; color: #047857; font-size: 12px; font-weight: 700; background: #ecfdf5; padding: 2px 8px; border-radius: 4px;">${s.user_code || `STD`}</span>
                                 </div>
@@ -470,14 +515,14 @@
                         container.innerHTML = html;
                     }
                 } catch (e) {
-                    container.innerHTML = '<div style="color: var(--c-danger);">Error loading unassigned pool.</div>';
+                    container.innerHTML = '<div style="color: var(--c-danger); padding:16px;">Error loading unassigned pool.</div>';
                 }
             }
 
             // Assign Selected Students
             document.getElementById('btnAssignSelectedStudents').addEventListener('click', async () => {
                 const streamId = document.getElementById('targetStreamSelect').value;
-                if (!streamId) { alert('Please select a target stream room first.'); return; }
+                if (!streamId) { alert('Please select a target stream first.'); return; }
 
                 const checked = Array.from(document.querySelectorAll('.pool-checkbox:checked')).map(cb => cb.value);
                 if (checked.length === 0) { alert('Please check at least one student from the unassigned pool.'); return; }
@@ -495,15 +540,14 @@
                     });
                     const result = await res.json();
                     if (res.ok && result.success) {
-                        alert(result.message);
                         loadGradeWorkspace();
                         document.getElementById('rosterStreamSelect').value = streamId;
                         loadStreamRoster(streamId);
                     } else {
-                        alert(result.message || 'Failed to assign students.');
+                        alert(result.message || 'Failed to allocate students.');
                     }
                 } catch (err) {
-                    alert('Network error assigning students.');
+                    alert('Network error allocating students.');
                 }
             });
 
@@ -530,7 +574,6 @@
                         const roster = result.roster || [];
                         const classroom = result.classroom || {};
                         
-                        document.getElementById('cardAllocated').setAttribute('value', roster.length.toString());
                         const rosterBadge = document.getElementById('rosterCountBadge');
                         if (rosterBadge) {
                             rosterBadge.textContent = `${roster.length} Enrolled`;
@@ -543,18 +586,30 @@
                         }
 
                         let html = `
-                            <div style="font-weight: 800; padding: 12px 14px; background: #f8fafc; border-bottom: 1px solid var(--c-border-light); font-size: 13px; color: #0f172a;">${classroom.classroom_name} Enrolled Roster</div>
+                            <div style="font-weight: 800; padding: 12px 14px; background: #f8fafc; border-bottom: 1px solid var(--c-border-light); font-size: 13px; color: #0f172a; display:flex; justify-content:space-between; align-items:center;">
+                                <span>${classroom.classroom_name} Enrolled Roster</span>
+                                <span class="badge badge-success" style="font-weight:700; font-size:11px;">${roster.length} Students</span>
+                            </div>
                             <ul style="list-style: none; padding: 0; margin: 0;">
                         `;
                         roster.forEach(r => {
                             const nameLower = (r.full_name || '').toLowerCase();
                             const codeLower = (r.user_code || '').toLowerCase();
+                            const gender = (r.gender || '').toUpperCase();
+                            const isFemale = gender.startsWith('F');
+                            const genderBadge = gender ? `<span class="badge" style="font-size:10px; font-weight:800; padding:1px 5px; border-radius:4px; margin-left:4px; ${isFemale ? 'background:#fdf2f8; color:#be185d; border:1px solid #fbcfe8;' : 'background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe;'}">${isFemale ? 'F' : 'M'}</span>` : '';
+
                             html += `
                                 <li class="roster-item-row" data-name="${nameLower}" data-code="${codeLower}" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--c-border-light); font-size: 13px; transition: background 0.12s ease;">
-                                    <div>
-                                        <strong style="color: #0f172a;">${r.full_name}</strong> <span style="font-family: monospace; color: #047857; font-size: 12px; font-weight: 700; background: #ecfdf5; padding: 2px 6px; border-radius: 4px; margin-left: 6px;">${r.user_code || 'STD'}</span>
+                                    <div style="display:flex; align-items:center; gap:6px;">
+                                        <strong style="color: #0f172a;">${r.full_name}</strong> 
+                                        ${genderBadge}
+                                        <span style="font-family: monospace; color: #047857; font-size: 12px; font-weight: 700; background: #ecfdf5; padding: 2px 6px; border-radius: 4px;">${r.user_code || 'STD'}</span>
                                     </div>
-                                    <button class="btn btn-outline btn-sm" style="color: #dc2626; border-color: #fca5a5; font-size: 11px; font-weight: 700; padding: 4px 10px;" onclick="removeFromRoster(${r.id}, ${streamId})">Remove 🗑️</button>
+                                    <button class="btn btn-outline btn-sm" style="color: #dc2626; border-color: #fca5a5; font-size: 11px; font-weight: 700; padding: 4px 10px; display:inline-flex; align-items:center; gap:4px;" onclick="removeFromRoster(${r.id}, ${streamId})">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                        <span>Remove</span>
+                                    </button>
                                 </li>
                             `;
                         });
@@ -562,7 +617,7 @@
                         container.innerHTML = html;
                     }
                 } catch (e) {
-                    container.innerHTML = '<div style="color: var(--c-danger);">Error loading stream roster.</div>';
+                    container.innerHTML = '<div style="color: var(--c-danger); padding:16px;">Error loading stream roster.</div>';
                 }
             }
 

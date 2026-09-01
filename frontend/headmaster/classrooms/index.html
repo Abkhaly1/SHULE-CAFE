@@ -368,14 +368,17 @@
                             </select>
                         </div>
                         <button class="btn btn-primary btn-sm" style="margin-top:18px;" onclick="loadAllocation()">Load Workspace</button>
-                        <button class="btn btn-outline btn-sm" style="margin-top:18px;border-color:#059669;color:#059669;font-weight:700;display:inline-flex;align-items:center;gap:5px;" onclick="openGradeImportModal()">
-                            📥 Bulk Import Students to Grade
+                        <button class="btn btn-outline btn-sm" style="margin-top:18px;border-color:#059669;color:#059669;font-weight:700;display:inline-flex;align-items:center;gap:6px;" onclick="openGradeImportModal()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            <span>Bulk Import Students to Grade</span>
                         </button>
                     </div>
 
                     <div id="allocWorkspace">
                         <div class="empty-state" style="margin-top:16px;background:white;border:1px solid var(--c-border-light);border-radius:10px;">
-                            <div class="es-icon">🏫</div>
+                            <div class="es-icon">
+                                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            </div>
                             <h4>Select a grade and classroom above</h4>
                             <p>The student pool and classroom roster will appear here.</p>
                         </div>
@@ -388,9 +391,9 @@
                 <div id="panel-promotion" class="tab-panel">
                     <!-- Step bar -->
                     <div class="promo-step-bar">
-                        <div class="promo-step active" id="pstep1">① Select Source Classroom</div>
-                        <div class="promo-step"        id="pstep2">② Review & Assign</div>
-                        <div class="promo-step"        id="pstep3">③ Confirm & Execute</div>
+                        <div class="promo-step active" id="pstep1">1. Select Source Stream</div>
+                        <div class="promo-step"        id="pstep2">2. Review &amp; Assign</div>
+                        <div class="promo-step"        id="pstep3">3. Confirm &amp; Execute</div>
                     </div>
 
                     <!-- Step 1: source selection -->
@@ -409,8 +412,14 @@
                                         <option value="">-- Load classrooms --</option>
                                     </select>
                                 </div>
-                                <button class="btn btn-outline" onclick="loadPromoClassrooms()">🔄 Load Classrooms</button>
-                                <button class="btn btn-primary" onclick="loadPromoStudents()">Next: Review Students ➡</button>
+                                <button class="btn btn-outline" onclick="loadPromoClassrooms()" style="display:inline-flex;align-items:center;gap:5px;">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                                    <span>Load Classrooms</span>
+                                </button>
+                                <button class="btn btn-primary" onclick="loadPromoStudents()" style="display:inline-flex;align-items:center;gap:5px;">
+                                    <span>Next: Review Students</span>
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -420,17 +429,20 @@
                         <div style="background:white;border:1px solid var(--c-border-light);border-radius:10px;padding:22px;">
                             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
                                 <div>
-                                    <h3 style="margin:0 0 4px;font-size:16px;font-weight:800;">Step 2 — Review & Assign Destinations</h3>
+                                    <h3 style="margin:0 0 4px;font-size:16px;font-weight:800;">Step 2 — Review &amp; Assign Destinations</h3>
                                     <p style="margin:0;font-size:13px;color:var(--c-text-muted);" id="promoSubLabel">Set outcome and target classroom for each student.</p>
                                 </div>
-                                <button class="btn btn-outline btn-sm" onclick="backToPromoStep1()">⬅ Back</button>
+                                <button class="btn btn-outline btn-sm" onclick="backToPromoStep1()" style="display:inline-flex;align-items:center;gap:4px;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                                    <span>Back</span>
+                                </button>
                             </div>
 
                             <!-- Bulk actions -->
                             <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
-                                <button class="btn btn-sm" style="background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;font-weight:700;" onclick="bulkSetOutcome('Promoted')">✅ Set All Promoted</button>
-                                <button class="btn btn-sm" style="background:#fef9c3;color:#92400e;border:1px solid #fcd34d;font-weight:700;" onclick="bulkSetOutcome('Repeated')">🔁 Set All Repeated</button>
-                                <button class="btn btn-sm btn-outline" onclick="bulkSetTarget()" id="bulkTargetBtn">🏫 Bulk Set Target Classroom</button>
+                                <button class="btn btn-sm" style="background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;font-weight:700;" onclick="bulkSetOutcome('Promoted')">Set All Promoted</button>
+                                <button class="btn btn-sm" style="background:#fef9c3;color:#92400e;border:1px solid #fcd34d;font-weight:700;" onclick="bulkSetOutcome('Repeated')">Set All Repeated</button>
+                                <button class="btn btn-sm btn-outline" onclick="bulkSetTarget()" id="bulkTargetBtn">Bulk Set Target Classroom</button>
                                 <select id="bulkTargetSelect" style="display:none;font-size:12px;border:1px solid var(--c-border-light);border-radius:5px;padding:4px 8px;"></select>
                             </div>
 
@@ -452,7 +464,10 @@
                             </div>
 
                             <div style="margin-top:16px;display:flex;justify-content:flex-end;">
-                                <button class="btn btn-primary" style="font-weight:800;" onclick="goPromoStep3()">Next: Confirm & Execute ➡</button>
+                                <button class="btn btn-primary" style="font-weight:800;display:inline-flex;align-items:center;gap:5px;" onclick="goPromoStep3()">
+                                    <span>Next: Confirm &amp; Execute</span>
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -460,17 +475,17 @@
                     <!-- Step 3: confirmation -->
                     <div id="promoStep3" style="display:none;margin-top:16px;">
                         <div style="background:white;border:1px solid var(--c-border-light);border-radius:10px;padding:22px;">
-                            <h3 style="margin:0 0 6px;font-size:16px;font-weight:800;">Step 3 — Confirm & Execute Promotion</h3>
+                            <h3 style="margin:0 0 6px;font-size:16px;font-weight:800;">Step 3 — Confirm &amp; Execute Promotion</h3>
                             <p style="margin:0 0 20px;font-size:13px;color:var(--c-text-muted);">Review the summary below. This action is permanent.</p>
 
                             <div id="promoSummary" style="background:#f8fafc;border:1px solid var(--c-border-light);border-radius:8px;padding:18px;margin-bottom:20px;"></div>
 
                             <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#92400e;font-weight:600;">
-                                ⚠️ This action will permanently lock the source year records and create new allocations for the target year. Please verify the summary before proceeding.
+                                Note: This action will permanently lock the source year records and create new allocations for the target year. Please verify the summary before proceeding.
                             </div>
                             <div style="display:flex;gap:10px;justify-content:flex-end;">
-                                <button class="btn btn-outline" onclick="backToPromoStep2()">⬅ Back to Review</button>
-                                <button class="btn btn-primary" style="font-weight:800;background:#059669;" id="executePromoBtn" onclick="executePromotion()">🎓 Execute Promotion Now</button>
+                                <button class="btn btn-outline" onclick="backToPromoStep2()">Back to Review</button>
+                                <button class="btn btn-primary" style="font-weight:800;background:#059669;" id="executePromoBtn" onclick="executePromotion()">Execute Promotion Now</button>
                             </div>
                         </div>
                     </div>
@@ -504,7 +519,7 @@
         </div>
         <div class="modal-foot">
             <button class="btn btn-outline" onclick="closeSetupModal()">Cancel</button>
-            <button class="btn btn-primary" style="font-weight:800;" onclick="saveClassrooms()">💾 Save Classrooms</button>
+            <button class="btn btn-primary" style="font-weight:800;" onclick="saveClassrooms()">Save Classrooms</button>
         </div>
     </div>
 </div>
@@ -516,7 +531,7 @@
     <div class="modal-box" style="border-top:5px solid #dc2626;">
         <div class="modal-head">
             <p class="modal-title" style="color:#dc2626;display:flex;align-items:center;gap:8px;">
-                ⚠️ DANGER ZONE: CONFIRM CLASSROOM DELETION
+                CONFIRM CLASSROOM DELETION
             </p>
             <p class="modal-sub" style="color:#791919;background:#fef2f2;border:1px solid #fca5a5;padding:12px;border-radius:8px;margin-top:10px;">
                 Warning: Deleting this classroom will unallocate all students assigned to it and drop active timetables. This action <strong>CANNOT be undone</strong>.
@@ -532,7 +547,7 @@
         </div>
         <div class="modal-foot" style="background:#f8fafc;">
             <button class="btn btn-outline" onclick="closeDeleteModal()">Cancel</button>
-            <button class="btn" id="confirmDeleteBtn" disabled style="background:#dc2626;color:white;font-weight:800;opacity:0.5;cursor:not-allowed;" onclick="executeVerifiedDeletion()">🔴 CONFIRM DELETE</button>
+            <button class="btn" id="confirmDeleteBtn" disabled style="background:#dc2626;color:white;font-weight:800;opacity:0.5;cursor:not-allowed;" onclick="executeVerifiedDeletion()">CONFIRM DELETE</button>
         </div>
     </div>
 </div>
@@ -544,7 +559,7 @@
     <div class="modal-box" style="max-width:540px;border-top:5px solid #059669;">
         <div class="modal-head">
             <p class="modal-title" style="color:#059669;display:flex;align-items:center;gap:8px;">
-                📥 Bulk Import Students to Grade Cohort
+                Bulk Import Students to Grade Cohort
             </p>
             <p class="modal-sub" style="color:#047857;background:#ecfdf5;border:1px solid #a7f3d0;padding:12px;border-radius:8px;margin-top:10px;">
                 All imported students will be <strong>automatically locked to <span id="importTargetGradeName" style="font-weight:800;text-decoration:underline;">the selected Grade</span></strong> and placed into its Unassigned Student Pool for classroom distribution.
@@ -552,11 +567,11 @@
         </div>
         <div class="modal-body">
             <div style="margin-bottom:16px;background:#f8fafc;padding:12px;border-radius:6px;border:1px solid #e2e8f0;font-size:12px;color:#475569;">
-                <strong>📋 CSV Column Format:</strong><br>
+                <strong>CSV Column Format:</strong><br>
                 <code>Full Name, Phone Number, Email, Student Reg Code</code><br>
                 <span style="font-size:11px;color:#64748b;">(No Grade or Level column needed — Grade is automatically assigned by page context).</span>
                 <br><br>
-                <a href="data:text/csv;charset=utf-8,Full%20Name%2CPhone%20Number%2CEmail%2CStudent%20Reg%20Code%0ANeema%20Baraka%2C0712345678%2Cneema%40school.tz%2CSTD%2F2026%2F101%0AJuma%20Mussa%2C0712345679%2Cjuma%40school.tz%2CSTD%2F2026%2F102" download="sample_grade_students_import.csv" style="color:#0284c7;font-weight:700;text-decoration:underline;">📥 Download Sample CSV Template</a>
+                <a href="data:text/csv;charset=utf-8,Full%20Name%2CPhone%20Number%2CEmail%2CStudent%20Reg%20Code%0ANeema%20Baraka%2C0712345678%2Cneema%40school.tz%2CSTD%2F2026%2F101%0AJuma%20Mussa%2C0712345679%2Cjuma%40school.tz%2CSTD%2F2026%2F102" download="sample_grade_students_import.csv" style="color:#0284c7;font-weight:700;text-decoration:underline;">Download Sample CSV Template</a>
             </div>
             <form id="gradeImportForm" onsubmit="executeGradeImport(event)">
                 <div class="form-group mb-3">
@@ -565,7 +580,7 @@
                 </div>
                 <div class="modal-foot" style="background:#f8fafc;padding:12px 0 0;margin-top:16px;display:flex;justify-content:flex-end;gap:10px;">
                     <button type="button" class="btn btn-outline" onclick="closeGradeImportModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="gradeImportBtn" style="font-weight:800;background:#059669;border-color:#059669;">📥 Upload & Lock to Grade Cohort</button>
+                    <button type="submit" class="btn btn-primary" id="gradeImportBtn" style="font-weight:800;background:#059669;border-color:#059669;">Upload &amp; Lock to Grade Cohort</button>
                 </div>
             </form>
         </div>
@@ -750,12 +765,10 @@ function generateRoomFields(qty, existing=[]) {
         const div = document.createElement('div');
         div.className = 'dynamic-room';
         div.innerHTML = `
-            <label>Classroom Room #${i}:</label>
+            <label>Stream / Room #${i}:</label>
             <div class="room-row">
                 <input type="text" class="form-control room-name" name="classroom_names[]"
                     placeholder="${ph}" value="${esc2(ex.classroom_name||'')}" autocomplete="off">
-                <input type="number" class="form-control room-cap" name="capacities[]"
-                    placeholder="Capacity" value="${ex.capacity||45}" min="1" max="200">
             </div>`;
         container.appendChild(div);
     }
@@ -763,12 +776,11 @@ function generateRoomFields(qty, existing=[]) {
 
 async function saveClassrooms() {
     const names = [...document.querySelectorAll('#dynamicFields .room-name')].map(i=>i.value.trim());
-    const caps  = [...document.querySelectorAll('#dynamicFields .room-cap')].map(i=>parseInt(i.value)||45);
     const valid = names.filter(n=>n);
-    if (!valid.length) { showToast('Please enter at least one classroom name.',true); return; }
+    if (!valid.length) { showToast('Please enter at least one stream name.',true); return; }
 
     const res = await api('/shule-cafe/api/headmaster/classrooms/classrooms_api.php?action=save_classrooms', {
-        method:'POST', body: { action:'save_classrooms', grade_id:modalGradeId, year:currentYear, classroom_names:names, capacities:caps }
+        method:'POST', body: { action:'save_classrooms', grade_id:modalGradeId, year:currentYear, classroom_names:names }
     });
     if (res.success) {
         closeSetupModal();
@@ -965,7 +977,9 @@ function onAllocGradeChange() {
     if (!gradeId) {
         document.getElementById('allocWorkspace').innerHTML = `
             <div class="empty-state" style="margin-top:16px;background:white;border:1px solid var(--c-border-light);border-radius:10px;">
-                <div class="es-icon">🏫</div>
+                <div class="es-icon">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </div>
                 <h4>Select a grade and classroom above</h4>
                 <p>The student pool and classroom roster will appear here.</p>
             </div>`;
@@ -973,7 +987,7 @@ function onAllocGradeChange() {
     }
     const g = allGrades.find(x=>x.id==gradeId);
     if (g && g.classrooms) {
-        sel.innerHTML += g.classrooms.map(c=>`<option value="${c.id}">${c.classroom_name} (${c.capacity} seats)</option>`).join('');
+        sel.innerHTML += g.classrooms.map(c=>`<option value="${c.id}">${c.classroom_name}</option>`).join('');
         if (g.classrooms.length === 1) {
             sel.value = g.classrooms[0].id;
             loadAllocation();
@@ -1000,30 +1014,26 @@ async function loadAllocation() {
 }
 
 function renderAllocationWorkspace(classroom, gradeId) {
-    const cap      = classroom.capacity || 45;
-    const fillPct  = Math.min(100, Math.round(rosterStudents.length / cap * 100));
-    const fillClr  = fillPct >= 100 ? '#dc2626' : fillPct >= 80 ? '#d97706' : '#059669';
-
     document.getElementById('allocWorkspace').innerHTML = `
         <div class="alloc-workspace">
             <!-- LEFT: Unassigned pool -->
             <div class="alloc-panel">
                 <div class="alloc-panel-header">
                     <div>
-                        <div class="alloc-panel-title">🗳️ Unassigned Student Pool</div>
+                        <div class="alloc-panel-title">Unassigned Student Pool</div>
                         <div style="font-size:11px;color:var(--c-text-muted);">${poolStudents.length} students not yet placed</div>
                     </div>
                     <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;cursor:pointer;">
-                        <input type="checkbox" id="selectAllPool" onchange="toggleSelectAll(this,'pool-student-')"> All
+                        <input type="checkbox" id="selectAllPool" onchange="toggleSelectAll(this,'pool-student-')" style="accent-color:#059669;"> All
                     </label>
                 </div>
-                <input class="alloc-search" id="poolSearch" placeholder="🔍 Search student name…" oninput="filterPool(this.value)">
+                <input class="alloc-search" id="poolSearch" placeholder="Search student name or code..." oninput="filterPool(this.value)">
                 <div class="alloc-list" id="poolList">
                     ${poolStudents.length === 0
-                        ? '<div class="empty-state" style="padding:24px;"><div class="es-icon">✅</div><p>All students are allocated.</p></div>'
+                        ? '<div class="empty-state" style="padding:24px;"><p>All students in this grade are allocated.</p></div>'
                         : poolStudents.map(s=>`
                         <div class="alloc-item" id="pool-student-${s.id}">
-                            <input type="checkbox" class="pool-check" value="${s.id}">
+                            <input type="checkbox" class="pool-check" value="${s.id}" style="accent-color:#059669;">
                             <div>
                                 <div class="student-name">${s.full_name}</div>
                                 <div class="student-code">${s.user_code||'—'}</div>
@@ -1033,7 +1043,7 @@ function renderAllocationWorkspace(classroom, gradeId) {
                 </div>
                 <div class="alloc-action-bar">
                     <span style="font-size:12px;color:var(--c-text-muted);" id="poolSelectedCount">0 selected</span>
-                    <button class="btn btn-primary btn-sm" onclick="assignSelected()" style="font-weight:700;">Move to Classroom ➡</button>
+                    <button class="btn btn-primary btn-sm" onclick="assignSelected()" style="font-weight:700;">Move to Classroom</button>
                 </div>
             </div>
 
@@ -1041,15 +1051,15 @@ function renderAllocationWorkspace(classroom, gradeId) {
             <div class="alloc-panel">
                 <div class="alloc-panel-header">
                     <div>
-                        <div class="alloc-panel-title">🏫 ${classroom.classroom_name||'Classroom'} Roster</div>
-                        <div style="font-size:11px;color:var(--c-text-muted);">${rosterStudents.length} / ${cap} seats filled</div>
+                        <div class="alloc-panel-title">${classroom.classroom_name||'Classroom'} Roster</div>
+                        <div style="font-size:11px;color:var(--c-text-muted);">${rosterStudents.length} students enrolled</div>
                     </div>
+                    <span class="badge badge-success" style="font-weight:700; font-size:11px;">${rosterStudents.length} Enrolled</span>
                 </div>
-                <div class="capacity-bar"><div class="capacity-fill" style="width:${fillPct}%;background:${fillClr};"></div></div>
-                <input class="alloc-search" id="rosterSearch" placeholder="🔍 Search roster…" oninput="filterRoster(this.value)">
+                <input class="alloc-search" id="rosterSearch" placeholder="Search roster..." oninput="filterRoster(this.value)">
                 <div class="alloc-list" id="rosterList">
                     ${rosterStudents.length === 0
-                        ? '<div class="empty-state" style="padding:24px;"><div class="es-icon">📋</div><p>No students assigned yet.</p></div>'
+                        ? '<div class="empty-state" style="padding:24px;"><p>No students assigned yet.</p></div>'
                         : rosterStudents.map((s,i)=>`
                         <div class="alloc-item" id="roster-student-${s.id}">
                             <div style="font-size:12px;font-weight:700;color:var(--c-text-muted);width:24px;flex-shrink:0;">${i+1}</div>
@@ -1062,8 +1072,7 @@ function renderAllocationWorkspace(classroom, gradeId) {
                     }
                 </div>
                 <div class="alloc-action-bar">
-                    <span style="font-size:12px;color:${fillClr};font-weight:700;">${fillPct}% full</span>
-                    <span style="font-size:12px;color:var(--c-text-muted);">${cap - rosterStudents.length} seats remaining</span>
+                    <span style="font-size:12px;color:var(--c-text-primary);font-weight:700;">${rosterStudents.length} Students in Stream</span>
                 </div>
             </div>
         </div>`;

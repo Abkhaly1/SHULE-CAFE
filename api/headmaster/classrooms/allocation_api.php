@@ -24,13 +24,13 @@ try {
     if ($method === 'GET' && $action === 'get_pool') {
         $gradeId = intval($_GET['grade_id'] ?? 0);
         $stmt = $conn->prepare("
-            SELECT u.id, u.full_name, u.user_code, u.phone, u.email
+            SELECT u.id, u.full_name, u.user_code, u.phone, u.email, u.gender
             FROM users u
             WHERE u.school_id=? AND u.role='student' AND u.status='active'
             AND (? = 0 OR u.grade_id=? OR u.grade_id IS NULL)
             AND u.id NOT IN (
                 SELECT sca.student_id FROM student_classroom_allocations sca
-                WHERE sca.school_id=? AND sca.academic_year=?
+                WHERE sca.school_id=? AND sca.academic_year=? AND sca.status='Active'
             )
             ORDER BY u.full_name ASC
         ");
@@ -44,20 +44,20 @@ try {
     if ($method === 'GET' && $action === 'get_roster') {
         $classroomId = intval($_GET['classroom_id'] ?? 0);
         $stmt = $conn->prepare("
-            SELECT u.id, u.full_name, u.user_code, sca.id AS allocation_id, sca.status
+            SELECT u.id, u.full_name, u.user_code, u.gender, sca.id AS allocation_id, sca.status
             FROM student_classroom_allocations sca
             JOIN users u ON sca.student_id=u.id
-            WHERE sca.school_id=? AND sca.classroom_id=? AND sca.academic_year=?
+            WHERE sca.school_id=? AND sca.classroom_id=? AND sca.academic_year=? AND sca.status='Active'
             ORDER BY u.full_name ASC
         ");
         $stmt->execute([$schoolId, $classroomId, $year]);
         $roster = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $classroom = $conn->query("SELECT classroom_name, capacity FROM classrooms WHERE id=$classroomId")->fetch(PDO::FETCH_ASSOC);
+        $classroom = $conn->query("SELECT id, classroom_name FROM classrooms WHERE id=$classroomId")->fetch(PDO::FETCH_ASSOC);
         echo json_encode(['success' => true, 'roster' => $roster, 'count' => count($roster), 'classroom' => $classroom]);
         exit();
     }
 
-    // POST: Assign students to classroom
+    // POST: Assign students to classroom (Unrestricted Capacity Allocation)
     if ($method === 'POST' && $action === 'assign') {
         $classroomId = intval($input['classroom_id'] ?? 0);
         $studentIds  = $input['student_ids'] ?? [];
@@ -66,13 +66,8 @@ try {
             exit();
         }
 
-        $classroom = $conn->query("SELECT capacity, classroom_name FROM classrooms WHERE id=$classroomId")->fetch(PDO::FETCH_ASSOC);
-        $current = $conn->query("SELECT COUNT(*) FROM student_classroom_allocations WHERE classroom_id=$classroomId AND academic_year='$year' AND status='Active'")->fetchColumn();
-        $cap = $classroom['capacity'];
-        if (($current + count($studentIds)) > $cap) {
-            echo json_encode(['success' => false, 'message' => "Capacity exceeded. '{$classroom['classroom_name']}' has $cap seats, $current already filled. You're adding " . count($studentIds) . ' more.']);
-            exit();
-        }
+        $classroom = $conn->query("SELECT classroom_name FROM classrooms WHERE id=$classroomId")->fetch(PDO::FETCH_ASSOC);
+        $cName = $classroom['classroom_name'] ?? 'Classroom Stream';
 
         $conn->beginTransaction();
         $stmt = $conn->prepare("INSERT INTO student_classroom_allocations (school_id, academic_year, student_id, classroom_id, status) VALUES (?,?,?,?,'Active') ON DUPLICATE KEY UPDATE classroom_id=VALUES(classroom_id), status='Active', updated_at=NOW()");
@@ -82,7 +77,7 @@ try {
             $assigned++;
         }
         $conn->commit();
-        echo json_encode(['success' => true, 'assigned' => $assigned, 'message' => "$assigned student(s) assigned to '{$classroom['classroom_name']}' successfully."]);
+        echo json_encode(['success' => true, 'assigned' => $assigned, 'message' => "$assigned student(s) allocated to '$cName' successfully."]);
         exit();
     }
 

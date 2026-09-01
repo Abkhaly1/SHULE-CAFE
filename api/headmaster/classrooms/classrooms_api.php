@@ -43,8 +43,14 @@ try {
             $grades = $stmtG->fetchAll(PDO::FETCH_ASSOC);
         }
 
-        $stmtC = $conn->prepare("SELECT id, grade_id, classroom_name, capacity, is_active, created_at FROM classrooms WHERE school_id=? AND academic_year=? ORDER BY classroom_name ASC");
-        $stmtC->execute([$schoolId, $year]);
+        $stmtC = $conn->prepare("
+            SELECT c.id, c.grade_id, c.classroom_name, c.is_active, c.created_at,
+            (SELECT COUNT(*) FROM student_classroom_allocations sca WHERE sca.classroom_id=c.id AND sca.academic_year=? AND sca.status='Active') AS enrolled_count
+            FROM classrooms c 
+            WHERE c.school_id=? AND c.academic_year=? 
+            ORDER BY c.classroom_name ASC
+        ");
+        $stmtC->execute([$year, $schoolId, $year]);
         $classrooms = $stmtC->fetchAll(PDO::FETCH_ASSOC);
 
         $classroomMap = [];
@@ -61,11 +67,10 @@ try {
         exit();
     }
 
-    // POST: Save classrooms batch for a grade
+    // POST: Save classrooms batch for a grade (No capacity requirement)
     if ($method === 'POST' && $action === 'save_classrooms') {
         $gradeId = intval($input['grade_id'] ?? 0);
         $names = $input['classroom_names'] ?? [];
-        $capacities = $input['capacities'] ?? [];
 
         if (!$gradeId || empty($names)) {
             http_response_code(400);
@@ -75,17 +80,16 @@ try {
 
         $conn->beginTransaction();
         $saved = 0; $skipped = 0;
-        $stmtIns = $conn->prepare("INSERT INTO classrooms (school_id, academic_year, grade_id, classroom_name, capacity) VALUES (?,?,?,?,?) ON DUPLICATE KEY UPDATE capacity=VALUES(capacity), is_active=1, updated_at=NOW()");
+        $stmtIns = $conn->prepare("INSERT INTO classrooms (school_id, academic_year, grade_id, classroom_name, capacity) VALUES (?,?,?,?,0) ON DUPLICATE KEY UPDATE is_active=1, updated_at=NOW()");
 
         foreach ($names as $i => $name) {
             $name = trim($name);
             if (empty($name)) { $skipped++; continue; }
-            $cap = intval($capacities[$i] ?? 45);
-            $stmtIns->execute([$schoolId, $year, $gradeId, $name, $cap]);
+            $stmtIns->execute([$schoolId, $year, $gradeId, $name]);
             $saved++;
         }
         $conn->commit();
-        echo json_encode(['success' => true, 'saved' => $saved, 'skipped' => $skipped, 'message' => "$saved classroom(s) saved successfully."]);
+        echo json_encode(['success' => true, 'saved' => $saved, 'skipped' => $skipped, 'message' => "$saved classroom stream(s) saved successfully."]);
         exit();
     }
 
