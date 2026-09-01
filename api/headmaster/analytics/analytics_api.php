@@ -167,7 +167,12 @@ try {
         $activeTermData = ($term === 'Term 2') ? $t2Data : $t1Data;
 
         // Fetch School details
-        $stmtSch = $conn->prepare("SELECT name, motto, email, phone, address, region, registration_number, logo FROM schools WHERE id = ? LIMIT 1");
+        $stmtSch = $conn->prepare("
+            SELECT name, motto, COALESCE(school_email, '') AS email, COALESCE(school_phone, '') AS phone,
+                   COALESCE(postal_address, ward_address, '') AS address, COALESCE(region, 'Tanzania') AS region,
+                   COALESCE(necta_no, school_code, 'TZ-REG-99201') AS registration_number
+            FROM schools WHERE id = ? LIMIT 1
+        ");
         $stmtSch->execute([$schoolId]);
         $schoolInfo = $stmtSch->fetch(PDO::FETCH_ASSOC) ?: [
             'name' => 'SHULE CAFE SECONDARY SCHOOL',

@@ -328,14 +328,15 @@
                         <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                             <button id="btnDynamicBack" class="btn btn-outline btn-sm"
                                 style="display: inline-flex; align-items: center; gap: 3px; font-weight: 700; height: 24px; padding: 1px 7px; font-size: 11px;">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
                                 </svg>
                                 <span id="btnBackLabel">Back</span>
                             </button>
                             <h1 id="pageHeading"
-                                style="margin: 0; font-size: 13.5px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
-                                <span>📊 Results Records & Broadsheets</span>
+                                style="margin: 0; font-size: 13.5px; font-weight: 800; color: #064e3b; display: flex; align-items: center; gap: 6px; white-space: nowrap;">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                                <span>Results Records & Broadsheets</span>
                             </h1>
                         </div>
 
@@ -357,11 +358,13 @@
 
                             <button id="btnPrintBroadsheet" class="btn btn-outline btn-sm"
                                 style="font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 11px; padding: 1px 8px;">
-                                <span>🖨️</span> Print
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                                Print
                             </button>
                             <button id="btnExportCSV" class="btn btn-outline btn-sm"
                                 style="font-weight: 700; display: inline-flex; align-items: center; gap: 4px; height: 24px; font-size: 11px; padding: 1px 8px;">
-                                <span>📥</span> CSV
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                CSV
                             </button>
                         </div>
                     </div>
@@ -369,7 +372,8 @@
                     <!-- STEP 1: SELECT ACADEMIC YEAR (Clean 2 Columns) -->
                     <div id="stepYearsView" class="step-container-box" style="display: block;">
                         <div class="step-heading">
-                            <span>📅 Select Academic Year</span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            <span>Select Academic Year</span>
                         </div>
                         <div id="yearsGridContainer" class="compact-list-2col">
                             <!-- Dynamic Year Links -->
@@ -379,15 +383,17 @@
                         <div id="yearsPaginationBar"
                             style="display: none; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid #e2e8f0; margin-top: 12px; flex-wrap: wrap; gap: 6px;">
                             <button id="btnPrevYears" class="btn btn-outline btn-sm"
-                                style="font-size: 11px; font-weight: 700; padding: 2px 8px; height: 24px;">
-                                ← Newer Years
+                                style="font-size: 11px; font-weight: 700; padding: 2px 8px; height: 24px; display: inline-flex; align-items: center; gap: 4px;">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                                Newer Years
                             </button>
                             <span id="yearsPaginationInfo" style="font-size: 11.5px; font-weight: 700; color: #64748b;">
                                 Page 1
                             </span>
                             <button id="btnNextYears" class="btn btn-outline btn-sm"
-                                style="font-size: 11px; font-weight: 700; padding: 2px 8px; height: 24px;">
-                                Older Years →
+                                style="font-size: 11px; font-weight: 700; padding: 2px 8px; height: 24px; display: inline-flex; align-items: center; gap: 4px;">
+                                Older Years
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                             </button>
                         </div>
                     </div>
@@ -397,7 +403,8 @@
                         <div
                             style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
                             <div class="step-heading" style="margin-bottom: 0;">
-                                <span>🏛️ Education Levels &bull; <strong id="step2YearBadge"
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                <span>Education Levels &bull; <strong id="step2YearBadge"
                                         style="color: #059669;">2026</strong></span>
                             </div>
                             <div class="term-pill-bar" id="termSwitcherBar">
@@ -414,7 +421,8 @@
                     <!-- STEP 3: SELECT GRADE (Clean 2 Columns) -->
                     <div id="stepGradesView" class="step-container-box" style="display: none;">
                         <div class="step-heading">
-                            <span>📚 Grades for <strong id="step3LevelBadge"
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                            <span>Grades for <strong id="step3LevelBadge"
                                     style="color: #059669;">O-Level</strong></span>
                         </div>
                         <div id="gradesGridContainer" class="compact-list-2col">
@@ -449,12 +457,19 @@
                                             <td id="topSumDiv3" style="color: #b45309; background: #fffbeb;">0</td>
                                             <td id="topSumDiv4" style="color: #c2410c; background: #fff7ed;">0</td>
                                             <td id="topSumDiv0" style="color: #dc2626; background: #fef2f2;">0</td>
-                                            <td id="topSumTotal" style="background: #f8fafc;">0</td>
-                                            <td id="topSumPassRate"
-                                                style="background: #ecfdf5; color: #059669; font-weight: 900;">0%</td>
+                                            <td id="topSumTotal" style="color: #043d2e; font-weight: 900; background: #f8fafc;">0</td>
+                                            <td id="topSumPassRate" style="color: #064e3b; font-weight: 900; background: #f0fdf4;">0.0%</td>
                                         </tr>
                                     </tbody>
                                 </table>
+                            </div>
+
+                            <div style="display: flex; gap: 6px; align-items: center;">
+                                <button id="btnNectaHarvestModal" class="btn btn-sm btn-outline no-print" onclick="openNectaCamsModal()"
+                                    style="background: #ecfdf5; border-color: #a7f3d0; color: #064e3b; font-weight: 800; font-size: 11px; height: 26px; padding: 2px 8px; display: inline-flex; align-items: center; gap: 5px;">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                                    Official NECTA CAMS Export
+                                </button>
                             </div>
                         </div>
 
@@ -474,8 +489,9 @@
                         <div
                             style="padding: 8px 12px; border-radius: 6px; background: white; border: 1.5px solid #cbd5e1; margin-bottom: 12px;">
                             <h3
-                                style="margin: 0 0 6px; font-size: 11.5px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.02em;">
-                                📋 Subject Examinations Summary
+                                style="margin: 0 0 6px; font-size: 11.5px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.02em; display: flex; align-items: center; gap: 6px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                                <span>Subject Examinations Summary</span>
                             </h3>
                             <div style="overflow-x: auto;">
                                 <table class="subj-summary-table" id="subjSummaryTable">
@@ -519,7 +535,15 @@
         let selectedAssessmentType = 'all';
         let selectedEntityName = '';
 
-        let currentScopes = null;
+        const _currYr = new Date().getFullYear();
+        let currentYearPage = 0;
+        let currentScopes = {
+            years: Array.from({length: 12}, (_, i) => String(_currYr - i)),
+            levels: [],
+            grades: [],
+            classrooms: [],
+            assessment_types: []
+        };
         let activeBroadsheetData = null;
         const YEARS_PER_PAGE = 10;
 
@@ -546,18 +570,21 @@
                 }
             });
 
+            // Immediately render default years list so screen is never blank
+            renderYearsStep();
+
             const urlParams = new URLSearchParams(window.location.search);
             await loadScopes();
 
             if (urlParams.get('classroom_id')) {
                 selectedClassroomId = parseInt(urlParams.get('classroom_id')) || 0;
-                selectedYear = urlParams.get('year') || '2026';
+                selectedYear = urlParams.get('year') || String(_currYr);
                 selectedTerm = urlParams.get('term') || 'Term 1';
                 goToStep('WORKSPACE');
             } else if (urlParams.get('grade_id')) {
                 selectedGradeId = parseInt(urlParams.get('grade_id')) || 0;
                 selectedClassroomId = 0;
-                selectedYear = urlParams.get('year') || '2026';
+                selectedYear = urlParams.get('year') || String(_currYr);
                 selectedTerm = urlParams.get('term') || 'Term 1';
                 goToStep('WORKSPACE');
             } else {
@@ -569,12 +596,13 @@
             try {
                 const res = await fetch('/shule-cafe/api/headmaster/exams/exams_api.php?action=get_scopes', { credentials: 'include' });
                 const data = await res.json();
-                if (data.success) {
+                if (data && data.success) {
                     currentScopes = data;
                     renderYearsStep();
                 }
             } catch (e) {
-                console.error(e);
+                console.error("Scopes load notice:", e);
+                renderYearsStep();
             }
         }
 
@@ -698,15 +726,24 @@
 
             if (step === 'YEARS') {
                 backLabel.textContent = 'Back to Exams';
-                pageHeading.innerHTML = '<span>📊 Results Records & Broadsheets</span>';
+                pageHeading.innerHTML = `
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                    <span>Results Records & Broadsheets</span>
+                `;
                 window.history.pushState({}, '', 'records.html');
             } else if (step === 'LEVELS') {
                 backLabel.textContent = 'Back to Years';
-                pageHeading.innerHTML = `<span>📊 Results Records ‹ Year ${selectedYear}</span>`;
+                pageHeading.innerHTML = `
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <span>Results Records ‹ Year ${selectedYear}</span>
+                `;
                 renderLevelsStep();
             } else if (step === 'GRADES') {
                 backLabel.textContent = 'Back to Levels';
-                pageHeading.innerHTML = `<span>📊 Results Records ‹ ${selectedLevel} (${selectedYear})</span>`;
+                pageHeading.innerHTML = `
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    <span>Results Records ‹ ${selectedLevel} (${selectedYear})</span>
+                `;
                 renderGradesStep();
             } else if (step === 'WORKSPACE') {
                 backLabel.textContent = 'Back to Grades';
@@ -737,11 +774,14 @@
         }
 
         function renderYearsStep() {
-            if (!currentScopes) return;
             const container = document.getElementById('yearsGridContainer');
+            if (!container) return;
             container.innerHTML = '';
 
-            const allYears = currentScopes.years || ['2026', '2025', '2024'];
+            const allYears = (currentScopes && currentScopes.years && currentScopes.years.length > 0)
+                ? currentScopes.years
+                : ['2026', '2025', '2024', '2023', '2022'];
+
             const totalPages = Math.ceil(allYears.length / YEARS_PER_PAGE);
             const startIdx = currentYearPage * YEARS_PER_PAGE;
             const pageYears = allYears.slice(startIdx, startIdx + YEARS_PER_PAGE);
@@ -750,7 +790,9 @@
                 const item = document.createElement('a');
                 item.className = 'compact-list-item';
                 item.innerHTML = `
-                    <span class="bullet">›</span>
+                    <span class="bullet" style="display:inline-flex; align-items:center;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </span>
                     <span>Results of the Year ${yr}</span>
                 `;
                 item.onclick = () => {
@@ -791,7 +833,9 @@
                 const item = document.createElement('a');
                 item.className = 'compact-list-item';
                 item.innerHTML = `
-                    <span class="bullet">›</span>
+                    <span class="bullet" style="display:inline-flex; align-items:center;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                    </span>
                     <span>${lvl.name}</span>
                 `;
                 item.onclick = () => {
@@ -829,7 +873,7 @@
                     streams.forEach(st => {
                         streamsHtml += `
                             <a href="javascript:void(0)" onclick="openClassStream(${st.id}, ${grd.id}, '${st.classroom_name}')" class="sub-stream-link">
-                                <span>•</span>
+                                <span style="display:inline-block; width:4px; height:4px; border-radius:50%; background:#059669; margin-right:4px;"></span>
                                 <span>${st.classroom_name} Results</span>
                             </a>
                         `;
@@ -839,7 +883,9 @@
 
                 wrapper.innerHTML = `
                     <a href="javascript:void(0)" class="compact-list-item">
-                        <span class="bullet">›</span>
+                        <span class="bullet" style="display:inline-flex; align-items:center;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                        </span>
                         <span>${grd.name} Results</span>
                     </a>
                     ${streamsHtml}
@@ -895,7 +941,10 @@
         }
 
         function renderBroadsheetUI(data) {
-            document.getElementById('pageHeading').innerHTML = `<span>📊 ${data.class_info.classroom_name} ‹ ${data.term} ${data.year}</span>`;
+            document.getElementById('pageHeading').innerHTML = `
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                <span>${data.class_info.classroom_name} ‹ ${data.term} ${data.year}</span>
+            `;
 
             document.getElementById('topSumDiv1').textContent = data.division_summary['Division I'] || 0;
             document.getElementById('topSumDiv2').textContent = data.division_summary['Division II'] || 0;
@@ -1197,7 +1246,8 @@
                 <div>
                     <h3
                         style="margin: 0; font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 6px;">
-                        <span>🎓</span> Official NECTA Continuous Assessment (CAMS) Export
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                        <span>Official NECTA Continuous Assessment (CAMS) Export</span>
                     </h3>
                     <div style="font-size: 11px; opacity: 0.9; margin-top: 2px;">
                         Multi-Year Continuous Assessment Harvest • Form 1 Excluded • Strict NECTA CAMS Flat CSV
@@ -1221,8 +1271,9 @@
                     <button class="btn btn-outline btn-sm" onclick="closeNectaCamsModal()"
                         style="padding: 4px 14px; font-weight: 700;">Close</button>
                     <button class="btn btn-primary btn-sm" id="btnDownloadNectaCsv" onclick="downloadNectaCamsCSV()"
-                        style="background: #047857; padding: 4px 16px; font-weight: 800;">
-                        <span>📥</span> Download Official NECTA CAMS CSV
+                        style="background: #047857; padding: 4px 16px; font-weight: 800; display: inline-flex; align-items: center; gap: 6px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <span>Download Official NECTA CAMS CSV</span>
                     </button>
                 </div>
             </div>
