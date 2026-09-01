@@ -123,8 +123,6 @@ try {
 
     // 3. Auto-provision selected Education Levels and their Master Curriculums
     $levelNames = [
-        'NURSERY' => ['name' => 'Nursery & Pre-School Education', 'range' => 'Baby Class - Pre-Unit'],
-        'PRIM'    => ['name' => 'Primary Education', 'range' => 'Standard 1 - Standard 7'],
         'O-LEVEL' => ['name' => 'Ordinary Level Secondary Education', 'range' => 'Form 1 - Form 4'],
         'A-LEVEL' => ['name' => 'Advanced Level Secondary Education', 'range' => 'Form 5 - Form 6']
     ];

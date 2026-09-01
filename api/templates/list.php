@@ -27,22 +27,13 @@ try {
 
     // Check if table needs initial seed
     $count = $conn->query("SELECT COUNT(*) FROM academic_templates")->fetchColumn();
+    // Clean any legacy nursery and primary templates
+    $conn->exec("DELETE FROM academic_templates WHERE level_code IN ('NURSERY', 'PRIM', 'PRIMARY')");
+
+    // Check if table needs initial seed or update
+    $count = $conn->query("SELECT COUNT(*) FROM academic_templates WHERE level_code IN ('O-LEVEL', 'A-LEVEL')")->fetchColumn();
     if ($count == 0) {
         $seedData = [
-            // Nursery Classes
-            ["tpl-cls-n1", "class", "Baby Class", "BABY", "NURSERY", "Early childhood foundation play", '{"assigned_subjects":[{"subject_code":"READ","is_core":1},{"subject_code":"NUM","is_core":1},{"subject_code":"ART","is_core":0}]}'],
-            ["tpl-cls-n2", "class", "Middle Class", "MIDDLE", "NURSERY", "Intermediate pre-primary development", '{"assigned_subjects":[{"subject_code":"READ","is_core":1},{"subject_code":"NUM","is_core":1},{"subject_code":"ART","is_core":0}]}'],
-            ["tpl-cls-n3", "class", "Pre-Unit", "PRE-UNIT", "NURSERY", "School readiness graduation tier", '{"assigned_subjects":[{"subject_code":"READ","is_core":1},{"subject_code":"NUM","is_core":1},{"subject_code":"ENV","is_core":1},{"subject_code":"ART","is_core":0}]}'],
-
-            // Primary Classes (Std 1 - Std 7)
-            ["tpl-cls-p1", "class", "Standard 1", "STD1", "PRIM", "Primary Education Grade 1", '{"assigned_subjects":[{"subject_code":"MATH","is_core":1},{"subject_code":"ENG","is_core":1},{"subject_code":"KISW","is_core":1},{"subject_code":"SCI","is_core":1}]}'],
-            ["tpl-cls-p2", "class", "Standard 2", "STD2", "PRIM", "Primary Education Grade 2", '{"assigned_subjects":[{"subject_code":"MATH","is_core":1},{"subject_code":"ENG","is_core":1},{"subject_code":"KISW","is_core":1},{"subject_code":"SCI","is_core":1}]}'],
-            ["tpl-cls-p3", "class", "Standard 3", "STD3", "PRIM", "Primary Education Grade 3", '{"assigned_subjects":[{"subject_code":"MATH","is_core":1},{"subject_code":"ENG","is_core":1},{"subject_code":"KISW","is_core":1},{"subject_code":"SCI","is_core":1},{"subject_code":"SOC","is_core":1}]}'],
-            ["tpl-cls-p4", "class", "Standard 4", "STD4", "PRIM", "Primary Education Grade 4 National Assessment", '{"assigned_subjects":[{"subject_code":"MATH","is_core":1},{"subject_code":"ENG","is_core":1},{"subject_code":"KISW","is_core":1},{"subject_code":"SCI","is_core":1},{"subject_code":"SOC","is_core":1},{"subject_code":"CIV","is_core":1}]}'],
-            ["tpl-cls-p5", "class", "Standard 5", "STD5", "PRIM", "Primary Education Grade 5", '{"assigned_subjects":[{"subject_code":"MATH","is_core":1},{"subject_code":"ENG","is_core":1},{"subject_code":"KISW","is_core":1},{"subject_code":"SCI","is_core":1},{"subject_code":"SOC","is_core":1},{"subject_code":"CIV","is_core":1}]}'],
-            ["tpl-cls-p6", "class", "Standard 6", "STD6", "PRIM", "Primary Education Grade 6", '{"assigned_subjects":[{"subject_code":"MATH","is_core":1},{"subject_code":"ENG","is_core":1},{"subject_code":"KISW","is_core":1},{"subject_code":"SCI","is_core":1},{"subject_code":"SOC","is_core":1},{"subject_code":"CIV","is_core":1},{"subject_code":"VOC","is_core":0}]}'],
-            ["tpl-cls-p7", "class", "Standard 7", "STD7", "PRIM", "Primary School Leaving Examination (PSLE)", '{"assigned_subjects":[{"subject_code":"MATH","is_core":1},{"subject_code":"ENG","is_core":1},{"subject_code":"KISW","is_core":1},{"subject_code":"SCI","is_core":1},{"subject_code":"SOC","is_core":1},{"subject_code":"CIV","is_core":1},{"subject_code":"VOC","is_core":0}]}'],
-
             // O-Level Classes (Form 1 - Form 4)
             ["tpl-cls-o1", "class", "Form 1", "F1", "O-LEVEL", "Ordinary Level Secondary Year 1", '{"assigned_subjects":[{"subject_code":"BMATH","is_core":1},{"subject_code":"ENG","is_core":1},{"subject_code":"KISW","is_core":1},{"subject_code":"PHY","is_core":1},{"subject_code":"CHEM","is_core":1},{"subject_code":"BIO","is_core":1},{"subject_code":"HIST","is_core":1},{"subject_code":"GEO","is_core":1},{"subject_code":"CIV","is_core":1}]}'],
             ["tpl-cls-o2", "class", "Form 2", "F2", "O-LEVEL", "Form Two National Assessment (FTNA)", '{"assigned_subjects":[{"subject_code":"BMATH","is_core":1},{"subject_code":"ENG","is_core":1},{"subject_code":"KISW","is_core":1},{"subject_code":"PHY","is_core":1},{"subject_code":"CHEM","is_core":1},{"subject_code":"BIO","is_core":1},{"subject_code":"HIST","is_core":1},{"subject_code":"GEO","is_core":1},{"subject_code":"CIV","is_core":1}]}'],
@@ -52,21 +43,6 @@ try {
             // A-Level Classes (Form 5 - Form 6)
             ["tpl-cls-a5", "class", "Form 5", "F5", "A-LEVEL", "High School Advanced Studies Year 1", '{"assigned_subjects":[{"subject_code":"GS","is_core":1},{"subject_code":"BAM","is_core":0},{"subject_code":"ADV-MATH","is_core":0},{"subject_code":"PHY-ADV","is_core":0},{"subject_code":"CHEM-ADV","is_core":0},{"subject_code":"BIO-ADV","is_core":0}]}'],
             ["tpl-cls-a6", "class", "Form 6", "F6", "A-LEVEL", "Advanced Certificate of Secondary Education (ACSEE)", '{"assigned_subjects":[{"subject_code":"GS","is_core":1},{"subject_code":"BAM","is_core":0},{"subject_code":"ADV-MATH","is_core":0},{"subject_code":"PHY-ADV","is_core":0},{"subject_code":"CHEM-ADV","is_core":0},{"subject_code":"BIO-ADV","is_core":0}]}'],
-
-            // Nursery Subjects
-            ["tpl-sbj-n1", "subject", "Reading & Phonics", "READ", "NURSERY", "Early literacy, letter sounds and word recognition", null],
-            ["tpl-sbj-n2", "subject", "Numbers & Arithmetic", "NUM", "NURSERY", "Basic counting, numbers and shapes", null],
-            ["tpl-sbj-n3", "subject", "Environmental Activities", "ENV", "NURSERY", "Health, hygiene and environment discovery", null],
-            ["tpl-sbj-n4", "subject", "Creative Arts & Coloring", "ART", "NURSERY", "Drawing, coloring, music and psychomotor development", null],
-
-            // Primary Subjects
-            ["tpl-sbj-p1", "subject", "Mathematics", "MATH", "PRIM", "Primary Mathematics (Hesabu)", null],
-            ["tpl-sbj-p2", "subject", "English Language", "ENG", "PRIM", "Grammar, reading comprehension and communication", null],
-            ["tpl-sbj-p3", "subject", "Kiswahili", "KISW", "PRIM", "Lugha ya Kiswahili, sarufi na insha", null],
-            ["tpl-sbj-p4", "subject", "Science and Technology", "SCI", "PRIM", "Sayansi na Teknolojia", null],
-            ["tpl-sbj-p5", "subject", "Social Studies", "SOC", "PRIM", "Maarifa ya Jamii (Geography & History)", null],
-            ["tpl-sbj-p6", "subject", "Civic and Moral Education", "CIV", "PRIM", "Uraia na Maadili", null],
-            ["tpl-sbj-p7", "subject", "Vocational Skills", "VOC", "PRIM", "Stadi za Kazi & Practical Skills", null],
 
             // O-Level Subjects
             ["tpl-sbj-o1", "subject", "Basic Mathematics", "BMATH", "O-LEVEL", "National NECTA Secondary Basic Mathematics", null],

@@ -19,14 +19,8 @@ class GradingManager {
      */
     public function normalizeLevelType($levelType) {
         $str = strtolower(trim($levelType ?? ''));
-        if (stripos($str, 'primary') !== false || stripos($str, 'std') !== false) {
-            return 'Primary';
-        }
         if (stripos($str, 'a-level') !== false || stripos($str, 'advanced') !== false || stripos($str, 'high') !== false || stripos($str, 'form 5') !== false || stripos($str, 'form 6') !== false) {
             return 'A-Level';
-        }
-        if (stripos($str, 'nursery') !== false || stripos($str, 'kindergarten') !== false || stripos($str, 'pre') !== false) {
-            return 'Nursery';
         }
         return 'O-Level';
     }
@@ -68,20 +62,9 @@ class GradingManager {
             if ($mark >= 70) return ['grade' => 'B', 'points' => 2, 'remark' => 'Very Good'];
             if ($mark >= 60) return ['grade' => 'C', 'points' => 3, 'remark' => 'Good'];
             if ($mark >= 50) return ['grade' => 'D', 'points' => 4, 'remark' => 'Satisfactory'];
-            if ($mark >= 40) return ['grade' => 'E', 'points' => 5, 'remark' => 'Sufficient'];
-            if ($mark >= 35) return ['grade' => 'S', 'points' => 6, 'remark' => 'Subsidiary'];
+            if ($mark >= 40) return ['grade' => 'E', 'points' => 5, 'remark' => 'Pass'];
+            if ($mark >= 35) return ['grade' => 'S', 'points' => 6, 'remark' => 'Subsidiary Pass'];
             return ['grade' => 'F', 'points' => 7, 'remark' => 'Fail'];
-        } elseif ($levelType === 'Primary') {
-            if ($mark >= 81) return ['grade' => 'A', 'points' => 1, 'remark' => 'Excellent'];
-            if ($mark >= 61) return ['grade' => 'B', 'points' => 2, 'remark' => 'Very Good'];
-            if ($mark >= 41) return ['grade' => 'C', 'points' => 3, 'remark' => 'Average Pass'];
-            if ($mark >= 21) return ['grade' => 'D', 'points' => 4, 'remark' => 'Marginal Pass'];
-            return ['grade' => 'E', 'points' => 5, 'remark' => 'Fail'];
-        } elseif ($levelType === 'Nursery') {
-            if ($mark >= 80) return ['grade' => 'A', 'points' => 1, 'remark' => 'Excellent'];
-            if ($mark >= 60) return ['grade' => 'B', 'points' => 2, 'remark' => 'Good'];
-            if ($mark >= 40) return ['grade' => 'C', 'points' => 3, 'remark' => 'Satisfactory'];
-            return ['grade' => 'D', 'points' => 4, 'remark' => 'Needs Improvement'];
         } else {
             // O-Level
             if ($mark >= 75) return ['grade' => 'A', 'points' => 1, 'remark' => 'Excellent'];
@@ -125,14 +108,6 @@ class GradingManager {
             if ($totalPoints >= 13 && $totalPoints <= 17) return ['division_name' => 'Division III', 'remark' => 'Credit'];
             if ($totalPoints >= 18 && $totalPoints <= 19) return ['division_name' => 'Division IV', 'remark' => 'Pass'];
             return ['division_name' => 'Division 0', 'remark' => 'Fail'];
-        } elseif ($levelType === 'Primary') {
-            if ($totalPoints >= 5 && $totalPoints <= 10) return ['division_name' => 'Grade A', 'remark' => 'High Distinction'];
-            if ($totalPoints >= 11 && $totalPoints <= 15) return ['division_name' => 'Grade B', 'remark' => 'Distinction'];
-            if ($totalPoints >= 16 && $totalPoints <= 20) return ['division_name' => 'Grade C', 'remark' => 'Average Pass'];
-            if ($totalPoints >= 21 && $totalPoints <= 25) return ['division_name' => 'Grade D', 'remark' => 'Marginal Pass'];
-            return ['division_name' => 'Grade E', 'remark' => 'Fail'];
-        } elseif ($levelType === 'Nursery') {
-            return ['division_name' => 'Pass', 'remark' => 'Satisfactory Performance'];
         } else {
             // O-Level (NECTA standard: 7-17 Div I, 18-21 Div II, 22-25 Div III, 26-34 Div IV, 35+ Div 0)
             if ($totalPoints >= 7 && $totalPoints <= 17) return ['division_name' => 'Division I', 'remark' => 'Distinction'];
@@ -213,41 +188,40 @@ class GradingManager {
         $bestSubjects = [];
 
         if ($levelType === 'A-Level') {
-            // A-Level: Take top 3 principal combination subjects
-            $topN = min(3, $subCount);
-            $bestSubjects = array_slice($evaluatedSubjects, 0, $topN);
+            // A-Level: Filter out subsidiary subjects (GS, BAM) when calculating 3-Principal points
+            $principalSubjects = array_filter($evaluatedSubjects, function($s) {
+                $sc = strtoupper(trim($s['subject']));
+                return !in_array($sc, ['GS', 'BAM', 'GENERAL STUDIES', 'BASIC APPLIED MATHEMATICS']);
+            });
+
+            // If not enough distinct principal subjects found, use evaluated subjects
+            if (empty($principalSubjects)) {
+                $principalSubjects = $evaluatedSubjects;
+            }
+
+            $topN = min(3, count($principalSubjects));
+            $bestSubjects = array_slice($principalSubjects, 0, $topN);
             foreach ($bestSubjects as $s) {
                 $totalPoints += $s['points'];
+            }
+
+            // If student sat for fewer than 3 principal subjects, pad missing with 7 points (Fail)
+            if (count($principalSubjects) < 3) {
+                $missingCount = 3 - count($principalSubjects);
+                $totalPoints += ($missingCount * 7);
             }
 
             $rawDivision = $this->calculateDivision('A-Level', $totalPoints);
             $finalDivisionName = $rawDivision['division_name'];
             $remark = $rawDivision['remark'];
 
-            // A-Level Business Logic: Requires 3 Principal Passes (A-E) for Div I, II, III
+            // A-Level Business Logic: Requires at least 2 Principal Passes (A-E) for Division III/II/I
             if (in_array($finalDivisionName, ['Division I', 'Division II', 'Division III'])) {
-                if ($principalPassCount < 3) {
-                    $finalDivisionName = ($totalPoints <= 19 && $principalPassCount >= 1) ? 'Division IV' : 'Division 0';
-                    $remark = ($finalDivisionName === 'Division IV') ? 'Pass (Subsidiary Penalty)' : 'Fail';
+                if ($principalPassCount < 2) {
+                    $finalDivisionName = ($principalPassCount >= 1 || $totalPoints <= 19) ? 'Division IV' : 'Division 0';
+                    $remark = ($finalDivisionName === 'Division IV') ? 'Pass (Minimum Principal Requirements)' : 'Fail';
                 }
             }
-
-        } elseif ($levelType === 'Primary') {
-            // Primary: Take top 5 core subjects
-            $topN = min(5, $subCount);
-            $bestSubjects = array_slice($evaluatedSubjects, 0, $topN);
-            foreach ($bestSubjects as $s) {
-                $totalPoints += $s['points'];
-            }
-
-            $rawDivision = $this->calculateDivision('Primary', $totalPoints);
-            $finalDivisionName = $rawDivision['division_name'];
-            $remark = $rawDivision['remark'];
-
-        } elseif ($levelType === 'Nursery') {
-            $bestSubjects = $evaluatedSubjects;
-            $finalDivisionName = ($averageScore >= 40) ? 'Pass' : 'Needs Support';
-            $remark = ($averageScore >= 80) ? 'Excellent Progress' : (($averageScore >= 60) ? 'Good Progress' : 'Developing');
 
         } else {
             // O-Level: Take top 7 best subjects (NECTA Standard)

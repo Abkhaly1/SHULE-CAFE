@@ -28,21 +28,9 @@ if (!$schoolId) {
 }
 
 try {
-    // GET: Fetch status of all 4 Education Levels for a school
+    // GET: Fetch status of Education Levels for a school (Strictly Secondary & Advanced Level)
     if ($method === 'GET' && $action === 'get_levels') {
         $masterLevels = [
-            [
-                'code' => 'NURSERY',
-                'name' => 'Nursery & Pre-School Education',
-                'range' => 'Baby Class - Pre-Unit',
-                'description' => 'Early Childhood Learning (Reading, Writing, Numeracy, Health & Play)'
-            ],
-            [
-                'code' => 'PRIM',
-                'name' => 'Primary Education',
-                'range' => 'Standard 1 - Standard 7',
-                'description' => 'Primary School Curriculum (Swahili, English, Mathematics, Science, Social Studies)'
-            ],
             [
                 'code' => 'O-LEVEL',
                 'name' => 'Ordinary Level Secondary Education',
@@ -124,12 +112,10 @@ try {
         }
 
         $levelNames = [
-            'NURSERY' => ['name' => 'Nursery & Pre-School Education', 'range' => 'Baby Class - Pre-Unit'],
-            'PRIM'    => ['name' => 'Primary Education', 'range' => 'Standard 1 - Standard 7'],
             'O-LEVEL' => ['name' => 'Ordinary Level Secondary Education', 'range' => 'Form 1 - Form 4'],
             'A-LEVEL' => ['name' => 'Advanced Level Secondary Education', 'range' => 'Form 5 - Form 6']
         ];
-        $lvlMeta = $levelNames[$levelCode] ?? ['name' => $levelCode, 'range' => 'Universal'];
+        $lvlMeta = $levelNames[$levelCode] ?? ['name' => $levelCode, 'range' => 'Form 1 - Form 6'];
 
         // SAFETY SHIELD: If attempting to disable a level with active student allocations
         if ($targetStatus === 'inactive') {

@@ -86,8 +86,8 @@ try {
     // 1. GET SCOPES (Levels, Grades, Classrooms, Subjects, Years, Terms, Types)
     // ────────────────────────────────────────────────────────────────────────
     if ($action === 'get_scopes') {
-        // All Education Levels configured in the system
-        $stmtLevels = $conn->query("SELECT id, name, code FROM education_levels ORDER BY id ASC");
+        // All Education Levels configured in the system (Strictly O-Level and A-Level)
+        $stmtLevels = $conn->query("SELECT id, name, code FROM education_levels WHERE code IN ('O-LEVEL', 'A-LEVEL') ORDER BY id ASC");
         $levels = $stmtLevels->fetchAll(PDO::FETCH_ASSOC);
 
         // All Grades mapped to Education Levels
@@ -95,6 +95,7 @@ try {
             SELECT g.id, g.name, g.level_id, el.name AS level_name, el.code AS level_code 
             FROM grades g 
             JOIN education_levels el ON g.level_id = el.id 
+            WHERE el.code IN ('O-LEVEL', 'A-LEVEL')
             ORDER BY el.id ASC, g.order_seq ASC, g.id ASC
         ");
         $grades = $stmtGrades->fetchAll(PDO::FETCH_ASSOC);
@@ -105,7 +106,7 @@ try {
             FROM classrooms c
             JOIN grades g ON c.grade_id = g.id
             JOIN education_levels el ON g.level_id = el.id
-            WHERE c.school_id = ?
+            WHERE c.school_id = ? AND el.code IN ('O-LEVEL', 'A-LEVEL')
             ORDER BY g.id ASC, c.classroom_name ASC
         ");
         $stmtClassrooms->execute([$schoolId]);
@@ -113,30 +114,17 @@ try {
 
         // Subjects
         $stmtSubj = $conn->prepare("
-            SELECT id, name, code 
+            SELECT id, name, code, level_type 
             FROM subjects 
-            WHERE school_id = ? OR school_id IS NULL OR school_id = '' 
-            ORDER BY name ASC
+            WHERE (school_id = ? OR school_id IS NULL OR school_id = '') AND level_type IN ('O-Level', 'A-Level')
+            ORDER BY level_type ASC, is_core DESC, name ASC
         ");
         $stmtSubj->execute([$schoolId]);
         $subjects = $stmtSubj->fetchAll(PDO::FETCH_ASSOC);
 
         if (empty($subjects)) {
-            $stmtAllSubj = $conn->query("SELECT id, name, code FROM subjects ORDER BY name ASC");
+            $stmtAllSubj = $conn->query("SELECT id, name, code, level_type FROM subjects WHERE level_type IN ('O-Level', 'A-Level') ORDER BY level_type ASC, name ASC");
             $subjects = $stmtAllSubj->fetchAll(PDO::FETCH_ASSOC);
-        }
-        if (empty($subjects)) {
-            $subjects = [
-                ['id' => 's1', 'code' => 'MATH', 'name' => 'Basic Mathematics'],
-                ['id' => 's2', 'code' => 'ENG', 'name' => 'English Language'],
-                ['id' => 's3', 'code' => 'KISW', 'name' => 'Kiswahili'],
-                ['id' => 's4', 'code' => 'PHY', 'name' => 'Physics'],
-                ['id' => 's5', 'code' => 'CHEM', 'name' => 'Chemistry'],
-                ['id' => 's6', 'code' => 'BIO', 'name' => 'Biology'],
-                ['id' => 's7', 'code' => 'GEO', 'name' => 'Geography'],
-                ['id' => 's8', 'code' => 'HIST', 'name' => 'History'],
-                ['id' => 's9', 'code' => 'CIV', 'name' => 'Civics']
-            ];
         }
 
         // Active Assessment Types
@@ -262,32 +250,55 @@ try {
             $scales = $stmtScales->fetchAll(PDO::FETCH_ASSOC);
         }
 
-        // Fetch all available subjects
+        // Fetch subjects specific to this Grade / Education Level
         $stmtSubjs = $conn->prepare("
-            SELECT id, name, code 
-            FROM subjects 
-            WHERE school_id = ? OR school_id IS NULL OR school_id = '' 
-            ORDER BY name ASC
+            SELECT DISTINCT gs.subject_code AS code, gs.subject_name AS name, gs.is_core
+            FROM grade_subjects gs
+            WHERE gs.grade_id = ? AND gs.school_id = ?
+            ORDER BY gs.is_core DESC, gs.id ASC
         ");
-        $stmtSubjs->execute([$schoolId]);
+        $stmtSubjs->execute([$classroom['grade_id'], $schoolId]);
         $allSubjects = $stmtSubjs->fetchAll(PDO::FETCH_ASSOC);
 
         if (empty($allSubjects)) {
-            $stmtAllSubj = $conn->query("SELECT id, name, code FROM subjects ORDER BY name ASC");
-            $allSubjects = $stmtAllSubj->fetchAll(PDO::FETCH_ASSOC);
+            $stmtSubjsLevel = $conn->prepare("
+                SELECT code, name, is_core 
+                FROM subjects 
+                WHERE (school_id = ? OR school_id IS NULL OR school_id = '') AND level_type = ?
+                ORDER BY is_core DESC, name ASC
+            ");
+            $stmtSubjsLevel->execute([$schoolId, $levelTypeKey]);
+            $allSubjects = $stmtSubjsLevel->fetchAll(PDO::FETCH_ASSOC);
         }
+
         if (empty($allSubjects)) {
-            $allSubjects = [
-                ['id' => 's1', 'code' => 'MATH', 'name' => 'Basic Mathematics'],
-                ['id' => 's2', 'code' => 'ENG', 'name' => 'English Language'],
-                ['id' => 's3', 'code' => 'KISW', 'name' => 'Kiswahili'],
-                ['id' => 's4', 'code' => 'PHY', 'name' => 'Physics'],
-                ['id' => 's5', 'code' => 'CHEM', 'name' => 'Chemistry'],
-                ['id' => 's6', 'code' => 'BIO', 'name' => 'Biology'],
-                ['id' => 's7', 'code' => 'GEO', 'name' => 'Geography'],
-                ['id' => 's8', 'code' => 'HIST', 'name' => 'History'],
-                ['id' => 's9', 'code' => 'CIV', 'name' => 'Civics']
-            ];
+            if ($levelTypeKey === 'A-Level') {
+                $allSubjects = [
+                    ['code' => 'GS', 'name' => 'General Studies', 'is_core' => 1],
+                    ['code' => 'BAM', 'name' => 'Basic Applied Mathematics', 'is_core' => 0],
+                    ['code' => 'ADV-MATH', 'name' => 'Advanced Mathematics', 'is_core' => 0],
+                    ['code' => 'PHY', 'name' => 'Physics', 'is_core' => 0],
+                    ['code' => 'CHEM', 'name' => 'Chemistry', 'is_core' => 0],
+                    ['code' => 'BIO', 'name' => 'Biology', 'is_core' => 0],
+                    ['code' => 'GEO', 'name' => 'Geography', 'is_core' => 0],
+                    ['code' => 'HIST', 'name' => 'History', 'is_core' => 0],
+                    ['code' => 'ENG', 'name' => 'English Language', 'is_core' => 0],
+                    ['code' => 'KISW', 'name' => 'Kiswahili', 'is_core' => 0],
+                    ['code' => 'ECON', 'name' => 'Economics', 'is_core' => 0]
+                ];
+            } else {
+                $allSubjects = [
+                    ['code' => 'CIV', 'name' => 'Civics', 'is_core' => 1],
+                    ['code' => 'HIST', 'name' => 'History', 'is_core' => 1],
+                    ['code' => 'GEO', 'name' => 'Geography', 'is_core' => 1],
+                    ['code' => 'KISW', 'name' => 'Kiswahili', 'is_core' => 1],
+                    ['code' => 'ENG', 'name' => 'English Language', 'is_core' => 1],
+                    ['code' => 'PHY', 'name' => 'Physics', 'is_core' => 1],
+                    ['code' => 'CHEM', 'name' => 'Chemistry', 'is_core' => 1],
+                    ['code' => 'BIO', 'name' => 'Biology', 'is_core' => 1],
+                    ['code' => 'MATH', 'name' => 'Basic Mathematics', 'is_core' => 1]
+                ];
+            }
         }
 
         // Fetch assessment types configured for this school & term
@@ -727,27 +738,55 @@ try {
             $levelTypeKey = 'A-Level';
         }
 
-        // Fetch subjects
+        // Fetch subjects specific to this Grade / Education Level
         $stmtSubjs = $conn->prepare("
-            SELECT DISTINCT s.code, s.name 
-            FROM subjects s
-            ORDER BY s.name ASC
+            SELECT DISTINCT gs.subject_code AS code, gs.subject_name AS name, gs.is_core
+            FROM grade_subjects gs
+            WHERE gs.grade_id = ? AND gs.school_id = ?
+            ORDER BY gs.is_core DESC, gs.id ASC
         ");
-        $stmtSubjs->execute();
+        $stmtSubjs->execute([$classInfo['grade_id'], $schoolId]);
         $allSubjects = $stmtSubjs->fetchAll(PDO::FETCH_ASSOC);
 
         if (empty($allSubjects)) {
-            $allSubjects = [
-                ['code' => 'MATH', 'name' => 'Basic Mathematics'],
-                ['code' => 'ENG', 'name' => 'English Language'],
-                ['code' => 'KISW', 'name' => 'Kiswahili'],
-                ['code' => 'PHY', 'name' => 'Physics'],
-                ['code' => 'CHEM', 'name' => 'Chemistry'],
-                ['code' => 'BIO', 'name' => 'Biology'],
-                ['code' => 'GEO', 'name' => 'Geography'],
-                ['code' => 'HIST', 'name' => 'History'],
-                ['code' => 'CIV', 'name' => 'Civics']
-            ];
+            $stmtSubjsLevel = $conn->prepare("
+                SELECT code, name, is_core 
+                FROM subjects 
+                WHERE (school_id = ? OR school_id IS NULL OR school_id = '') AND level_type = ?
+                ORDER BY is_core DESC, name ASC
+            ");
+            $stmtSubjsLevel->execute([$schoolId, $levelTypeKey]);
+            $allSubjects = $stmtSubjsLevel->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        if (empty($allSubjects)) {
+            if ($levelTypeKey === 'A-Level') {
+                $allSubjects = [
+                    ['code' => 'GS', 'name' => 'General Studies', 'is_core' => 1],
+                    ['code' => 'BAM', 'name' => 'Basic Applied Mathematics', 'is_core' => 0],
+                    ['code' => 'ADV-MATH', 'name' => 'Advanced Mathematics', 'is_core' => 0],
+                    ['code' => 'PHY', 'name' => 'Physics', 'is_core' => 0],
+                    ['code' => 'CHEM', 'name' => 'Chemistry', 'is_core' => 0],
+                    ['code' => 'BIO', 'name' => 'Biology', 'is_core' => 0],
+                    ['code' => 'GEO', 'name' => 'Geography', 'is_core' => 0],
+                    ['code' => 'HIST', 'name' => 'History', 'is_core' => 0],
+                    ['code' => 'ENG', 'name' => 'English Language', 'is_core' => 0],
+                    ['code' => 'KISW', 'name' => 'Kiswahili', 'is_core' => 0],
+                    ['code' => 'ECON', 'name' => 'Economics', 'is_core' => 0]
+                ];
+            } else {
+                $allSubjects = [
+                    ['code' => 'CIV', 'name' => 'Civics', 'is_core' => 1],
+                    ['code' => 'HIST', 'name' => 'History', 'is_core' => 1],
+                    ['code' => 'GEO', 'name' => 'Geography', 'is_core' => 1],
+                    ['code' => 'KISW', 'name' => 'Kiswahili', 'is_core' => 1],
+                    ['code' => 'ENG', 'name' => 'English Language', 'is_core' => 1],
+                    ['code' => 'PHY', 'name' => 'Physics', 'is_core' => 1],
+                    ['code' => 'CHEM', 'name' => 'Chemistry', 'is_core' => 1],
+                    ['code' => 'BIO', 'name' => 'Biology', 'is_core' => 1],
+                    ['code' => 'MATH', 'name' => 'Basic Mathematics', 'is_core' => 1]
+                ];
+            }
         }
 
         // Fetch students in this class/grade
@@ -876,12 +915,15 @@ try {
                     ];
 
                     if (!isset($subjectScoresAccumulator[$sc])) {
+                        $defaultGrades = ($levelTypeKey === 'A-Level')
+                            ? ['A' => 0, 'B' => 0, 'C' => 0, 'D' => 0, 'E' => 0, 'S' => 0, 'F' => 0]
+                            : ['A' => 0, 'B' => 0, 'C' => 0, 'D' => 0, 'F' => 0];
                         $subjectScoresAccumulator[$sc] = [
                             'total' => 0,
                             'count' => 0,
                             'passed' => 0,
                             'name' => $sub['name'],
-                            'grades' => ['A' => 0, 'B' => 0, 'C' => 0, 'D' => 0, 'F' => 0]
+                            'grades' => $defaultGrades
                         ];
                     }
                     $subjectScoresAccumulator[$sc]['total'] += $mark;
@@ -892,7 +934,9 @@ try {
                     } else {
                         $subjectScoresAccumulator[$sc]['grades']['F']++;
                     }
-                    if ($mark >= 45.0) $subjectScoresAccumulator[$sc]['passed']++;
+                    // Pass threshold: A-Level is S or better (>= 35.0); O-Level is D or better (>= 30.0)
+                    $passThreshold = ($levelTypeKey === 'A-Level') ? 35.0 : 30.0;
+                    if ($mark >= $passThreshold) $subjectScoresAccumulator[$sc]['passed']++;
                     $totalEvaluatedScoreSum += $mark;
                     $totalEvaluatedSubjectEntries++;
                 } else {

@@ -1270,14 +1270,47 @@
                 });
             }
 
+            const subjTable = document.getElementById('subjSummaryTable');
+            const isALevel = (data.level_type === 'A-Level');
+
+            let subjTheadHtml = `
+                <thead>
+                    <tr>
+                        <th style="width: 30px;">S/N</th>
+                        <th style="width: 55px;">Code</th>
+                        <th style="text-align: left; min-width: 130px;">Subject Name</th>
+                        <th style="width: 45px;">REG</th>
+                        <th style="width: 45px;">SAT</th>
+                        <th style="width: 35px; background: #15803d;">A</th>
+                        <th style="width: 35px; background: #1d4ed8;">B</th>
+                        <th style="width: 35px; background: #0284c7;">C</th>
+                        <th style="width: 35px; background: #b45309;">D</th>
+            `;
+
+            if (isALevel) {
+                subjTheadHtml += `
+                        <th style="width: 35px; background: #c2410c;">E</th>
+                        <th style="width: 35px; background: #4f46e5;">S</th>
+                `;
+            }
+
+            subjTheadHtml += `
+                        <th style="width: 35px; background: #dc2626;">F</th>
+                        <th style="width: 60px; background: #064e3b;">Pass %</th>
+                    </tr>
+                </thead>
+                <tbody id="subjSummaryTbody"></tbody>
+            `;
+            subjTable.innerHTML = subjTheadHtml;
+
             const subjTbody = document.getElementById('subjSummaryTbody');
-            subjTbody.innerHTML = '';
 
             if (data.subject_rankings && data.subject_rankings.length > 0) {
                 data.subject_rankings.forEach((sRank, sIdx) => {
-                    const g = sRank.grades || { 'A': 0, 'B': 0, 'C': 0, 'D': 0, 'F': 0 };
+                    const g = sRank.grades || (isALevel ? { 'A': 0, 'B': 0, 'C': 0, 'D': 0, 'E': 0, 'S': 0, 'F': 0 } : { 'A': 0, 'B': 0, 'C': 0, 'D': 0, 'F': 0 });
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `
+                    
+                    let sRowHtml = `
                         <td style="font-weight: 700; color: #64748b;">${sIdx + 1}</td>
                         <td style="font-weight: 800; color: #0f172a;">${sRank.code}</td>
                         <td style="text-align: left; font-weight: 700; color: #334155;">${sRank.name}</td>
@@ -1285,23 +1318,38 @@
                         <td style="font-weight: 700; color: #059669;">${sRank.evaluated_count}</td>
                         <td style="font-weight: 800; color: #15803d; background: #f0fdf4;">${g.A || 0}</td>
                         <td style="font-weight: 800; color: #1d4ed8; background: #eff6ff;">${g.B || 0}</td>
-                        <td style="font-weight: 800; color: #b45309; background: #fffbeb;">${g.C || 0}</td>
-                        <td style="font-weight: 800; color: #c2410c; background: #fff7ed;">${g.D || 0}</td>
+                        <td style="font-weight: 800; color: #0284c7; background: #f0f9ff;">${g.C || 0}</td>
+                        <td style="font-weight: 800; color: #b45309; background: #fffbeb;">${g.D || 0}</td>
+                    `;
+
+                    if (isALevel) {
+                        sRowHtml += `
+                            <td style="font-weight: 800; color: #c2410c; background: #fff7ed;">${g.E || 0}</td>
+                            <td style="font-weight: 800; color: #4f46e5; background: #eef2ff;">${g.S || 0}</td>
+                        `;
+                    }
+
+                    sRowHtml += `
                         <td style="font-weight: 800; color: #dc2626; background: #fef2f2;">${g.F || 0}</td>
                         <td style="font-weight: 900; color: #064e3b; background: #ecfdf5;">${sRank.pass_rate_percent}%</td>
                     `;
+
+                    tr.innerHTML = sRowHtml;
                     subjTbody.appendChild(tr);
                 });
             } else {
-                subjTbody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding:12px; color:#64748b;">No subject marks recorded yet.</td></tr>`;
+                const totalCols = isALevel ? 13 : 11;
+                subjTbody.innerHTML = `<tr><td colspan="${totalCols}" style="text-align:center; padding:12px; color:#64748b;">No subject marks recorded yet.</td></tr>`;
             }
         }
 
         function getGradeColor(grade) {
             if (grade === 'A') return '#15803d';
             if (grade === 'B') return '#1d4ed8';
-            if (grade === 'C') return '#b45309';
-            if (grade === 'D') return '#c2410c';
+            if (grade === 'C') return '#0284c7';
+            if (grade === 'D') return '#b45309';
+            if (grade === 'E') return '#c2410c';
+            if (grade === 'S') return '#4f46e5';
             return '#dc2626';
         }
 
@@ -1562,6 +1610,9 @@
 
             // 4. SUBJECT PERFORMANCE SUMMARY TABLE
             if (data.subject_rankings && data.subject_rankings.length > 0) {
+                const isALevel = (data.level_type === 'A-Level');
+                const subSummaryCols = isALevel ? 13 : 11;
+
                 html += `
                     <tr>
                         <td colspan="${totalCols}" class="sec-hdr">SUBJECT PERFORMANCE & RANKINGS SUMMARY</td>
@@ -1574,16 +1625,26 @@
                         <th class="th-sub">Sat</th>
                         <th class="th-sub" style="background-color: #15803d;">A</th>
                         <th class="th-sub" style="background-color: #1d4ed8;">B</th>
-                        <th class="th-sub" style="background-color: #b45309;">C</th>
-                        <th class="th-sub" style="background-color: #c2410c;">D</th>
+                        <th class="th-sub" style="background-color: #0284c7;">C</th>
+                        <th class="th-sub" style="background-color: #b45309;">D</th>
+                `;
+
+                if (isALevel) {
+                    html += `
+                        <th class="th-sub" style="background-color: #c2410c;">E</th>
+                        <th class="th-sub" style="background-color: #4f46e5;">S</th>
+                    `;
+                }
+
+                html += `
                         <th class="th-sub" style="background-color: #dc2626;">F</th>
                         <th class="th-sub" style="background-color: #043d2e;">Pass %</th>
-                        <th colspan="${Math.max(0, totalCols - 11)}"></th>
+                        <th colspan="${Math.max(0, totalCols - subSummaryCols)}"></th>
                     </tr>
                 `;
 
                 data.subject_rankings.forEach((sRank, sIdx) => {
-                    const g = sRank.grades || { 'A': 0, 'B': 0, 'C': 0, 'D': 0, 'F': 0 };
+                    const g = sRank.grades || (isALevel ? { 'A': 0, 'B': 0, 'C': 0, 'D': 0, 'E': 0, 'S': 0, 'F': 0 } : { 'A': 0, 'B': 0, 'C': 0, 'D': 0, 'F': 0 });
                     html += `
                         <tr>
                             <td class="td-center" style="font-weight: bold; color: #64748b;">${sIdx + 1}</td>
@@ -1593,11 +1654,21 @@
                             <td class="td-bold-center" style="color: #059669;">${sRank.evaluated_count}</td>
                             <td class="td-bold-center" style="color: #15803d; background-color: #f0fdf4;">${g.A || 0}</td>
                             <td class="td-bold-center" style="color: #1d4ed8; background-color: #eff6ff;">${g.B || 0}</td>
-                            <td class="td-bold-center" style="color: #b45309; background-color: #fffbeb;">${g.C || 0}</td>
-                            <td class="td-bold-center" style="color: #c2410c; background-color: #fff7ed;">${g.D || 0}</td>
+                            <td class="td-bold-center" style="color: #0284c7; background-color: #f0f9ff;">${g.C || 0}</td>
+                            <td class="td-bold-center" style="color: #b45309; background-color: #fffbeb;">${g.D || 0}</td>
+                    `;
+
+                    if (isALevel) {
+                        html += `
+                            <td class="td-bold-center" style="color: #c2410c; background-color: #fff7ed;">${g.E || 0}</td>
+                            <td class="td-bold-center" style="color: #4f46e5; background-color: #eef2ff;">${g.S || 0}</td>
+                        `;
+                    }
+
+                    html += `
                             <td class="td-bold-center" style="color: #dc2626; background-color: #fef2f2;">${g.F || 0}</td>
                             <td class="td-bold-center" style="color: #064e3b; background-color: #ecfdf5;">${sRank.pass_rate_percent}%</td>
-                            <td colspan="${Math.max(0, totalCols - 11)}"></td>
+                            <td colspan="${Math.max(0, totalCols - subSummaryCols)}"></td>
                         </tr>
                     `;
                 });

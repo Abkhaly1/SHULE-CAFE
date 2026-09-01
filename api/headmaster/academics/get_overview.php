@@ -47,11 +47,7 @@ try {
         $lvlMeta = $lvlStmt->fetch(PDO::FETCH_ASSOC);
 
         $lvlName = $lvlMeta['name'] ?? $levelCode;
-        $rangeText = 'All Classes';
-        if ($dbCode === 'O-LEVEL') $rangeText = 'Form 1 – Form 4';
-        else if ($dbCode === 'A-LEVEL') $rangeText = 'Form 5 – Form 6';
-        else if ($dbCode === 'PRIMARY') $rangeText = 'Standard 1 – Standard 7';
-        else if ($dbCode === 'NURSERY') $rangeText = 'Baby Class – Pre-Unit';
+        $rangeText = ($dbCode === 'A-LEVEL') ? 'Form 5 – Form 6' : 'Form 1 – Form 4';
 
         $conn->beginTransaction();
 
@@ -67,9 +63,9 @@ try {
             $tplSubStmt = $conn->prepare("
                 SELECT name AS subject_name, code AS subject_code
                 FROM academic_templates
-                WHERE type = 'subject' AND (level_code = ? OR level_code = ? OR level_code = 'ALL')
+                WHERE type = 'subject' AND (level_code = ? OR level_code = 'ALL')
             ");
-            $tplSubStmt->execute([$levelCode, $dbCode]);
+            $tplSubStmt->execute([$levelCode]);
             $tplSubjects = $tplSubStmt->fetchAll(PDO::FETCH_ASSOC);
 
             if (!empty($tplSubjects)) {
@@ -99,50 +95,37 @@ try {
         CASE 
             WHEN el.code = 'O-LEVEL' OR sel.level_code = 'O-LEVEL' THEN 'Form 1 – Form 4'
             WHEN el.code = 'A-LEVEL' OR sel.level_code = 'A-LEVEL' THEN 'Form 5 – Form 6'
-            WHEN el.code IN ('PRIMARY', 'PRIM') OR sel.level_code IN ('PRIMARY', 'PRIM') THEN 'Standard 1 – Standard 7'
-            WHEN el.code = 'NURSERY' OR sel.level_code = 'NURSERY' THEN 'Baby Class – Pre-Unit'
-            ELSE 'All Classes'
+            ELSE 'Form 1 – Form 4'
         END AS range_text
         FROM school_education_levels sel
-        LEFT JOIN education_levels el ON (sel.level_code = el.code OR (sel.level_code = 'PRIM' AND el.code = 'PRIMARY'))
-        WHERE sel.school_id = ? AND sel.status = 'active'
+        LEFT JOIN education_levels el ON sel.level_code = el.code
+        WHERE sel.school_id = ? AND sel.status = 'active' AND sel.level_code IN ('O-LEVEL', 'A-LEVEL')
         ORDER BY el.id ASC
     ");
     $stmtLevels->execute([$schoolId]);
     $levels = $stmtLevels->fetchAll(PDO::FETCH_ASSOC);
 
-    // If school has no entries in school_education_levels, auto-default to school type or O-LEVEL
+    // If school has no entries in school_education_levels, auto-default to O-LEVEL
     if (empty($levels)) {
-        $schoolRow = $conn->query("SELECT type FROM schools WHERE id = '$schoolId' LIMIT 1")->fetch(PDO::FETCH_ASSOC);
-        $sType = strtoupper($schoolRow['type'] ?? 'SECONDARY');
-        $defaultCode = ($sType === 'PRIMARY') ? 'PRIMARY' : 'O-LEVEL';
-
-        $conn->prepare("INSERT IGNORE INTO school_education_levels (school_id, level_code, status) VALUES (?, ?, 'active')")
-             ->execute([$schoolId, $defaultCode]);
+        $conn->prepare("INSERT IGNORE INTO school_education_levels (school_id, level_code, status) VALUES (?, 'O-LEVEL', 'active')")
+             ->execute([$schoolId]);
 
         $stmtLevels->execute([$schoolId]);
         $levels = $stmtLevels->fetchAll(PDO::FETCH_ASSOC);
     }
 
     $activeCodes = array_column($levels, 'level_code');
-    $activeCodesNorm = [];
-    foreach ($activeCodes as $c) {
-        $activeCodesNorm[] = $c;
-        if ($c === 'PRIM') $activeCodesNorm[] = 'PRIMARY';
-        if ($c === 'PRIMARY') $activeCodesNorm[] = 'PRIM';
-    }
+    $activeCodesNorm = $activeCodes;
 
-    // ── 2. Master Education Levels (Super Admin Global Catalog) ──
+    // ── 2. Master Education Levels (Super Admin Global Catalog - O-Level & A-Level) ──
     $masterLevels = $conn->query("
         SELECT el.id, el.name AS level_name, el.code AS level_code,
         CASE 
-            WHEN el.code = 'O-LEVEL' THEN 'Form 1 – Form 4'
             WHEN el.code = 'A-LEVEL' THEN 'Form 5 – Form 6'
-            WHEN el.code IN ('PRIMARY', 'PRIM') THEN 'Standard 1 – Standard 7'
-            WHEN el.code = 'NURSERY' THEN 'Baby Class – Pre-Unit'
-            ELSE 'All Classes'
+            ELSE 'Form 1 – Form 4'
         END AS range_text
         FROM education_levels el
+        WHERE el.code IN ('O-LEVEL', 'A-LEVEL')
         ORDER BY el.id ASC
     ")->fetchAll(PDO::FETCH_ASSOC);
 
