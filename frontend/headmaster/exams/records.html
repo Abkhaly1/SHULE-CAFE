@@ -247,21 +247,19 @@
         }
 
         .subj-summary-table td {
-            padding: 3px 6px;
-            border: 1px solid #e2e8f0;
-            text-align: center;
-        }
-
         @media print {
             @page {
                 size: A4 landscape;
-                margin: 8mm 8mm 8mm 8mm;
+                margin: 5mm 8mm 5mm 8mm;
             }
 
             html, body {
                 background: white !important;
                 padding: 0 !important;
                 margin: 0 !important;
+                width: 100% !important;
+                height: auto !important;
+                overflow: visible !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
@@ -269,31 +267,87 @@
             .no-print,
             app-sidebar,
             app-topbar,
-            app-breadcrumb {
+            app-breadcrumb,
+            .workspace-ribbon-bar,
+            #broadsheetActionButtons,
+            #btnNectaHarvestModal,
+            .step-container-box {
                 display: none !important;
             }
 
-            .app-main {
+            .app-layout,
+            .app-main,
+            .app-content-wrapper,
+            .app-content,
+            #stepWorkspaceView {
+                display: block !important;
                 margin: 0 !important;
                 padding: 0 !important;
                 width: 100% !important;
+                max-width: 100% !important;
+                min-width: 100% !important;
+                height: auto !important;
+                overflow: visible !important;
+                position: static !important;
+                float: none !important;
             }
 
-            .card {
-                box-shadow: none !important;
+            .print-broadsheet-header {
+                display: block !important;
+            }
+
+            .summary-matrix-table {
+                width: 100% !important;
+                margin-bottom: 6px !important;
+                border-collapse: collapse !important;
+            }
+
+            .summary-matrix-table th {
+                background: #064e3b !important;
+                color: #ffffff !important;
+                padding: 3px 5px !important;
+                font-size: 10px !important;
+                border: 1px solid #022c22 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .summary-matrix-table td {
+                padding: 3px 5px !important;
+                font-size: 10.5px !important;
                 border: 1px solid #cbd5e1 !important;
-                page-break-inside: avoid !important;
-                break-inside: avoid !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .broadsheet-table-box {
+                max-height: none !important;
+                overflow: visible !important;
+                border: 1px solid #94a3b8 !important;
+                border-radius: 4px !important;
+                margin-bottom: 8px !important;
+                width: 100% !important;
             }
 
             .broadsheet-table {
-                page-break-inside: auto;
-                break-inside: auto;
                 width: 100% !important;
+                border-collapse: collapse !important;
+                page-break-inside: auto;
             }
 
             .broadsheet-table thead {
                 display: table-header-group !important;
+            }
+
+            .broadsheet-table th {
+                background: #064e3b !important;
+                color: #ffffff !important;
+                position: static !important;
+                padding: 3.5px 4px !important;
+                font-size: 9.5px !important;
+                border: 1px solid #022c22 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
 
             .broadsheet-table tr {
@@ -301,11 +355,43 @@
                 break-inside: avoid !important;
             }
 
-            .broadsheet-table th {
-                background: #064e3b !important;
-                color: #fff !important;
+            .broadsheet-table td {
+                padding: 3px 4px !important;
+                font-size: 9.5px !important;
+                border: 1px solid #cbd5e1 !important;
+                position: static !important;
+                background: #ffffff !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
+            }
+
+            .subj-summary-table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            .subj-summary-table th {
+                background: #0f172a !important;
+                color: #ffffff !important;
+                padding: 3px 5px !important;
+                font-size: 9.5px !important;
+                border: 1px solid #020617 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .subj-summary-table td {
+                padding: 2.5px 5px !important;
+                font-size: 9.5px !important;
+                border: 1px solid #cbd5e1 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .print-signatures-row {
+                display: flex !important;
             }
         }
     </style>
@@ -433,6 +519,25 @@
                     <!-- STEP 4: BROADSHEET WORKSPACE VIEW (High Density) -->
                     <div id="stepWorkspaceView" style="display: none;">
 
+                        <!-- Print-Only Official Broadsheet Header (Visible only on print) -->
+                        <div class="print-broadsheet-header" style="display: none; border-bottom: 2px solid #064e3b; padding-bottom: 6px; margin-bottom: 8px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div style="width: 36px; height: 36px; border-radius: 50%; background: #ecfdf5; border: 2px solid #059669; display: flex; align-items: center; justify-content: center;">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#064e3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                                    </div>
+                                    <div>
+                                        <h2 id="printSchoolName" style="margin: 0; font-size: 15px; font-weight: 900; color: #064e3b; text-transform: uppercase; letter-spacing: 0.5px;">SHULE CAFE SECONDARY SCHOOL</h2>
+                                        <div id="printReportTitle" style="font-size: 11px; font-weight: 800; color: #0f172a; margin-top: 1px;">OFFICIAL CONTINUOUS ASSESSMENT RESULTS BROADSHEET</div>
+                                    </div>
+                                </div>
+                                <div style="text-align: right; font-size: 10.5px; font-weight: 700; color: #475569;">
+                                    <div id="printScopeMeta" style="color: #064e3b; font-weight: 800; font-size: 11px;">Form 1 • Term 1 2026</div>
+                                    <div id="printDateStamp" style="font-size: 9.5px; color: #64748b; margin-top: 2px;">Official Examination Record</div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Slim Top Bar: Division Summary Matrix & Badge -->
                         <div
                             style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 6px;">
@@ -514,6 +619,22 @@
                                         <!-- Dynamic Subject Summary Rows -->
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+
+                        <!-- Print-Only Official Signatures Block -->
+                        <div class="print-signatures-row" style="display: none; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 10px; border-top: 1px dashed #cbd5e1;">
+                            <div style="text-align: center; width: 220px;">
+                                <div style="border-bottom: 1px solid #0f172a; height: 26px; margin-bottom: 4px;"></div>
+                                <div style="font-size: 10px; font-weight: 700; color: #334155;">Class Teacher Signature & Date</div>
+                            </div>
+                            <div style="text-align: center; width: 220px;">
+                                <div style="border-bottom: 1px solid #0f172a; height: 26px; margin-bottom: 4px;"></div>
+                                <div style="font-size: 10px; font-weight: 700; color: #334155;">Academic Dean / Examination Officer</div>
+                            </div>
+                            <div style="text-align: center; width: 220px;">
+                                <div style="border-bottom: 1px solid #0f172a; height: 26px; margin-bottom: 4px;"></div>
+                                <div style="font-size: 10px; font-weight: 700; color: #334155;">Head of School & Official Stamp</div>
                             </div>
                         </div>
 
@@ -965,13 +1086,23 @@
                 }
             }
 
-            const bestBadge = document.getElementById('bestSubjectBadge');
-            if (bestBadge) {
-                if (data.best_subject) {
-                    bestBadge.innerHTML = `🏆 Best: <strong>${data.best_subject.name}</strong> (Avg: ${data.best_subject.average}, Pass: ${data.best_subject.pass_rate_percent}%)`;
-                } else {
-                    bestBadge.textContent = 'No evaluated subjects yet';
-                }
+            // Sync print header elements
+            const schNameEl = document.getElementById('printSchoolName');
+            if (schNameEl && data.school && data.school.name) {
+                schNameEl.textContent = data.school.name;
+            }
+            const repTitleEl = document.getElementById('printReportTitle');
+            if (repTitleEl) {
+                const assessName = (selAssess && selAssess.options[selAssess.selectedIndex]) ? selAssess.options[selAssess.selectedIndex].text : 'Continuous Assessment';
+                repTitleEl.textContent = `OFFICIAL EXAMINATION BROADSHEET • ${assessName.toUpperCase()}`;
+            }
+            const metaEl = document.getElementById('printScopeMeta');
+            if (metaEl) {
+                metaEl.textContent = `${data.class_info.classroom_name} • ${data.term} ${data.year}`;
+            }
+            const dateEl = document.getElementById('printDateStamp');
+            if (dateEl) {
+                dateEl.textContent = `Printed on: ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`;
             }
 
             const thead = document.getElementById('broadsheetThead');
@@ -1008,7 +1139,8 @@
                         <td style="font-weight: 700; color: #475569;">${stu.user_code || '-'}</td>
                         <td style="font-weight: 800;">
                             <a href="/shule-cafe/frontend/headmaster/reports/student_transcript_pdf.html?student_id=${stu.student_id}&year=${selectedYear}&term=${encodeURIComponent(selectedTerm)}" target="_blank" style="color: #064e3b; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;" title="Click to view/print official transcript">
-                                <span>${stu.full_name}</span> <span style="font-size: 10px; opacity: 0.7;">📄</span>
+                                <span>${stu.full_name}</span>
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.6;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                             </a>
                         </td>
                     `;
