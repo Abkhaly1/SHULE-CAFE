@@ -250,25 +250,36 @@ try {
             $scales = $stmtScales->fetchAll(PDO::FETCH_ASSOC);
         }
 
-        // Fetch subjects specific to this Grade / Education Level
+        // Fetch subjects specific to this Grade / Education Level as configured by the school
         $stmtSubjs = $conn->prepare("
             SELECT DISTINCT gs.subject_code AS code, gs.subject_name AS name, gs.is_core
             FROM grade_subjects gs
-            WHERE gs.grade_id = ? AND gs.school_id = ?
+            WHERE gs.grade_id = ? AND gs.school_id = ? AND (gs.academic_year = ? OR gs.academic_year IS NULL OR gs.academic_year = '')
             ORDER BY gs.is_core DESC, gs.id ASC
         ");
-        $stmtSubjs->execute([$classroom['grade_id'], $schoolId]);
+        $stmtSubjs->execute([$classroom['grade_id'], $schoolId, $year]);
         $allSubjects = $stmtSubjs->fetchAll(PDO::FETCH_ASSOC);
 
         if (empty($allSubjects)) {
-            $stmtSubjsLevel = $conn->prepare("
-                SELECT code, name, is_core 
-                FROM subjects 
-                WHERE (school_id = ? OR school_id IS NULL OR school_id = '') AND level_type = ?
-                ORDER BY is_core DESC, name ASC
+            $stmtSubjsAny = $conn->prepare("
+                SELECT DISTINCT gs.subject_code AS code, gs.subject_name AS name, gs.is_core
+                FROM grade_subjects gs
+                WHERE gs.grade_id = ? AND gs.school_id = ?
+                ORDER BY gs.is_core DESC, gs.id ASC
             ");
-            $stmtSubjsLevel->execute([$schoolId, $levelTypeKey]);
-            $allSubjects = $stmtSubjsLevel->fetchAll(PDO::FETCH_ASSOC);
+            $stmtSubjsAny->execute([$classroom['grade_id'], $schoolId]);
+            $allSubjects = $stmtSubjsAny->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        if (empty($allSubjects)) {
+            $stmtAppSubjs = $conn->prepare("
+                SELECT subject_code AS code, subject_name AS name, 1 AS is_core
+                FROM school_approved_subjects
+                WHERE school_id = ? AND (level_code = ? OR level_code IS NULL OR level_code = 'ALL') AND status = 'active'
+                ORDER BY subject_name ASC
+            ");
+            $stmtAppSubjs->execute([$schoolId, $levelTypeKey === 'A-Level' ? 'A-LEVEL' : 'O-LEVEL']);
+            $allSubjects = $stmtAppSubjs->fetchAll(PDO::FETCH_ASSOC);
         }
 
         if (empty($allSubjects)) {
@@ -738,25 +749,36 @@ try {
             $levelTypeKey = 'A-Level';
         }
 
-        // Fetch subjects specific to this Grade / Education Level
+        // Fetch subjects specific to this Grade / Education Level as configured by the school
         $stmtSubjs = $conn->prepare("
             SELECT DISTINCT gs.subject_code AS code, gs.subject_name AS name, gs.is_core
             FROM grade_subjects gs
-            WHERE gs.grade_id = ? AND gs.school_id = ?
+            WHERE gs.grade_id = ? AND gs.school_id = ? AND (gs.academic_year = ? OR gs.academic_year IS NULL OR gs.academic_year = '')
             ORDER BY gs.is_core DESC, gs.id ASC
         ");
-        $stmtSubjs->execute([$classInfo['grade_id'], $schoolId]);
+        $stmtSubjs->execute([$classInfo['grade_id'], $schoolId, $year]);
         $allSubjects = $stmtSubjs->fetchAll(PDO::FETCH_ASSOC);
 
         if (empty($allSubjects)) {
-            $stmtSubjsLevel = $conn->prepare("
-                SELECT code, name, is_core 
-                FROM subjects 
-                WHERE (school_id = ? OR school_id IS NULL OR school_id = '') AND level_type = ?
-                ORDER BY is_core DESC, name ASC
+            $stmtSubjsAny = $conn->prepare("
+                SELECT DISTINCT gs.subject_code AS code, gs.subject_name AS name, gs.is_core
+                FROM grade_subjects gs
+                WHERE gs.grade_id = ? AND gs.school_id = ?
+                ORDER BY gs.is_core DESC, gs.id ASC
             ");
-            $stmtSubjsLevel->execute([$schoolId, $levelTypeKey]);
-            $allSubjects = $stmtSubjsLevel->fetchAll(PDO::FETCH_ASSOC);
+            $stmtSubjsAny->execute([$classInfo['grade_id'], $schoolId]);
+            $allSubjects = $stmtSubjsAny->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        if (empty($allSubjects)) {
+            $stmtAppSubjs = $conn->prepare("
+                SELECT subject_code AS code, subject_name AS name, 1 AS is_core
+                FROM school_approved_subjects
+                WHERE school_id = ? AND (level_code = ? OR level_code IS NULL OR level_code = 'ALL') AND status = 'active'
+                ORDER BY subject_name ASC
+            ");
+            $stmtAppSubjs->execute([$schoolId, $levelTypeKey === 'A-Level' ? 'A-LEVEL' : 'O-LEVEL']);
+            $allSubjects = $stmtAppSubjs->fetchAll(PDO::FETCH_ASSOC);
         }
 
         if (empty($allSubjects)) {

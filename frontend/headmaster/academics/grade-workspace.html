@@ -123,11 +123,13 @@
                                 </p>
                             </div>
                             <div style="display:flex; gap:10px;">
-                                <button type="button" class="btn-add-subject" onclick="openAddSubjectsModal()">
-                                    ➕ Add Subjects to Grade Curriculum
+                                <button type="button" class="btn-add-subject" onclick="openAddSubjectsModal()" style="display:inline-flex; align-items:center; gap:6px;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                    <span>Add Subjects to Grade Curriculum</span>
                                 </button>
-                                <button type="button" class="btn btn-primary" style="font-weight:700;padding:9px 22px;" onclick="saveGradeCurriculum()">
-                                    💾 Save Grade Curriculum
+                                <button type="button" class="btn btn-primary" style="font-weight:700;padding:9px 22px; display:inline-flex; align-items:center; gap:6px;" onclick="saveGradeCurriculum()">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                                    <span>Save Grade Curriculum</span>
                                 </button>
                             </div>
                         </div>
@@ -152,7 +154,10 @@
                             <span style="font-size:13px;color:var(--c-text-muted);" id="checklistSummaryText">0 subject(s) assigned.</span>
                             <div style="display:flex;gap:12px;">
                                 <button type="button" class="btn btn-outline" onclick="goBackToAcademics()">Cancel</button>
-                                <button type="button" class="btn btn-primary" style="font-weight:700;padding:9px 22px;" onclick="saveGradeCurriculum()">💾 Save Grade Curriculum</button>
+                                <button type="button" class="btn btn-primary" style="font-weight:700;padding:9px 22px; display:inline-flex; align-items:center; gap:6px;" onclick="saveGradeCurriculum()">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                                    <span>Save Grade Curriculum</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -169,7 +174,7 @@
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:10px;">
                     <div style="width:36px; height:36px; border-radius:50%; background:#ecfdf5; color:#059669; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:800;">
-                        📚
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                     </div>
                     <div>
                         <h3 style="margin:0; font-size:16px; font-weight:800; color:#0f172a;">Select Subjects for Grade Curriculum</h3>
@@ -280,9 +285,11 @@
                 tbody.html(`
                     <tr>
                         <td colspan="4" style="text-align:center; padding:36px; color:#64748b;">
-                            <div style="font-size:24px; margin-bottom:6px;">📚</div>
+                            <div style="margin-bottom:8px;">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                            </div>
                             <div style="font-weight:700; color:#334155;">No subjects added to this grade curriculum yet.</div>
-                            <div style="font-size:12px; margin-top:2px;">Click <strong>"➕ Add Subjects to Grade Curriculum"</strong> to select subjects from the Super Admin template.</div>
+                            <div style="font-size:12px; margin-top:2px;">Click <strong>"Add Subjects to Grade Curriculum"</strong> to select subjects from the Super Admin template.</div>
                         </td>
                     </tr>
                 `);
@@ -304,12 +311,13 @@
                         <td style="padding:12px;text-align:center;">
                             <label style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;">
                                 <input type="checkbox" class="chk-gw-core" onchange="toggleSubjectCore('${sbj.subject_code}', this.checked)" ${isCore ? 'checked' : ''} style="width:16px;height:16px;">
-                                <span>${isCore ? '🟢 Core Mandatory' : '🔵 Optional Elective'}</span>
+                                <span style="color:${isCore ? '#15803d' : '#1e40af'};">${isCore ? 'Core Mandatory' : 'Optional Elective'}</span>
                             </label>
                         </td>
                         <td style="padding:12px;text-align:right;">
-                            <button type="button" class="btn btn-outline btn-sm" style="color:#dc2626; border-color:#fca5a5; font-weight:700; padding:4px 10px; font-size:12px;" onclick="removeSubjectFromGrade('${sbj.subject_code}')">
-                                🗑️ Remove
+                            <button type="button" class="btn btn-outline btn-sm" style="color:#dc2626; border-color:#fca5a5; font-weight:700; padding:4px 10px; font-size:12px; display:inline-flex; align-items:center; gap:4px;" onclick="removeSubjectFromGrade('${sbj.subject_code}')">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                <span>Remove</span>
                             </button>
                         </td>
                     </tr>
