@@ -121,13 +121,16 @@
                     <!-- TAB NAVIGATION -->
                     <div class="report-nav-tabs">
                         <button type="button" class="report-tab-btn active" data-tab="tabAnalytics">
-                            📊 Attendance Analytics
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                            Attendance Analytics
                         </button>
                         <button type="button" class="report-tab-btn" data-tab="tabRoster">
-                            🏫 Classrooms & Rosters
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            Classrooms & Rosters
                         </button>
                         <button type="button" class="report-tab-btn" data-tab="tabExports">
-                            📥 Data Exports
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Data Exports
                         </button>
                     </div>
 
@@ -142,25 +145,37 @@
                                 <div class="progress-bar-bg">
                                     <div class="progress-bar-fill" id="overallRateFill" style="width: 0%;"></div>
                                 </div>
-                                <div style="font-size: 11px; color: #047857; font-weight: 600; margin-top: 6px;">🟢 School Average Rate</div>
+                                <div style="font-size: 11px; color: #047857; font-weight: 600; margin-top: 6px; display: flex; align-items: center; gap: 4px;">
+                                    <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#047857;"></span>
+                                    School Average Rate
+                                </div>
                             </div>
 
                             <div class="stat-widget" style="border-left: 4px solid #3b82f6;">
                                 <div class="stat-widget-lbl">Total Sessions</div>
                                 <div class="stat-widget-val" id="totalSessionsVal">0</div>
-                                <div style="font-size: 11px; color: #3b82f6; font-weight: 600; margin-top: 6px;">📘 Recorded Roll Calls</div>
+                                <div style="font-size: 11px; color: #3b82f6; font-weight: 600; margin-top: 6px; display: flex; align-items: center; gap: 4px;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                                    Recorded Roll Calls
+                                </div>
                             </div>
 
                             <div class="stat-widget" style="border-left: 4px solid #f59e0b;">
                                 <div class="stat-widget-lbl">Total Absences</div>
                                 <div class="stat-widget-val" id="totalAbsencesVal">0</div>
-                                <div style="font-size: 11px; color: #f59e0b; font-weight: 600; margin-top: 6px;">⚠️ Absent + Excused Days</div>
+                                <div style="font-size: 11px; color: #f59e0b; font-weight: 600; margin-top: 6px; display: flex; align-items: center; gap: 4px;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                    Absent + Excused Days
+                                </div>
                             </div>
 
                             <div class="stat-widget" style="border-left: 4px solid #ef4444;">
                                 <div class="stat-widget-lbl">Truancy Watchlist</div>
                                 <div class="stat-widget-val" id="chronicCountVal">0</div>
-                                <div style="font-size: 11px; color: #ef4444; font-weight: 600; margin-top: 6px;">🚨 Frequent Absentees</div>
+                                <div style="font-size: 11px; color: #ef4444; font-weight: 600; margin-top: 6px; display: flex; align-items: center; gap: 4px;">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                    Frequent Absentees
+                                </div>
                             </div>
                         </div>
 
@@ -169,7 +184,8 @@
                             
                             <div class="card" style="padding: 20px;">
                                 <h3 style="margin: 0 0 14px 0; font-size: 16px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
-                                    <span>🏫</span> Education Levels
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                    Education Levels
                                 </h3>
                                 <div id="levelBreakdownContainer" style="display: flex; flex-direction: column; gap: 12px;">
                                     <div style="color: #64748b; font-size: 13px;">Loading level analytics...</div>
@@ -178,7 +194,8 @@
 
                             <div class="card" style="padding: 20px;">
                                 <h3 style="margin: 0 0 14px 0; font-size: 16px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
-                                    <span>📚</span> Grade Levels
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                                    Grade Levels
                                 </h3>
                                 <div id="gradeBreakdownContainer" style="display: flex; flex-direction: column; gap: 12px;">
                                     <div style="color: #64748b; font-size: 13px;">Loading grade analytics...</div>
@@ -192,7 +209,8 @@
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                                 <div>
                                     <h3 style="margin: 0; font-size: 16px; font-weight: 800; color: #b91c1c; display: flex; align-items: center; gap: 8px;">
-                                        <span>🚨</span> Truancy Watchlist
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                        Truancy Watchlist
                                     </h3>
                                     <p style="margin: 4px 0 0 0; font-size: 12px; color: #64748b;">
                                         Students with frequent unexcused absences requiring attention.
@@ -247,7 +265,7 @@
 
                             <div style="display: flex; flex-direction: column; gap: 4px; flex: 1; max-width: 260px;">
                                 <label style="font-size: 12px; font-weight: 700; color: #475569;">Filter Student Roster:</label>
-                                <input type="text" id="rosterSearch" placeholder="🔍 Search name or reg code..." class="form-control" style="font-size: 13px;">
+                                <input type="text" id="rosterSearch" placeholder="Search name or reg code..." class="form-control" style="font-size: 13px;">
                             </div>
 
                             <div style="display: flex; flex-direction: column; gap: 4px;">
@@ -574,8 +592,9 @@
                                     <td style="padding: 10px 14px;"><span class="badge-status-absent">${c.absent_count} Absences</span></td>
                                     <td style="padding: 10px 14px; font-weight: 700; color: #b91c1c;">${c.attendance_rate}%</td>
                                     <td style="padding: 10px 14px; text-align: right;">
-                                        <button type="button" class="btn btn-outline btn-sm" onclick="openStudentTimeline('${c.student_id}')" style="font-size: 12px; font-weight: 700;">
-                                            🔍 View Log
+                                        <button type="button" class="btn btn-outline btn-sm" onclick="openStudentTimeline('${c.student_id}')" style="font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                            View Log
                                         </button>
                                     </td>
                                 </tr>
@@ -583,7 +602,7 @@
                         });
                         chronicBody.innerHTML = html;
                     } else {
-                        chronicBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: #059669; font-weight: 700;">🎉 No truancy recorded.</td></tr>';
+                        chronicBody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px; color: #059669; font-weight: 700;">No truancy recorded.</td></tr>';
                     }
                 }
             } catch (err) {
@@ -674,8 +693,9 @@
                                     <td style="padding: 10px 14px;"><span class="badge-status-excused">${s.excused_count} Excused</span></td>
                                     <td style="padding: 10px 14px; font-weight: 800; color: ${rateColor};">${s.attendance_rate}%</td>
                                     <td style="padding: 10px 14px; text-align: right;">
-                                        <button type="button" class="btn btn-outline btn-sm" onclick="openStudentTimeline('${s.student_id}')" style="font-size: 12px; font-weight: 700;">
-                                            🔍 View Log
+                                        <button type="button" class="btn btn-outline btn-sm" onclick="openStudentTimeline('${s.student_id}')" style="font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                            View Log
                                         </button>
                                     </td>
                                 </tr>

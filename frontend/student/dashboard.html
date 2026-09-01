@@ -33,35 +33,53 @@
                     <div class="dashboard-grid">
                         <div class="dashboard-card">
                             <div class="student-summary">
-                                <span class="student-summary-title">Current Grade</span>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span class="student-summary-title">Current Grade</span>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                                </div>
                                 <span class="student-summary-value" id="studentGrade">N/A</span>
                             </div>
                         </div>
                         <div class="dashboard-card">
                             <div class="student-summary">
-                                <span class="student-summary-title">Enrolled Subjects</span>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span class="student-summary-title">Enrolled Subjects</span>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                                </div>
                                 <span class="student-summary-value" id="studentSubjects">0</span>
                             </div>
                         </div>
                         <div class="dashboard-card">
                             <div class="student-summary">
-                                <span class="student-summary-title">Latest Average Score</span>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span class="student-summary-title">Latest Average Score</span>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                                </div>
                                 <span class="student-summary-value" id="studentAverage">N/A</span>
                             </div>
                         </div>
                         <div class="dashboard-card">
                             <div class="student-summary">
-                                <span class="student-summary-title">Attendance Rate</span>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span class="student-summary-title">Attendance Rate</span>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                </div>
                                 <span class="student-summary-value" id="studentAttendance">N/A</span>
                             </div>
                         </div>
                     </div>
                     <div class="dashboard-card" style="margin-bottom:24px;">
-                        <h2 style="margin:0 0 16px; font-size:18px; font-weight:800;">Today's Timetable</h2>
+                        <h2 style="margin:0 0 16px; font-size:18px; font-weight:800; display: flex; align-items: center; gap: 8px;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            Today's Timetable
+                        </h2>
                         <div id="studentTimetable">Loading timetable...</div>
                     </div>
                     <div class="dashboard-card">
-                        <h2 style="margin:0 0 16px; font-size:18px; font-weight:800;">Recent Notices</h2>
+                        <h2 style="margin:0 0 16px; font-size:18px; font-weight:800; display: flex; align-items: center; gap: 8px;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                            Recent Notices
+                        </h2>
                         <div id="studentNotices">No notices available.</div>
                     </div>
                 </div>
@@ -92,7 +110,12 @@
                     if (subjects.length > 0) {
                         document.getElementById('studentTimetable').innerHTML = `
                             <div style="display:flex; flex-wrap:wrap; gap:8px;">
-                                ${subjects.map(s => `<span class="badge" style="background:#f1f5f9; color:#0f172a; font-weight:700; padding:6px 12px; border-radius:8px;">📘 ${s.subject_name || s.name} (${s.subject_code || s.code})</span>`).join('')}
+                                ${subjects.map(s => `
+                                    <span class="badge" style="background:#f1f5f9; color:#0f172a; font-weight:700; padding:6px 12px; border-radius:8px; display:inline-flex; align-items:center; gap:6px;">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                                        ${s.subject_name || s.name} (${s.subject_code || s.code})
+                                    </span>
+                                `).join('')}
                             </div>
                         `;
                     } else {

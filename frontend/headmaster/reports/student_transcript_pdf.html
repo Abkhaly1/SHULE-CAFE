@@ -590,8 +590,9 @@
 
     <!-- Top Action Toolbar (Hidden in Print) -->
     <div class="no-print-toolbar">
-        <div class="toolbar-title">
-            <span>📄 Official Student Academic Transcript System</span>
+        <div class="toolbar-title" style="display: flex; align-items: center; gap: 8px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <span>Official Student Academic Transcript System</span>
         </div>
         <div class="toolbar-controls">
             
@@ -612,8 +613,14 @@
                 <option value="density-relaxed">Relaxed</option>
             </select>
 
-            <button class="btn btn-outline" onclick="window.history.back()">⬅ Back</button>
-            <button class="btn btn-primary" onclick="window.print()">🖨️ Print / Save as PDF</button>
+            <button class="btn btn-outline" onclick="window.history.back()" style="display: inline-flex; align-items: center; gap: 6px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Back
+            </button>
+            <button class="btn btn-primary" onclick="window.print()" style="display: inline-flex; align-items: center; gap: 6px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                Print / Save as PDF
+            </button>
         </div>
     </div>
 
@@ -742,7 +749,9 @@
                     <div>
                         <!-- Header -->
                         <div class="school-header">
-                            <div class="school-crest">🎓</div>
+                            <div class="school-crest">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                            </div>
                             <div class="school-meta">
                                 <h1>${sch.name || 'SHULE CAFE SECONDARY SCHOOL'}</h1>
                                 <div class="motto">${sch.motto || '"Excellence in Academic and Moral Integrity"'}</div>
@@ -942,7 +951,9 @@
                     <div>
                         <!-- Official School Header -->
                         <div class="school-header">
-                            <div class="school-crest">🎓</div>
+                            <div class="school-crest">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                            </div>
                             <div class="school-meta">
                                 <h1>${sch.name || 'SHULE CAFE SECONDARY SCHOOL'}</h1>
                                 <div class="motto">${sch.motto || '"Excellence in Academic and Moral Integrity"'}</div>
@@ -1036,8 +1047,11 @@
                         <div class="trends-charts-grid">
                             <!-- Chart 1: Subject Progression Trend Chart -->
                             <div class="trend-chart-card">
-                                <div class="trend-chart-header">
-                                    <span>📊 Subject Progression Trend (Term 1 vs Term 2)</span>
+                                <div class="trend-chart-header" style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="display: flex; align-items: center; gap: 5px;">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                                        Subject Progression Trend (Term 1 vs Term 2)
+                                    </span>
                                     <span style="color:#64748b; font-size:9px;">Term Score Comparison</span>
                                 </div>
                                 <div class="trend-chart-canvas-box">
@@ -1047,8 +1061,11 @@
 
                             <!-- Chart 2: Competency & Performance Trajectory -->
                             <div class="trend-chart-card">
-                                <div class="trend-chart-header">
-                                    <span>📈 Term Trajectory & Competency Profile</span>
+                                <div class="trend-chart-header" style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="display: flex; align-items: center; gap: 5px;">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                                        Term Trajectory & Competency Profile
+                                    </span>
                                     <span style="color:#64748b; font-size:9px;">Average Trajectory</span>
                                 </div>
                                 <div class="trend-chart-canvas-box">
@@ -1061,8 +1078,9 @@
                         <div class="verdict-box">
                             <div>
                                 <span style="font-size: 9.5px; font-weight: 800; color: #166534; text-transform: uppercase; letter-spacing: 0.3px;">Official Promotion Verdict & Academic Remark:</span>
-                                <div style="font-size: 11px; font-weight: 800; color: #14532d; margin-top: 1px;">
-                                    ✅ Promoted to the Next Grade Level in Good Standing (${annual.overall_division || 'Division I'}).
+                                <div style="font-size: 11px; font-weight: 800; color: #14532d; margin-top: 1px; display: flex; align-items: center; gap: 5px;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                    Promoted to the Next Grade Level in Good Standing (${annual.overall_division || 'Division I'}).
                                 </div>
                             </div>
                             <span class="badge badge-success" style="font-size: 10px; font-weight: 800; padding: 3px 8px; background: #059669; color: white; border-radius: 4px;">
