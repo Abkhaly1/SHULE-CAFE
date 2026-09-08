@@ -21,21 +21,21 @@
             <app-topbar username="Headmaster Portal"></app-topbar>
             
             <main class="app-content-wrapper">
-                <div class="app-content" style="padding: var(--sp-4) var(--sp-6);">
+                <div class="app-content" style="padding: 0;">
                     
-                    <div style="margin-bottom: 12px;">
+                    <div style="margin-bottom: 6px;">
                         <app-breadcrumb path="Headmaster, Teachers/Staffs"></app-breadcrumb>
                     </div>
 
                     <!-- Top Header Box with Navigation Tabs -->
-                    <div class="card" style="margin-bottom: var(--sp-4); padding: 14px 20px; background: white; border-radius: 8px; border: 1px solid var(--c-primary-border); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                    <div class="card" style="margin-bottom: 8px; padding: 10px 16px; background: white; border-radius: 8px; border: 1px solid var(--c-primary-border); box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
                         <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="width: 36px; height: 36px; border-radius: 8px; background: var(--c-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800;">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 30px; height: 30px; border-radius: 6px; background: var(--c-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800;">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                                 </div>
                                 <div>
-                                    <h2 style="margin: 0; font-size: 17px; font-weight: 800; color: var(--c-text-primary);">Teachers & Staffs</h2>
+                                    <h2 style="margin: 0; font-size: 15px; font-weight: 800; color: var(--c-text-primary);">Teachers & Staffs</h2>
                                     <span style="font-size: 12px; color: var(--c-text-muted);">Manage all academic teachers and school staff registered under your school.</span>
                                 </div>
                             </div>
@@ -53,7 +53,7 @@
                                 primary-action="Register Teacher"
                                 secondary-actions='[{"label":" Bulk CSV Import","action":"import_teachers"},{"label":" Export Data As...","menu":[{"label":"PDF Document (.pdf)","action":"export_teachers_pdf"},{"label":"Excel Spreadsheet (.xlsx)","action":"export_teachers_excel"},{"label":"CSV Raw File (.csv)","action":"export_teachers_csv"}]}]'>
                             </app-workspace-toolbar>
-                            <div class="card" style="margin-top: var(--sp-3);">
+                            <div class="card" style="margin-top: 0;">
                                 <div id="teachersTableContainer"></div>
                                 <app-table-pagination id="teachersPagination" current-page="1" total-pages="1" total-records="0" page-size="10"></app-table-pagination>
                             </div>

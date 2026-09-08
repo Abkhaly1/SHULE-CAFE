@@ -50,7 +50,7 @@ class AppWorkspaceTabs extends HTMLElement {
         });
 
         this.innerHTML = `
-            <div class="workspace-tabs" style="display: inline-flex; gap: 4px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 3px; margin-top: 0; margin-bottom: 8px; overflow-x: auto; scrollbar-width: none;">
+            <div class="workspace-tabs" style="display: inline-flex; gap: 4px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 3px; margin-top: 0; margin-bottom: 0; overflow-x: auto; scrollbar-width: none;">
                 ${tabsHtml}
             </div>
         `;
@@ -65,7 +65,7 @@ class AppWorkspaceTabs extends HTMLElement {
         this.style.borderRadius = '8px';
         this.style.padding = '3px';
         this.style.marginTop = '0';
-        this.style.marginBottom = '8px';
+        this.style.marginBottom = '0';
         this.style.overflowX = 'auto';
         
         const activeTabId = this.activeTab;

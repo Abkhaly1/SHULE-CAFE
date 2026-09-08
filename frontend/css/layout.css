@@ -257,7 +257,7 @@ app-topbar {
     flex: 1;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: var(--sp-4); /* Add padding to wrapper for normal pages */
+    padding: 10px 16px 16px; /* Compact top padding to reduce vertical blank space */
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
