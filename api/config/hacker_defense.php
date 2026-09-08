@@ -129,7 +129,7 @@ function verifyUploadedFileSecurity($fileArray, $allowedExtensions = ['jpg', 'jp
         if (strpos($fileName, $badExt) !== false) {
             return [
                 "valid" => false,
-                "message" => "Security Alert 🔒: Executable file upload attempt blocked."
+                "message" => "Security Alert: Executable file upload attempt blocked."
             ];
         }
     }

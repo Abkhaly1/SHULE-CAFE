@@ -57,7 +57,7 @@ function checkHoneypotTrap($inputData = null) {
             http_response_code(403);
             echo json_encode([
                 "success" => false, 
-                "message" => "Security Alert 🤖: Automated Bot / Script Detected and Blocked."
+                "message" => "Security Alert: Automated Bot / Script Detected and Blocked."
             ]);
             exit();
         }
@@ -181,7 +181,7 @@ function enforceTenantIsolation($sessionSchoolId, $recordSchoolId) {
         http_response_code(403);
         echo json_encode([
             "success" => false, 
-            "message" => "Security Alert 🔒: Access Denied. Cross-tenant data access is strictly prohibited."
+            "message" => "Security Alert: Access Denied. Cross-tenant data access is strictly prohibited."
         ]);
         exit();
     }

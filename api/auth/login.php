@@ -55,7 +55,7 @@ if ($lockStatus['locked']) {
     http_response_code(429);
     echo json_encode([
         "success" => false,
-        "message" => "Security Alert 🔒: Too many failed login attempts. Account temporarily locked for security. Please try again in " . $lockStatus['remaining_minutes'] . " minute(s)."
+        "message" => "Security Alert: Too many failed login attempts. Account temporarily locked for security. Please try again in " . $lockStatus['remaining_minutes'] . " minute(s)."
     ]);
     exit();
 }
