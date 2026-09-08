@@ -918,17 +918,17 @@
                 if (name.length >= 2 && nameCheckBadge) {
                     nameCheckBadge.style.display = 'block';
                     nameCheckBadge.style.color = '#0284c7';
-                    nameCheckBadge.innerHTML = '⏳ Checking school name availability...';
+                    nameCheckBadge.innerHTML = 'Checking school name availability...';
                 }
                 if (nectaNo.length >= 2 && nectaCheckBadge) {
                     nectaCheckBadge.style.display = 'block';
                     nectaCheckBadge.style.color = '#0284c7';
-                    nectaCheckBadge.innerHTML = '⏳ Checking NECTA registration number...';
+                    nectaCheckBadge.innerHTML = 'Checking NECTA registration number...';
                 }
                 if (email.length >= 3 && emailCheckBadge && email.indexOf('@') !== -1) {
                     emailCheckBadge.style.display = 'block';
                     emailCheckBadge.style.color = '#0284c7';
-                    emailCheckBadge.innerHTML = '⏳ Checking official school email...';
+                    emailCheckBadge.innerHTML = 'Checking official school email...';
                 }
 
                 try {
@@ -1049,7 +1049,7 @@
                 // Instant live verification on Next click
                 const origText = btnNext1.innerHTML;
                 btnNext1.disabled = true;
-                btnNext1.innerHTML = '⏳ Verifying availability...';
+                btnNext1.innerHTML = 'Verifying availability...';
 
                 try {
                     const nectaNo = nectaNoInput ? nectaNoInput.value.trim() : '';
@@ -1128,7 +1128,7 @@
                 // Verify Official School Email availability before proceeding to Step 3
                 const origText2 = btnNext2.innerHTML;
                 btnNext2.disabled = true;
-                btnNext2.innerHTML = '⏳ Verifying school email...';
+                btnNext2.innerHTML = 'Verifying school email...';
 
                 try {
                     let apiUrl = `../../api/schools/check_name.php?email=${encodeURIComponent(schoolEmailVal)}`;

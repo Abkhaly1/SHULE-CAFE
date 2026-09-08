@@ -225,14 +225,14 @@ class AppCsvImportModal extends HTMLElement {
                                 <label style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px; cursor: pointer; background: #f8fafc; padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 8px;">
                                     <input type="radio" name="dup_handling" value="skip" checked style="margin-top: 2px;">
                                     <div>
-                                        <strong style="color: #0f172a;">⏭ Skip Existing:</strong>
+                                        <strong style="color: #0f172a; display: flex; align-items: center; gap: 6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg> Skip Existing:</strong>
                                         <div style="color: #64748b; font-size: 12px; margin-top: 2px;">Import new users only and leave existing records unchanged.</div>
                                     </div>
                                 </label>
                                 <label style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px; cursor: pointer; background: #f8fafc; padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 8px;">
                                     <input type="radio" name="dup_handling" value="update" style="margin-top: 2px;">
                                     <div>
-                                        <strong style="color: #0f172a;"> Update Existing:</strong>
+                                        <strong style="color: #0f172a; display: flex; align-items: center; gap: 6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Update Existing:</strong>
                                         <div style="color: #64748b; font-size: 12px; margin-top: 2px;">Update information of existing users according to the file.</div>
                                     </div>
                                 </label>

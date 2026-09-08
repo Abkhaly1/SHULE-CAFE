@@ -13,3 +13,4 @@ logs/
 backups/
 tmp_*.php
 fpdf.zip
+scratch/
