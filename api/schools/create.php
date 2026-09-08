@@ -19,16 +19,24 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $data = json_decode(file_get_contents("php://input"));
 
-if (empty($data->school_name) || empty($data->headmaster_name) || empty($data->headmaster_phone)) {
+$schoolName = mb_strtoupper(trim($data->school_name ?? ''), 'UTF-8');
+$schoolEmail = trim($data->school_email ?? $data->headmaster_email ?? '');
+$schoolPhone = trim($data->school_phone ?? $data->headmaster_phone ?? '');
+
+$registrarName = mb_strtoupper(trim($data->registrar_name ?? $data->headmaster_name ?? ''), 'UTF-8');
+$registrarPhone = trim($data->registrar_phone ?? $data->headmaster_phone ?? '');
+$registrarEmail = trim($data->registrar_email ?? '');
+$registrarTitle = trim($data->registrar_title ?? 'Registrar / Owner');
+
+if (empty($schoolName) || empty($schoolEmail) || empty($schoolPhone) || empty($registrarName)) {
     http_response_code(400);
-    echo json_encode(["success" => false, "message" => "School Name, Headmaster Name, and Phone are required."]);
+    echo json_encode(["success" => false, "message" => "School Name, Official School Email, School Phone, and Registrar Name are required."]);
     exit();
 }
 
-$email = !empty($data->headmaster_email) ? trim($data->headmaster_email) : null;
 $selectedLevels = isset($data->education_levels) && is_array($data->education_levels) ? $data->education_levels : ['O-LEVEL'];
 
-// Auto-generate standard high-entropy temporary password
+// Auto-generate standard high-entropy temporary password or use provided
 function generateStandardTempPassword() {
     $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789#@!';
     $pwd = 'Shule#' . date('Y') . '@';
@@ -38,10 +46,16 @@ function generateStandardTempPassword() {
     return $pwd;
 }
 
-$tempPassword = generateStandardTempPassword();
+$tempPassword = !empty($data->password) ? trim($data->password) : (!empty($data->headmaster_password) ? trim($data->headmaster_password) : generateStandardTempPassword());
 
 try {
     $conn->beginTransaction();
+
+    // Ensure columns exist
+    try { $conn->exec("ALTER TABLE schools ADD COLUMN registrar_name VARCHAR(150) DEFAULT NULL"); } catch (Exception $e) {}
+    try { $conn->exec("ALTER TABLE schools ADD COLUMN registrar_phone VARCHAR(50) DEFAULT NULL"); } catch (Exception $e) {}
+    try { $conn->exec("ALTER TABLE schools ADD COLUMN registrar_email VARCHAR(150) DEFAULT NULL"); } catch (Exception $e) {}
+    try { $conn->exec("ALTER TABLE schools ADD COLUMN registrar_title VARCHAR(100) DEFAULT 'Registrar / Owner'"); } catch (Exception $e) {}
 
     // 1. Generate standard ShuleCafe School ID: S/CAFE-{YYYY}-{XXXX}
     $currentYear = date('Y');
@@ -66,7 +80,7 @@ try {
     
     $shuleCafeId = sprintf("S/CAFE-%s-%04d", $currentYear, $nextNum);
 
-    // 2. Create School
+    // 2. Create School with Registrar Audit History
     $school_id = sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
         mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff),
         mt_rand(0, 0x0fff) | 0x4000, mt_rand(0, 0x3fff) | 0x8000,
@@ -75,26 +89,30 @@ try {
     
     $stmt = $conn->prepare("
         INSERT INTO schools 
-        (id, school_code, name, type, region, school_email, school_phone, status) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, 'active')
+        (id, school_code, name, type, region, school_email, school_phone, registrar_name, registrar_phone, registrar_email, registrar_title, status) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')
     ");
     $stmt->execute([
         $school_id,
         $shuleCafeId,
-        trim($data->school_name), 
+        $schoolName, 
         $data->school_type ?? 'Secondary', 
         trim($data->region ?? ''),
-        $email,
-        trim($data->headmaster_phone)
+        $schoolEmail,
+        $schoolPhone,
+        $registrarName,
+        $registrarPhone,
+        $registrarEmail,
+        $registrarTitle
     ]);
 
-    // 3. Create Headmaster (tenant_admin)
+    // 3. Create Master School Account (tenant_admin - Institutional credentials)
     $check = $conn->prepare("SELECT id FROM users WHERE phone = ? OR (email IS NOT NULL AND email = ?)");
-    $check->execute([trim($data->headmaster_phone), $email]);
+    $check->execute([$schoolPhone, $schoolEmail]);
     if ($check->fetch()) {
         $conn->rollBack();
         http_response_code(400);
-        echo json_encode(["success" => false, "message" => "Phone number or Email already exists for another user."]);
+        echo json_encode(["success" => false, "message" => "Official School Phone number or Email already exists for another account."]);
         exit();
     }
 
@@ -114,9 +132,9 @@ try {
         $user_id,
         $school_id,
         $shuleCafeId,
-        trim($data->headmaster_name),
-        $email,
-        trim($data->headmaster_phone),
+        $schoolName,
+        $schoolEmail,
+        $schoolPhone,
         $hash,
         $tempPassword
     ]);
@@ -194,11 +212,26 @@ try {
         "message" => "School created & education levels provisioned successfully.",
         "shule_cafe_id" => $shuleCafeId,
         "school_id" => $school_id,
+        "school_credentials" => [
+            "shule_cafe_id" => $shuleCafeId,
+            "school_name" => $schoolName,
+            "email" => $schoolEmail,
+            "phone" => $schoolPhone,
+            "temp_password" => $tempPassword,
+            "login_url" => "/shule-cafe/frontend/auth/login.html"
+        ],
+        "registrar_details" => [
+            "name" => $registrarName,
+            "phone" => $registrarPhone,
+            "email" => $registrarEmail,
+            "title" => $registrarTitle
+        ],
+        // Backward-compatibility for legacy frontends
         "headmaster_credentials" => [
             "shule_cafe_id" => $shuleCafeId,
-            "name" => trim($data->headmaster_name),
-            "email" => $email,
-            "phone" => trim($data->headmaster_phone),
+            "name" => $schoolName,
+            "email" => $schoolEmail,
+            "phone" => $schoolPhone,
             "temp_password" => $tempPassword,
             "is_password_changed" => false,
             "login_url" => "/shule-cafe/frontend/auth/login.html"

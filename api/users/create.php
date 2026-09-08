@@ -44,13 +44,13 @@ if ($sessionRole === 'super_admin') {
         exit();
     }
 } else if (in_array($sessionRole, ['tenant_admin', 'school_admin', 'headmaster'])) {
-    $allowedRoles = ['teacher', 'student', 'parent', 'guardian'];
+    $allowedRoles = ['teacher', 'headmaster', 'student', 'parent', 'guardian'];
     $school_id = $sessionSchoolId;
     if (!in_array($role, $allowedRoles)) {
         http_response_code(400);
         echo json_encode([
             "success" => false, 
-            "message" => "School Administrators can only register Teachers, Students, or Parents for their school."
+            "message" => "School Administrators can only register Headmasters, Teachers, Students, or Parents for their school."
         ]);
         exit();
     }

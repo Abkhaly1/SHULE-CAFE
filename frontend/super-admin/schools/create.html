@@ -25,7 +25,7 @@
                     
                     <app-page-header 
                         title="Register New School" 
-                        subtitle="Provision a new tenant, configure education levels, and create the headmaster account.">
+                        subtitle="Provision a new tenant institution, configure education levels, and set up official school master credentials.">
                     </app-page-header>
 
                     <div id="formAlert" class="alert alert-danger" style="display: none; margin-top: var(--sp-4);">
@@ -92,32 +92,56 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Headmaster Account -->
+                                <!-- Official School Account Credentials -->
                                 <div class="card" style="padding: var(--sp-6);">
-                                    <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">Headmaster Account Credentials</h3>
+                                    <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">Official School Account Credentials</h3>
                                     <p style="font-size: var(--text-sm); color: var(--c-text-secondary); margin-bottom: var(--sp-4);">
-                                        Create administrator login details for this tenant school. Email address will be used as the primary login username.
+                                        Create official institutional credentials for this tenant school. Official School Email or the generated School ID will be used as the primary login identity.
                                     </p>
                                     
                                     <div class="form-group" style="margin-bottom: var(--sp-4);">
-                                        <label class="form-label">Headmaster Full Name <span style="color:var(--c-danger);">*</span></label>
-                                        <input type="text" id="headmaster_name" class="form-control" placeholder="e.g. Dr. Jane Doe" required>
-                                    </div>
-
-                                    <div class="form-group" style="margin-bottom: var(--sp-4);">
-                                        <label class="form-label">Headmaster Email Address (Primary Username) <span style="color:var(--c-danger);">*</span></label>
-                                        <input type="email" id="headmaster_email" class="form-control" placeholder="e.g. headmaster@mlimani.ac.tz" required>
+                                        <label class="form-label">Official School Email (Login Identity) <span style="color:var(--c-danger);">*</span></label>
+                                        <input type="email" id="school_email" class="form-control" placeholder="e.g. info@school.ac.tz or schoolname@gmail.com" required>
                                     </div>
                                     
                                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); margin-bottom: var(--sp-4);">
                                         <div class="form-group">
-                                            <label class="form-label">Phone Number <span style="color:var(--c-danger);">*</span></label>
-                                            <input type="text" id="headmaster_phone" class="form-control" placeholder="e.g. +255711000111" required>
+                                            <label class="form-label">Official School Phone <span style="color:var(--c-danger);">*</span></label>
+                                            <input type="text" id="school_phone" class="form-control" placeholder="e.g. +255 715 000 111" required>
                                         </div>
                                         <div class="form-group">
                                             <label class="form-label">Temporary Password <span style="color:var(--c-danger);">*</span></label>
-                                            <input type="text" id="headmaster_password" class="form-control" value="Shule#202X@" placeholder="Set password" required>
+                                            <input type="text" id="school_password" class="form-control" value="Shule#2026@" placeholder="Set password" required>
                                         </div>
+                                    </div>
+                                </div>
+
+                                <!-- School Registrar / Contact Person Details (Audit History) -->
+                                <div class="card" style="padding: var(--sp-6);">
+                                    <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">School Registrar Details (Audit History)</h3>
+                                    <p style="font-size: var(--text-sm); color: var(--c-text-secondary); margin-bottom: var(--sp-4);">
+                                        Enter the identity of the school representative or registrar who submitted the school. This information is preserved strictly for institutional audit history.
+                                    </p>
+                                    
+                                    <div class="form-group" style="margin-bottom: var(--sp-4);">
+                                        <label class="form-label">Registrar Full Name <span style="color:var(--c-danger);">*</span></label>
+                                        <input type="text" id="registrar_name" class="form-control" placeholder="e.g. ABUBAKAR OMAR SAID" required style="text-transform: uppercase;">
+                                    </div>
+
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); margin-bottom: var(--sp-4);">
+                                        <div class="form-group">
+                                            <label class="form-label">Registrar Contact Phone <span style="color:var(--c-danger);">*</span></label>
+                                            <input type="text" id="registrar_phone" class="form-control" placeholder="e.g. +255 711 000 222" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Registrar Personal Email (Optional)</label>
+                                            <input type="email" id="registrar_email" class="form-control" placeholder="e.g. registrar@personal.com">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label">Registrar Institutional Title</label>
+                                        <input type="text" id="registrar_title" class="form-control" value="School Owner / Registrar" placeholder="e.g. School Owner, Board Chairman, Founder">
                                     </div>
                                 </div>
                             </div>
@@ -134,11 +158,11 @@
                                 <!-- Information -->
                                 <div class="card" style="padding: var(--sp-6); background: var(--c-bg-page);">
                                     <h4 style="margin-top: 0; font-size: var(--text-sm); display: flex; align-items: center; gap: 8px; color: var(--c-text-secondary);">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                                        Credentials Instructions
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+                                        Institutional Governance
                                     </h4>
                                     <p style="font-size: var(--text-sm); color: var(--c-text-muted); margin: 0; line-height: 1.5;">
-                                        Upon provisioning, the Headmaster can log into SHULE CAFE using their <strong>Email Address</strong> and initial Password set above.
+                                        Upon provisioning, the master <strong>School Account</strong> logs into SHULE CAFE using the <strong>Official School Email</strong> or generated <strong>School ID</strong>. Academic leaders (Headmaster) and teachers have separate individual staff accounts registered under Staff Management.
                                     </p>
                                 </div>
                             </div>
@@ -175,19 +199,29 @@
                     return;
                 }
 
+                const schoolEmail = document.getElementById('school_email').value.trim();
+                const schoolPhone = document.getElementById('school_phone').value.trim();
+                const registrarName = document.getElementById('registrar_name').value.trim();
+                const registrarPhone = document.getElementById('registrar_phone').value.trim();
+                const registrarEmail = document.getElementById('registrar_email').value.trim();
+                const registrarTitle = document.getElementById('registrar_title').value.trim();
+
                 const data = {
-                    school_name: document.getElementById('school_name').value,
+                    school_name: document.getElementById('school_name').value.trim(),
                     school_type: document.getElementById('school_type').value,
-                    region: document.getElementById('region').value,
-                    headmaster_name: document.getElementById('headmaster_name').value,
-                    headmaster_email: document.getElementById('headmaster_email').value,
-                    headmaster_phone: document.getElementById('headmaster_phone').value,
-                    headmaster_password: document.getElementById('headmaster_password').value,
+                    region: document.getElementById('region').value.trim(),
+                    school_email: schoolEmail,
+                    school_phone: schoolPhone,
+                    password: document.getElementById('school_password').value.trim(),
+                    registrar_name: registrarName,
+                    registrar_phone: registrarPhone,
+                    registrar_email: registrarEmail,
+                    registrar_title: registrarTitle,
                     education_levels: educationLevels
                 };
 
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Provisioning School & Curriculum...';
+                submitBtn.textContent = 'Provisioning School & Master Credentials...';
 
                 try {
                     const res = await fetch('/shule-cafe/api/schools/create.php', {
@@ -202,14 +236,14 @@
                     if (res.ok && result.success) {
                         alertBox.className = 'alert alert-success';
                         alertTitle.textContent = 'Success!';
-                        alertMsg.textContent = `${result.message} Headmaster login email: ${data.headmaster_email}`;
+                        alertMsg.textContent = `${result.message} School Code: ${result.shule_cafe_id}. School master login: ${schoolEmail}`;
                         alertBox.style.display = 'block';
                         
                         form.reset();
                         
                         setTimeout(() => {
                             window.location.href = 'index.html';
-                        }, 2000);
+                        }, 2200);
                     } else {
                         alertBox.className = 'alert alert-danger';
                         alertTitle.textContent = 'Error!';

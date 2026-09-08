@@ -109,6 +109,13 @@
                     <label class="form-label">Full Name <span style="color:var(--c-danger);">*</span></label>
                     <input type="text" id="tch_name" class="form-control" required placeholder="e.g. Mr. Moses John">
                 </div>
+                <div class="form-group" style="margin-bottom: var(--sp-3);">
+                    <label class="form-label">Staff Role / Designation <span style="color:var(--c-danger);">*</span></label>
+                    <select id="tch_role" class="form-select">
+                        <option value="teacher" selected>Teacher / Academic Staff</option>
+                        <option value="headmaster">Headmaster / Principal</option>
+                    </select>
+                </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: var(--sp-3);">
                     <div class="form-group">
                         <label class="form-label">Teacher Staff ID</label>
@@ -581,7 +588,7 @@
                     department: document.getElementById('tch_dept').value,
                     phone: document.getElementById('tch_phone').value,
                     email: document.getElementById('tch_email').value,
-                    role: 'teacher'
+                    role: (document.getElementById('tch_role') ? document.getElementById('tch_role').value : 'teacher')
                 };
 
                 try {
@@ -775,7 +782,8 @@
 
                 const cols = [
                     { key: 'code', label: 'Staff ID', type: 'text' },
-                    { key: 'teacher', label: 'Teacher Name', type: 'avatar' },
+                    { key: 'teacher', label: 'Staff Name', type: 'avatar' },
+                    { key: 'role_title', label: 'Designation', type: 'badge' },
                     { key: 'gender', label: 'Gender', type: 'text' },
                     { key: 'department', label: 'Department', type: 'text' },
                     { key: 'phone', label: 'Phone', type: 'text' },
@@ -786,8 +794,9 @@
                     id: item.id,
                     code: item.user_code || ('TCH/' + new Date().getFullYear() + '/001'),
                     raw_name: item.full_name,
+                    role_title: (item.role === 'headmaster') ? 'Headmaster' : 'Teacher',
                     gender: (item.gender === 'F' || item.gender === 'Female') ? 'Female' : ((item.gender === 'M' || item.gender === 'Male') ? 'Male' : (item.gender || 'Female')),
-                    department: item.department || 'General',
+                    department: (item.role === 'headmaster') ? (item.department || 'Administration') : (item.department || 'General'),
                     phone: item.phone || 'N/A',
                     email: item.email || 'N/A',
                     teacher: { initials: item.full_name ? item.full_name.charAt(0).toUpperCase() : 'T', name: item.full_name },

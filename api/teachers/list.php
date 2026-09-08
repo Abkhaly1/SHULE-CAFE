@@ -48,11 +48,11 @@ try {
     $limit  = max(10, min(500, intval($_GET['limit'] ?? 25)));
     $offset = ($page - 1) * $limit;
 
-    $whereSql = "WHERE role = 'teacher' AND school_id = :school_id";
+    $whereSql = "WHERE role IN ('teacher', 'headmaster') AND school_id = :school_id";
     $params = [':school_id' => $school_id];
 
     if ($search !== '') {
-        $whereSql .= " AND (full_name LIKE :search OR user_code LIKE :search OR phone LIKE :search OR email LIKE :search OR department LIKE :search)";
+        $whereSql .= " AND (full_name LIKE :search OR user_code LIKE :search OR phone LIKE :search OR email LIKE :search OR department LIKE :search OR role LIKE :search)";
         $params[':search'] = '%' . $search . '%';
     }
 
@@ -64,7 +64,7 @@ try {
     $teachers = [];
     if ($total > 0) {
         $stmt = $conn->prepare("
-            SELECT id, user_code, full_name, gender, email, phone, department, status, created_at 
+            SELECT id, user_code, full_name, gender, email, phone, department, role, status, created_at 
             FROM users 
             $whereSql
             ORDER BY created_at DESC

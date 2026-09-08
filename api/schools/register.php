@@ -128,6 +128,10 @@ try {
     try { $db->exec("ALTER TABLE schools ADD COLUMN ward_address VARCHAR(255) DEFAULT NULL"); } catch (Exception $e) {}
     try { $db->exec("ALTER TABLE schools ADD COLUMN school_email VARCHAR(150) DEFAULT NULL"); } catch (Exception $e) {}
     try { $db->exec("ALTER TABLE schools ADD COLUMN school_phone VARCHAR(50) DEFAULT NULL"); } catch (Exception $e) {}
+    try { $db->exec("ALTER TABLE schools ADD COLUMN registrar_name VARCHAR(150) DEFAULT NULL"); } catch (Exception $e) {}
+    try { $db->exec("ALTER TABLE schools ADD COLUMN registrar_phone VARCHAR(50) DEFAULT NULL"); } catch (Exception $e) {}
+    try { $db->exec("ALTER TABLE schools ADD COLUMN registrar_email VARCHAR(150) DEFAULT NULL"); } catch (Exception $e) {}
+    try { $db->exec("ALTER TABLE schools ADD COLUMN registrar_title VARCHAR(100) DEFAULT 'Registrar / Owner'"); } catch (Exception $e) {}
 
     try { $db->exec("ALTER TABLE users ADD COLUMN email VARCHAR(150) DEFAULT NULL"); } catch (Exception $e) {}
     try { $db->exec("ALTER TABLE users ADD COLUMN user_code VARCHAR(50) DEFAULT NULL"); } catch (Exception $e) {}
@@ -247,18 +251,19 @@ try {
 
     $schoolId = gen_uuid();
 
-    // Insert School
+    // Insert School with Registrar Audit Details
     $insertSchool = $db->prepare("
         INSERT INTO schools 
-        (id, school_code, name, type, necta_no, ownership_type, gender_classification, region, district, ward_address, school_email, school_phone, status) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')
+        (id, school_code, name, type, necta_no, ownership_type, gender_classification, region, district, ward_address, school_email, school_phone, registrar_name, registrar_phone, registrar_email, registrar_title, status) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Registrar / Owner', 'active')
     ");
     $insertSchool->execute([
         $schoolId, $shuleCafeId, $schoolName, $schoolType, $nectaNo, $ownership, $gender, 
-        $region, $district, $wardAddr, $schoolMail, $schoolPh
+        $region, $district, $wardAddr, $schoolMail, $schoolPh,
+        $adminName, $adminPhone, $adminEmail
     ]);
 
-    // Insert User (Headmaster / Tenant Admin - Bypass first time setup since password & details were established during onboarding)
+    // Insert School Account (Master Institutional Tenant Admin Credentials)
     $userId = gen_uuid();
     $pwHash = password_hash($password, PASSWORD_BCRYPT);
 
@@ -267,7 +272,7 @@ try {
         (id, school_id, full_name, email, phone, user_code, password_hash, role, status, is_password_changed, first_login_completed) 
         VALUES (?, ?, ?, ?, ?, ?, ?, 'tenant_admin', 'active', 1, 1)
     ");
-    $insertUser->execute([$userId, $schoolId, $adminName, $loginEmail, $adminPhone, $shuleCafeId, $pwHash]);
+    $insertUser->execute([$userId, $schoolId, $schoolName, $loginEmail, $schoolPh ?: $adminPhone, $shuleCafeId, $pwHash]);
 
     // Process selected education levels
     $selectedLevels = $input['education_levels'] ?? [];

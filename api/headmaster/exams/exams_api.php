@@ -315,38 +315,41 @@ try {
         $isSingleSubject = (!empty($subjectCode) && $subjectCode !== 'all');
         $isLocked = $isSingleSubject ? isset($locksMap[$subjectCode]) : $isClassSubmitted;
 
-        // Student Roster
+        // Student Roster - Strictly scoped to classroom/grade and academic year
         if ($classroomId > 0) {
             $stmtRoster = $conn->prepare("
                 SELECT u.id AS student_id, u.full_name, u.user_code, u.gender
                 FROM student_classroom_allocations sca
                 JOIN users u ON sca.student_id = u.id
-                WHERE sca.classroom_id = ? AND sca.school_id = ? AND sca.status = 'Active'
+                WHERE sca.classroom_id = ? AND sca.school_id = ? AND sca.status = 'Active' AND (sca.academic_year = ? OR sca.academic_year IS NULL OR sca.academic_year = '')
                 ORDER BY u.full_name ASC
             ");
-            $stmtRoster->execute([$classroomId, $schoolId]);
+            $stmtRoster->execute([$classroomId, $schoolId, $year]);
             $students = $stmtRoster->fetchAll(PDO::FETCH_ASSOC);
         } else {
+            // Grade-wide view: ONLY students actively allocated to classrooms belonging to this grade
             $stmtRoster = $conn->prepare("
                 SELECT DISTINCT u.id AS student_id, u.full_name, u.user_code, u.gender
-                FROM users u
-                LEFT JOIN student_classroom_allocations sca ON sca.student_id = u.id AND sca.status = 'Active'
-                LEFT JOIN classrooms c ON sca.classroom_id = c.id
-                WHERE u.school_id = ? AND (c.grade_id = ? OR u.grade_id = ?)
+                FROM student_classroom_allocations sca
+                JOIN classrooms c ON sca.classroom_id = c.id
+                JOIN users u ON sca.student_id = u.id
+                WHERE c.grade_id = ? AND sca.school_id = ? AND sca.status = 'Active' AND (sca.academic_year = ? OR sca.academic_year IS NULL OR sca.academic_year = '')
                 ORDER BY u.full_name ASC
             ");
-            $stmtRoster->execute([$schoolId, $classroom['grade_id'], $classroom['grade_id']]);
+            $stmtRoster->execute([$classroom['grade_id'], $schoolId, $year]);
             $students = $stmtRoster->fetchAll(PDO::FETCH_ASSOC);
 
+            // Optional fallback ONLY for unstreamed students explicitly registered with this exact grade_id
             if (empty($students)) {
-                $stmtAllStu = $conn->prepare("
+                $stmtGradeOnly = $conn->prepare("
                     SELECT u.id AS student_id, u.full_name, u.user_code, u.gender
                     FROM users u
-                    WHERE u.school_id = ? AND u.role = 'student'
+                    LEFT JOIN student_classroom_allocations sca ON (sca.student_id = u.id AND sca.status = 'Active')
+                    WHERE u.school_id = ? AND u.grade_id = ? AND u.role = 'student' AND sca.id IS NULL
                     ORDER BY u.full_name ASC
                 ");
-                $stmtAllStu->execute([$schoolId]);
-                $students = $stmtAllStu->fetchAll(PDO::FETCH_ASSOC);
+                $stmtGradeOnly->execute([$schoolId, $classroom['grade_id']]);
+                $students = $stmtGradeOnly->fetchAll(PDO::FETCH_ASSOC);
             }
         }
 
@@ -552,12 +555,35 @@ try {
             WHERE school_id = ? AND academic_year = ? AND term = ? AND student_id = ? AND subject_code = ? AND assessment_type_id = ?
         ");
 
+        // Strict Integrity Validation: Only save marks for students actively enrolled in this classroom or grade
+        if ($classroomId > 0) {
+            $stmtValid = $conn->prepare("
+                SELECT student_id 
+                FROM student_classroom_allocations 
+                WHERE classroom_id = ? AND school_id = ? AND status = 'Active'
+            ");
+            $stmtValid->execute([$classroomId, $schoolId]);
+            $validStudentIds = $stmtValid->fetchAll(PDO::FETCH_COLUMN);
+        } else {
+            $stmtValid = $conn->prepare("
+                SELECT DISTINCT sca.student_id 
+                FROM student_classroom_allocations sca
+                JOIN classrooms c ON sca.classroom_id = c.id
+                WHERE c.grade_id = ? AND sca.school_id = ? AND sca.status = 'Active'
+                UNION
+                SELECT u.id FROM users u WHERE u.school_id = ? AND u.grade_id = ? AND u.role = 'student'
+            ");
+            $stmtValid->execute([$gradeId, $schoolId, $schoolId, $gradeId]);
+            $validStudentIds = $stmtValid->fetchAll(PDO::FETCH_COLUMN);
+        }
+        $validStudentMap = array_flip($validStudentIds);
+
         $savedCount = 0;
         $conn->beginTransaction();
 
         foreach ($marksList as $entry) {
             $studentId = $entry['student_id'] ?? '';
-            if (empty($studentId)) continue;
+            if (empty($studentId) || !isset($validStudentMap[$studentId])) continue;
 
             if ($isMultiSubject && isset($entry['subject_scores']) && is_array($entry['subject_scores'])) {
                 // Multi-subject row: scores: { MATH: 85, ENG: 70, ... }
@@ -776,39 +802,40 @@ try {
             }
         }
 
-        // Fetch students in this class/grade
+        // Fetch students in this class/grade strictly scoped to academic year and classroom/grade
         if ($classroomId > 0) {
             $stmtStudents = $conn->prepare("
                 SELECT u.id AS student_id, u.full_name, u.user_code, u.gender, c.id AS classroom_id, c.classroom_name
                 FROM student_classroom_allocations sca
                 JOIN users u ON sca.student_id = u.id
                 JOIN classrooms c ON sca.classroom_id = c.id
-                WHERE sca.classroom_id = ? AND sca.school_id = ? AND sca.status = 'Active'
+                WHERE sca.classroom_id = ? AND sca.school_id = ? AND sca.status = 'Active' AND (sca.academic_year = ? OR sca.academic_year IS NULL OR sca.academic_year = '')
                 ORDER BY u.full_name ASC
             ");
-            $stmtStudents->execute([$classroomId, $schoolId]);
+            $stmtStudents->execute([$classroomId, $schoolId, $year]);
             $students = $stmtStudents->fetchAll(PDO::FETCH_ASSOC);
         } else {
             $stmtStudents = $conn->prepare("
                 SELECT DISTINCT u.id AS student_id, u.full_name, u.user_code, u.gender, COALESCE(c.classroom_name, '') as classroom_name
-                FROM users u
-                LEFT JOIN student_classroom_allocations sca ON (sca.student_id = u.id AND sca.status = 'Active')
-                LEFT JOIN classrooms c ON sca.classroom_id = c.id
-                WHERE u.school_id = ? AND (c.grade_id = ? OR u.grade_id = ?)
+                FROM student_classroom_allocations sca
+                JOIN classrooms c ON sca.classroom_id = c.id
+                JOIN users u ON sca.student_id = u.id
+                WHERE c.grade_id = ? AND sca.school_id = ? AND sca.status = 'Active' AND (sca.academic_year = ? OR sca.academic_year IS NULL OR sca.academic_year = '')
                 ORDER BY u.full_name ASC
             ");
-            $stmtStudents->execute([$schoolId, $classInfo['grade_id'], $classInfo['grade_id']]);
+            $stmtStudents->execute([$classInfo['grade_id'], $schoolId, $year]);
             $students = $stmtStudents->fetchAll(PDO::FETCH_ASSOC);
 
             if (empty($students)) {
-                $stmtAllStu = $conn->prepare("
+                $stmtGradeOnly = $conn->prepare("
                     SELECT u.id AS student_id, u.full_name, u.user_code, u.gender, '' as classroom_name
                     FROM users u
-                    WHERE u.school_id = ? AND u.role = 'student'
+                    LEFT JOIN student_classroom_allocations sca ON (sca.student_id = u.id AND sca.status = 'Active')
+                    WHERE u.school_id = ? AND u.grade_id = ? AND u.role = 'student' AND sca.id IS NULL
                     ORDER BY u.full_name ASC
                 ");
-                $stmtAllStu->execute([$schoolId]);
-                $students = $stmtAllStu->fetchAll(PDO::FETCH_ASSOC);
+                $stmtGradeOnly->execute([$schoolId, $classInfo['grade_id']]);
+                $students = $stmtGradeOnly->fetchAll(PDO::FETCH_ASSOC);
             }
         }
 
