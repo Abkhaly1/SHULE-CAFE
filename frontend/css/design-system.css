@@ -215,9 +215,32 @@ a:hover { color: var(--c-primary-700); text-decoration: underline; }
     direction: ltr !important;
     transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
 }
-.form-control { height: 36px; line-height: 36px; padding-left: 12px !important; }
+.form-control { height: 36px; line-height: 36px; padding-left: 12px; }
 .form-select { height: 36px; padding-right: var(--sp-6); }
 .form-textarea { padding: var(--sp-2); min-height: 80px; resize: vertical; }
+
+/* Search Box & Icon Input Alignment */
+.search-box {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+.search-box svg,
+.search-box .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--c-text-muted);
+    pointer-events: none;
+    z-index: 2;
+}
+.search-box .form-control,
+.search-box input,
+.toolbar-search-input,
+.search-input-with-icon {
+    padding-left: 38px !important;
+}
 
 .form-control:focus, .form-select:focus, .form-textarea:focus {
     border-color: var(--c-primary-500);

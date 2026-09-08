@@ -37,9 +37,9 @@ class AppToolbar extends HTMLElement {
         this.innerHTML = `
             <div class="toolbar" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: var(--sp-4); padding: var(--sp-3); background: var(--c-bg-surface); border: 1px solid var(--c-border-light); border-radius: var(--radius-md);">
                 <div class="toolbar-left" style="display:flex; gap: var(--sp-2);">
-                    <div class="search-box" style="position:relative;">
-                        <svg style="position:absolute; left:10px; top:10px; color:var(--c-text-muted);" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                        <input type="text" class="form-control" placeholder="${this.searchPlaceholder}" style="padding-left: 32px; height: 36px; min-width: 250px;">
+                    <div class="search-box" style="position:relative; display:inline-flex; align-items:center;">
+                        <svg style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--c-text-muted); pointer-events:none; z-index:2;" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                        <input type="text" class="form-control toolbar-search-input" placeholder="${this.searchPlaceholder}" style="padding-left: 38px !important; height: 36px; min-width: 250px;">
                     </div>
                 </div>
                 <div class="toolbar-right" style="display:flex; gap: var(--sp-2);">
