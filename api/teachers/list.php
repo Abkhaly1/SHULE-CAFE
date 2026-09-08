@@ -10,17 +10,16 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-$school_id = $_GET['school_id'] ?? $_SESSION['school_id'] ?? null;
-
-if (empty($school_id) && !empty($_SESSION['user_id'])) {
-    $uStmt = $conn->prepare("SELECT school_id FROM users WHERE id = ? LIMIT 1");
-    $uStmt->execute([$_SESSION['user_id']]);
-    $school_id = $uStmt->fetchColumn() ?: null;
-}
-
-if (empty($school_id)) {
-    $sStmt = $conn->query("SELECT id FROM schools ORDER BY id ASC LIMIT 1");
-    $school_id = $sStmt->fetchColumn() ?: null;
+$userRole = $_SESSION['role'] ?? '';
+if ($userRole === 'super_admin' && !empty($_GET['school_id'])) {
+    $school_id = $_GET['school_id'];
+} else {
+    $school_id = $_SESSION['school_id'] ?? null;
+    if (empty($school_id) && !empty($_SESSION['user_id'])) {
+        $uStmt = $conn->prepare("SELECT school_id FROM users WHERE id = ? LIMIT 1");
+        $uStmt->execute([$_SESSION['user_id']]);
+        $school_id = $uStmt->fetchColumn() ?: null;
+    }
 }
 
 if (empty($school_id)) {

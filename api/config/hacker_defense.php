@@ -73,24 +73,28 @@ function detectXssPayloadAttack($conn = null) {
     $queryStr = $_SERVER['QUERY_STRING'] ?? '';
     $inputString = strtolower($rawInput . ' ' . $queryStr . ' ' . json_encode($_POST) . ' ' . json_encode($_GET));
 
-    // Malicious XSS patterns
-    $xssPatterns = [
-        '<script', '</script>', 'javascript:', 'vbscript:',
-        'onload=', 'onerror=', 'onclick=', 'onmouseover=',
-        'document.cookie', 'document.location', 'window.location',
-        'eval(', 'alert(', 'prompt('
+    // Malicious XSS patterns with boundary detection
+    $xssRegexes = [
+        '/<\s*script\b[^>]*>/i',
+        '/<\s*\/\s*script\s*>/i',
+        '/javascript\s*:/i',
+        '/vbscript\s*:/i',
+        '/\bon(?:load|error|click|mouseover|submit|focus|blur)\s*=/i',
+        '/document\.(?:cookie|location)/i',
+        '/window\.location/i',
+        '/\b(?:eval|prompt)\s*\(/i'
     ];
 
-    foreach ($xssPatterns as $pattern) {
-        if (strpos($inputString, $pattern) !== false) {
+    foreach ($xssRegexes as $regex) {
+        if (preg_match($regex, $inputString)) {
             if ($conn) {
                 require_once __DIR__ . '/backup_manager.php';
-                logSecurityEvent($conn, 'XSS_ATTACK_BLOCKED', "Blocked malicious XSS script payload ('$pattern').");
+                logSecurityEvent($conn, 'XSS_ATTACK_BLOCKED', "Blocked malicious XSS script payload matching '$regex'.");
             }
 
             http_response_code(403);
             echo json_encode([
-                "success" => false,
+                "success" => false, 
                 "message" => "Security Shield 🛡️: Malicious Script / XSS payload detected and blocked."
             ]);
             exit();

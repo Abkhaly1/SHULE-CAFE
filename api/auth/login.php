@@ -5,6 +5,7 @@
  * PROPRIETARY & CONFIDENTIAL. Unauthorized copying or redistribution is strictly prohibited.
  */
 require_once __DIR__ . '/../config/auth_guard.php';
+startSecureSession();
 header("Content-Type: application/json; charset=UTF-8");
 
 require_once __DIR__ . '/../config/db.php';

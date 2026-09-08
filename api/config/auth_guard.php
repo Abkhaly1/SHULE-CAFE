@@ -192,25 +192,11 @@ function enforceTenantIsolation($sessionSchoolId, $recordSchoolId) {
  * Verify session security & Anti-Hijacking tokens
  */
 function verifySessionSecurity() {
-    if (!isset($_SESSION['user_id'])) {
-        // Inspect Authorization Header or X-Auth-Token
-        $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['HTTP_X_AUTH_TOKEN'] ?? '';
-        if (empty($authHeader) && function_exists('getallheaders')) {
-            $headers = getallheaders();
-            $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? $headers['X-Auth-Token'] ?? $headers['x-auth-token'] ?? '';
-        }
+    if (php_sapi_name() === 'cli') {
+        return true;
+    }
 
-        if (!empty($authHeader) || (isset($_SERVER['SERVER_NAME']) && in_array($_SERVER['SERVER_NAME'], ['localhost', '127.0.0.1']))) {
-            // Restore Super Admin session if running locally or if token is present
-            if (!isset($_SESSION['user_id'])) {
-                $_SESSION['user_id'] = 'usr-admin-0001';
-                $_SESSION['role'] = 'super_admin';
-                $_SESSION['full_name'] = 'System Administrator';
-                $_SESSION['last_activity'] = time();
-                $_SESSION['user_agent_hash'] = md5($_SERVER['HTTP_USER_AGENT'] ?? 'UNKNOWN');
-            }
-            return true;
-        }
+    if (!isset($_SESSION['user_id'])) {
         return false;
     }
 
