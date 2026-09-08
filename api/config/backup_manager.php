@@ -42,13 +42,18 @@ function triggerAutoBackup($conn) {
             $tables[] = $row[0];
         }
 
-        $dump = "-- SHULE CAFE AUTOMATED DATA PROTECTION BACKUP DUMP\n";
-        $dump .= "-- Generated At: " . date('Y-m-d H:i:s') . "\n\n";
-        $dump .= "SET FOREIGN_KEY_CHECKS=0;\n\n";
+        $fh = fopen($filepath, 'w');
+        if (!$fh) {
+            throw new Exception("Unable to open backup file for writing: " . $filepath);
+        }
+
+        fwrite($fh, "-- SHULE CAFE AUTOMATED DATA PROTECTION BACKUP DUMP\n");
+        fwrite($fh, "-- Generated At: " . date('Y-m-d H:i:s') . "\n\n");
+        fwrite($fh, "SET FOREIGN_KEY_CHECKS=0;\n\n");
 
         foreach ($tables as $table) {
             $row = $conn->query("SHOW CREATE TABLE `$table`")->fetch(PDO::FETCH_NUM);
-            $dump .= "\n\n" . $row[1] . ";\n\n";
+            fwrite($fh, "\n\n" . $row[1] . ";\n\n");
 
             $rowsStmt = $conn->query("SELECT * FROM `$table`");
             while ($r = $rowsStmt->fetch(PDO::FETCH_ASSOC)) {
@@ -58,13 +63,12 @@ function triggerAutoBackup($conn) {
                     return $conn->quote($v);
                 }, array_values($r));
 
-                $dump .= "INSERT INTO `$table` (" . implode(', ', $keys) . ") VALUES (" . implode(', ', $vals) . ");\n";
+                fwrite($fh, "INSERT INTO `$table` (" . implode(', ', $keys) . ") VALUES (" . implode(', ', $vals) . ");\n");
             }
         }
 
-        $dump .= "\n\nSET FOREIGN_KEY_CHECKS=1;\n";
-
-        file_put_contents($filepath, $dump);
+        fwrite($fh, "\n\nSET FOREIGN_KEY_CHECKS=1;\n");
+        fclose($fh);
 
         // Prune old backups older than 14 days
         $files = glob($backupDir . '/*.sql');

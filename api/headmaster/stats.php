@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 header("Content-Type: application/json; charset=UTF-8");
 
 require_once __DIR__ . '/../config/db.php';
@@ -73,8 +75,8 @@ try {
     $totalSubAllocations = (int)$subAllocStmt->fetchColumn();
 
     // Timetables count
-    $ttStmt = $conn->prepare("SELECT COUNT(*) FROM class_timetables WHERE school_id = ? AND academic_year = ?");
-    $ttStmt->execute([$school_id, $year]);
+    $ttStmt = $conn->prepare("SELECT COUNT(*) FROM class_timetables WHERE school_id = ? AND (academic_year_id = ? OR academic_year_id LIKE ?)");
+    $ttStmt->execute([$school_id, $year, "%$year%"]);
     $totalTimetables = (int)$ttStmt->fetchColumn();
 
     // Recent Activities (latest 5 user registrations or updates)

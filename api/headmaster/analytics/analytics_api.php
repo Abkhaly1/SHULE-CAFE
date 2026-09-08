@@ -31,22 +31,6 @@ if (in_array(strtolower($term), ['2', 'term2', 'term 2', 'second term', 'second'
 $gradingManager = new GradingManager($conn);
 
 try {
-    // Self-healing table migrations
-    $conn->exec("
-        CREATE TABLE IF NOT EXISTS `student_report_comments` (
-            `id` INT AUTO_INCREMENT PRIMARY KEY,
-            `school_id` VARCHAR(36) NOT NULL,
-            `academic_year` VARCHAR(10) NOT NULL,
-            `term` VARCHAR(20) NOT NULL,
-            `student_id` VARCHAR(36) NOT NULL,
-            `form_master_id` VARCHAR(36) DEFAULT NULL,
-            `conduct_comment` TEXT DEFAULT NULL,
-            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            UNIQUE KEY `uq_report_comment` (`school_id`, `academic_year`, `term`, `student_id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-    ");
-
     // 1. INDIVIDUAL 360° STUDENT PROGRESS REPORT CARD (TASK 4.1)
     if ($action === 'student_report_card') {
         $studentId = trim($_GET['student_id'] ?? $input['student_id'] ?? '');

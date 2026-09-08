@@ -45,41 +45,6 @@ $input = json_decode(file_get_contents('php://input'), true) ?? [];
 $action = $_GET['action'] ?? $input['action'] ?? '';
 
 try {
-    // Self-healing table migrations
-    $conn->exec("
-        CREATE TABLE IF NOT EXISTS `marks_entry_locks` (
-            `id` INT AUTO_INCREMENT PRIMARY KEY,
-            `school_id` VARCHAR(36) NOT NULL,
-            `academic_year` VARCHAR(10) NOT NULL,
-            `term` VARCHAR(20) NOT NULL,
-            `classroom_id` INT NOT NULL,
-            `subject_code` VARCHAR(50) NOT NULL,
-            `is_locked` TINYINT(1) DEFAULT 0,
-            `locked_by` VARCHAR(36) DEFAULT NULL,
-            `locked_at` DATETIME DEFAULT NULL,
-            `unlocked_by` VARCHAR(36) DEFAULT NULL,
-            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            UNIQUE KEY `uq_lock_target` (`school_id`, `academic_year`, `term`, `classroom_id`, `subject_code`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-    ");
-
-    $conn->exec("
-        CREATE TABLE IF NOT EXISTS `marks_entry_dynamic` (
-            `id` INT AUTO_INCREMENT PRIMARY KEY,
-            `school_id` VARCHAR(36) NOT NULL,
-            `academic_year` VARCHAR(10) NOT NULL,
-            `term` VARCHAR(20) NOT NULL,
-            `student_id` VARCHAR(36) NOT NULL,
-            `subject_code` VARCHAR(50) NOT NULL,
-            `assessment_type_id` VARCHAR(50) NOT NULL,
-            `score` DECIMAL(5,2) DEFAULT 0.00,
-            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            UNIQUE KEY `uq_student_assessment` (`school_id`, `academic_year`, `term`, `student_id`, `subject_code`, `assessment_type_id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-    ");
-
     $gradingManager = new GradingManager($conn);
 
     // ────────────────────────────────────────────────────────────────────────
