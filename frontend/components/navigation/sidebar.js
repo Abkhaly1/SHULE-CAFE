@@ -50,6 +50,7 @@ class AppSidebar extends HTMLElement {
         const currentPath = window.location.pathname;
         const frontendIndex = currentPath.indexOf('/frontend/');
         const basePath = (frontendIndex !== -1) ? currentPath.substring(0, frontendIndex + '/frontend/'.length) : '/';
+        const loginUrl = basePath + 'auth/login.html';
 
         let navHtml = `<ul>`;
         menus.forEach(item => {
@@ -65,6 +66,16 @@ class AppSidebar extends HTMLElement {
                 </li>
             `;
         });
+
+        // Logout button as the last item in the sidebar list
+        navHtml += `
+            <li class="sidebar-logout-item" style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px;">
+                <a href="${loginUrl}" class="sidebar-logout-link" id="sidebarLogoutBtn" title="Logout" style="color: #f87171 !important;">
+                    <svg class="nav-icon" style="fill: currentColor;" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                    <span>Logout</span>
+                </a>
+            </li>
+        `;
         navHtml += `</ul>`;
 
         this.innerHTML = `
@@ -87,6 +98,23 @@ class AppSidebar extends HTMLElement {
                 sidebar.classList.toggle('collapsed');
             }
         });
+
+        const logoutBtn = this.querySelector('#sidebarLogoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('shule_token');
+                sessionStorage.removeItem('shule_token');
+                localStorage.removeItem('shule_user');
+                sessionStorage.removeItem('shule_user');
+                localStorage.removeItem('shule_role');
+                sessionStorage.removeItem('shule_role');
+                const currentPath = window.location.pathname;
+                const frontendIndex = currentPath.indexOf('/frontend/');
+                const basePath = (frontendIndex !== -1) ? currentPath.substring(0, frontendIndex + '/frontend/'.length) : '/frontend/';
+                window.location.href = basePath + 'auth/login.html';
+            });
+        }
     }
 }
 

@@ -145,7 +145,7 @@ app-topbar {
 }
 
 .sidebar-brand {
-    height: 50px;
+    height: 42px;
     display: flex;
     align-items: center;
     padding: 0 var(--sp-4);
@@ -194,6 +194,14 @@ app-topbar {
     background-color: #2271b1;
 }
 
+.sidebar-nav a.sidebar-logout-link {
+    color: #f87171 !important;
+}
+.sidebar-nav a.sidebar-logout-link:hover {
+    color: #ffffff !important;
+    background-color: #dc2626 !important;
+}
+
 .sidebar-nav .nav-icon {
     width: 19px;
     height: 19px;
@@ -219,7 +227,7 @@ app-topbar {
 
 /* Topbar */
 .app-topbar {
-    height: 50px;
+    height: 42px;
     background-color: #1d2327;
     color: #ffffff;
     display: flex;
