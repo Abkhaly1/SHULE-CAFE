@@ -778,12 +778,12 @@
             }
 
             // 1. Whole Grade Option
-            selFilter.innerHTML += `<option value="0" ${selectedClassroomId === 0 ? 'selected' : ''}>✓ All ${gradeName} (Grade-Wide)</option>`;
+            selFilter.innerHTML += `<option value="0" ${selectedClassroomId === 0 ? 'selected' : ''}> All ${gradeName} (Grade-Wide)</option>`;
 
             // 2. Stream Options
             const streams = (currentScopes.classrooms || []).filter(c => String(c.grade_id) === String(selectedGradeId));
             streams.forEach(st => {
-                selFilter.innerHTML += `<option value="${st.id}" ${selectedClassroomId === st.id ? 'selected' : ''}>✓ Stream: ${st.classroom_name}</option>`;
+                selFilter.innerHTML += `<option value="${st.id}" ${selectedClassroomId === st.id ? 'selected' : ''}> Stream: ${st.classroom_name}</option>`;
             });
         }
 

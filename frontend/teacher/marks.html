@@ -24,7 +24,7 @@
                     <app-breadcrumb path="Teacher, Mark Entry Workspace"></app-breadcrumb>
 
                     <div class="card" style="margin-top: 14px; padding: 24px;">
-                        <h2 style="margin: 0 0 6px; font-size: 20px; font-weight: 800; color: var(--c-text-primary);">📝 Mark Entry Workspace</h2>
+                        <h2 style="margin: 0 0 6px; font-size: 20px; font-weight: 800; color: var(--c-text-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Mark Entry Workspace</h2>
                         <p style="margin: 0 0 20px; font-size: 13px; color: var(--c-text-muted);">Dedicated spreadsheet workspace for continuous assessment (CA) and terminal exam scores.</p>
 
                         <div style="display: flex; gap: 14px; flex-wrap: wrap; background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid var(--c-border-light); margin-bottom: 20px; align-items: center;">
@@ -54,7 +54,7 @@
 
                         <div id="marksBoard">
                             <div style="padding: 40px; text-align: center; color: var(--c-text-muted); background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 10px;">
-                                💡 Select a class stream and subject course above to auto-load the dynamic student score sheet.
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5.76.76 1.23 1.52 1.41 2.5"/></svg> Select a class stream and subject course above to auto-load the dynamic student score sheet.
                             </div>
                         </div>
                     </div>
@@ -131,7 +131,7 @@
             } else {
                 document.getElementById('marksBoard').innerHTML = `
                     <div style="padding: 40px; text-align: center; color: var(--c-text-muted); background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 10px;">
-                        💡 Select a class stream and subject course above to auto-load the dynamic student score sheet.
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5.76.76 1.23 1.52 1.41 2.5"/></svg> Select a class stream and subject course above to auto-load the dynamic student score sheet.
                     </div>
                 `;
             }
@@ -145,7 +145,7 @@
             if (!stream || !subject) return;
 
             const board = document.getElementById('marksBoard');
-            board.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--c-text-muted); font-weight: 700;">🔄 Loading score sheet & subject rank positions...</div>';
+            board.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--c-text-muted); font-weight: 700;"> Loading score sheet & subject rank positions...</div>';
 
             try {
                 const res = await fetch(`/shule-cafe/api/teacher/teacher_portal_api.php?action=get_scoresheet&stream=${encodeURIComponent(stream)}&subject=${encodeURIComponent(subject)}&term=${encodeURIComponent(term)}`, { credentials: 'include' });
@@ -159,7 +159,7 @@
                     const maxScore = activeTrackObj ? activeTrackObj.weight_percent : 100;
                     
                     if (roster.length === 0) {
-                        board.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--c-text-muted); font-weight: 700;">⚠️ No active students registered for this subject in this classroom stream.</div>';
+                        board.innerHTML = '<div style="padding: 30px; text-align: center; color: var(--c-text-muted); font-weight: 700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> No active students registered for this subject in this classroom stream.</div>';
                         return;
                     }
 
@@ -173,7 +173,7 @@
                     if (isLocked) {
                         lockBanner = `
                             <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 13px; color: #991b1b; font-weight: 700; display: flex; align-items: center; justify-content: space-between;">
-                                <span>🔒 READ-ONLY FINALIZATION LOCK: This score sheet has been locked. Grade adjustments require supervisor override from Headmaster Portal.</span>
+                                <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> READ-ONLY FINALIZATION LOCK: This score sheet has been locked. Grade adjustments require supervisor override from Headmaster Portal.</span>
                                 <span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;">Finalized</span>
                             </div>
                         `;
@@ -189,10 +189,10 @@
                         ${lockBanner}
                         <div style="display: flex; justify-content: space-between; align-items: center; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 13px; color: #065f46; flex-wrap: wrap; gap: 8px;">
                             <div>
-                                📌 Context: <strong>${stream}</strong> • Subject: <strong>${subject}</strong> • Term: <strong>${term}</strong> • Active Track: <strong>${activeTrackObj ? activeTrackObj.name : track} (Max: ${maxScore})</strong>
+                                 Context: <strong>${stream}</strong> • Subject: <strong>${subject}</strong> • Term: <strong>${term}</strong> • Active Track: <strong>${activeTrackObj ? activeTrackObj.name : track} (Max: ${maxScore})</strong>
                             </div>
                             <div style="font-weight: 700;">
-                                👥 Enrolled: <strong>${roster.length}</strong> | Graded: <span class="badge badge-success" style="font-size: 11px;">${gradedCount} / ${roster.length}</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Enrolled: <strong>${roster.length}</strong> | Graded: <span class="badge badge-success" style="font-size: 11px;">${gradedCount} / ${roster.length}</span>
                             </div>
                         </div>
                         <div style="border: 1px solid var(--c-border-light); border-radius: 8px; overflow-x: auto;">
@@ -218,9 +218,9 @@
                         const subjRank   = s.subject_wide_rank || '-';
 
                         let rankBadge = '';
-                        if (streamRank === 1) rankBadge = `<span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; font-weight:800; font-size:11px; padding:3px 6px;">🥇 1st (Room)</span>`;
-                        else if (streamRank === 2) rankBadge = `<span class="badge" style="background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; font-weight:800; font-size:11px; padding:3px 6px;">🥈 2nd (Room)</span>`;
-                        else if (streamRank === 3) rankBadge = `<span class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-weight:800; font-size:11px; padding:3px 6px;">🥉 3rd (Room)</span>`;
+                        if (streamRank === 1) rankBadge = `<span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; font-weight:800; font-size:11px; padding:3px 6px;"><span class="badge" style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;font-weight:800;font-size:11px;padding:3px 6px;">1st (Room)</span> 1st (Room)</span>`;
+                        else if (streamRank === 2) rankBadge = `<span class="badge" style="background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; font-weight:800; font-size:11px; padding:3px 6px;"><span class="badge" style="background:#f1f5f9;color:#334155;border:1px solid #cbd5e1;font-weight:800;font-size:11px;padding:3px 6px;">2nd (Room)</span> 2nd (Room)</span>`;
+                        else if (streamRank === 3) rankBadge = `<span class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-weight:800; font-size:11px; padding:3px 6px;"><span class="badge" style="background:#ffedd5;color:#9a3412;border:1px solid #fed7aa;font-weight:800;font-size:11px;padding:3px 6px;">3rd (Room)</span> 3rd (Room)</span>`;
                         else rankBadge = `<span class="badge" style="background:#f8fafc; color:#64748b; font-weight:700; font-size:11px; padding:3px 6px;">${streamRank}th (Room)</span>`;
 
                         let gradeRankBadge = `<span class="badge" style="background:#e0f2fe; color:#0369a1; font-size:11px; font-weight:700;">Grade: #${gradeRank}</span>`;
@@ -267,12 +267,12 @@
 
                     let actionButtons = '';
                     if (isLocked) {
-                        actionButtons = `<button class="btn btn-secondary" disabled style="font-weight: 800; padding: 10px 24px; border-radius: 6px; cursor: not-allowed;">🔒 Score Sheet Finalized & Locked</button>`;
+                        actionButtons = `<button class="btn btn-secondary" disabled style="font-weight: 800; padding: 10px 24px; border-radius: 6px; cursor: not-allowed;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Score Sheet Finalized & Locked</button>`;
                     } else {
                         actionButtons = `
                             <div style="display: flex; gap: 10px;">
-                                <button class="btn btn-primary" id="btnSaveMarksBatch" style="font-weight: 800; background: #047857; border-color: #047857; padding: 10px 20px; border-radius: 6px;" onclick="saveMarks('${stream}', '${subject}', '${track}', '${term}')">💾 Save Marks Batch</button>
-                                <button class="btn btn-secondary" style="font-weight: 800; color: #991b1b; border-color: #fca5a5; background: #fff1f2; padding: 10px 20px; border-radius: 6px;" onclick="lockMarksSheet('${stream}', '${subject}', '${term}')">🔒 Save and Lock Marks</button>
+                                <button class="btn btn-primary" id="btnSaveMarksBatch" style="font-weight: 800; background: #047857; border-color: #047857; padding: 10px 20px; border-radius: 6px;" onclick="saveMarks('${stream}', '${subject}', '${track}', '${term}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Marks Batch</button>
+                                <button class="btn btn-secondary" style="font-weight: 800; color: #991b1b; border-color: #fca5a5; background: #fff1f2; padding: 10px 20px; border-radius: 6px;" onclick="lockMarksSheet('${stream}', '${subject}', '${term}')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Save and Lock Marks</button>
                             </div>
                         `;
                     }
@@ -282,7 +282,7 @@
                             </table>
                         </div>
                         <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-                            <span style="font-size: 12px; color: var(--c-text-muted); font-weight: 600;">⚠️ Scores are validated against track limits (${maxScore}) and live multi-layered positions update automatically.</span>
+                            <span style="font-size: 12px; color: var(--c-text-muted); font-weight: 600;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Scores are validated against track limits (${maxScore}) and live multi-layered positions update automatically.</span>
                             ${actionButtons}
                         </div>
                     `;
@@ -326,7 +326,7 @@
 
             if (btn) {
                 btn.disabled = true;
-                btn.textContent = '💾 Saving Batch...';
+                btn.textContent = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Saving Batch...';
             }
 
             try {
@@ -348,7 +348,7 @@
             } finally {
                 if (btn) {
                     btn.disabled = false;
-                    btn.textContent = `💾 Save Marks Batch`;
+                    btn.textContent = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Marks Batch`;
                 }
             }
         };

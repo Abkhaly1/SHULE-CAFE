@@ -84,13 +84,13 @@
     <div id="deleteSchoolModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center;">
         <div class="card" style="width: 100%; max-width: 540px; padding: var(--sp-6); background: white; border-top: 6px solid #b91c1c;">
             <h3 style="margin-top: 0; color: #b91c1c; display: flex; align-items: center; gap: 8px;">
-                🚨 Danger Zone: Permanent Tenant Deletion
+                 Danger Zone: Permanent Tenant Deletion
             </h3>
             <p style="font-size: 13px; color: #475569; margin-bottom: 12px; line-height: 1.5;">
                 You are about to permanently delete <strong id="delSchoolNameDisplay" style="color:#0f172a;">-</strong>. This will purge all associated classrooms, student allocations, teacher accounts, and headmaster credentials.
             </p>
             <div style="background: #fef2f2; border: 1px solid #fca5a5; padding: 12px; border-radius: 8px; font-size: 12px; color: #991b1b; margin-bottom: 16px;">
-                <strong>⚠️ Permanent Data Loss Warning:</strong> This operation cannot be reversed. All tenant academic records will be permanently erased.
+                <strong><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Permanent Data Loss Warning:</strong> This operation cannot be reversed. All tenant academic records will be permanently erased.
             </div>
             <div class="form-group" style="margin-bottom: 20px;">
                 <label class="form-label" style="font-weight: 700;">To confirm deletion, type exact school name: <span id="delRequiredNameText" style="color:#b91c1c; font-family:monospace; font-size:13px;">-</span></label>
@@ -98,7 +98,7 @@
             </div>
             <div style="display: flex; gap: 8px; justify-content: flex-end;">
                 <button type="button" id="cancelDeleteSchoolBtn" class="btn btn-outline">Cancel</button>
-                <button type="button" id="submitDeleteSchoolBtn" class="btn btn-danger" style="background:#b91c1c; border-color:#b91c1c;" disabled>🗑️ Permanently Delete School Tenant</button>
+                <button type="button" id="submitDeleteSchoolBtn" class="btn btn-danger" style="background:#b91c1c; border-color:#b91c1c;" disabled> Permanently Delete School Tenant</button>
             </div>
         </div>
     </div>
@@ -185,12 +185,12 @@
                     } else {
                         alert(result.message || 'Failed to delete school tenant.');
                         submitDeleteBtn.disabled = false;
-                        submitDeleteBtn.textContent = '🗑️ Permanently Delete School Tenant';
+                        submitDeleteBtn.textContent = ' Permanently Delete School Tenant';
                     }
                 } catch (err) {
                     alert('Network error deleting school tenant.');
                     submitDeleteBtn.disabled = false;
-                    submitDeleteBtn.textContent = '🗑️ Permanently Delete School Tenant';
+                    submitDeleteBtn.textContent = ' Permanently Delete School Tenant';
                 }
             });
 

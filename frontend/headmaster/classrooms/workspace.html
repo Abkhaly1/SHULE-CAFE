@@ -692,7 +692,7 @@
 
                         let html = `
                             <div style="margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 10px 14px; border-radius: 6px; font-weight: 700; font-size: 13px;">
-                                <span>🎓 END-OF-YEAR PROGRESSION BOARD (Reviewing: ${from_year} ➔ ${to_year})</span>
+                                <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> END-OF-YEAR PROGRESSION BOARD (Reviewing: ${from_year}  ${to_year})</span>
                                 <span class="badge badge-success">${students.length} Students Pending Review</span>
                             </div>
 
@@ -714,8 +714,8 @@
                         students.forEach(s => {
                             const pass = s.auto_pass;
                             const recTag = pass 
-                                ? `<span class="badge badge-success" style="font-weight:700;">🟢 Promote</span>` 
-                                : `<span class="badge badge-warning" style="font-weight:700;background:#fee2e2;color:#991b1b;">🔴 Repeat</span>`;
+                                ? `<span class="badge badge-success" style="font-weight:700;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px;"></span> Promote</span>` 
+                                : `<span class="badge badge-warning" style="font-weight:700;background:#fee2e2;color:#991b1b;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:4px;"></span> Repeat</span>`;
                             const gpaTag = `<span style="font-weight:800;color:${pass ? '#059669' : '#dc2626'};">${s.final_gpa}</span>`;
                             const defaultAction = s.auto_recommendation === 'Promote' ? 'Promoted' : 'Repeated';
 
@@ -747,7 +747,7 @@
                             </div>
 
                             <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
-                                <button class="btn btn-primary" style="font-weight: 800; background: #059669; padding: 10px 24px;" onclick="executeWsBatchPromotion('${streamId}')">🚀 EXECUTE BATCH PROMOTION</button>
+                                <button class="btn btn-primary" style="font-weight: 800; background: #059669; padding: 10px 24px;" onclick="executeWsBatchPromotion('${streamId}')"> EXECUTE BATCH PROMOTION</button>
                             </div>
                         `;
 
@@ -770,13 +770,13 @@
                     row.style.background = '#f0fdf4';
                     targetSelect.disabled = false;
                     targetSelect.innerHTML = target_classrooms.length
-                        ? target_classrooms.map(c => `<option value="${c.id}">⬆️ ${c.classroom_name}</option>`).join('')
+                        ? target_classrooms.map(c => `<option value="${c.id}">⬆ ${c.classroom_name}</option>`).join('')
                         : '<option value="">-- No Target Rooms --</option>';
                 } else if (outcome === 'Repeated') {
                     row.style.background = '#fef9c3';
                     targetSelect.disabled = false;
                     targetSelect.innerHTML = repeat_classrooms.length
-                        ? repeat_classrooms.map(c => `<option value="${c.id}">🔁 ${c.classroom_name}</option>`).join('')
+                        ? repeat_classrooms.map(c => `<option value="${c.id}"> ${c.classroom_name}</option>`).join('')
                         : '<option value="">-- No Repeat Rooms --</option>';
                 } else {
                     row.style.background = '#f1f5f9';

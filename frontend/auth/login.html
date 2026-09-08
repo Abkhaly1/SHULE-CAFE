@@ -413,11 +413,11 @@
             <!-- Prominent School Self-Registration Callout Box -->
             <div class="hero-register-box">
                 <div class="hero-register-title">
-                    <span>🏫</span> New School Owner?
+                    <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span> New School Owner?
                 </div>
                 <p class="hero-register-desc">Register your school now to generate your official ShuleCafe ID.</p>
                 <a href="register-school.html" class="btn-hero-register">
-                    ➕ Register Your School Here &rarr;
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Register Your School Here &rarr;
                 </a>
             </div>
         </div>
@@ -429,12 +429,12 @@
 
             <!-- Prominent Account Needed Card -->
             <div id="accountNeededCard" class="account-needed-card" style="display: none;">
-                <div class="card-header-icon">⚠️</div>
+                <div class="card-header-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
                 <div class="card-content">
                     <h4 class="card-heading">Account Needed</h4>
                     <p class="card-text" id="accountNeededText">No account was found for this identifier. If you are a new school owner or headmaster, you need to register your school first to create your portal.</p>
                     <a href="register-school.html" class="btn-register-now">
-                        ➕ Register Your School Now &rarr;
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Register Your School Now &rarr;
                     </a>
                 </div>
             </div>
@@ -446,7 +446,7 @@
 
             <!-- Login Form -->
             <form id="loginForm">
-                <!-- 🤖 Anti-Bot Honeypot Trap Field -->
+                <!--  Anti-Bot Honeypot Trap Field -->
                 <input type="text" name="website_hp_check" id="website_hp_check" tabindex="-1" style="display:none !important;" autocomplete="off">
 
                 <!-- Identifier Field -->
@@ -454,7 +454,7 @@
                     <label class="form-label-custom" for="username">School Email or ShuleCafe School ID <span style="color:#ef4444;">*</span></label>
                     <div class="input-wrapper" style="margin-bottom: 18px;">
                         <input type="text" id="username" class="form-control-custom" required autofocus autocomplete="username">
-                        <span class="input-icon">✉️</span>
+                        <span class="input-icon"></span>
                     </div>
                 </div>
 
@@ -466,8 +466,8 @@
                     </div>
                     <div class="input-wrapper" style="margin-bottom: 20px;">
                         <input type="password" id="password" class="form-control-custom" required style="padding-right: 44px !important;" autocomplete="current-password">
-                        <span class="input-icon">🔒</span>
-                        <button type="button" id="togglePassword" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 16px; padding: 4px;">👁️</button>
+                        <span class="input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+                        <button type="button" id="togglePassword" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 16px; padding: 4px;"></button>
                     </div>
                 </div>
 
@@ -505,10 +505,10 @@
                 togglePasswordBtn.addEventListener('click', () => {
                     if (passwordInput.type === 'password') {
                         passwordInput.type = 'text';
-                        togglePasswordBtn.textContent = '🙈';
+                        togglePasswordBtn.textContent = '';
                     } else {
                         passwordInput.type = 'password';
-                        togglePasswordBtn.textContent = '👁️';
+                        togglePasswordBtn.textContent = '';
                     }
                 });
             }

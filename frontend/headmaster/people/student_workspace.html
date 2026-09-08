@@ -104,7 +104,7 @@
                     <div class="header-top-row" style="display:flex;justify-content:space-between;align-items:center; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 12px;">
                         <app-breadcrumb path="Headmaster, Students Directory, Student 360° Workspace"></app-breadcrumb>
                         <div style="display:flex;gap:10px;">
-                            <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print</button>
+                            <button class="btn btn-primary btn-sm" onclick="window.print()"> Print</button>
                         </div>
                     </div>
 
@@ -133,13 +133,13 @@
                     <div class="secondary-sidebar">
                         <div class="secondary-sidebar-nav">
                             <button class="active" id="tabbtn-profile" onclick="switchWorkspaceTab('profile')">
-                                <span class="icon" style="color: #3b82f6;">📁</span> Profile Info
+                                <span class="icon" style="color: #3b82f6;"></span> Profile Info
                             </button>
                             <button id="tabbtn-academics" onclick="switchWorkspaceTab('academics')">
-                                <span class="icon" style="color: #10b981;">📊</span> Academic Ledger
+                                <span class="icon" style="color: #10b981;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Academic Ledger
                             </button>
                             <button id="tabbtn-attendance" onclick="switchWorkspaceTab('attendance')">
-                                <span class="icon" style="color: #f59e0b;">📅</span> Attendance Tracker
+                                <span class="icon" style="color: #f59e0b;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span> Attendance Tracker
                             </button>
                         </div>
                     </div>
@@ -147,11 +147,11 @@
                     <!-- ── MAIN CONTENT CONTAINER ──────────────────────────── -->
                     <div class="workspace-main-content">
 
-                    <!-- 📍 TAB 1: PROFILE INFO -->
+                    <!--  TAB 1: PROFILE INFO -->
                     <div id="panel-profile">
                         <div class="info-grid">
                             <div class="info-box">
-                                <h4>ℹ️ Biographical Details</h4>
+                                <h4>ℹ Biographical Details</h4>
                                 <div class="info-row"><span>Full Name:</span><span id="bioName">—</span></div>
                                 <div class="info-row"><span>Registration ID:</span><span id="bioCode">—</span></div>
                                 <div class="info-row"><span>Gender:</span><span id="bioGender">—</span></div>
@@ -159,7 +159,7 @@
                                 <div class="info-row"><span>Student Status:</span><span id="bioStatus">Active</span></div>
                             </div>
                             <div class="info-box">
-                                <h4>👨‍👩‍👧 Parent & Guardian Profile</h4>
+                                <h4>‍‍ Parent & Guardian Profile</h4>
                                 <div class="info-row"><span>Primary Guardian:</span><span id="parName">—</span></div>
                                 <div class="info-row"><span>Relational Link:</span><span id="parRelation">—</span></div>
                                 <div class="info-row"><span>Primary Contact Phone:</span><span id="parPhone">—</span></div>
@@ -170,7 +170,7 @@
                         </div>
                     </div>
 
-                    <!-- 📍 TAB 2: ACADEMIC LEDGER -->
+                    <!--  TAB 2: ACADEMIC LEDGER -->
                     <div id="panel-academics" style="display:none;">
                         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;background:#f8fafc;padding:14px 18px;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:18px;">
                             <div>
@@ -178,7 +178,7 @@
                                 <div style="font-size:12px;color:var(--c-text-muted);" id="acadClassInfo">Class Registered: Loading…</div>
                             </div>
                             <div style="display:flex;align-items:center;gap:10px;">
-                                <label style="font-size:13px;font-weight:700;">🕒 Academic Year Context:</label>
+                                <label style="font-size:13px;font-weight:700;"> Academic Year Context:</label>
                                 <select id="workspaceYearSelect" class="form-control" style="width:220px;font-weight:700;" onchange="onYearContextChange(this.value)">
                                     <!-- Options populated dynamically via JS -->
                                 </select>
@@ -186,17 +186,17 @@
                         </div>
 
                         <div id="readonlyWarn" class="readonly-banner" style="display:none;">
-                            🔒 <strong>ARCHIVED ACADEMIC RECORD (READ-ONLY)</strong> — Historical data for <span id="warnYr">Past Academic Year</span>. Past performance records are locked and cannot be edited.
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> <strong>ARCHIVED ACADEMIC RECORD (READ-ONLY)</strong> — Historical data for <span id="warnYr">Past Academic Year</span>. Past performance records are locked and cannot be edited.
                         </div>
 
-                        <!-- 📚 STUDENT GRADE SUBJECT ELECTIVES ENROLLMENT CARD -->
+                        <!-- <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> STUDENT GRADE SUBJECT ELECTIVES ENROLLMENT CARD -->
                         <div style="background:#ffffff;border:1px solid var(--c-border-light);border-radius:10px;padding:20px;margin-bottom:20px;">
                             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
                                 <div>
-                                    <h4 style="margin:0 0 4px;font-size:15px;font-weight:800;color:var(--c-text-primary);">📚 Enrolled Subjects (<span id="subjEnrollGradeName">Grade</span> Pool)</h4>
+                                    <h4 style="margin:0 0 4px;font-size:15px;font-weight:800;color:var(--c-text-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Enrolled Subjects (<span id="subjEnrollGradeName">Grade</span> Pool)</h4>
                                     <div style="font-size:12px;color:var(--c-text-muted);">Subjects inherited from the Grade Master Pool + custom electives selected for this student.</div>
                                 </div>
-                                <button class="btn btn-outline btn-sm" id="btnManageElectives" onclick="openManageElectivesModal()">⚙️ Manage Electives</button>
+                                <button class="btn btn-outline btn-sm" id="btnManageElectives" onclick="openManageElectivesModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Manage Electives</button>
                             </div>
                             <div id="studentEnrolledSubjectsContainer" style="display:flex;flex-wrap:wrap;gap:8px;">
                                 <span class="skeleton skeleton-text" style="width:220px;"></span>
@@ -227,9 +227,9 @@
                         </div>
                     </div>
 
-                    <!-- 📍 TAB 3: ATTENDANCE TRACKER -->
+                    <!--  TAB 3: ATTENDANCE TRACKER -->
                     <div id="panel-attendance" style="display:none;">
-                        <h4 style="margin:0 0 6px;font-size:16px;font-weight:800;">📅 Attendance Summary & Tracking</h4>
+                        <h4 style="margin:0 0 6px;font-size:16px;font-weight:800;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Attendance Summary & Tracking</h4>
                         <p style="margin:0 0 18px;font-size:13px;color:var(--c-text-muted);">Quantitative attendance tracking metrics across the selected academic year context.</p>
 
                         <div class="stat-card-grid">
@@ -249,12 +249,12 @@
     </div>
 </div>
 
-<!-- ⚙️ MANAGE ELECTIVES MODAL -->
+<!-- <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> MANAGE ELECTIVES MODAL -->
 <div class="custom-modal-overlay" id="manageElectivesModal">
     <div class="custom-modal-content">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #e2e8f0;">
-            <h4 style="margin:0;font-size:16px;font-weight:800;color:var(--c-text-primary);">⚙️ Manage Student Elective Subjects</h4>
-            <button style="background:none;border:none;font-size:20px;cursor:pointer;" onclick="closeManageElectivesModal()">✕</button>
+            <h4 style="margin:0;font-size:16px;font-weight:800;color:var(--c-text-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Manage Student Elective Subjects</h4>
+            <button style="background:none;border:none;font-size:20px;cursor:pointer;" onclick="closeManageElectivesModal()"></button>
         </div>
         <p style="margin:0 0 16px;font-size:13px;color:var(--c-text-muted);">
             Select optional/elective subjects from the Grade Master Pool for <strong id="modalStudentName">Student</strong>. Core subjects are mandatory and automatically locked.
@@ -330,7 +330,7 @@ async function loadWorkspace(studentId, year) {
         // Populate Timeline Dropdown
         const yrSelect = document.getElementById('workspaceYearSelect');
         if (data.timeline && data.timeline.length) {
-            yrSelect.innerHTML = data.timeline.map(t => `<option value="${t.academic_year}" ${t.academic_year === year ? 'selected' : ''}>📅 ${t.academic_year} — ${t.classroom_name}</option>`).join('');
+            yrSelect.innerHTML = data.timeline.map(t => `<option value="${t.academic_year}" ${t.academic_year === year ? 'selected' : ''}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${t.academic_year} — ${t.classroom_name}</option>`).join('');
         }
 
         // TAB 1: Profile Info
@@ -452,7 +452,7 @@ function openManageElectivesModal() {
         container.innerHTML = pool.map(s => {
             const isChecked = s.is_enrolled ? 'checked' : '';
             const isDisabled = s.is_core ? 'disabled' : '';
-            const coreLabel = s.is_core ? '<span style="font-size:11px;color:#059669;font-weight:700;">🟢 Core Mandatory (Locked)</span>' : '<span style="font-size:11px;color:#0284c7;font-weight:700;">🔵 Optional Elective</span>';
+            const coreLabel = s.is_core ? '<span style="font-size:11px;color:#059669;font-weight:700;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px;"></span> Core Mandatory (Locked)</span>' : '<span style="font-size:11px;color:#0284c7;font-weight:700;"> Optional Elective</span>';
 
             return `
                 <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 6px;border-bottom:1px solid #f1f5f9;">
@@ -496,7 +496,7 @@ document.getElementById('manageElectivesForm').addEventListener('submit', async 
         const result = await res.json();
 
         if (res.ok && result.success) {
-            alert('✅ Student elective enrollments updated successfully!');
+            alert('<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Student elective enrollments updated successfully!');
             closeManageElectivesModal();
             loadStudentSubjects(currentStudentId, currentContextYear);
         } else {

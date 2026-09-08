@@ -32,7 +32,7 @@
                         <div style="display: flex; align-items: center; justify-content: space-between;">
                             <div style="display: flex; align-items: center; gap: 12px;">
                                 <div style="width: 36px; height: 36px; border-radius: 8px; background: var(--c-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800;">
-                                    👩‍🏫
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                                 </div>
                                 <div>
                                     <h2 style="margin: 0; font-size: 17px; font-weight: 800; color: var(--c-text-primary);">Teachers & Staffs</h2>
@@ -51,7 +51,7 @@
                                 id="teacherToolbar" 
                                 search-placeholder="Search teachers by name, Staff ID, or department..." 
                                 primary-action="Register Teacher"
-                                secondary-actions='[{"label":"📥 Bulk CSV Import","action":"import_teachers"},{"label":"📤 Export Data As...","menu":[{"label":"PDF Document (.pdf)","action":"export_teachers_pdf"},{"label":"Excel Spreadsheet (.xlsx)","action":"export_teachers_excel"},{"label":"CSV Raw File (.csv)","action":"export_teachers_csv"}]}]'>
+                                secondary-actions='[{"label":" Bulk CSV Import","action":"import_teachers"},{"label":" Export Data As...","menu":[{"label":"PDF Document (.pdf)","action":"export_teachers_pdf"},{"label":"Excel Spreadsheet (.xlsx)","action":"export_teachers_excel"},{"label":"CSV Raw File (.csv)","action":"export_teachers_csv"}]}]'>
                             </app-workspace-toolbar>
                             <div class="card" style="margin-top: var(--sp-3);">
                                 <div id="teachersTableContainer"></div>
@@ -277,7 +277,7 @@
                     <strong>Temporary Password:</strong><br>
                     <div style="display:flex; align-items:center; gap:8px; margin-top:4px;">
                         <code id="credPwd" style="font-size: 16px; font-weight: bold; color: #b45309; background:#fef3c7; padding:4px 8px; border-radius:4px;">-</code>
-                        <button type="button" id="copyCredBtn" class="btn btn-outline btn-sm">📋 Copy</button>
+                        <button type="button" id="copyCredBtn" class="btn btn-outline btn-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Copy</button>
                     </div>
                 </div>
             </div>
@@ -444,7 +444,7 @@
                             document.getElementById('viewClassDeptVal').textContent = 'Parent / Guardian';
                         }
 
-                        document.getElementById('viewPwdStatus').textContent = u.is_password_changed == 1 ? '✅ Password Changed' : `⚠️ Pending Change (Temp: ${u.temp_password || 'N/A'})`;
+                        document.getElementById('viewPwdStatus').textContent = u.is_password_changed == 1 ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Password Changed' : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Pending Change (Temp: ${u.temp_password || 'N/A'})`;
                         document.getElementById('viewCreatedAt').textContent = u.created_at || 'N/A';
 
                         viewModal.style.display = 'flex';
@@ -825,7 +825,7 @@
                     if (data && data.success && data.group_count > 0 && alertBox) {
                         alertBox.style.display = 'flex';
                         alertBox.innerHTML = `
-                            <span>⚠️ <strong>Duplicate Name Auto-Audit Alert:</strong> System detected ${data.group_count} duplicate name group(s) in database.</span>
+                            <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> <strong>Duplicate Name Auto-Audit Alert:</strong> System detected ${data.group_count} duplicate name group(s) in database.</span>
                             <button type="button" id="btnAutoViewDups_${role}" class="btn btn-sm" style="background: #b45309; color: white; border: none; font-weight: 800; padding: 5px 14px; border-radius: 6px; cursor: pointer;">Review Duplicates</button>
                         `;
                         document.getElementById(`btnAutoViewDups_${role}`).addEventListener('click', () => {

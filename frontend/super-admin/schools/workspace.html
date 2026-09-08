@@ -63,7 +63,7 @@
                         
                         <app-workspace-tabs active-tab="overview">
                             <button class="workspace-tab" data-target="overview">Overview</button>
-                            <button class="workspace-tab" data-target="levels">🏫 Education Levels & Curriculum</button>
+                            <button class="workspace-tab" data-target="levels"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Education Levels & Curriculum</button>
                             <button class="workspace-tab" data-target="headmaster">Headmaster Account</button>
                             <button class="workspace-tab" data-target="teachers">Teachers Directory</button>
                             <button class="workspace-tab" data-target="students">Students Roster</button>
@@ -150,25 +150,25 @@
                                 <!-- Card 1: Tenant Suspension Control -->
                                 <div class="card" style="padding: var(--sp-6); border-color: #fde68a; background: #fffbeb;">
                                     <h3 style="color: #b45309; margin-top: 0; display:flex; align-items:center; gap:8px;">
-                                        ⚠️ School Tenant Access & Suspension
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> School Tenant Access & Suspension
                                     </h3>
                                     <p style="color: #92400e; margin-bottom: var(--sp-4); font-size: 13px; line-height: 1.5;">
                                         Temporarily suspend or restore platform access for this school. When suspended, teachers, students, and headmasters associated with this tenant cannot access the platform until reactivated.
                                     </p>
                                     <div id="suspendBtnContainer">
-                                        <button type="button" class="btn btn-outline" id="btnToggleSuspendSchool" style="border-color:#f59e0b; color:#b45309; font-weight:700; background:#fffbeb;">⚠️ Suspend School Tenant</button>
+                                        <button type="button" class="btn btn-outline" id="btnToggleSuspendSchool" style="border-color:#f59e0b; color:#b45309; font-weight:700; background:#fffbeb;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Suspend School Tenant</button>
                                     </div>
                                 </div>
 
                                 <!-- Card 2: Permanent Tenant Deletion -->
                                 <div class="card" style="padding: var(--sp-6); border-color: #fca5a5; background: #fff5f5;">
                                     <h3 style="color: #dc2626; margin-top: 0; display:flex; align-items:center; gap:8px;">
-                                        🚨 Danger Zone: Permanent Tenant Deletion
+                                         Danger Zone: Permanent Tenant Deletion
                                     </h3>
                                     <p style="color: #7f1d1d; margin-bottom: var(--sp-4); font-size: 13px; line-height: 1.5;">
                                         Deleting a school tenant will permanently purge all associated classrooms, student allocations, teacher accounts, and headmaster credentials. This action cannot be reversed.
                                     </p>
-                                    <button class="btn btn-danger" id="btnDeleteSchool" style="font-weight: 700;">🗑️ Permanent Delete School Tenant</button>
+                                    <button class="btn btn-danger" id="btnDeleteSchool" style="font-weight: 700;"> Permanent Delete School Tenant</button>
                                 </div>
 
                             </div>
@@ -185,7 +185,7 @@
     <div id="disableLevelModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; align-items: center; justify-content: center;">
         <div class="card" style="width: 100%; max-width: 520px; padding: var(--sp-6); background: white; border-top: 6px solid #dc2626;">
             <h3 style="margin-top: 0; color: #dc2626; display: flex; align-items: center; gap: 8px;">
-                ⚠️ High-Risk Action: Disable Education Level
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> High-Risk Action: Disable Education Level
             </h3>
             <div id="disableLevelModalBody" style="font-size: 13px; color: #334155; margin-bottom: 16px; line-height: 1.5;">
                 <!-- Populated dynamically -->
@@ -196,7 +196,7 @@
             </div>
             <div style="display: flex; gap: 8px; justify-content: flex-end;">
                 <button type="button" id="cancelDisableLevelBtn" class="btn btn-outline">Cancel</button>
-                <button type="button" id="submitDisableLevelBtn" class="btn btn-danger" disabled>🔴 Confirm Disable Education Level</button>
+                <button type="button" id="submitDisableLevelBtn" class="btn btn-danger" disabled><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:4px;"></span> Confirm Disable Education Level</button>
             </div>
         </div>
     </div>
@@ -205,13 +205,13 @@
     <div id="deleteSchoolModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center;">
         <div class="card" style="width: 100%; max-width: 540px; padding: var(--sp-6); background: white; border-top: 6px solid #b91c1c;">
             <h3 style="margin-top: 0; color: #b91c1c; display: flex; align-items: center; gap: 8px;">
-                🚨 Danger Zone: Permanent Tenant Deletion
+                 Danger Zone: Permanent Tenant Deletion
             </h3>
             <p style="font-size: 13px; color: #475569; margin-bottom: 12px; line-height: 1.5;">
                 You are about to permanently delete <strong id="delSchoolNameDisplay" style="color:#0f172a;">-</strong>. This will purge all associated classrooms, student allocations, teacher accounts, and headmaster credentials.
             </p>
             <div style="background: #fef2f2; border: 1px solid #fca5a5; padding: 12px; border-radius: 8px; font-size: 12px; color: #991b1b; margin-bottom: 16px;">
-                <strong>⚠️ Permanent Data Loss Warning:</strong> This operation cannot be reversed. All tenant academic records will be permanently erased.
+                <strong><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Permanent Data Loss Warning:</strong> This operation cannot be reversed. All tenant academic records will be permanently erased.
             </div>
             <div class="form-group" style="margin-bottom: 20px;">
                 <label class="form-label" style="font-weight: 700;">To confirm deletion, type exact school name: <span id="delRequiredNameText" style="color:#b91c1c; font-family:monospace; font-size:13px;">-</span></label>
@@ -219,7 +219,7 @@
             </div>
             <div style="display: flex; gap: 8px; justify-content: flex-end;">
                 <button type="button" id="cancelDeleteSchoolBtn" class="btn btn-outline">Cancel</button>
-                <button type="button" id="submitDeleteSchoolBtn" class="btn btn-danger" style="background:#b91c1c; border-color:#b91c1c;" disabled>🗑️ Permanently Delete School Tenant</button>
+                <button type="button" id="submitDeleteSchoolBtn" class="btn btn-danger" style="background:#b91c1c; border-color:#b91c1c;" disabled> Permanently Delete School Tenant</button>
             </div>
         </div>
     </div>
@@ -317,7 +317,7 @@
                     
                     document.getElementById('disableLevelModalBody').innerHTML = `
                         <div style="background:#fff7ed; border:1px solid #ffedd5; padding:12px; border-radius:8px; margin-bottom:12px; color:#c2410c;">
-                            <strong>🛡️ Safety Shield Alert:</strong> This school currently has <strong>${activeStudentCount} active student(s)</strong> enrolled in <strong>${levelCode}</strong> grades.
+                            <strong> Safety Shield Alert:</strong> This school currently has <strong>${activeStudentCount} active student(s)</strong> enrolled in <strong>${levelCode}</strong> grades.
                         </div>
                         Disabling this level will restrict student access and remove curriculum mappings. Please confirm that you intend to perform this action.
                     `;
@@ -412,12 +412,12 @@
                     } else {
                         alert(result.message || 'Failed to delete school tenant.');
                         submitDeleteBtn.disabled = false;
-                        submitDeleteBtn.textContent = '🗑️ Permanently Delete School Tenant';
+                        submitDeleteBtn.textContent = ' Permanently Delete School Tenant';
                     }
                 } catch (err) {
                     alert('Network error deleting school tenant.');
                     submitDeleteBtn.disabled = false;
-                    submitDeleteBtn.textContent = '🗑️ Permanently Delete School Tenant';
+                    submitDeleteBtn.textContent = ' Permanently Delete School Tenant';
                 }
             });
 
@@ -443,27 +443,27 @@
                         const cardClass = isActive ? 'level-provision-card active' : 'level-provision-card inactive';
 
                         const statusBadge = isActive
-                            ? '<span class="badge badge-success" style="font-weight:700;">🟢 Active & Provisioned</span>'
-                            : '<span class="badge badge-secondary" style="font-weight:700;">⚪ Not Enabled</span>';
+                            ? '<span class="badge badge-success" style="font-weight:700;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px;"></span> Active & Provisioned</span>'
+                            : '<span class="badge badge-secondary" style="font-weight:700;"> Not Enabled</span>';
 
                         const studentShieldBadge = (lvl.active_student_count > 0)
-                            ? `<div style="margin-top:6px;"><span class="badge badge-warning" style="background:#fef3c7; color:#b45309; border:1px solid #fde68a; font-weight:700;">🛡️ ${lvl.active_student_count} Active Student(s) Enrolled</span></div>`
+                            ? `<div style="margin-top:6px;"><span class="badge badge-warning" style="background:#fef3c7; color:#b45309; border:1px solid #fde68a; font-weight:700;"> ${lvl.active_student_count} Active Student(s) Enrolled</span></div>`
                             : '';
 
                         const statsBadge = isActive
-                            ? `<span style="background:#d1fae5;color:#065f46;padding:4px 12px;border-radius:12px;font-size:12px;font-weight:700;">📘 ${lvl.approved_subjects} Master Subjects Active</span>`
+                            ? `<span style="background:#d1fae5;color:#065f46;padding:4px 12px;border-radius:12px;font-size:12px;font-weight:700;"> ${lvl.approved_subjects} Master Subjects Active</span>`
                             : `<span style="color:var(--c-text-muted);font-size:12px;">Curriculum Not Provisioned</span>`;
 
                         const btnHtml = isActive
-                            ? `<button class="btn btn-outline btn-block" style="color:#dc2626;border-color:#fca5a5;font-weight:700;margin-top:16px;" onclick="toggleSchoolEducationLevel('${lvl.level_code}', 'inactive', ${lvl.active_student_count})">🔴 Disable Education Level</button>`
-                            : `<button class="btn btn-primary btn-block" style="font-weight:700;margin-top:16px;background:#059669;" onclick="toggleSchoolEducationLevel('${lvl.level_code}', 'active', 0)">⚡ Enable & Auto-Provision Curriculum ➡️</button>`;
+                            ? `<button class="btn btn-outline btn-block" style="color:#dc2626;border-color:#fca5a5;font-weight:700;margin-top:16px;" onclick="toggleSchoolEducationLevel('${lvl.level_code}', 'inactive', ${lvl.active_student_count})"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:4px;"></span> Disable Education Level</button>`
+                            : `<button class="btn btn-primary btn-block" style="font-weight:700;margin-top:16px;background:#059669;" onclick="toggleSchoolEducationLevel('${lvl.level_code}', 'active', 0)"> Enable & Auto-Provision Curriculum </button>`;
 
                         html += `
                             <div class="${cardClass}">
                                 <div>
                                     <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
                                         <div style="width:44px;height:44px;border-radius:50%;background:${isActive?'#059669':'#94a3b8'};color:white;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:bold;">
-                                            🏫
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                                         </div>
                                         <div>${statusBadge}${studentShieldBadge}</div>
                                     </div>
@@ -586,8 +586,8 @@
 
                         const isPwdChanged = (data.headmaster_is_password_changed == 1 || data.headmaster_is_password_changed === true);
                         const pwdStatusBadge = isPwdChanged 
-                            ? `<span class="badge badge-success" style="background:#dcfce7; color:#15803d; padding:4px 8px; border-radius:4px; font-weight:600;">✅ Password Changed & Secured by User</span>` 
-                            : `<span class="badge badge-warning" style="background:#fef3c7; color:#b45309; padding:4px 8px; border-radius:4px; font-weight:600;">⚠️ Temporary Password (Unchanged - One Time Use)</span>`;
+                            ? `<span class="badge badge-success" style="background:#dcfce7; color:#15803d; padding:4px 8px; border-radius:4px; font-weight:600;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Password Changed & Secured by User</span>` 
+                            : `<span class="badge badge-warning" style="background:#fef3c7; color:#b45309; padding:4px 8px; border-radius:4px; font-weight:600;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Temporary Password (Unchanged - One Time Use)</span>`;
 
                         // Update Overview
                         document.getElementById('infoName').textContent = data.name;
@@ -604,7 +604,7 @@
                             ? `<div style="background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #e2e8f0; font-family:monospace; color:#64748b;">•••••••• (Secured by Headmaster)</div>` 
                             : `<div style="display:flex; align-items:center; gap:12px; background:#fffbeb; padding:12px; border-radius:6px; border:1px solid #fde68a;">
                                 <code style="font-size:16px; font-weight:bold; color:#b45309;">${data.headmaster_temp_password || 'Shule#202X@Hk8'}</code>
-                                <button type="button" class="btn btn-outline btn-sm" onclick="navigator.clipboard.writeText('${data.headmaster_temp_password || 'Shule#202X@Hk8'}'); alert('Credentials copied to clipboard!');">📋 Copy Password</button>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="navigator.clipboard.writeText('${data.headmaster_temp_password || 'Shule#202X@Hk8'}'); alert('Credentials copied to clipboard!');"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Copy Password</button>
                                </div>`;
 
                         document.getElementById('hmDetails').innerHTML = `
@@ -628,9 +628,9 @@
                         const suspendBtnContainer = document.getElementById('suspendBtnContainer');
                         if (suspendBtnContainer) {
                             if (currentSchoolStatus === 'active') {
-                                suspendBtnContainer.innerHTML = `<button type="button" class="btn btn-outline" id="btnToggleSuspendSchool" style="border-color:#f59e0b; color:#b45309; font-weight:700; background:#fffbeb;">⚠️ Suspend School Tenant</button>`;
+                                suspendBtnContainer.innerHTML = `<button type="button" class="btn btn-outline" id="btnToggleSuspendSchool" style="border-color:#f59e0b; color:#b45309; font-weight:700; background:#fffbeb;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Suspend School Tenant</button>`;
                             } else {
-                                suspendBtnContainer.innerHTML = `<button type="button" class="btn btn-primary" id="btnToggleSuspendSchool" style="background:#059669; border-color:#059669; font-weight:700;">🟢 Activate School Tenant</button>`;
+                                suspendBtnContainer.innerHTML = `<button type="button" class="btn btn-primary" id="btnToggleSuspendSchool" style="background:#059669; border-color:#059669; font-weight:700;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px;"></span> Activate School Tenant</button>`;
                             }
                         }
 
@@ -641,10 +641,10 @@
                                 const alertHtml = `
                                     <div id="suspensionBanner" style="margin: var(--sp-6) var(--sp-6) 0 var(--sp-6); padding: 16px; background: #fff7ed; border: 1px solid #ffedd5; border-left: 6px solid #f59e0b; border-radius: 8px; color: #c2410c; display: flex; align-items: center; justify-content: space-between;">
                                         <div>
-                                            <strong style="font-size: 15px;">⚠️ THIS SCHOOL TENANT IS CURRENTLY SUSPENDED</strong><br>
+                                            <strong style="font-size: 15px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> THIS SCHOOL TENANT IS CURRENTLY SUSPENDED</strong><br>
                                             <span style="font-size: 13px; color: #9a3412;">Platform access for all headmasters, teachers, and students in this school is currently locked. Data remains 100% safe.</span>
                                         </div>
-                                        <button type="button" class="btn btn-primary" style="background:#059669; border-color:#059669; font-weight:700;" onclick="handleSchoolSuspendToggle()">🟢 Reactivate School Tenant Now</button>
+                                        <button type="button" class="btn btn-primary" style="background:#059669; border-color:#059669; font-weight:700;" onclick="handleSchoolSuspendToggle()"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px;"></span> Reactivate School Tenant Now</button>
                                     </div>
                                 `;
                                 document.querySelector('app-workspace-layout').insertAdjacentHTML('afterbegin', alertHtml);

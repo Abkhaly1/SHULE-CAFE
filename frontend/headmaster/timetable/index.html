@@ -132,7 +132,7 @@
                         </div>
                         <div>
                             <button id="btnReconfigWizard" class="btn btn-outline btn-sm" style="font-weight:700; border-radius:6px; display:none;" onclick="launchSetupWizard()">
-                                ⚙️ Re-Configure Setup Wizard
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Re-Configure Setup Wizard
                             </button>
                         </div>
                     </div>
@@ -145,7 +145,7 @@
                         <!-- =================================================================== -->
                         <div id="viewStage0Fallback" style="display: none;">
                             <div class="fallback-card">
-                                <div style="font-size: 48px; margin-bottom: 14px;">⚠️</div>
+                                <div style="font-size: 48px; margin-bottom: 14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
                                 <h3 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 800; color: #0f172a;">
                                     No Active Timetable Found for Academic Year <span class="current-year"></span>
                                 </h3>
@@ -154,7 +154,7 @@
                                 </p>
                                 <div>
                                     <button class="btn-action-primary" onclick="launchSetupWizard()">
-                                        🚀 Initialize Master Timetable Setup Wizard Now
+                                         Initialize Master Timetable Setup Wizard Now
                                     </button>
                                 </div>
                             </div>
@@ -186,7 +186,7 @@
                                     </div>
                                 </div>
 
-                                <!-- 📍 STAGE 1: Education Level & Grade Multi-Selection -->
+                                <!--  STAGE 1: Education Level & Grade Multi-Selection -->
                                 <div id="wizardStage1" style="display: block;">
                                     <h3 style="margin:0 0 6px 0; font-size:16px; font-weight:800; color:#0f172a;">
                                         STAGE 1: Education Level & Multi-Grade Cohort Selection
@@ -210,13 +210,13 @@
 
                                     <div style="display:flex; justify-content:flex-end;">
                                         <button class="btn-action-primary" onclick="proceedToStage2()">
-                                            Next: Operational Days Setup ➔
+                                            Next: Operational Days Setup 
                                         </button>
                                     </div>
                                 </div>
 
 
-                                <!-- 📍 STAGE 2: Operational Days Setup -->
+                                <!--  STAGE 2: Operational Days Setup -->
                                 <div id="wizardStage2" style="display: none;">
                                     <h3 style="margin:0 0 6px 0; font-size:16px; font-weight:800; color:#0f172a;">
                                         STAGE 2: Operational Days Baseline Setup
@@ -227,13 +227,13 @@
 
                                     <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
                                         <button class="btn btn-outline" id="btnDaysPresetWeekdays" onclick="applyDaysPreset('weekdays')" style="font-weight:700; font-size:13px;">
-                                            📅 [ Weekdays Only ] (Mon-Fri)
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> [ Weekdays Only ] (Mon-Fri)
                                         </button>
                                         <button class="btn btn-outline" id="btnDaysPresetWeekends" onclick="applyDaysPreset('weekends')" style="font-weight:700; font-size:13px;">
-                                            🏖️ [ Weekends Only ] (Sat-Sun)
+                                             [ Weekends Only ] (Sat-Sun)
                                         </button>
                                         <button class="btn btn-outline" id="btnDaysPresetCustom" onclick="applyDaysPreset('custom')" style="font-weight:700; font-size:13px;">
-                                            🛠️ [ Custom Days Selection ]
+                                             [ Custom Days Selection ]
                                         </button>
                                     </div>
 
@@ -245,13 +245,13 @@
                                     <div style="display:flex; justify-content:space-between;">
                                         <button class="btn btn-outline" onclick="navStage(1)" style="font-weight:700;">⬅ Back</button>
                                         <button class="btn-action-primary" onclick="proceedToStage3()">
-                                            Next: Periods & Time Matrix ➔
+                                            Next: Periods & Time Matrix 
                                         </button>
                                     </div>
                                 </div>
 
 
-                                <!-- 📍 STAGE 3: Quantitative Period Load & Dynamic Time Mapping -->
+                                <!--  STAGE 3: Quantitative Period Load & Dynamic Time Mapping -->
                                 <div id="wizardStage3" style="display: none;">
                                     <h3 style="margin:0 0 6px 0; font-size:16px; font-weight:800; color:#0f172a;">
                                         STAGE 3: Daily Period Load & Time Matrix Mapping
@@ -274,7 +274,7 @@
                                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                                         <div style="font-weight:800; font-size:14px; color:#0f172a;">Daily Period Time Table:</div>
                                         <div style="font-size:12px; color:#047857; font-weight:700;">
-                                            ⚡ Times apply globally to all operational week days
+                                             Times apply globally to all operational week days
                                         </div>
                                     </div>
 
@@ -297,13 +297,13 @@
                                     <div style="display:flex; justify-content:space-between;">
                                         <button class="btn btn-outline" onclick="navStage(2)" style="font-weight:700;">⬅ Back</button>
                                         <button class="btn-action-primary" onclick="proceedToStage4()">
-                                            Next: Subject Frequency Calibration ➔
+                                            Next: Subject Frequency Calibration 
                                         </button>
                                     </div>
                                 </div>
 
 
-                                <!-- 📍 STAGE 4: Subject Frequency Calibration & Capacity Balance Meter -->
+                                <!--  STAGE 4: Subject Frequency Calibration & Capacity Balance Meter -->
                                 <div id="wizardStage4" style="display: none;">
                                     <h3 style="margin:0 0 6px 0; font-size:16px; font-weight:800; color:#0f172a;">
                                         STAGE 4: Subject Frequency Calibration & Real-Time Capacity Meter
@@ -333,7 +333,7 @@
                                             </div>
                                             <div>
                                                 <div id="boxMeterBadge" class="meter-badge badge-balanced">
-                                                    ✅ Balanced Capacity
+                                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Balanced Capacity
                                                 </div>
                                             </div>
                                         </div>
@@ -359,13 +359,13 @@
                                     <div style="display:flex; justify-content:space-between;">
                                         <button class="btn btn-outline" onclick="navStage(3)" style="font-weight:700;">⬅ Back</button>
                                         <button id="btnWizardStage4Next" class="btn-action-primary" onclick="proceedToStage5()">
-                                            Next: Run Automated Engine ➔
+                                            Next: Run Automated Engine 
                                         </button>
                                     </div>
                                 </div>
 
 
-                                <!-- 📍 STAGE 5: Automated Conflict-Free Engine Execution -->
+                                <!--  STAGE 5: Automated Conflict-Free Engine Execution -->
                                 <div id="wizardStage5" style="display: none;">
                                     <h3 style="margin:0 0 6px 0; font-size:16px; font-weight:800; color:#0f172a;">
                                         STAGE 5: Automated Conflict-Free Generator Execution
@@ -375,7 +375,7 @@
                                     </p>
 
                                     <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:10px; padding:18px; margin-bottom:20px; color:#166534; font-size:13px;">
-                                        <div style="font-weight:800; font-size:14px; margin-bottom:6px;">🛡️ Multi-Tier Time-Conflict Matrix Checks:</div>
+                                        <div style="font-weight:800; font-size:14px; margin-bottom:6px;"> Multi-Tier Time-Conflict Matrix Checks:</div>
                                         <ul style="margin:0; padding-left:20px; line-height:1.6;">
                                             <li><strong>Teacher Collision Prevention:</strong> Ensures no teacher is scheduled in 2 classrooms during exact same day & period slot.</li>
                                             <li><strong>Cross-Level Verification:</strong> Scans O-Level and A-Level simultaneously for teachers working across both tracks.</li>
@@ -384,7 +384,7 @@
                                     </div>
 
                                     <div id="boxEngineProgress" style="display:none; text-align:center; padding:32px 0;">
-                                        <div style="font-size:32px; margin-bottom:8px;">⚡</div>
+                                        <div style="font-size:32px; margin-bottom:8px;"></div>
                                         <div style="font-weight:800; font-size:16px; color:#0f172a;">Running Conflict-Free Automated Engine...</div>
                                         <div style="font-size:13px; color:#64748b; margin-top:4px;">Scanning teacher qualifications & classroom slots.</div>
                                     </div>
@@ -392,7 +392,7 @@
                                     <!-- Bottleneck Report (if any) -->
                                     <div id="boxBottleneckReport" style="display:none; background:#fef2f2; border:1px solid #fca5a5; border-radius:10px; padding:18px; margin-bottom:20px;">
                                         <h4 style="margin:0 0 8px 0; color:#991b1b; font-size:15px; font-weight:800;">
-                                            ⚠️ Structural Bottleneck Report
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Structural Bottleneck Report
                                         </h4>
                                         <div style="font-size:13px; color:#7f1d1d; margin-bottom:12px;" id="lblBottleneckSummary"></div>
                                         <ul id="listBottlenecks" style="margin:0; padding-left:20px; font-size:12px; color:#991b1b;"></ul>
@@ -402,10 +402,10 @@
                                         <button class="btn btn-outline" onclick="navStage(4)" style="font-weight:700;">⬅ Back</button>
                                         <div style="display:flex; gap:10px; flex-wrap:wrap;">
                                             <button class="btn-action-primary" id="btnRunEngine" onclick="runAutomatedEngine()">
-                                                ⚡ Run Automated Generator Now
+                                                 Run Automated Generator Now
                                             </button>
                                             <button class="btn btn-primary" id="btnProceedToMatrix" onclick="loadTimetableMatrixData()" style="display:none; background:#047857; font-weight:800; padding:10px 20px;">
-                                                📊 View & Refine Timetable Matrix ➡
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> View & Refine Timetable Matrix 
                                             </button>
                                         </div>
                                     </div>
@@ -427,11 +427,11 @@
                                                 Master Timetable Matrix Overview
                                             </h3>
                                             <span id="badgeTimetableStatus" class="badge" style="background:#fef3c7; color:#92400e; font-weight:800; font-size:12px; padding:6px 14px;">
-                                                🟡 DRAFT LAYOUT (Unpublished)
+                                                <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;margin-right:4px;"></span> DRAFT LAYOUT (Unpublished)
                                             </span>
                                         </div>
                                         <div style="font-size:12px; color:#64748b; margin-top:4px;">
-                                            Weekly schedule layout for Academic Year <span class="current-year"></span>. 💡 <strong>Drag & Drop</strong> any period card to refine slots. Live engine validates teacher collisions.
+                                            Weekly schedule layout for Academic Year <span class="current-year"></span>. <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5.76.76 1.23 1.52 1.41 2.5"/></svg> <strong>Drag & Drop</strong> any period card to refine slots. Live engine validates teacher collisions.
                                         </div>
                                     </div>
                                     <div style="display:flex; gap:10px; align-items:center;">
@@ -439,7 +439,7 @@
                                             <option value="">-- Select Classroom Stream --</option>
                                         </select>
                                         <button class="btn btn-outline btn-sm" style="font-weight:700;" onclick="launchSetupWizard()">
-                                            ⚙️ Setup Wizard
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Setup Wizard
                                         </button>
                                     </div>
                                 </div>
@@ -464,15 +464,15 @@
                                     <div style="display:flex; gap:12px; align-items:center;">
                                         <!-- Split-Button Dropdown for Document Exportation -->
                                         <div style="position:relative; display:inline-block;" id="exportDropdownContainer">
-                                            <button type="button" class="btn btn-outline" onclick="$('#exportMenu').toggle()" style="font-weight:700; background:#f8fafc; color:#0f172a;">📥 Export Data As... ▾</button>
+                                            <button type="button" class="btn btn-outline" onclick="$('#exportMenu').toggle()" style="font-weight:700; background:#f8fafc; color:#0f172a;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export Data As... ▾</button>
                                             <div id="exportMenu" style="display:none; position:absolute; bottom:100%; right:0; background:#fff; border:1px solid #e2e8f0; border-radius:6px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); z-index:1000; min-width:240px; padding:4px 0; margin-bottom:8px; text-align:left;">
-                                                <a href="javascript:void(0)" onclick="exportTimetable('pdf'); $('#exportMenu').hide();" style="display:block; padding:10px 16px; color:#0f172a; text-decoration:none; font-weight:600; border-bottom:1px solid #f1f5f9; transition: background 0.2s;"><span style="color:#ef4444; margin-right:8px;">📄</span> PDF Document (.pdf)</a>
-                                                <a href="javascript:void(0)" onclick="exportTimetable('excel'); $('#exportMenu').hide();" style="display:block; padding:10px 16px; color:#0f172a; text-decoration:none; font-weight:600; border-bottom:1px solid #f1f5f9; transition: background 0.2s;"><span style="color:#10b981; margin-right:8px;">📊</span> Excel Spreadsheet (.xlsx)</a>
-                                                <a href="javascript:void(0)" onclick="exportTimetable('csv'); $('#exportMenu').hide();" style="display:block; padding:10px 16px; color:#0f172a; text-decoration:none; font-weight:600; transition: background 0.2s;"><span style="color:#64748b; margin-right:8px;">📝</span> CSV Raw File (.csv)</a>
+                                                <a href="javascript:void(0)" onclick="exportTimetable('pdf'); $('#exportMenu').hide();" style="display:block; padding:10px 16px; color:#0f172a; text-decoration:none; font-weight:600; border-bottom:1px solid #f1f5f9; transition: background 0.2s;"><span style="color:#ef4444; margin-right:8px;"></span> PDF Document (.pdf)</a>
+                                                <a href="javascript:void(0)" onclick="exportTimetable('excel'); $('#exportMenu').hide();" style="display:block; padding:10px 16px; color:#0f172a; text-decoration:none; font-weight:600; border-bottom:1px solid #f1f5f9; transition: background 0.2s;"><span style="color:#10b981; margin-right:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Excel Spreadsheet (.xlsx)</a>
+                                                <a href="javascript:void(0)" onclick="exportTimetable('csv'); $('#exportMenu').hide();" style="display:block; padding:10px 16px; color:#0f172a; text-decoration:none; font-weight:600; transition: background 0.2s;"><span style="color:#64748b; margin-right:8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></span> CSV Raw File (.csv)</a>
                                             </div>
                                         </div>
-                                        <button type="button" class="btn btn-outline" onclick="saveTimetableAsDraft()" style="font-weight:700;">💾 Save Layout as Draft</button>
-                                        <button type="button" class="btn btn-primary" onclick="publishTimetableLive()" style="font-weight:800; background:#047857; padding:10px 24px;">🚀 Publish Timetable Live</button>
+                                        <button type="button" class="btn btn-outline" onclick="saveTimetableAsDraft()" style="font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Layout as Draft</button>
+                                        <button type="button" class="btn btn-primary" onclick="publishTimetableLive()" style="font-weight:800; background:#047857; padding:10px 24px;"> Publish Timetable Live</button>
                                     </div>
                                 </div>
                             </div>
@@ -489,7 +489,7 @@
     <div id="modalWarningPopup" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); align-items:center; justify-content:center; z-index:999999; backdrop-filter:blur(4px);">
         <div style="background:white; width:90%; max-width:440px; border-radius:16px; padding:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.25); text-align:center;">
             <div style="width:54px; height:54px; border-radius:50%; background:#fef2f2; color:#dc2626; display:flex; align-items:center; justify-content:center; font-size:26px; margin:0 auto 14px; border:2px solid #fecaca;">
-                ⚠️
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             </div>
             <h3 id="lblWarningModalTitle" style="margin:0 0 8px; font-size:17px; font-weight:800; color:#0f172a;">
                 Collision Warning
@@ -747,11 +747,11 @@
                     labelControlHtml = `
                         <div style="display:flex; gap:6px; align-items:center;">
                             <select class="form-control form-control-sm selBreakPreset" data-idx="${idx}" onchange="handleBreakPresetChange(${idx}, this.value)" style="font-weight:700;">
-                                <option value="Tea / Breakfast Break" ${selectedPreset === 'Tea / Breakfast Break' ? 'selected' : ''}>☕ Tea / Breakfast Break</option>
-                                <option value="Lunch Break" ${selectedPreset === 'Lunch Break' ? 'selected' : ''}>🍲 Lunch Break</option>
-                                <option value="Muslim Prayer Break" ${selectedPreset === 'Muslim Prayer Break' ? 'selected' : ''}>🕌 Muslim Prayer Break</option>
-                                <option value="Assembly / Sports Break" ${selectedPreset === 'Assembly / Sports Break' ? 'selected' : ''}>🏃 Assembly / Sports Break</option>
-                                <option value="Custom Rest Break" ${isCustom ? 'selected' : ''}>✏️ Custom Rest Break...</option>
+                                <option value="Tea / Breakfast Break" ${selectedPreset === 'Tea / Breakfast Break' ? 'selected' : ''}> Tea / Breakfast Break</option>
+                                <option value="Lunch Break" ${selectedPreset === 'Lunch Break' ? 'selected' : ''}> Lunch Break</option>
+                                <option value="Muslim Prayer Break" ${selectedPreset === 'Muslim Prayer Break' ? 'selected' : ''}> Muslim Prayer Break</option>
+                                <option value="Assembly / Sports Break" ${selectedPreset === 'Assembly / Sports Break' ? 'selected' : ''}> Assembly / Sports Break</option>
+                                <option value="Custom Rest Break" ${isCustom ? 'selected' : ''}> Custom Rest Break...</option>
                             </select>
                             <input type="text" class="form-control form-control-sm txtCustomBreakLabel" data-idx="${idx}" value="${p.period_name}" style="display:${isCustom ? 'block' : 'none'}; font-weight:700; width:140px;" placeholder="Custom label...">
                         </div>
@@ -766,8 +766,8 @@
                     <tr style="border-bottom:1px solid #f1f5f9; background:${isB ? '#f8fafc' : '#ffffff'};">
                         <td style="padding:8px 10px; width:190px;">
                             <select class="form-control form-control-sm selSlotType" data-idx="${idx}" onchange="handleSlotTypeChange(${idx}, this.value)" style="font-weight:800; cursor:pointer; color:${isB ? '#92400e' : '#0369a1'}; background:${isB ? '#fef3c7' : '#e0f2fe'}; border:1px solid ${isB ? '#fde047' : '#bae6fd'};">
-                                <option value="0" ${!isB ? 'selected' : ''}>📚 Class Period</option>
-                                <option value="1" ${isB ? 'selected' : ''}>☕ Rest Break</option>
+                                <option value="0" ${!isB ? 'selected' : ''}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Class Period</option>
+                                <option value="1" ${isB ? 'selected' : ''}> Rest Break</option>
                             </select>
                         </td>
                         <td style="padding:8px 10px;">
@@ -950,7 +950,7 @@
             }
 
             if (hasError) {
-                alert(`⚠️ Time Matrix Validation Error:\n${errorMessage}`);
+                alert(`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Time Matrix Validation Error:\n${errorMessage}`);
                 return;
             }
 
@@ -1112,14 +1112,14 @@
             const btnNext = $('#btnWizardStage4Next');
 
             if (anyOverload) {
-                badgeBox.attr('class', 'meter-badge badge-overload').html(`⚠️ Overload Detected: ${overloadedGrades.join(', ')}`);
+                badgeBox.attr('class', 'meter-badge badge-overload').html(`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Overload Detected: ${overloadedGrades.join(', ')}`);
                 btnNext.prop('disabled', true); // BLOCK Progression!
             } else if (activeLoad === totalCapacity) {
-                badgeBox.attr('class', 'meter-badge badge-balanced').html(`✅ ${activeGradeName} Balanced Capacity (${activeLoad}/${totalCapacity} Slots)`);
+                badgeBox.attr('class', 'meter-badge badge-balanced').html(`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> ${activeGradeName} Balanced Capacity (${activeLoad}/${totalCapacity} Slots)`);
                 btnNext.prop('disabled', false);
             } else {
                 const diff = totalCapacity - activeLoad;
-                badgeBox.attr('class', 'meter-badge badge-underload').html(`💡 ${activeGradeName}: ${diff} free remaining slots`);
+                badgeBox.attr('class', 'meter-badge badge-underload').html(`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5.76.76 1.23 1.52 1.41 2.5"/></svg> ${activeGradeName}: ${diff} free remaining slots`);
                 btnNext.prop('disabled', false);
             }
         }
@@ -1199,7 +1199,7 @@
                         $('#listBottlenecks').html(bHtml);
                         $('#boxBottleneckReport').show();
                     } else {
-                        alert(`🎉 Conflict-Free Timetable Generated Successfully! ${data.scheduled_slots_count} period slots created with zero collisions.`);
+                        alert(` Conflict-Free Timetable Generated Successfully! ${data.scheduled_slots_count} period slots created with zero collisions.`);
                         loadTimetableMatrixData();
                     }
                 } else {
@@ -1230,9 +1230,9 @@
                     const isPub = parseInt(dataStatus.config.is_published || 0) === 1;
                     const badge = $('#badgeTimetableStatus');
                     if (isPub) {
-                        badge.css({'background': '#dcfce7', 'color': '#15803d'}).html('🟢 LIVE PUBLISHED (Active Shuleni)');
+                        badge.css({'background': '#dcfce7', 'color': '#15803d'}).html('<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px;"></span> LIVE PUBLISHED (Active Shuleni)');
                     } else {
-                        badge.css({'background': '#fef3c7', 'color': '#92400e'}).html('🟡 DRAFT LAYOUT (Unpublished)');
+                        badge.css({'background': '#fef3c7', 'color': '#92400e'}).html('<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;margin-right:4px;"></span> DRAFT LAYOUT (Unpublished)');
                     }
                 }
 
@@ -1280,7 +1280,7 @@
                     if (p.is_break === 1) {
                         return `
                             <td style="background:#f8fafc; text-align:center; vertical-align:middle;">
-                                <div class="tt-break-box">☕ ${p.period_name}</div>
+                                <div class="tt-break-box"> ${p.period_name}</div>
                             </td>
                         `;
                     }
@@ -1298,7 +1298,7 @@
                                 <div class="tt-slot-card">
                                     <div style="font-weight:800; color:#166534; font-size:12px;">${slot.subject_name || slot.subject_code}</div>
                                     <span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:700; font-size:10px;">${slot.subject_code}</span>
-                                    <div style="font-size:11px; color:#475569; margin-top:4px; font-weight:700;">👩‍🏫 ${slot.teacher_name || 'Assigned Staff'}</div>
+                                    <div style="font-size:11px; color:#475569; margin-top:4px; font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> ${slot.teacher_name || 'Assigned Staff'}</div>
                                 </div>
                             </td>
                         `;
@@ -1406,7 +1406,7 @@
 
                 const data = await res.json();
                 if (!data.success) {
-                    showWarningModal('⚠️ Timetable Conflict Warning', data.message || 'Invalid Action: Teacher is already assigned during this period slot.');
+                    showWarningModal('<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Timetable Conflict Warning', data.message || 'Invalid Action: Teacher is already assigned during this period slot.');
                     return;
                 }
 
@@ -1414,7 +1414,7 @@
 
             } catch (err) {
                 console.error("Drop swap error:", err);
-                showWarningModal('⚠️ Drag & Drop Error', 'Error processing drag-and-drop move.');
+                showWarningModal('<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Drag & Drop Error', 'Error processing drag-and-drop move.');
             }
         };
 
@@ -1445,14 +1445,14 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    $('#badgeTimetableStatus').css({'background': '#fef3c7', 'color': '#92400e'}).html('🟡 DRAFT LAYOUT (Unpublished)');
-                    showWarningModal('💾 Timetable Saved as Draft', 'Timetable layout saved as DRAFT. Changes are locked from teacher and student dashboards until published.');
+                    $('#badgeTimetableStatus').css({'background': '#fef3c7', 'color': '#92400e'}).html('<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;margin-right:4px;"></span> DRAFT LAYOUT (Unpublished)');
+                    showWarningModal('<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Timetable Saved as Draft', 'Timetable layout saved as DRAFT. Changes are locked from teacher and student dashboards until published.');
                 } else {
-                    showWarningModal('⚠️ Draft Save Failed', data.message || 'Error saving draft layout.');
+                    showWarningModal('<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Draft Save Failed', data.message || 'Error saving draft layout.');
                 }
             } catch (e) {
                 console.error("Save draft error:", e);
-                showWarningModal('⚠️ Network Error', 'Network or server error while saving draft.');
+                showWarningModal('<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Network Error', 'Network or server error while saving draft.');
             }
         };
 
@@ -1466,14 +1466,14 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    $('#badgeTimetableStatus').css({'background': '#dcfce7', 'color': '#15803d'}).html('🟢 LIVE PUBLISHED (Active Shuleni)');
-                    showWarningModal('🚀 Timetable Published Live!', 'Official schedules are now live and active across all teacher and classroom portals shuleni.');
+                    $('#badgeTimetableStatus').css({'background': '#dcfce7', 'color': '#15803d'}).html('<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px;"></span> LIVE PUBLISHED (Active Shuleni)');
+                    showWarningModal(' Timetable Published Live!', 'Official schedules are now live and active across all teacher and classroom portals shuleni.');
                 } else {
-                    showWarningModal('⚠️ Publication Failed', data.message || 'Error publishing live timetable.');
+                    showWarningModal('<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Publication Failed', data.message || 'Error publishing live timetable.');
                 }
             } catch (e) {
                 console.error("Publish live error:", e);
-                showWarningModal('⚠️ Network Error', 'Network or server error while publishing live.');
+                showWarningModal('<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Network Error', 'Network or server error while publishing live.');
             }
         };
 

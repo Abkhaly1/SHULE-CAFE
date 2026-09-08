@@ -641,25 +641,25 @@ async function loadSetup() {
 
 function renderAccordion(grades) {
     const el = document.getElementById('gradesAccordion');
-    if (!grades.length) { el.innerHTML = '<div class="empty-state"><div class="es-icon">📋</div><p>No grades found.</p></div>'; return; }
+    if (!grades.length) { el.innerHTML = '<div class="empty-state"><div class="es-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></div><p>No grades found.</p></div>'; return; }
 
     // Group by level
     const byLevel = {};
     grades.forEach(g => { (byLevel[g.level_name] = byLevel[g.level_name] || []).push(g); });
 
-    const levelIcons = { 'O-Level':'📗', 'A-Level':'📘', 'Primary':'📒' };
+    const levelIcons = { 'O-Level':'', 'A-Level':'', 'Primary':'' };
     let html = '';
 
     Object.entries(byLevel).forEach(([level, gs]) => {
         html += `<div class="level-header">
-            <h3>${levelIcons[level]||'🏫'} ${level}</h3>
+            <h3>${levelIcons[level]||'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>'} ${level}</h3>
             <div class="level-line"></div>
         </div>
         <div class="grades-grid-layout">`;
 
         gs.forEach(g => {
             const configured = g.classroom_count > 0;
-            const btnLabel   = configured ? '👁️ Manage Workspace ➔' : '⚡ Setup Streams ➔';
+            const btnLabel   = configured ? ' Manage Workspace ' : ' Setup Streams ';
 
             let streamChipsHtml = '';
             if (g.classrooms && g.classrooms.length > 0) {
@@ -670,7 +670,7 @@ function renderAccordion(grades) {
                     </span>
                 `).join('');
             } else {
-                streamChipsHtml = `<span class="stream-empty-tag">⚠️ No active streams</span>`;
+                streamChipsHtml = `<span class="stream-empty-tag"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> No active streams</span>`;
             }
 
             html += `
@@ -686,7 +686,7 @@ function renderAccordion(grades) {
                             </div>
                         </div>
                         <span class="badge ${configured ? 'badge-success' : 'badge-warning'}" style="font-weight: 700; font-size: 10px; padding: 2px 6px; flex-shrink: 0; border-radius: 999px;">
-                            ${configured ? `🟢 ${g.classroom_count} Stream` : '⚠️ Setup'}
+                            ${configured ? `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px;"></span> ${g.classroom_count} Stream` : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Setup'}
                         </span>
                     </div>
 
@@ -718,8 +718,8 @@ function renderClassroomChips(g) {
     }
     const chips = g.classrooms.map(c => `
         <div class="classroom-chip" id="chip-room-${c.id}">
-            🏫 ${c.classroom_name}
-            <button class="chip-delete" title="Delete ${c.classroom_name}" onclick="startDeleteProtection(${c.id},'${esc(c.classroom_name)}',this)">✕</button>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> ${c.classroom_name}
+            <button class="chip-delete" title="Delete ${c.classroom_name}" onclick="startDeleteProtection(${c.id},'${esc(c.classroom_name)}',this)"></button>
         </div>`).join('');
     return `<div class="classroom-chips">${chips}</div>`;
 }
@@ -813,8 +813,8 @@ function startDeleteProtection(classroomId, name, btnEl) {
     // Transform row into yellow alert with active undo button
     chipEl.style.cssText = 'background:#fef9c3;border:1.5px solid #fcd34d;color:#92400e;padding:5px 12px;border-radius:20px;display:inline-flex;align-items:center;gap:8px;';
     chipEl.innerHTML = `
-        <span style="font-weight:700;font-size:11px;">⚠️ "${name}" queued for deletion (<strong id="undo-timer-${classroomId}">5</strong>s)…</span>
-        <button style="background:#059669;color:white;padding:2px 8px;font-size:11px;font-weight:800;border:none;border-radius:12px;cursor:pointer;" onclick="event.stopPropagation();undoDeletion(${classroomId})">↩️ UNDO</button>
+        <span style="font-weight:700;font-size:11px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> "${name}" queued for deletion (<strong id="undo-timer-${classroomId}">5</strong>s)…</span>
+        <button style="background:#059669;color:white;padding:2px 8px;font-size:11px;font-weight:800;border:none;border-radius:12px;cursor:pointer;" onclick="event.stopPropagation();undoDeletion(${classroomId})">↩ UNDO</button>
     `;
 
     const timerId = setInterval(() => {
@@ -893,7 +893,7 @@ async function executeVerifiedDeletion() {
     });
 
     closeDeleteModal();
-    btn.textContent = '🔴 CONFIRM DELETE';
+    btn.textContent = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:4px;"></span> CONFIRM DELETE';
 
     showToast(res.message, !res.success);
     if (res.success) loadSetup();
@@ -939,7 +939,7 @@ async function executeGradeImport(e) {
         const data = await res.json();
         closeGradeImportModal();
         btn.disabled = false;
-        btn.textContent = '📥 Upload & Lock to Grade Cohort';
+        btn.textContent = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Upload & Lock to Grade Cohort';
 
         if (data.success) {
             showToast(data.message);
@@ -949,7 +949,7 @@ async function executeGradeImport(e) {
         }
     } catch (err) {
         btn.disabled = false;
-        btn.textContent = '📥 Upload & Lock to Grade Cohort';
+        btn.textContent = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Upload & Lock to Grade Cohort';
         showToast('Network/system error during import.', true);
     }
 }
@@ -1156,8 +1156,8 @@ function renderPromoTable(data) {
     const { students, target_classrooms, repeat_classrooms, from_year, to_year } = data;
     document.getElementById('promoSubLabel').textContent = `From ${from_year} → ${to_year} · ${students.length} students`;
 
-    const targetOpts = [...target_classrooms.map(c=>`<option value="${c.id}">⬆️ Promote → ${c.classroom_name}</option>`),
-                        ...repeat_classrooms.map(c=>`<option value="${c.id}">🔁 Repeat → ${c.classroom_name}</option>`)].join('');
+    const targetOpts = [...target_classrooms.map(c=>`<option value="${c.id}">⬆ Promote → ${c.classroom_name}</option>`),
+                        ...repeat_classrooms.map(c=>`<option value="${c.id}"> Repeat → ${c.classroom_name}</option>`)].join('');
 
     // Populate bulk target select
     document.getElementById('bulkTargetSelect').innerHTML = '<option value="">-- Choose target --</option>' + targetOpts;
@@ -1166,8 +1166,8 @@ function renderPromoTable(data) {
     tbody.innerHTML = students.map(s => {
         const pass = s.auto_pass;
         const recTag = pass 
-            ? `<span class="badge badge-success" style="font-weight:700;font-size:12px;">🟢 Promote</span>` 
-            : `<span class="badge badge-warning" style="font-weight:700;font-size:12px;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;">🔴 Repeat</span>`;
+            ? `<span class="badge badge-success" style="font-weight:700;font-size:12px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px;"></span> Promote</span>` 
+            : `<span class="badge badge-warning" style="font-weight:700;font-size:12px;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:4px;"></span> Repeat</span>`;
         const gpaTag = `<span style="font-weight:800;color:${pass ? '#059669' : '#dc2626'};">${s.final_gpa}</span>`;
 
         // Pre-select action from system recommendation
@@ -1199,7 +1199,7 @@ function renderPromoTable(data) {
     students.forEach(s => updateRowStyle(s.student_id));
 
     if (!target_classrooms.length) {
-        showToast(`⚠️ No target classrooms found for ${to_year}. Please set up ${to_year} classrooms first in the Setup tab.`, true);
+        showToast(`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> No target classrooms found for ${to_year}. Please set up ${to_year} classrooms first in the Setup tab.`, true);
     }
 }
 
@@ -1214,13 +1214,13 @@ function updateRowStyle(sid) {
         row.style.background = '#f0fdf4';
         targetSelect.disabled = false;
         targetSelect.innerHTML = target_classrooms.length
-            ? target_classrooms.map(c=>`<option value="${c.id}">⬆️ ${c.classroom_name}</option>`).join('')
+            ? target_classrooms.map(c=>`<option value="${c.id}">⬆ ${c.classroom_name}</option>`).join('')
             : '<option value="">-- No Target Rooms --</option>';
     } else if (outcome === 'Repeated') {
         row.style.background = '#fef9c3';
         targetSelect.disabled = false;
         targetSelect.innerHTML = repeat_classrooms.length
-            ? repeat_classrooms.map(c=>`<option value="${c.id}">🔁 ${c.classroom_name}</option>`).join('')
+            ? repeat_classrooms.map(c=>`<option value="${c.id}"> ${c.classroom_name}</option>`).join('')
             : '<option value="">-- No Repeat Rooms --</option>';
     } else {
         row.style.background = '#f1f5f9';
@@ -1281,7 +1281,7 @@ function goPromoStep3() {
     });
 
     if (missingTarget) {
-        showToast(`⚠️ ${missingTarget} student(s) have no target classroom assigned. Please assign all before proceeding.`, true);
+        showToast(`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ${missingTarget} student(s) have no target classroom assigned. Please assign all before proceeding.`, true);
         return;
     }
 
@@ -1338,10 +1338,10 @@ async function executePromotion() {
         body: { action:'process', from_year:fromYear, to_year:toYear, from_classroom_id:parseInt(fromClassroomId), promotions }
     });
 
-    btn.disabled = false; btn.textContent = '🎓 Execute Promotion Now';
+    btn.disabled = false; btn.textContent = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Execute Promotion Now';
 
     if (res.success) {
-        showToast(`🎓 ${res.message}`);
+        showToast(`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> ${res.message}`);
         // Reset wizard
         setTimeout(() => {
             document.getElementById('promoStep3').style.display = 'none';
@@ -1371,7 +1371,7 @@ function showToast(msg, isErr=false) {
     t.style.background = isErr ? '#fef2f2' : '#f0fdf4';
     t.style.border     = `1.5px solid ${isErr?'#fca5a5':'#6ee7b7'}`;
     t.style.color      = isErr ? '#991b1b' : '#065f46';
-    t.innerHTML        = (isErr ? '⚠️ ' : '✅ ') + msg;
+    t.innerHTML        = (isErr ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ' : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> ') + msg;
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 4000);
 }

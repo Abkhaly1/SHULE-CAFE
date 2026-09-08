@@ -172,9 +172,9 @@
                         <!-- Alert Box for Notifications -->
                         <div id="profileAlert" class="alert" style="display: none; margin-bottom: 12px; font-size: 12px; padding: 8px 12px;"></div>
 
-                        <!-- 🔒 SECTION 1: PERMANENT & LOCKED IDENTIFIERS (READ-ONLY) -->
+                        <!-- <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> SECTION 1: PERMANENT & LOCKED IDENTIFIERS (READ-ONLY) -->
                         <div class="compact-card" id="profile_sec_locked">
-                            <h3 class="form-section-title" id="secLockedTitle">🔒 Permanent Identifiers (Cannot be changed by user)</h3>
+                            <h3 class="form-section-title" id="secLockedTitle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Permanent Identifiers (Cannot be changed by user)</h3>
                             <p style="margin: 0 0 10px 0; font-size: 11px; color: #64748b;" id="secLockedDesc">
                                 Full Name and Registration Code are permanent identifiers. Only the Headmaster can change them if required.
                             </p>
@@ -184,7 +184,7 @@
                                     <label class="compact-label" id="lblFullName">Full Name</label>
                                     <div class="locked-field-badge" id="profile_badge_fullname">
                                         <span id="txtFullName">-</span>
-                                        <span id="lockLabel1" style="font-size: 11px; color: #94a3b8;">🔒 Lock</span>
+                                        <span id="lockLabel1" style="font-size: 11px; color: #94a3b8;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Lock</span>
                                     </div>
                                 </div>
 
@@ -192,7 +192,7 @@
                                     <label class="compact-label" id="lblRegId">Reg Code / Staff ID</label>
                                     <div class="locked-field-badge" id="profile_badge_regcode" style="background: #f0fdf4; border-color: #bbf7d0; color: #047857;">
                                         <code style="font-family: monospace; font-size: 12px; font-weight: 800;" id="txtUserCode">-</code>
-                                        <span id="lockLabel2" style="font-size: 11px; color: #059669;">🔒 Lock</span>
+                                        <span id="lockLabel2" style="font-size: 11px; color: #059669;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Lock</span>
                                     </div>
                                 </div>
 
@@ -200,15 +200,15 @@
                                     <label class="compact-label" id="lblRole">Role</label>
                                     <div class="locked-field-badge" id="profile_badge_role">
                                         <span id="txtRole">-</span>
-                                        <span id="lockLabel3" style="font-size: 11px; color: #94a3b8;">🔒 Lock</span>
+                                        <span id="lockLabel3" style="font-size: 11px; color: #94a3b8;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Lock</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- ✏️ SECTION 2: EDITABLE PROFILE DETAILS (PHONE, EMAIL, GENDER) -->
+                        <!--  SECTION 2: EDITABLE PROFILE DETAILS (PHONE, EMAIL, GENDER) -->
                         <div class="compact-card" id="profile_sec_editable">
-                            <h3 class="form-section-title" id="secEditableTitle">✏️ Editable Information</h3>
+                            <h3 class="form-section-title" id="secEditableTitle"> Editable Information</h3>
                             
                             <form id="formUpdateProfile">
                                 <div class="profile-grid">
@@ -233,15 +233,15 @@
 
                                 <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
                                     <button type="submit" id="btnSaveProfile" class="btn btn-primary compact-btn" style="background: #047857; border-color: #047857;">
-                                        💾 Save Profile Changes
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Profile Changes
                                     </button>
                                 </div>
                             </form>
                         </div>
 
-                        <!-- 🔐 SECTION 3: CHANGE PASSWORD -->
+                        <!--  SECTION 3: CHANGE PASSWORD -->
                         <div class="compact-card" id="profile_sec_security">
-                            <h3 class="form-section-title" id="secSecurityTitle">🔐 Security & Password</h3>
+                            <h3 class="form-section-title" id="secSecurityTitle"> Security & Password</h3>
                             
                             <form id="formChangePassword">
                                 <div class="profile-grid">
@@ -249,7 +249,7 @@
                                         <label class="compact-label" id="lblCurrPass">Current Password</label>
                                         <div style="position: relative;">
                                             <input type="password" id="inpCurrPass" class="form-control compact-input" placeholder="Enter current password" required style="padding-right: 36px;">
-                                            <button type="button" class="btn-toggle-pwd" data-target="inpCurrPass" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; font-size: 14px;">👁️</button>
+                                            <button type="button" class="btn-toggle-pwd" data-target="inpCurrPass" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; font-size: 14px;"></button>
                                         </div>
                                     </div>
 
@@ -257,7 +257,7 @@
                                         <label class="compact-label" id="lblNewPass">New Password</label>
                                         <div style="position: relative;">
                                             <input type="password" id="inpNewPass" class="form-control compact-input" placeholder="Min 8 characters" required style="padding-right: 36px;">
-                                            <button type="button" class="btn-toggle-pwd" data-target="inpNewPass" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; font-size: 14px;">👁️</button>
+                                            <button type="button" class="btn-toggle-pwd" data-target="inpNewPass" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; font-size: 14px;"></button>
                                         </div>
                                     </div>
 
@@ -265,14 +265,14 @@
                                         <label class="compact-label" id="lblConfirmPass">Confirm New Password</label>
                                         <div style="position: relative;">
                                             <input type="password" id="inpConfirmPass" class="form-control compact-input" placeholder="Re-enter password" required style="padding-right: 36px;">
-                                            <button type="button" class="btn-toggle-pwd" data-target="inpConfirmPass" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; font-size: 14px;">👁️</button>
+                                            <button type="button" class="btn-toggle-pwd" data-target="inpConfirmPass" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #64748b; font-size: 14px;"></button>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
                                     <button type="submit" id="btnSavePassword" class="btn btn-primary compact-btn" style="background: #0284c7; border-color: #0284c7;">
-                                        🔑 Change Password Now
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5L10 10l1.5 1.5L8 15l-3 3v4h4l3-3 3.5-3.5 1.5 1.5 2.5-2.5-1.5-1.5 3.5-3.5z"/></svg> Change Password Now
                                     </button>
                                 </div>
                             </form>
@@ -328,17 +328,17 @@
             if (document.getElementById('hdrRoleLabel')) document.getElementById('hdrRoleLabel').innerHTML = `${t.roleLabel || 'Role'}: <span class="badge" style="background: #0284c7; color: white; font-weight: 800; font-size: 10px; padding: 2px 6px;" id="hdrRole">-</span>`;
             if (document.getElementById('hdrSchoolLabel')) document.getElementById('hdrSchoolLabel').innerHTML = `${t.schoolLabel || 'School'}: <strong style="color: white;" id="hdrSchoolName">-</strong>`;
 
-            if (document.getElementById('secLockedTitle')) document.getElementById('secLockedTitle').innerHTML = `🔒 ${t.secLockedTitle || 'Permanent Identifiers'}`;
+            if (document.getElementById('secLockedTitle')) document.getElementById('secLockedTitle').innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> ${t.secLockedTitle || 'Permanent Identifiers'}`;
             if (document.getElementById('secLockedDesc')) document.getElementById('secLockedDesc').textContent = t.secLockedDesc || 'Full Name and Registration Code are permanent...';
             if (document.getElementById('lblFullName')) document.getElementById('lblFullName').textContent = t.lblFullName || 'Full Name';
             if (document.getElementById('lblRegId')) document.getElementById('lblRegId').textContent = t.lblRegId || 'Reg Code / Staff ID';
             if (document.getElementById('lblRole')) document.getElementById('lblRole').textContent = t.lblRole || 'Role';
             
-            if (document.getElementById('lockLabel1')) document.getElementById('lockLabel1').textContent = `🔒 ${c.lock || 'Lock'}`;
-            if (document.getElementById('lockLabel2')) document.getElementById('lockLabel2').textContent = `🔒 ${c.lock || 'Lock'}`;
-            if (document.getElementById('lockLabel3')) document.getElementById('lockLabel3').textContent = `🔒 ${c.lock || 'Lock'}`;
+            if (document.getElementById('lockLabel1')) document.getElementById('lockLabel1').textContent = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> ${c.lock || 'Lock'}`;
+            if (document.getElementById('lockLabel2')) document.getElementById('lockLabel2').textContent = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> ${c.lock || 'Lock'}`;
+            if (document.getElementById('lockLabel3')) document.getElementById('lockLabel3').textContent = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> ${c.lock || 'Lock'}`;
 
-            if (document.getElementById('secEditableTitle')) document.getElementById('secEditableTitle').innerHTML = `✏️ ${t.secEditableTitle || 'Editable Information'}`;
+            if (document.getElementById('secEditableTitle')) document.getElementById('secEditableTitle').innerHTML = ` ${t.secEditableTitle || 'Editable Information'}`;
             if (document.getElementById('lblPhone')) document.getElementById('lblPhone').innerHTML = `${t.lblPhone || 'Phone Number'} <span style="color: red;">*</span>`;
             if (document.getElementById('inpPhone')) document.getElementById('inpPhone').placeholder = t.phPhone || 'e.g. +255712345678';
             if (document.getElementById('lblEmail')) document.getElementById('lblEmail').textContent = t.lblEmail || 'Email Address';
@@ -346,16 +346,16 @@
             if (document.getElementById('lblGender')) document.getElementById('lblGender').innerHTML = `${t.lblGender || 'Gender'} <span style="color: red;">*</span>`;
             if (document.getElementById('optMale')) document.getElementById('optMale').textContent = t.optMale || 'Male';
             if (document.getElementById('optFemale')) document.getElementById('optFemale').textContent = t.optFemale || 'Female';
-            if (document.getElementById('btnSaveProfile')) document.getElementById('btnSaveProfile').textContent = `💾 ${t.btnSaveProfile || 'Save Profile Changes'}`;
+            if (document.getElementById('btnSaveProfile')) document.getElementById('btnSaveProfile').textContent = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> ${t.btnSaveProfile || 'Save Profile Changes'}`;
 
-            if (document.getElementById('secSecurityTitle')) document.getElementById('secSecurityTitle').innerHTML = `🔐 ${t.secSecurityTitle || 'Security & Password'}`;
+            if (document.getElementById('secSecurityTitle')) document.getElementById('secSecurityTitle').innerHTML = ` ${t.secSecurityTitle || 'Security & Password'}`;
             if (document.getElementById('lblCurrPass')) document.getElementById('lblCurrPass').textContent = t.lblCurrPass || 'Current Password';
             if (document.getElementById('inpCurrPass')) document.getElementById('inpCurrPass').placeholder = t.phCurrPass || 'Enter current password';
             if (document.getElementById('lblNewPass')) document.getElementById('lblNewPass').textContent = t.lblNewPass || 'New Password';
             if (document.getElementById('inpNewPass')) document.getElementById('inpNewPass').placeholder = t.phNewPass || 'Min 8 characters';
             if (document.getElementById('lblConfirmPass')) document.getElementById('lblConfirmPass').textContent = t.lblConfirmPass || 'Confirm New Password';
             if (document.getElementById('inpConfirmPass')) document.getElementById('inpConfirmPass').placeholder = t.phConfirmPass || 'Re-enter password';
-            if (document.getElementById('btnSavePassword')) document.getElementById('btnSavePassword').textContent = `🔑 ${t.btnSavePassword || 'Change Password Now'}`;
+            if (document.getElementById('btnSavePassword')) document.getElementById('btnSavePassword').textContent = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5L10 10l1.5 1.5L8 15l-3 3v4h4l3-3 3.5-3.5 1.5 1.5 2.5-2.5-1.5-1.5 3.5-3.5z"/></svg> ${t.btnSavePassword || 'Change Password Now'}`;
 
             const storedRole = localStorage.getItem('shule_role') || sessionStorage.getItem('shule_role');
             if (storedRole) {
@@ -369,10 +369,10 @@
                     if (targetInput) {
                         if (targetInput.type === 'password') {
                             targetInput.type = 'text';
-                            btn.textContent = '🙈';
+                            btn.textContent = '';
                         } else {
                             targetInput.type = 'password';
-                            btn.textContent = '👁️';
+                            btn.textContent = '';
                         }
                     }
                 });
@@ -430,7 +430,7 @@
                         }
                     } finally {
                         btn.disabled = false;
-                        btn.textContent = `💾 ${window.__i18n?.profile?.btnSaveProfile || 'Save Profile Changes'}`;
+                        btn.textContent = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> ${window.__i18n?.profile?.btnSaveProfile || 'Save Profile Changes'}`;
                     }
                 });
             }
@@ -487,7 +487,7 @@
                         }
                     } finally {
                         btn.disabled = false;
-                        btn.textContent = `🔑 ${window.__i18n?.profile?.btnSavePassword || 'Change Password Now'}`;
+                        btn.textContent = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5L10 10l1.5 1.5L8 15l-3 3v4h4l3-3 3.5-3.5 1.5 1.5 2.5-2.5-1.5-1.5 3.5-3.5z"/></svg> ${window.__i18n?.profile?.btnSavePassword || 'Change Password Now'}`;
                     }
                 });
             }

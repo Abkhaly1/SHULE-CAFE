@@ -34,7 +34,7 @@ class AppSameNameAuditModal extends HTMLElement {
                 if (groups.length === 0) {
                     body.innerHTML = `
                         <div style="padding: 40px 20px; text-align: center;">
-                            <div style="font-size: 48px; margin-bottom: 12px;">✅</div>
+                            <div style="font-size: 48px; margin-bottom: 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
                             <h4 style="margin: 0 0 6px 0; font-size: 16px; font-weight: 800; color: #047857;">No Duplicate Names Found!</h4>
                             <p style="margin: 0; font-size: 13px; color: #64748b;">All registered users in your school have distinct unique names.</p>
                         </div>
@@ -46,7 +46,7 @@ class AppSameNameAuditModal extends HTMLElement {
                 groups.forEach((g, gIdx) => {
                     let userCards = '';
                     g.users.forEach(u => {
-                        const roleLabel = u.role === 'teacher' ? '👨‍🏫 Teacher' : '🎓 Student';
+                        const roleLabel = u.role === 'teacher' ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Teacher' : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Student';
                         const classDept = u.classroom_name ? `${u.grade_name || ''} - ${u.classroom_name}` : (u.department || 'Academics');
                         const phone = u.phone || 'Unavailable';
                         const email = u.email || 'Unavailable';
@@ -67,10 +67,10 @@ class AppSameNameAuditModal extends HTMLElement {
                                     </div>
 
                                     <div style="font-size: 12px; color: #475569; display: flex; flex-direction: column; gap: 4px;">
-                                        <div>🏫 <strong>Class/Dept:</strong> ${classDept}</div>
-                                        <div>📱 <strong>Phone:</strong> ${phone}</div>
-                                        <div>✉️ <strong>Email:</strong> ${email}</div>
-                                        <div>👤 <strong>Gender:</strong> ${gender}</div>
+                                        <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> <strong>Class/Dept:</strong> ${classDept}</div>
+                                        <div> <strong>Phone:</strong> ${phone}</div>
+                                        <div> <strong>Email:</strong> ${email}</div>
+                                        <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> <strong>Gender:</strong> ${gender}</div>
                                     </div>
                                 </div>
                             </div>
@@ -81,7 +81,7 @@ class AppSameNameAuditModal extends HTMLElement {
                         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 16px;">
                             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; border-bottom: 1px solid #cbd5e1; padding-bottom: 8px;">
                                 <div style="display: flex; align-items: center; gap: 8px;">
-                                    <span style="font-size: 18px;">👥</span>
+                                    <span style="font-size: 18px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
                                     <h4 style="margin: 0; font-size: 16px; font-weight: 800; color: #1e293b;">
                                         Group #${gIdx + 1}: <span style="color: #047857;">${g.full_name}</span>
                                     </h4>
@@ -101,7 +101,7 @@ class AppSameNameAuditModal extends HTMLElement {
 
                             <div style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed #cbd5e1; display: flex; justify-content: flex-end;">
                                 <button type="button" class="btn btn-outline btn-sm btn-mark-verified" style="font-weight: 700; color: #047857; border-color: #047857;">
-                                    ✔️ Verified As Different Individuals
+                                     Verified As Different Individuals
                                 </button>
                             </div>
                         </div>
@@ -117,7 +117,7 @@ class AppSameNameAuditModal extends HTMLElement {
                         if (card) {
                             card.style.opacity = '0.6';
                             evt.target.disabled = true;
-                            evt.target.textContent = '✔️ Imethibitishwa (Verified)';
+                            evt.target.textContent = ' Imethibitishwa (Verified)';
                         }
                     });
                 });
@@ -147,7 +147,7 @@ class AppSameNameAuditModal extends HTMLElement {
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 16px;">
                     <div>
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: #047857;">👥 Same-Name User Verification Audit</h3>
+                            <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: #047857;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Same-Name User Verification Audit</h3>
                             <span id="sameNameBadge" class="badge" style="background: #047857; color: white; font-weight: 800;">-</span>
                         </div>
                         <p style="margin: 4px 0 0 0; font-size: 12px; color: #64748b;">

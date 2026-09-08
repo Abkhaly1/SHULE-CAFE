@@ -176,7 +176,7 @@
                         </div>
 
                         <div class="info-banner">
-                            <span style="font-size:20px;">🔍</span>
+                            <span style="font-size:20px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
                             <div>
                                 <strong>Dynamic Subject Filter Active</strong>
                                 Only subjects mapped to this specific stream room are shown below.
@@ -236,16 +236,16 @@
     // ─── STEP 1: Render Level Cards ───────────────────────────────
     function renderLevels(levels) {
         const grid = document.getElementById('levelGrid');
-        const icons = { 'O-Level':'📗', 'A-Level':'📘', 'Primary':'📒', 'Nursery':'🌱' };
+        const icons = { 'O-Level':'', 'A-Level':'', 'Primary':'', 'Nursery':'' };
         const colors = { 'O-Level':'#059669','A-Level':'#2563eb','Primary':'#d97706','Nursery':'#7c3aed' };
         grid.innerHTML = levels.map(l => `
             <div class="choice-card" onclick="selectLevel(${l.id},'${l.name}')">
-                <div class="choice-icon">${icons[l.name]||'🏫'}</div>
+                <div class="choice-icon">${icons[l.name]||'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>'}</div>
                 <div class="choice-name">${l.name}</div>
                 <div class="choice-meta">Code: ${l.code}</div>
                 <div style="margin-top:10px;">
                     <span class="badge" style="background:${colors[l.name]||'#6b7280'}20;color:${colors[l.name]||'#6b7280'};border:1px solid ${colors[l.name]||'#6b7280'}40;font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;">
-                        Explore Grades ➡
+                        Explore Grades 
                     </span>
                 </div>
             </div>`).join('');
@@ -268,11 +268,11 @@
         if (!grades.length) { grid.innerHTML = '<div style="color:var(--c-text-muted);">No grades found for this level.</div>'; return; }
         grid.innerHTML = grades.map(g => `
             <div class="choice-card" onclick="selectGrade(${g.id},'${g.name}')">
-                <div class="choice-icon">🏛️</div>
+                <div class="choice-icon"></div>
                 <div class="choice-name">${g.name}</div>
                 <div class="choice-meta">Order: Year ${g.order_seq}</div>
                 <div style="margin-top:10px;">
-                    <span class="badge badge-outline" style="font-size:11px;">View Streams ➡</span>
+                    <span class="badge badge-outline" style="font-size:11px;">View Streams </span>
                 </div>
             </div>`).join('');
     }
@@ -288,7 +288,7 @@
     }
 
     // ─── STEP 3: Render Stream Cards ──────────────────────────────
-    const STREAM_ICONS = { standard:'🏫', science:'🔬', arts:'🎨', commerce:'💼', combination:'🎓' };
+    const STREAM_ICONS = { standard:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>', science:'', arts:'', commerce:'', combination:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>' };
     const STREAM_COLORS= { standard:'#059669', science:'#0284c7', arts:'#7c3aed', commerce:'#d97706', combination:'#dc2626' };
 
     function renderStreams(streams) {
@@ -298,12 +298,12 @@
             const color = STREAM_COLORS[st.stream_type] || '#6b7280';
             return `
                 <div class="choice-card" onclick="selectStream(${st.id},'${escapeSingle(st.name)}','${st.stream_type}')">
-                    <div class="choice-icon">${STREAM_ICONS[st.stream_type]||'🏫'}</div>
+                    <div class="choice-icon">${STREAM_ICONS[st.stream_type]||'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>'}</div>
                     <div class="choice-name">${st.name}</div>
                     <div class="choice-meta">Type: ${capitalize(st.stream_type)} · Capacity: ${st.capacity}</div>
                     <div style="margin-top:10px;">
                         <span style="background:${color}20;color:${color};border:1px solid ${color}40;font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;display:inline-block;">
-                            Manage Subjects & Teachers ➡
+                            Manage Subjects & Teachers 
                         </span>
                     </div>
                 </div>`;
@@ -350,8 +350,8 @@
 
             const hasSel = ids.length > 0;
             const alertHtml = hasSel
-                ? `<span style="font-size:11px;color:#059669;font-weight:700;">🟢 ${a.teacher_names}</span>`
-                : `<span style="font-size:11px;color:#dc2626;font-weight:700;">🔴 No Teacher Assigned</span>`;
+                ? `<span style="font-size:11px;color:#059669;font-weight:700;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px;"></span> ${a.teacher_names}</span>`
+                : `<span style="font-size:11px;color:#dc2626;font-weight:700;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:4px;"></span> No Teacher Assigned</span>`;
 
             return `<tr style="border-bottom:1px solid var(--c-border-light); vertical-align:middle;">
                 <td style="padding:12px; font-weight:700; width:12%;">
@@ -400,9 +400,9 @@
                         const opt = $(this).find(`option[value="${v}"]`).text();
                         return opt;
                     }).join(', ');
-                    td.html(`<span style="font-size:11px;color:#059669;font-weight:700;">🟢 ${names}</span>`);
+                    td.html(`<span style="font-size:11px;color:#059669;font-weight:700;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px;"></span> ${names}</span>`);
                 } else {
-                    td.html(`<span style="font-size:11px;color:#dc2626;font-weight:700;">🔴 No Teacher Assigned</span>`);
+                    td.html(`<span style="font-size:11px;color:#dc2626;font-weight:700;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:4px;"></span> No Teacher Assigned</span>`);
                 }
             });
         }
@@ -451,7 +451,7 @@
         t.style.background   = isError ? '#fef2f2' : '#f0fdf4';
         t.style.border       = `1.5px solid ${isError ? '#fca5a5' : '#6ee7b7'}`;
         t.style.color        = isError ? '#991b1b' : '#065f46';
-        t.innerHTML          = (isError ? '⚠️ ' : '✅ ') + msg;
+        t.innerHTML          = (isError ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ' : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> ') + msg;
         t.style.opacity      = '1';
         setTimeout(() => { t.style.opacity = '0'; }, 3500);
     }

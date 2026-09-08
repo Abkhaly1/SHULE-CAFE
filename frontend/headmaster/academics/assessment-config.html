@@ -120,7 +120,7 @@
                         <div>
                             <app-breadcrumb path="Headmaster, Settings, Assessment Structure Config"></app-breadcrumb>
                             <h1 style="margin: 4px 0 0 0; font-size: 20px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px;">
-                                <span>⚙️ Full Academic Year Assessment Structure</span>
+                                <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Full Academic Year Assessment Structure</span>
                             </h1>
                             <p style="margin: 2px 0 0 0; font-size: 12.5px; color: #64748b; font-weight: 500;">
                                 Complete institutional evaluation layout for Term 1, Term 2, and Continuous Assessment weightings across all education levels.
@@ -129,7 +129,7 @@
 
                         <div style="display: flex; gap: 8px;">
                             <button class="btn btn-primary" onclick="saveAllTermsPolicy()" style="font-weight: 800; background: #047857; border-color: #047857; padding: 8px 18px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
-                                <span>💾</span> Save Full Assessment Matrix
+                                <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> Save Full Assessment Matrix
                             </button>
                         </div>
                     </div>
@@ -139,14 +139,14 @@
                         <!-- Quick Presets Banner -->
                         <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                             <div>
-                                <strong style="font-size: 13px; color: #0f172a; display: block; margin-bottom: 2px;">⚡ Standard Academic Year Assessment Structure:</strong>
+                                <strong style="font-size: 13px; color: #0f172a; display: block; margin-bottom: 2px;"> Standard Academic Year Assessment Structure:</strong>
                                 <span style="font-size: 12px; color: #64748b; font-weight: 600;">
                                     Terminal exam marks are recorded out of <strong>100%</strong> for <strong>First Term Exam</strong> and <strong>Second Term Exam</strong> of each academic year.
                                 </span>
                             </div>
                             <div style="display: flex; gap: 8px;">
                                 <button class="btn btn-outline btn-sm" onclick="applyGlobalStandardPreset()" style="background: #ecfdf5; color: #065f46; border-color: #a7f3d0; font-weight: 800; font-size: 12px; padding: 6px 14px;">
-                                    <span>🔄</span> Apply 100% Terminal Exams (Term 1 & Term 2)
+                                    <span></span> Apply 100% Terminal Exams (Term 1 & Term 2)
                                 </button>
                             </div>
                         </div>
@@ -156,7 +156,7 @@
                             <div class="term-box-header term-1">
                                 <div>
                                     <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: #065f46; display: flex; align-items: center; gap: 6px;">
-                                        <span>📘 Term 1 Assessment Structure</span>
+                                        <span> Term 1 Assessment Structure</span>
                                     </h3>
                                     <span style="font-size: 11.5px; color: #047857; font-weight: 600;">Active in First Term evaluation cycles</span>
                                 </div>
@@ -165,7 +165,7 @@
                                         Term 1 Total Weight: <strong id="lblTotalWeightT1" style="color: #047857; font-size: 14px;">100.00%</strong>
                                     </span>
                                     <span id="badgeStatusT1" class="badge badge-success" style="font-size: 11px; padding: 4px 10px; font-weight: 800;">
-                                        ✅ Valid (100%)
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Valid (100%)
                                     </span>
                                 </div>
                             </div>
@@ -188,7 +188,7 @@
                                         <tr>
                                             <td colspan="5">
                                                 <button class="btn btn-outline btn-sm" onclick="addCategoryRow('Term 1')" style="font-weight: 800; font-size: 11.5px; padding: 4px 12px; color: #065f46; border-color: #a7f3d0;">
-                                                    ➕ Add Assessment Category to Term 1
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Assessment Category to Term 1
                                                 </button>
                                             </td>
                                         </tr>
@@ -202,7 +202,7 @@
                             <div class="term-box-header term-2">
                                 <div>
                                     <h3 style="margin: 0; font-size: 15px; font-weight: 800; color: #1e40af; display: flex; align-items: center; gap: 6px;">
-                                        <span>📗 Term 2 Assessment Structure</span>
+                                        <span> Term 2 Assessment Structure</span>
                                     </h3>
                                     <span style="font-size: 11.5px; color: #2563eb; font-weight: 600;">Active in Second Term / Annual evaluation cycles</span>
                                 </div>
@@ -211,7 +211,7 @@
                                         Term 2 Total Weight: <strong id="lblTotalWeightT2" style="color: #1e40af; font-size: 14px;">100.00%</strong>
                                     </span>
                                     <span id="badgeStatusT2" class="badge badge-success" style="font-size: 11px; padding: 4px 10px; font-weight: 800;">
-                                        ✅ Valid (100%)
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Valid (100%)
                                     </span>
                                 </div>
                             </div>
@@ -234,7 +234,7 @@
                                         <tr>
                                             <td colspan="5">
                                                 <button class="btn btn-outline btn-sm" onclick="addCategoryRow('Term 2')" style="font-weight: 800; font-size: 11.5px; padding: 4px 12px; color: #1e40af; border-color: #bfdbfe;">
-                                                    ➕ Add Assessment Category to Term 2
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Assessment Category to Term 2
                                                 </button>
                                             </td>
                                         </tr>
@@ -246,7 +246,7 @@
                         <!-- ── NATIONAL CURRICULUM & MILESTONE HARVESTING PIPELINES ── -->
                         <div class="card" style="background: white; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 18px 22px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
                             <h3 style="margin: 0 0 12px 0; font-size: 15px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px;">
-                                <span>🏛️ National Curriculum Profiles & Multi-Year Milestone Pipelines</span>
+                                <span> National Curriculum Profiles & Multi-Year Milestone Pipelines</span>
                             </h3>
                             <p style="font-size: 12px; color: #64748b; margin-bottom: 16px;">
                                 The background system automatically harvests historical student performance across multi-year cycles for official NECTA CAMS uploads while maintaining standalone 100% internal school reports.
@@ -257,7 +257,7 @@
                                 <!-- Primary -->
                                 <div class="pipeline-card" style="border-left: 4px solid #059669;">
                                     <div class="pipeline-title">
-                                        <span>🎒 Primary Profile (Standard 1–7)</span>
+                                        <span> Primary Profile (Standard 1–7)</span>
                                     </div>
                                     <div class="pipeline-desc">
                                         • <strong>Internal Reports</strong>: Standalone Term 1 (100%) & Term 2 (100%) for all classes.<br>
@@ -268,7 +268,7 @@
                                 <!-- O-Level -->
                                 <div class="pipeline-card" style="border-left: 4px solid #2563eb;">
                                     <div class="pipeline-title">
-                                        <span>🏫 O-Level Secondary Profile (Form 1–4)</span>
+                                        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> O-Level Secondary Profile (Form 1–4)</span>
                                     </div>
                                     <div class="pipeline-desc">
                                         • <strong>Internal Reports</strong>: Routine term marks captured out of 100% for all grades (Form 1–4).<br>
@@ -279,7 +279,7 @@
                                 <!-- A-Level -->
                                 <div class="pipeline-card" style="border-left: 4px solid #7c3aed;">
                                     <div class="pipeline-title">
-                                        <span>🎓 A-Level Secondary Profile (Form 5–6)</span>
+                                        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> A-Level Secondary Profile (Form 5–6)</span>
                                     </div>
                                     <div class="pipeline-desc">
                                         • <strong>Internal Reports</strong>: Routine term marks captured out of 100% (Form 5 & 6).<br>
@@ -293,10 +293,10 @@
                         <!-- Action Bottom Bar -->
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
                             <div style="font-size: 12px; color: #64748b; font-weight: 600;">
-                                🛡️ Weights are strictly enforced across Marks Entry, Broadsheets, Transcripts, and NECTA CAMS Harvesters.
+                                 Weights are strictly enforced across Marks Entry, Broadsheets, Transcripts, and NECTA CAMS Harvesters.
                             </div>
                             <button class="btn btn-primary" onclick="saveAllTermsPolicy()" style="font-weight: 800; background: #047857; border-color: #047857; padding: 10px 24px; font-size: 13px; display: inline-flex; align-items: center; gap: 6px;">
-                                <span>💾</span> Save Full Assessment Matrix
+                                <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg></span> Save Full Assessment Matrix
                             </button>
                         </div>
 
@@ -361,7 +361,7 @@
                         </label>
                     </td>
                     <td style="text-align: center;">
-                        <button class="btn btn-outline btn-sm" onclick="this.closest('tr').remove(); recalcTermTotal('${term}');" style="color:#dc2626; border-color:#fca5a5; font-weight:800; padding:2px 7px; font-size:11px;" title="Remove Category">✕</button>
+                        <button class="btn btn-outline btn-sm" onclick="this.closest('tr').remove(); recalcTermTotal('${term}');" style="color:#dc2626; border-color:#fca5a5; font-weight:800; padding:2px 7px; font-size:11px;" title="Remove Category"></button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -395,7 +395,7 @@
                     </label>
                 </td>
                 <td style="text-align: center;">
-                    <button class="btn btn-outline btn-sm" onclick="this.closest('tr').remove(); recalcTermTotal('${term}');" style="color:#dc2626; border-color:#fca5a5; font-weight:800; padding:2px 7px; font-size:11px;" title="Remove Category">✕</button>
+                    <button class="btn btn-outline btn-sm" onclick="this.closest('tr').remove(); recalcTermTotal('${term}');" style="color:#dc2626; border-color:#fca5a5; font-weight:800; padding:2px 7px; font-size:11px;" title="Remove Category"></button>
                 </td>
             `;
             tbody.appendChild(tr);
@@ -417,11 +417,11 @@
 
             if (sum === 100.00) {
                 if (lbl) lbl.style.color = isT1 ? '#047857' : '#1e40af';
-                if (badge) badge.innerHTML = '✅ Valid (100%)';
+                if (badge) badge.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Valid (100%)';
                 if (badge) badge.className = 'badge badge-success';
             } else {
                 if (lbl) lbl.style.color = 'crimson';
-                if (badge) badge.innerHTML = `❌ Invalid (${sum.toFixed(2)}% != 100%)`;
+                if (badge) badge.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Invalid (${sum.toFixed(2)}% != 100%)`;
                 if (badge) badge.className = 'badge badge-danger';
             }
         }

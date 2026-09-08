@@ -71,7 +71,7 @@
             <div class="app-content" style="padding: var(--sp-4) var(--sp-6);">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
                     <app-breadcrumb path="Headmaster, Teachers/Staffs, Teacher Workspace"></app-breadcrumb>
-                    <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print Teacher Profile</button>
+                    <button class="btn btn-primary btn-sm" onclick="window.print()"> Print Teacher Profile</button>
                 </div>
 
                 <!-- HEADER BANNER -->
@@ -114,16 +114,16 @@
                     <div class="secondary-sidebar">
                         <div class="secondary-sidebar-nav">
                             <button class="active" id="tabbtn-overview" onclick="switchTab('overview')">
-                                <span class="icon" style="color: #3b82f6;">📁</span> Profile & Overview
+                                <span class="icon" style="color: #3b82f6;"></span> Profile & Overview
                             </button>
                             <button id="tabbtn-assignments" onclick="switchTab('assignments')">
-                                <span class="icon" style="color: #10b981;">📚</span> Teaching Assignments
+                                <span class="icon" style="color: #10b981;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span> Teaching Assignments
                             </button>
                             <button id="tabbtn-schedule" onclick="switchTab('schedule')">
-                                <span class="icon" style="color: #f59e0b;">📅</span> Weekly Schedule (Live)
+                                <span class="icon" style="color: #f59e0b;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span> Weekly Schedule (Live)
                             </button>
                             <button id="tabbtn-security" onclick="switchTab('security')">
-                                <span class="icon" style="color: #64748b;">🔒</span> Account & Security
+                                <span class="icon" style="color: #64748b;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span> Account & Security
                             </button>
                         </div>
                     </div>
@@ -135,7 +135,7 @@
                 <div id="panel-overview">
                     <div class="info-grid">
                         <div class="info-box">
-                            <h4>👨‍🏫 Personal & Contact Details</h4>
+                            <h4><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Personal & Contact Details</h4>
                             <div class="info-row"><span>Full Name:</span><span id="bioName">-</span></div>
                             <div class="info-row"><span>Staff ID / Reg Code:</span><span id="bioCode">-</span></div>
                             <div class="info-row"><span>Gender:</span><span id="bioGender">-</span></div>
@@ -146,13 +146,13 @@
                         </div>
 
                         <div class="info-box">
-                            <h4>⚡ Quick Management Actions</h4>
+                            <h4> Quick Management Actions</h4>
                             <div style="display:flex;flex-direction:column;gap:14px;margin-top:16px;">
                                 <a id="btnAssignSubjects" href="../allocations/subject-allocations.html" class="btn btn-outline btn-md" style="justify-content:flex-start;padding:12px 18px;height:auto;font-size:14px;border-radius:8px;font-weight:600;">
-                                    ➕ Manage Master Subject Qualifications
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Manage Master Subject Qualifications
                                 </a>
                                 <a href="../allocations/class-guiders.html" class="btn btn-outline btn-md" style="justify-content:flex-start;padding:12px 18px;height:auto;font-size:14px;border-radius:8px;font-weight:600;">
-                                    🏫 Assign as Class Guider
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Assign as Class Guider
                                 </a>
                             </div>
                         </div>
@@ -162,7 +162,7 @@
                 <!-- TAB 2: ASSIGNMENTS & QUALIFICATIONS -->
                 <div id="panel-assignments" style="display:none;">
                     <div class="info-box" style="margin-bottom:20px;">
-                        <h4>📚 Master Subject Qualifications</h4>
+                        <h4><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Master Subject Qualifications</h4>
                         <table class="report-table">
                             <thead>
                                 <tr>
@@ -179,7 +179,7 @@
                     </div>
 
                     <div class="info-box">
-                        <h4>🏫 Classroom Stream Assignments (Physical Room Placements)</h4>
+                        <h4><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Classroom Stream Assignments (Physical Room Placements)</h4>
                         <table class="report-table">
                             <thead>
                                 <tr>
@@ -201,11 +201,11 @@
                     <div class="info-box">
                         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
                             <div>
-                                <h4 style="margin:0;" id="lblScheduleTitle">📅 MY OFFICIAL WEEKLY TEACHING SCHEDULE</h4>
+                                <h4 style="margin:0;" id="lblScheduleTitle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> MY OFFICIAL WEEKLY TEACHING SCHEDULE</h4>
                                 <div style="font-size:12px; color:var(--c-text-muted);" id="lblSchedulePublishedStatus">Checking status...</div>
                             </div>
                             <button type="button" class="btn btn-outline btn-sm" id="btnToggleHomeroomSchedule" style="display:none; font-weight:700;">
-                                📋 View My Classroom Master Timetable
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> View My Classroom Master Timetable
                             </button>
                         </div>
 
@@ -227,13 +227,13 @@
                 <!-- TAB 4: SECURITY -->
                 <div id="panel-security" style="display:none;">
                     <div class="info-box">
-                        <h4>🔒 Security & Access Credentials</h4>
+                        <h4><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Security & Access Credentials</h4>
                         <div style="max-width:540px;display:flex;flex-direction:column;gap:14px;margin-top:16px;">
                             <button type="button" class="btn btn-outline btn-md" style="justify-content:flex-start;padding:12px 18px;height:auto;font-size:14px;border-radius:8px;font-weight:600;" onclick="alert('Password reset link dispatched to teacher email.')">
-                                🔑 Send Password Reset Link
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5L10 10l1.5 1.5L8 15l-3 3v4h4l3-3 3.5-3.5 1.5 1.5 2.5-2.5-1.5-1.5 3.5-3.5z"/></svg> Send Password Reset Link
                             </button>
                             <button type="button" class="btn btn-danger btn-md" style="justify-content:flex-start;padding:12px 18px;height:auto;font-size:14px;border-radius:8px;font-weight:600;" onclick="confirm('Are you sure you want to suspend this teacher?')">
-                                🚫 Suspend Teacher Account
+                                 Suspend Teacher Account
                             </button>
                         </div>
                     </div>
@@ -358,22 +358,22 @@
             if (!data.success) return;
 
             if (!data.is_published) {
-                $('#lblSchedulePublishedStatus').html('<span class="badge" style="background:#fef3c7; color:#92400e; font-weight:800;">🟡 DRAFT STATE (Unpublished)</span>');
-                $('#boxScheduleGrid').html('<div style="text-align:center; padding:36px; color:var(--c-text-muted); font-weight:700;">🔒 Official Weekly Timetable is currently locked in Draft state by the Headmaster. Schedules will appear here once published live.</div>');
+                $('#lblSchedulePublishedStatus').html('<span class="badge" style="background:#fef3c7; color:#92400e; font-weight:800;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;margin-right:4px;"></span> DRAFT STATE (Unpublished)</span>');
+                $('#boxScheduleGrid').html('<div style="text-align:center; padding:36px; color:var(--c-text-muted); font-weight:700;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Official Weekly Timetable is currently locked in Draft state by the Headmaster. Schedules will appear here once published live.</div>');
                 return;
             }
 
-            $('#lblSchedulePublishedStatus').html('<span class="badge" style="background:#dcfce7; color:#15803d; font-weight:800;">🟢 LIVE PUBLISHED SHULENI</span>');
+            $('#lblSchedulePublishedStatus').html('<span class="badge" style="background:#dcfce7; color:#15803d; font-weight:800;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px;"></span> LIVE PUBLISHED SHULENI</span>');
 
             // Render Homeroom toggle button if teacher is Class Teacher
             if (data.homeroom) {
                 $('#btnToggleHomeroomSchedule').show();
                 if (viewClassroom === 1) {
-                    $('#btnToggleHomeroomSchedule').html('👨‍🏫 Switch to My Personal Teaching Schedule').attr('onclick', `loadTeacherSchedule('${tId}', 0)`);
-                    $('#lblScheduleTitle').text(`📋 Master Classroom Schedule (${data.homeroom})`);
+                    $('#btnToggleHomeroomSchedule').html('<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Switch to My Personal Teaching Schedule').attr('onclick', `loadTeacherSchedule('${tId}', 0)`);
+                    $('#lblScheduleTitle').text(`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Master Classroom Schedule (${data.homeroom})`);
                 } else {
-                    $('#btnToggleHomeroomSchedule').html(`📋 View My Classroom Master Timetable (${data.homeroom})`).attr('onclick', `loadTeacherSchedule('${tId}', 1)`);
-                    $('#lblScheduleTitle').text('📅 My Official Weekly Teaching Schedule');
+                    $('#btnToggleHomeroomSchedule').html(`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> View My Classroom Master Timetable (${data.homeroom})`).attr('onclick', `loadTeacherSchedule('${tId}', 1)`);
+                    $('#lblScheduleTitle').text('<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> My Official Weekly Teaching Schedule');
                 }
             } else {
                 $('#btnToggleHomeroomSchedule').hide();
@@ -395,15 +395,15 @@
             const rows = days.map(day => {
                 const cells = periods.map(p => {
                     if (p.is_break == 1) {
-                        return `<td style="background:#f8fafc; text-align:center; vertical-align:middle; font-weight:700; color:#92400e; font-size:12px;">☕ ${p.period_name}</td>`;
+                        return `<td style="background:#f8fafc; text-align:center; vertical-align:middle; font-weight:700; color:#92400e; font-size:12px;"> ${p.period_name}</td>`;
                     }
 
                     const s = (slotMap[day] && slotMap[day][p.id]) ? slotMap[day][p.id] : null;
                     if (s) {
                         return `
                             <td style="padding:10px; background:#f0fdf4; border:1px solid #bbf7d0;">
-                                <div style="font-weight:800; color:#166534; font-size:13px;">🏫 ${s.class_name}</div>
-                                <div style="font-weight:700; color:#0f172a; font-size:12px; margin-top:2px;">📖 ${s.subject_name}</div>
+                                <div style="font-weight:800; color:#166534; font-size:13px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> ${s.class_name}</div>
+                                <div style="font-weight:700; color:#0f172a; font-size:12px; margin-top:2px;"> ${s.subject_name}</div>
                             </td>
                         `;
                     } else {

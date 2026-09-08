@@ -127,7 +127,7 @@
                                 <div class="card" style="padding: var(--sp-6);">
                                     <h3 style="margin-top: 0; margin-bottom: var(--sp-4);">Action</h3>
                                     <button type="submit" id="submitBtn" class="btn btn-primary" style="width: 100%; justify-content: center; font-weight: 700; padding: 12px 20px;">
-                                        ⚡ Save & Auto-Provision School
+                                         Save & Auto-Provision School
                                     </button>
                                 </div>
                                 
@@ -216,7 +216,7 @@
                         alertMsg.textContent = result.message || 'Failed to create school.';
                         alertBox.style.display = 'block';
                         submitBtn.disabled = false;
-                        submitBtn.textContent = '⚡ Save & Auto-Provision School';
+                        submitBtn.textContent = ' Save & Auto-Provision School';
                     }
                 } catch (err) {
                     alertBox.className = 'alert alert-danger';
@@ -224,7 +224,7 @@
                     alertMsg.textContent = 'Network or server error. Please try again.';
                     alertBox.style.display = 'block';
                     submitBtn.disabled = false;
-                    submitBtn.textContent = '⚡ Save & Auto-Provision School';
+                    submitBtn.textContent = ' Save & Auto-Provision School';
                 }
             });
         });

@@ -42,7 +42,7 @@ class AppCsvImportModal extends HTMLElement {
         this.querySelector('#importStatusText').textContent = '';
         this.querySelector('#csvFileInput').value = '';
         this.querySelector('#btnStartImport').disabled = true;
-        this.querySelector('#btnStartImport').textContent = 'Review & Start Import ➔';
+        this.querySelector('#btnStartImport').textContent = 'Review & Start Import ';
     }
 
     async fetchClassrooms() {
@@ -102,7 +102,7 @@ class AppCsvImportModal extends HTMLElement {
         const spec = specs[type] || specs['general'];
         return `
             <div style="background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13px; margin-bottom: 16px;">
-                <p style="margin: 0 0 6px 0; font-weight: 700; color: #1e293b;">📄 CSV / Excel File Guidelines:</p>
+                <p style="margin: 0 0 6px 0; font-weight: 700; color: #1e293b;"> CSV / Excel File Guidelines:</p>
                 <ul style="margin: 0; padding-left: 18px; color: #475569; line-height: 1.5;">
                     <li>File must be a valid <strong>CSV (.csv)</strong> format.</li>
                     <li>First row must contain Column Headers: <code style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px; color: #0f172a;">${spec.headers}</code></li>
@@ -154,7 +154,7 @@ class AppCsvImportModal extends HTMLElement {
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 32px; border-bottom: 1px solid #e2e8f0; background: #ffffff; flex-shrink: 0;">
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <div style="width: 40px; height: 40px; border-radius: 10px; background: #ecfdf5; color: #047857; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-                            📥
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                         </div>
                         <div>
                             <h2 id="importModalTitle" style="margin: 0; font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px;">Bulk Data Import Workspace</h2>
@@ -197,7 +197,7 @@ class AppCsvImportModal extends HTMLElement {
                     <!-- DUPLICATE CONFLICT PREVIEW SECTION -->
                     <div id="conflictSection" style="display: none; margin-bottom: 24px;">
                         <div style="background: #fffbeb; border: 1px solid #fde68a; padding: 16px; border-radius: 12px; font-size: 14px; color: #92400e; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
-                            <span style="font-size: 20px;">⚠️</span>
+                            <span style="font-size: 20px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
                             <div>
                                 <strong>Duplicate &amp; Conflict Analysis:</strong> Detected <strong id="conflictCountNum" style="text-decoration: underline;">0</strong> record(s) that already exist in the system or are duplicated in the file. Choose action:
                             </div>
@@ -225,14 +225,14 @@ class AppCsvImportModal extends HTMLElement {
                                 <label style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px; cursor: pointer; background: #f8fafc; padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 8px;">
                                     <input type="radio" name="dup_handling" value="skip" checked style="margin-top: 2px;">
                                     <div>
-                                        <strong style="color: #0f172a;">⏭️ Skip Existing:</strong>
+                                        <strong style="color: #0f172a;">⏭ Skip Existing:</strong>
                                         <div style="color: #64748b; font-size: 12px; margin-top: 2px;">Import new users only and leave existing records unchanged.</div>
                                     </div>
                                 </label>
                                 <label style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px; cursor: pointer; background: #f8fafc; padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 8px;">
                                     <input type="radio" name="dup_handling" value="update" style="margin-top: 2px;">
                                     <div>
-                                        <strong style="color: #0f172a;">🔄 Update Existing:</strong>
+                                        <strong style="color: #0f172a;"> Update Existing:</strong>
                                         <div style="color: #64748b; font-size: 12px; margin-top: 2px;">Update information of existing users according to the file.</div>
                                     </div>
                                 </label>
@@ -250,11 +250,11 @@ class AppCsvImportModal extends HTMLElement {
                 <!-- STICKY FOOTER ACTION BAR -->
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 18px 32px; border-top: 1px solid #e2e8f0; flex-shrink: 0; background: #ffffff;">
                     <div style="font-size: 13px; color: #64748b; font-weight: 600;">
-                        💡 Review your file formatting and options before completing import.
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5.76.76 1.23 1.52 1.41 2.5"/></svg> Review your file formatting and options before completing import.
                     </div>
                     <div style="display: flex; gap: 12px; align-items: center;">
                         <button type="button" id="btnCloseImportModal" class="btn btn-outline" style="padding: 10px 20px; font-weight: 700; border-radius: 8px;">Cancel</button>
-                        <button type="button" id="btnStartImport" class="btn btn-primary" style="font-weight: 800; padding: 10px 24px; border-radius: 8px; font-size: 14px;" disabled>Verify &amp; Start Import ➔</button>
+                        <button type="button" id="btnStartImport" class="btn btn-primary" style="font-weight: 800; padding: 10px 24px; border-radius: 8px; font-size: 14px;" disabled>Verify &amp; Start Import </button>
                     </div>
                 </div>
             </div>
@@ -280,20 +280,20 @@ class AppCsvImportModal extends HTMLElement {
             container.innerHTML = `
                 <div style="background: #ffffff; border: 1px solid #bbf7d0; padding: 20px 22px; border-radius: 12px; box-shadow: 0 2px 8px rgba(15,23,42,0.03);">
                     <div style="font-weight: 800; font-size: 15px; color: #166534; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-                        <span>🏫</span> Allocate all newly imported students to a classroom now?
+                        <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span> Allocate all newly imported students to a classroom now?
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px;">
                         <label style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px; cursor: pointer; background: #f0fdf4; padding: 12px 14px; border: 1px solid #dcfce7; border-radius: 8px;">
                             <input type="radio" name="assign_classroom_choice" value="none" checked id="radioAllocNone" style="margin-top: 2px;">
                             <div>
-                                <strong style="color: #166534;">🔘 Keep Unallocated (Unallocated Pool)</strong>
+                                <strong style="color: #166534;"> Keep Unallocated (Unallocated Pool)</strong>
                                 <div style="color: #475569; font-size: 12px; margin-top: 2px;">Students will be added to system pool without classroom assignment. You can assign classrooms later.</div>
                             </div>
                         </label>
                         <label style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px; cursor: pointer; background: #f0fdf4; padding: 12px 14px; border: 1px solid #dcfce7; border-radius: 8px;">
                             <input type="radio" name="assign_classroom_choice" value="select" id="radioAllocSelect" style="margin-top: 2px;">
                             <div>
-                                <strong style="color: #166534;">🏫 Assign All Students to Selected Classroom</strong>
+                                <strong style="color: #166534;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Assign All Students to Selected Classroom</strong>
                                 <div style="color: #475569; font-size: 12px; margin-top: 2px;">Directly enroll all imported students into a designated classroom.</div>
                             </div>
                         </label>
@@ -305,7 +305,7 @@ class AppCsvImportModal extends HTMLElement {
                             <option value="">— Select a classroom stream —</option>
                             ${optionsHtml}
                         </select>
-                        <div style="font-size: 12px; color: #b91c1c; margin-top: 6px; display: none; font-weight: 700;" id="classroomSelectError">⚠️ Please select a classroom before importing.</div>
+                        <div style="font-size: 12px; color: #b91c1c; margin-top: 6px; display: none; font-weight: 700;" id="classroomSelectError"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Please select a classroom before importing.</div>
                     </div>
                 </div>
             `;
@@ -323,7 +323,7 @@ class AppCsvImportModal extends HTMLElement {
         } else {
             container.innerHTML = `
                 <div style="background: #eff6ff; border: 1px solid #bfdbfe; padding: 14px; border-radius: 8px; font-size: 13px; color: #1e40af;">
-                    💡 <strong>Classrooms Notice:</strong> No classrooms have been created in your school yet. These students will be imported without a classroom (Unallocated Pool). You will need to go to the <strong>Classrooms Workspace</strong> to create classrooms and assign them later.
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5.76.76 1.23 1.52 1.41 2.5"/></svg> <strong>Classrooms Notice:</strong> No classrooms have been created in your school yet. These students will be imported without a classroom (Unallocated Pool). You will need to go to the <strong>Classrooms Workspace</strong> to create classrooms and assign them later.
                 </div>
             `;
             container.style.display = 'block';
@@ -464,7 +464,7 @@ class AppCsvImportModal extends HTMLElement {
                             if (scrollBody) setTimeout(() => { scrollBody.scrollTop = scrollBody.scrollHeight; }, 50);
 
                             startBtn.disabled = false;
-                            startBtn.textContent = 'Complete User Import ➔';
+                            startBtn.textContent = 'Complete User Import ';
                             statusText.textContent = `Validation complete. Review options below and click Complete.`;
                         } else {
                             alertBox.textContent = result.message || 'Error occurred while validating data.';
@@ -540,7 +540,7 @@ class AppCsvImportModal extends HTMLElement {
                     allocMsg = `• Students imported without a classroom. Assign them later in the Classrooms Workspace.\n`;
                 }
 
-                alert(`🎉 User import completed successfully!\n\n` +
+                alert(` User import completed successfully!\n\n` +
                       `• New Accounts Created: ${summary.inserted || 0}\n` +
                       `• Accounts Updated: ${summary.updated || 0}\n` +
                       `• Skipped (Duplicates): ${summary.skipped || 0}\n` +
