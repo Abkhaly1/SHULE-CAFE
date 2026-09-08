@@ -3,17 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Grades ‹ SHULE CAFE</title>
+    <title>Academic Statements & Grades ‹ Student Portal ‹ SHULE CAFE</title>
     <link rel="stylesheet" href="../css/design-system.css">
     <link rel="stylesheet" href="../css/layout.css">
     <script type="module" src="../layouts/global-layout.js"></script>
     <script type="module" src="../js/auth/auth-guard.js"></script>
     <style>
-        .grade-card { background:#fff; border:1px solid var(--c-border-light); border-radius:16px; padding:22px; margin-bottom:18px; box-shadow:0 8px 24px rgba(15,23,42,0.04); }
-        .grade-row { display:grid; grid-template-columns:1fr 120px; gap:12px; padding:12px 0; border-bottom:1px solid var(--c-border-light); }
-        .grade-row:last-child { border-bottom:none; }
-        .subject-label { font-weight:700; color:var(--c-text-primary); }
-        .grade-value { font-size:16px; font-weight:800; color:#0f766e; }
+        .summary-card {
+            background: #fff;
+            border: 1px solid var(--c-border-light);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .metric-box {
+            background: var(--c-surface-hover, #f8fafc);
+            border: 1px solid var(--c-border-light);
+            border-radius: 8px;
+            padding: 14px 16px;
+        }
+        .metric-label {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--c-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .metric-val {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--c-text-primary);
+        }
+        @media print {
+            app-sidebar, app-topbar, .no-print { display: none !important; }
+            .app-main { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+            .card { border: none !important; box-shadow: none !important; }
+        }
     </style>
 </head>
 <body>
@@ -23,20 +56,223 @@
             <app-topbar username="Student Portal"></app-topbar>
             <main class="app-content-wrapper">
                 <div class="app-content">
-                    <div class="grade-card">
-                        <h1 style="margin:0 0 14px; font-size:24px; font-weight:800;">Your Grades</h1>
-                        <p style="margin:0 0 20px; color:var(--c-text-secondary);">Latest assessment grades for your enrolled subjects.</p>
-                        <div class="grade-row"><span class="subject-label">Mathematics</span><span class="grade-value">A-</span></div>
-                        <div class="grade-row"><span class="subject-label">English</span><span class="grade-value">B+</span></div>
-                        <div class="grade-row"><span class="subject-label">Biology</span><span class="grade-value">B</span></div>
-                        <div class="grade-row"><span class="subject-label">History</span><span class="grade-value">A</span></div>
-                        <div class="grade-row"><span class="subject-label">Geography</span><span class="grade-value">B+</span></div>
-                        <div class="grade-row"><span class="subject-label">Civics</span><span class="grade-value">A-</span></div>
+                    <app-breadcrumb path="Student Portal, Academic Statements"></app-breadcrumb>
+
+                    <!-- Top Control Header -->
+                    <div class="card no-print" style="padding: 16px 20px; margin-bottom: 20px; margin-top: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+                            <div>
+                                <h1 style="margin: 0 0 4px; font-size: 20px; font-weight: 800; color: var(--c-text-primary);">
+                                    Academic Statements & Grades
+                                </h1>
+                                <p style="margin: 0; font-size: 13px; color: var(--c-text-secondary);">
+                                    Official multi-year assessment scores, GPA calculations, and division standings.
+                                </p>
+                            </div>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <select id="yearSelector" class="form-control" style="width: 140px; font-weight: 700;">
+                                    <option value="2026">Academic 2026</option>
+                                    <option value="2025">Academic 2025</option>
+                                </select>
+                                <button class="btn btn-secondary" onclick="window.print()" style="display: flex; align-items: center; gap: 6px; font-weight: 700;">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                                    <span>Print Statement</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Academic Performance Summary -->
+                    <div class="summary-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--c-border-light); padding-bottom: 14px;">
+                            <div>
+                                <div style="font-size: 16px; font-weight: 800; color: var(--c-text-primary);" id="dispStudentName">Student Statement</div>
+                                <div style="font-size: 12px; color: var(--c-text-muted);" id="dispStudentMeta">Classroom: Loading... | Student ID: ...</div>
+                            </div>
+                            <div id="standingBadge">
+                                <span class="badge" style="background: #ecfdf5; color: #047857; font-weight: 800; font-size: 12px; padding: 6px 12px; border-radius: 6px;">Good Standing</span>
+                            </div>
+                        </div>
+
+                        <div class="metrics-grid">
+                            <div class="metric-box">
+                                <div class="metric-label">Cumulative GPA</div>
+                                <div class="metric-val" style="color: var(--c-primary);" id="statGpa">-</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Division Standing</div>
+                                <div class="metric-val" style="color: #047857;" id="statDivision">-</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Average Score</div>
+                                <div class="metric-val" id="statAverage">-</div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">Subjects Evaluated</div>
+                                <div class="metric-val" id="statSubjectsCount">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detailed Grades Table -->
+                    <div class="card" style="padding: 0; overflow: hidden; border: 1px solid var(--c-border-light); border-radius: 8px;">
+                        <div style="padding: 16px 20px; border-bottom: 1px solid var(--c-border-light); background: var(--c-surface-hover); display: flex; justify-content: space-between; align-items: center;">
+                            <div style="font-weight: 800; font-size: 14px; color: var(--c-text-primary);">Subject Assessment Breakdown</div>
+                            <div style="font-size: 12px; color: var(--c-text-muted);" id="tableYearLabel">Academic Session 2026</div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table" style="width: 100%; margin: 0; border-collapse: collapse;">
+                                <thead style="background: #fff; border-bottom: 2px solid var(--c-border-light);">
+                                    <tr>
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 800; color: var(--c-text-muted); text-transform: uppercase;">Subject Code</th>
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 800; color: var(--c-text-muted); text-transform: uppercase;">Subject Title</th>
+                                        <th style="padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 800; color: var(--c-text-muted); text-transform: uppercase;">CA Score</th>
+                                        <th style="padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 800; color: var(--c-text-muted); text-transform: uppercase;">Terminal Exam</th>
+                                        <th style="padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 800; color: var(--c-text-muted); text-transform: uppercase;">Total Score</th>
+                                        <th style="padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 800; color: var(--c-text-muted); text-transform: uppercase;">Grade</th>
+                                        <th style="padding: 12px 16px; text-align: center; font-size: 12px; font-weight: 800; color: var(--c-text-muted); text-transform: uppercase;">Points</th>
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 800; color: var(--c-text-muted); text-transform: uppercase;">Remark</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="gradesTableBody">
+                                    <tr>
+                                        <td colspan="8" style="text-align: center; padding: 36px; color: var(--c-text-muted);">
+                                            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+                                                <span>Loading academic assessment records...</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <app-footer></app-footer>
                 </div>
             </main>
         </div>
     </div>
+
+    <script>
+        async function fetchGrades(year = '') {
+            if (!year) year = document.getElementById('yearSelector').value;
+            document.getElementById('tableYearLabel').textContent = `Academic Session ${year}`;
+            
+            try {
+                const res = await fetch(`/api/students/student_workspace.php?year=${encodeURIComponent(year)}`);
+                const data = await res.json();
+                
+                if (data.success) {
+                    renderStatement(data);
+                } else {
+                    showError(data.message || 'Unable to retrieve academic statements.');
+                }
+            } catch (e) {
+                showError('Network error connecting to student academic statements service.');
+            }
+        }
+
+        function renderStatement(data) {
+            const profile = data.profile || {};
+            const marks = data.marks || [];
+            const summary = data.summary || {};
+            const timeline = data.timeline || [];
+
+            // Update selectors
+            const yearSelect = document.getElementById('yearSelector');
+            if (timeline.length > 0 && yearSelect.options.length <= 2) {
+                const curVal = yearSelect.value;
+                yearSelect.innerHTML = '';
+                timeline.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.academic_year;
+                    opt.textContent = `Academic ${t.academic_year}`;
+                    if (t.academic_year === curVal) opt.selected = true;
+                    yearSelect.appendChild(opt);
+                });
+            }
+
+            // Student header info
+            document.getElementById('dispStudentName').textContent = profile.full_name || 'Student Statement';
+            const roomName = data.current_allocation?.classroom_name || 'Assigned Classroom';
+            const code = profile.user_code || profile.id || '-';
+            document.getElementById('dispStudentMeta').textContent = `Classroom: ${roomName} | Student ID: ${code}`;
+
+            // Metrics
+            document.getElementById('statGpa').textContent = summary.gpa !== undefined ? summary.gpa : (summary.average ? (summary.average / 20).toFixed(2) : '-');
+            document.getElementById('statDivision').textContent = summary.division || 'Pass';
+            document.getElementById('statAverage').textContent = summary.average ? `${summary.average}%` : '-';
+            document.getElementById('statSubjectsCount').textContent = marks.length;
+
+            const tbody = document.getElementById('gradesTableBody');
+            if (marks.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 40px; color: var(--c-text-muted);">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                <span style="font-weight: 700;">No official marks entered yet for the selected session.</span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = marks.map(m => {
+                const ca = m.scores?.ca !== undefined ? m.scores.ca : '-';
+                const terminal = m.scores?.terminal !== undefined ? m.scores.terminal : '-';
+                const total = m.total_score !== undefined ? m.total_score : '-';
+                const grade = m.grade || '-';
+                const points = m.points || '-';
+                const remark = m.remark || '-';
+
+                let gradeColor = '#0f766e';
+                if (grade === 'A') gradeColor = '#059669';
+                else if (grade === 'B' || grade === 'B+') gradeColor = '#2563eb';
+                else if (grade === 'C') gradeColor = '#d97706';
+                else if (grade === 'F') gradeColor = '#dc2626';
+
+                return `
+                    <tr style="border-bottom: 1px solid var(--c-border-light);">
+                        <td style="padding: 12px 16px; font-weight: 800; font-size: 13px; color: var(--c-text-muted);">${escapeHtml(m.subject_code || '-')}</td>
+                        <td style="padding: 12px 16px; font-weight: 700; color: var(--c-text-primary); font-size: 13px;">${escapeHtml(m.subject_name || m.subject_code || '-')}</td>
+                        <td style="padding: 12px 16px; text-align: center; color: var(--c-text-secondary); font-size: 13px;">${ca}</td>
+                        <td style="padding: 12px 16px; text-align: center; color: var(--c-text-secondary); font-size: 13px;">${terminal}</td>
+                        <td style="padding: 12px 16px; text-align: center; font-weight: 800; font-size: 14px; color: var(--c-text-primary);">${total}</td>
+                        <td style="padding: 12px 16px; text-align: center; font-weight: 800; font-size: 14px; color: ${gradeColor};">${grade}</td>
+                        <td style="padding: 12px 16px; text-align: center; font-weight: 700; font-size: 13px;">${points}</td>
+                        <td style="padding: 12px 16px; font-size: 13px; color: var(--c-text-secondary);">${escapeHtml(remark)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function showError(msg) {
+            const tbody = document.getElementById('gradesTableBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 32px; color: var(--c-danger, #dc2626);">
+                        <div style="font-weight: 700;">${escapeHtml(msg)}</div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        document.getElementById('yearSelector').addEventListener('change', (e) => {
+            fetchGrades(e.target.value);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchGrades();
+        });
+    </script>
 </body>
 </html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schools Directory ‹ Regional Officer ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/regional-theme.css">
+    
+    <script type="module" src="../layouts/global-layout.js"></script>
+    <script type="module" src="../js/auth/auth-guard.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="regional_officer" active-path="/regional/schools.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="Regional Officer Portal"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content">
+                    <app-breadcrumb path="Regional Officer, Schools Directory"></app-breadcrumb>
+                    
+                    <app-page-header 
+                        title="Registered Schools Directory" 
+                        subtitle="Supervise and monitor secondary schools registered within your regional jurisdiction.">
+                    </app-page-header>
+                    
+                    <!-- Search & Filter Controls -->
+                    <div class="card" style="padding: var(--sp-4); margin-bottom: var(--sp-4); margin-top: var(--sp-4);">
+                        <div style="display: flex; gap: var(--sp-3); flex-wrap: wrap; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; gap: var(--sp-3); flex: 1; min-width: 280px; align-items: center;">
+                                <div style="position: relative; flex: 1;">
+                                    <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--c-text-muted); display: flex; align-items: center; pointer-events: none;">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                    </span>
+                                    <input type="text" id="schoolSearchInput" class="form-control" placeholder="Search schools by name or region..." style="padding-left: 36px; width: 100%;">
+                                </div>
+                                <select id="filterTypeSelect" class="form-control" style="width: 160px;">
+                                    <option value="">All Types</option>
+                                    <option value="Secondary">Secondary</option>
+                                    <option value="High School">High School</option>
+                                </select>
+                                <select id="filterStatusSelect" class="form-control" style="width: 140px;">
+                                    <option value="">All Status</option>
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
+                            <div style="font-size: var(--text-sm); font-weight: 700; color: var(--c-text-secondary);" id="schoolsCountSummary">
+                                Showing 0 schools
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Schools Table Container -->
+                    <div class="card" style="padding: 0; overflow: hidden; border: 1px solid var(--c-border-light); border-radius: 8px;">
+                        <div class="table-responsive">
+                            <table class="table" style="width: 100%; margin: 0; border-collapse: collapse;">
+                                <thead style="background: var(--c-surface-hover); border-bottom: 2px solid var(--c-border-light);">
+                                    <tr>
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 800; color: var(--c-text-muted); text-transform: uppercase;">School Name</th>
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 800; color: var(--c-text-muted); text-transform: uppercase;">Type</th>
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 800; color: var(--c-text-muted); text-transform: uppercase;">Region</th>
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 800; color: var(--c-text-muted); text-transform: uppercase;">Headmaster</th>
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 800; color: var(--c-text-muted); text-transform: uppercase;">Contact Phone</th>
+                                        <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 800; color: var(--c-text-muted); text-transform: uppercase;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="schoolsTableBody">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; padding: 40px; color: var(--c-text-muted);">
+                                            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+                                                <span>Loading registered schools directory...</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <app-footer></app-footer>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script>
+        let allSchools = [];
+        
+        async function loadSchools() {
+            try {
+                const res = await fetch('/api/schools/list.php');
+                const data = await res.json();
+                
+                if (data.success && Array.isArray(data.data)) {
+                    allSchools = data.data;
+                    renderSchools(allSchools);
+                } else {
+                    showError(data.message || 'Unable to retrieve schools directory.');
+                }
+            } catch (err) {
+                showError('Network error connecting to schools endpoint.');
+            }
+        }
+        
+        function renderSchools(schools) {
+            const tbody = document.getElementById('schoolsTableBody');
+            const summary = document.getElementById('schoolsCountSummary');
+            summary.textContent = `Showing ${schools.length} school${schools.length === 1 ? '' : 's'}`;
+            
+            if (schools.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 48px 16px; color: var(--c-text-muted);">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                <span style="font-weight: 700;">No registered schools found matching criteria.</span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = schools.map(s => {
+                const statusBadge = (s.status || 'active').toLowerCase() === 'active' 
+                    ? `<span class="badge" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-weight: 700; font-size: 11px; padding: 3px 8px; border-radius: 4px;">Active</span>`
+                    : `<span class="badge" style="background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; font-weight: 700; font-size: 11px; padding: 3px 8px; border-radius: 4px;">Inactive</span>`;
+                    
+                return `
+                    <tr style="border-bottom: 1px solid var(--c-border-light);">
+                        <td style="padding: 14px 16px; font-weight: 800; color: var(--c-text-primary);">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 28px; height: 28px; border-radius: 6px; background: var(--c-primary-bg, #eff6ff); color: var(--c-primary); display: flex; align-items: center; justify-content: center;">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                </div>
+                                <span>${escapeHtml(s.name || 'Unknown School')}</span>
+                            </div>
+                        </td>
+                        <td style="padding: 14px 16px; color: var(--c-text-secondary); font-size: 13px;">${escapeHtml(s.type || 'Secondary')}</td>
+                        <td style="padding: 14px 16px; color: var(--c-text-secondary); font-size: 13px;">${escapeHtml(s.region || 'National')}</td>
+                        <td style="padding: 14px 16px; font-weight: 600; color: var(--c-text-primary); font-size: 13px;">${escapeHtml(s.headmaster_name || 'Unassigned')}</td>
+                        <td style="padding: 14px 16px; color: var(--c-text-secondary); font-size: 13px;">${escapeHtml(s.headmaster_phone || 'N/A')}</td>
+                        <td style="padding: 14px 16px;">${statusBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function filterSchools() {
+            const query = (document.getElementById('schoolSearchInput').value || '').toLowerCase().trim();
+            const type = (document.getElementById('filterTypeSelect').value || '').toLowerCase().trim();
+            const status = (document.getElementById('filterStatusSelect').value || '').toLowerCase().trim();
+            
+            const filtered = allSchools.filter(s => {
+                const nameMatch = (s.name || '').toLowerCase().includes(query) || (s.region || '').toLowerCase().includes(query);
+                const typeMatch = !type || (s.type || '').toLowerCase() === type;
+                const statusMatch = !status || (s.status || '').toLowerCase() === status;
+                return nameMatch && typeMatch && statusMatch;
+            });
+            
+            renderSchools(filtered);
+        }
+        
+        function showError(msg) {
+            const tbody = document.getElementById('schoolsTableBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 32px 16px; color: var(--c-danger, #dc2626);">
+                        <div style="font-weight: 700;">${escapeHtml(msg)}</div>
+                    </td>
+                </tr>
+            `;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        document.getElementById('schoolSearchInput').addEventListener('input', filterSchools);
+        document.getElementById('filterTypeSelect').addEventListener('change', filterSchools);
+        document.getElementById('filterStatusSelect').addEventListener('change', filterSchools);
+        
+        document.addEventListener('DOMContentLoaded', loadSchools);
+    </script>
+</body>
+</html>
