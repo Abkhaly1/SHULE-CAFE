@@ -13,43 +13,11 @@
     <script type="module" src="../../js/auth/auth-guard.js"></script>
 
     <style>
-        .report-nav-tabs {
-            display: flex;
-            gap: 8px;
-            border-bottom: 2px solid #e2e8f0;
-            margin-top: 16px;
-            margin-bottom: 24px;
-        }
-        .report-tab-btn {
-            background: none;
-            border: none;
-            padding: 12px 20px;
-            font-size: 14px;
-            font-weight: 700;
-            color: #64748b;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            margin-bottom: -2px;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .report-tab-btn:hover {
-            color: #047857;
-        }
-        .report-tab-btn.active {
-            color: #047857;
-            border-bottom-color: #047857;
-            background: #f0fdf4;
-            border-radius: 8px 8px 0 0;
-        }
-
         .analytics-card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
+            gap: 12px;
+            margin-bottom: 14px;
         }
         .stat-widget {
             background: #ffffff;
@@ -110,32 +78,33 @@
             <app-topbar username="Headmaster Portal"></app-topbar>
             
             <main class="app-content-wrapper">
-                <div class="app-content">
-                    <app-breadcrumb path="Headmaster, Reports"></app-breadcrumb>
+                <div class="app-content" style="padding: 0;">
                     
-                    <app-page-header 
-                        title="Attendance & School Reports" 
-                        subtitle="School attendance analytics, class rosters, and data exports.">
-                    </app-page-header>
-
-                    <!-- TAB NAVIGATION -->
-                    <div class="report-nav-tabs">
-                        <button type="button" class="report-tab-btn active" data-tab="tabAnalytics">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                            Attendance Analytics
-                        </button>
-                        <button type="button" class="report-tab-btn" data-tab="tabRoster">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                            Classrooms & Rosters
-                        </button>
-                        <button type="button" class="report-tab-btn" data-tab="tabExports">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            Data Exports
-                        </button>
+                    <div style="margin-bottom: 6px;">
+                        <app-breadcrumb path="Headmaster, School Reports"></app-breadcrumb>
                     </div>
 
-                    <!-- TAB 1: ATTENDANCE ANALYTICS HUB -->
-                    <div id="tabAnalytics" class="report-tab-content">
+                    <!-- Single Compact Header Box with Tabs on Same Line -->
+                    <div class="card" style="margin-bottom: 8px; padding: 6px 14px; background: white; border-radius: 8px; border: 1px solid var(--c-primary-border); box-shadow: 0 1px 2px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 26px; height: 26px; border-radius: 6px; background: var(--c-primary); color: white; display: flex; align-items: center; justify-content: center;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                            </div>
+                            <h2 style="margin: 0; font-size: 14px; font-weight: 800; color: var(--c-text-primary);">Attendance &amp; School Reports</h2>
+                        </div>
+
+                        <!-- Navigation Tabs on Same Row -->
+                        <app-workspace-tabs active-tab="tabAnalytics">
+                            <button class="workspace-tab active" data-target="tabAnalytics" style="font-weight: 700; font-size: 12px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px;"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Attendance Analytics</button>
+                            <button class="workspace-tab" data-target="tabRoster" style="font-weight: 700; font-size: 12px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Classrooms &amp; Rosters</button>
+                            <button class="workspace-tab" data-target="tabExports" style="font-weight: 700; font-size: 12px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Data Exports</button>
+                        </app-workspace-tabs>
+                    </div>
+
+                    <!-- Spacious Workspace Content Container -->
+                    <div class="workspace-main-area">
+                        <!-- TAB 1: ATTENDANCE ANALYTICS HUB -->
+                        <app-workspace-content tab-id="tabAnalytics" active="true">
                         
                         <!-- Top Overview Stat Widgets -->
                         <div class="analytics-card-grid">
@@ -236,12 +205,10 @@
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
+                        </app-workspace-content>
 
-                    </div>
-
-                    <!-- TAB 2: CLASSROOMS & STUDENT DRILLDOWN -->
-                    <div id="tabRoster" class="report-tab-content" style="display: none;">
+                        <!-- TAB 2: CLASSROOMS & STUDENT DRILLDOWN -->
+                        <app-workspace-content tab-id="tabRoster">
                         
                         <div class="filter-bar">
                             <div style="display: flex; flex-direction: column; gap: 4px;">
@@ -318,47 +285,47 @@
                                 </div>
                             </div>
                         </div>
+                        </app-workspace-content>
 
-                    </div>
+                        <!-- TAB 3: DATA EXPORTS -->
+                        <app-workspace-content tab-id="tabExports">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px;">
+                                
+                                <div class="card" style="padding: 18px;">
+                                    <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; color: #0f172a;">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--c-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72l5 2.73 5-2.73v3.72z"/></svg>
+                                        Students Export
+                                    </h3>
+                                    <p style="color: var(--c-text-muted); font-size: 12px; margin-bottom: 14px;">
+                                        Export full student roster and enrollment data.
+                                    </p>
+                                    <a href="/shule-cafe/api/export/users.php?role=student" class="btn btn-outline btn-sm" style="width: 100%; justify-content: center; text-decoration: none; font-weight: 700;">Download Students CSV</a>
+                                </div>
+                                
+                                <div class="card" style="padding: 18px;">
+                                    <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; color: #0f172a;">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--c-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                                        Teachers Export
+                                    </h3>
+                                    <p style="color: var(--c-text-muted); font-size: 12px; margin-bottom: 14px;">
+                                        Export academic staff &amp; teachers directory.
+                                    </p>
+                                    <a href="/shule-cafe/api/export/users.php?role=teacher" class="btn btn-outline btn-sm" style="width: 100%; justify-content: center; text-decoration: none; font-weight: 700;">Download Teachers CSV</a>
+                                </div>
 
-                    <!-- TAB 3: DATA EXPORTS (PRESERVED EXISTING UI) -->
-                    <div id="tabExports" class="report-tab-content" style="display: none;">
-                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--sp-6);">
-                            
-                            <div class="card" style="padding: var(--sp-6);">
-                                <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--c-primary)"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72l5 2.73 5-2.73v3.72z"/></svg>
-                                    Students Export
-                                </h3>
-                                <p style="color: var(--c-text-secondary); font-size: var(--text-sm); margin-bottom: var(--sp-4);">
-                                    Export student roster CSV.
-                                </p>
-                                <a href="/shule-cafe/api/export/users.php?role=student" class="btn btn-outline" style="width: 100%; justify-content: center; text-decoration: none;">Download Students CSV</a>
+                                <div class="card" style="padding: 18px;">
+                                    <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; color: #0f172a;">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--c-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                                        Parents Export
+                                    </h3>
+                                    <p style="color: var(--c-text-muted); font-size: 12px; margin-bottom: 14px;">
+                                        Export parents and guardians contact directory.
+                                    </p>
+                                    <a href="/shule-cafe/api/export/users.php?role=parent" class="btn btn-outline btn-sm" style="width: 100%; justify-content: center; text-decoration: none; font-weight: 700;">Download Parents CSV</a>
+                                </div>
+
                             </div>
-                            
-                            <div class="card" style="padding: var(--sp-6);">
-                                <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--c-primary)"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-                                    Teachers Export
-                                </h3>
-                                <p style="color: var(--c-text-secondary); font-size: var(--text-sm); margin-bottom: var(--sp-4);">
-                                    Export teachers list CSV.
-                                </p>
-                                <a href="/shule-cafe/api/export/users.php?role=teacher" class="btn btn-outline" style="width: 100%; justify-content: center; text-decoration: none;">Download Teachers CSV</a>
-                            </div>
-
-                            <div class="card" style="padding: var(--sp-6);">
-                                <h3 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--c-primary)"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
-                                    Parents Export
-                                </h3>
-                                <p style="color: var(--c-text-secondary); font-size: var(--text-sm); margin-bottom: var(--sp-4);">
-                                    Export parents directory CSV.
-                                </p>
-                                <a href="/shule-cafe/api/export/users.php?role=parent" class="btn btn-outline" style="width: 100%; justify-content: center; text-decoration: none;">Download Parents CSV</a>
-                            </div>
-
-                        </div>
+                        </app-workspace-content>
                     </div>
 
                 </div>
@@ -433,25 +400,13 @@
         };
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Tab switching logic
-            const tabBtns = document.querySelectorAll('.report-tab-btn');
-            const tabContents = document.querySelectorAll('.report-tab-content');
-
-            tabBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    tabBtns.forEach(b => b.classList.remove('active'));
-                    tabContents.forEach(c => c.style.display = 'none');
-
-                    btn.classList.add('active');
-                    const targetId = btn.getAttribute('data-tab');
-                    const targetContent = document.getElementById(targetId);
-                    if (targetContent) targetContent.style.display = 'block';
-
-                    if (targetId === 'tabRoster') {
-                        const yr = document.getElementById('selYear')?.value || new Date().getFullYear().toString();
-                        loadClassrooms(yr);
-                    }
-                });
+            // Tab switching logic via standard workspace-tabs event
+            document.addEventListener('workspace-tab-change', (e) => {
+                const targetId = e.detail?.tabId;
+                if (targetId === 'tabRoster') {
+                    const yr = document.getElementById('selYear')?.value || new Date().getFullYear().toString();
+                    loadClassrooms(yr);
+                }
             });
 
             // Initial Data Load

@@ -16,3 +16,11 @@
 ## 4. Standard SVG / Vector Icons Directive (Strict No-Keyboard / No-Emoji Icons Rule)
 - **100% Standard SVG Icons**: SHULE CAFE must use clean, professional standard SVG vector icons (`<svg viewBox="0 0 24 24">...</svg>`). DO NOT use emoji keyboard characters (such as 📊, 👥, 🏫, 📝, 👨‍🏫, 🖨️, ⚙️, 📈, 🔔, 🏆, 🥇, ⚠️, ❌, ✅, ⬅, ➡️, 🔍, 📥, 🎓, 👦, 👧, 🟢, 🟡, 🔴, etc.) anywhere in UI buttons, stat cards, sidebar menus, navigation tabs, banners, headers, table badges, or notifications.
 - **Visual Elegance & Professionalism**: All iconography across all role portals, dashboards, reports, and workspaces must be crisp, high-resolution SVG icons with appropriate `stroke`, `fill`, `width`, `height`, and semantic CSS styling.
+
+## 5. Official Page Design & Frontend UI Architecture Directive
+- **Strict Compliance with `PAGE_RULES.md`**: All frontend pages must strictly follow the rules defined in [PAGE_RULES.md](file:///c:/xampp/htdocs/shule-cafe/.agents/PAGE_RULES.md):
+  1. **Single-Row Compact Header**: Eliminate subtitles and multi-line descriptions. Use the single-row compact header card with 26x26px icon box, 14px bold title, and embedded `<app-workspace-tabs>` on the same line.
+  2. **Zero-Padding Content Container**: Use `<div class="app-content" style="padding: 0;">` with compact breadcrumbs.
+  3. **No Floating Tab Bars**: Workspace tabs must be embedded inside the header card row.
+  4. **Standard KPI Cards**: 4px left-border indicators, bold metrics, and crisp uppercase labels.
+  5. **Standard Tables & Filters**: Unified white filter bar, non-overlapping search inputs, and semantic status badges.
