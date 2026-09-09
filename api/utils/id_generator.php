@@ -122,7 +122,7 @@ if (!function_exists('generateShuleCafeUserId')) {
      * @param string|null $region Region name or code (used for regional_officer)
      * @return string Formatted Systematic User ID
      */
-    function generateShuleCafeUserId(PDO $conn, ?string $schoolId, string $role, ?string $region = null): string {
+    function generateShuleCafeUserId(PDO $conn, ?string $schoolId, string $role, ?string $region = null, array $excludeCodes = []): string {
         $roleClean = strtolower(trim($role));
 
         // 1. Regional Officer Generation: SC/REG-{REGION}/OFF-{SEQ}
@@ -149,7 +149,20 @@ if (!function_exists('generateShuleCafeUserId')) {
             }
 
             $nextSeq = $maxSeq + 1;
-            return sprintf("SC/REG-%s/OFF-%03d", $regCode, $nextSeq);
+
+            // Collision check loop against DB and batch
+            do {
+                $generatedCode = sprintf("SC/REG-%s/OFF-%03d", $regCode, $nextSeq);
+                $checkStmt = $conn->prepare("SELECT COUNT(*) FROM users WHERE user_code = ?");
+                $checkStmt->execute([$generatedCode]);
+                $existsInDb = ((int)$checkStmt->fetchColumn()) > 0;
+                $existsInBatch = in_array($generatedCode, $excludeCodes, true);
+                if ($existsInDb || $existsInBatch) {
+                    $nextSeq++;
+                }
+            } while ($existsInDb || $existsInBatch);
+
+            return $generatedCode;
         }
 
         // 2. School-Bound User Generation
@@ -216,16 +229,17 @@ if (!function_exists('generateShuleCafeUserId')) {
             $nextSeq = $maxSeq + 1;
         }
 
-        // Collision safety check
+        // Absolute Zero-Collision safety check against DB and batch
         do {
             $generatedCode = sprintf("SC/%s/%s-%0" . $padLength . "d", $schoolCore, $roleTag, $nextSeq);
             $checkStmt = $conn->prepare("SELECT COUNT(*) FROM users WHERE user_code = ?");
             $checkStmt->execute([$generatedCode]);
-            $exists = ((int)$checkStmt->fetchColumn()) > 0;
-            if ($exists) {
+            $existsInDb = ((int)$checkStmt->fetchColumn()) > 0;
+            $existsInBatch = in_array($generatedCode, $excludeCodes, true);
+            if ($existsInDb || $existsInBatch) {
                 $nextSeq++;
             }
-        } while ($exists);
+        } while ($existsInDb || $existsInBatch);
 
         return $generatedCode;
     }

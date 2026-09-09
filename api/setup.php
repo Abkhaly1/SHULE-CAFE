@@ -80,6 +80,7 @@ try {
 
     // Alter migrations for existing users table
     try { $pdo->exec("ALTER TABLE users ADD COLUMN user_code VARCHAR(50) DEFAULT NULL"); } catch (Exception $e) {}
+    try { $pdo->exec("ALTER TABLE users ADD UNIQUE KEY uq_users_user_code (user_code)"); } catch (Exception $e) {}
     try { $pdo->exec("ALTER TABLE users ADD COLUMN email VARCHAR(150) DEFAULT NULL"); } catch (Exception $e) {}
     try { $pdo->exec("ALTER TABLE users ADD COLUMN gender VARCHAR(20) DEFAULT NULL"); } catch (Exception $e) {}
     try { $pdo->exec("ALTER TABLE users ADD COLUMN department VARCHAR(100) DEFAULT NULL"); } catch (Exception $e) {}

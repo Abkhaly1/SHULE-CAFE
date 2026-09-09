@@ -261,6 +261,7 @@ try {
         $stmtFindStudentByCode = $conn->prepare("SELECT id FROM users WHERE school_id = ? AND LOWER(user_code) = LOWER(?) AND role = 'student' LIMIT 1");
 
         $currentYear = date('Y');
+        $assignedBatchCodes = [];
 
         foreach ($rows as $idx => $r) {
             $name = mb_strtoupper(trim($r['full_name'] ?? ''), 'UTF-8');
@@ -275,10 +276,11 @@ try {
                 continue;
             }
 
-            // If user_code is empty, generate Option A Systematic ID
+            // If user_code is empty, generate Option A Systematic ID with zero-collision batch tracking
             if (empty($code)) {
-                $code = generateShuleCafeUserId($conn, $schoolId, $role);
+                $code = generateShuleCafeUserId($conn, $schoolId, $role, null, $assignedBatchCodes);
             }
+            $assignedBatchCodes[] = $code;
 
             // Check if existing user
             $existingId = null;
