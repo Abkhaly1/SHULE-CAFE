@@ -7,6 +7,7 @@
     
     <link rel="stylesheet" href="../../css/design-system.css">
     <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/super-admin-theme.css">
     
     <script type="module" src="../../layouts/global-layout.js"></script>
     <script type="module" src="../../js/auth/auth-guard.js"></script>
@@ -19,22 +20,35 @@
             <app-topbar username="System Administrator"></app-topbar>
             
             <main class="app-content-wrapper">
-                <div class="app-content">
-                    <app-breadcrumb path="Super Admin, Platform Users"></app-breadcrumb>
+                <div class="app-content" style="padding: 0;">
+                    <div style="margin-bottom: 6px;">
+                        <app-breadcrumb path="Super Admin, Platform Users"></app-breadcrumb>
+                    </div>
                     
-                    <app-page-header 
-                        title="Platform Users" 
-                        subtitle="View and manage all platform users (Regional Officers, Headmasters, Teachers, Students)."
-                        primary-action="Invite Regional Officer"
-                        id="pageHeader">
-                    </app-page-header>
+                    <!-- Single-Row Compact Header Card -->
+                    <div class="card" style="margin-bottom: 8px; padding: 6px 14px; background: white; border-radius: 8px; border: 1.5px solid var(--sa-grid-border); box-shadow: 0 1px 2px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 26px; height: 26px; border-radius: 6px; background: var(--sa-primary); color: white; display: flex; align-items: center; justify-content: center;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            </div>
+                            <h2 style="margin: 0; font-size: 14px; font-weight: 800; color: var(--c-text-primary);">Platform Users Directory</h2>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button id="inviteBtn" class="btn btn-primary btn-sm" style="font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Invite Regional Officer
+                            </button>
+                        </div>
+                    </div>
                     
-                    <div class="card" style="margin-top: var(--sp-4);">
-                        <div style="padding: var(--sp-4); border-bottom: 1px solid var(--c-border-light); display: flex; justify-content: space-between; align-items: center;">
-                            <app-table-toolbar entity-type="users" search-placeholder="Search users by name, email, or phone..."></app-table-toolbar>
-                            <div style="display: flex; align-items: center; gap: 8px; margin-right: var(--sp-4);">
-                                <label style="font-size: var(--text-sm); font-weight: 500; color: var(--c-text-muted);">Role Filter:</label>
-                                <select id="roleFilter" class="form-control" style="width: auto;">
+                    <div class="card" style="padding: 0; background: white; border-radius: 10px; border: 1px solid #e2e8f0; overflow: hidden;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding-right: 14px; border-bottom: 1px solid #e2e8f0;">
+                            <div style="flex: 1;">
+                                <app-table-toolbar entity-type="users" search-placeholder="Search users by name, email, or phone..."></app-table-toolbar>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <label style="font-size: 12px; font-weight: 700; color: var(--sa-header-text); text-transform: uppercase;">Role:</label>
+                                <select id="roleFilter" class="form-control" style="width: auto; height: 32px; font-size: 12.5px; border-radius: 6px; border: 1.5px solid var(--sa-grid-border); font-weight: 600;">
                                     <option value="ALL">All Roles</option>
                                     <option value="super_admin">Super Admin</option>
                                     <option value="regional_officer">Regional Officer</option>
@@ -45,7 +59,7 @@
                             </div>
                         </div>
                         
-                        <div id="tableContainer"></div>
+                        <div id="tableContainer" style="padding: 10px 14px;"></div>
                     </div>
                 </div>
                 <app-footer></app-footer>

@@ -1,0 +1,377 @@
+/**
+ * SHULE CAFE - Super Admin Mint-Green Table & Workspace Design Theme
+ * Based on high-fidelity custom design specification
+ */
+
+:root {
+    /* Super Admin Brand Palette */
+    --sa-primary: #10b981;
+    --sa-primary-hover: #059669;
+    --sa-primary-light: #ecfdf5;
+    
+    /* Table Green Grid Palette (Exact Match from Design Sample) */
+    --sa-grid-border: #48c78e;
+    --sa-grid-border-light: #86efac;
+    --sa-grid-border-subtle: #a7f3d0;
+    --sa-header-bg: #cbf2dc;
+    --sa-header-text: #15803d;
+    --sa-row-hover: #f0fdf4;
+    --sa-row-selected: #e6f9ed;
+    --sa-count-badge-border: #48c78e;
+    --sa-count-badge-text: #15803d;
+    
+    /* Category / Tag Pill Colors */
+    --tag-green-bg: #dcfce7;
+    --tag-green-text: #15803d;
+    --tag-green-border: #86efac;
+
+    --tag-blue-bg: #dbeafe;
+    --tag-blue-text: #1d4ed8;
+    --tag-blue-border: #93c5fd;
+
+    --tag-purple-bg: #ede9fe;
+    --tag-purple-text: #6d28d9;
+    --tag-purple-border: #c4b5fd;
+
+    --tag-amber-bg: #fef3c7;
+    --tag-amber-text: #b45309;
+    --tag-amber-border: #fde68a;
+
+    --tag-red-bg: #fee2e2;
+    --tag-red-text: #b91c1c;
+    --tag-red-border: #fca5a5;
+
+    --tag-slate-bg: #f1f5f9;
+    --tag-slate-text: #475569;
+    --tag-slate-border: #cbd5e1;
+}
+
+/* ==========================================================================
+   1. TABLE CONTAINER & GREEN GRID ARCHITECTURE
+   ========================================================================== */
+
+/* Outer frame enclosing the table */
+.app-table-container,
+.table-responsive,
+#tableContainer .table-responsive,
+.super-admin-table-frame {
+    border: 1.5px solid var(--sa-grid-border) !important;
+    border-radius: 10px !important;
+    overflow: hidden !important;
+    background: #ffffff !important;
+    box-shadow: 0 2px 10px rgba(72, 199, 142, 0.06) !important;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+}
+
+/* Grid Table Element */
+table.table,
+.table-responsive table,
+app-table table,
+.app-table-grid {
+    width: 100% !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    background: #ffffff !important;
+    margin-bottom: 0 !important;
+}
+
+/* Table Header Row & Cells */
+table.table thead tr,
+.table-responsive table thead tr,
+app-table thead tr {
+    background-color: var(--sa-header-bg) !important;
+}
+
+table.table th,
+.table-responsive table th,
+app-table th {
+    background-color: var(--sa-header-bg) !important;
+    color: var(--sa-header-text) !important;
+    font-size: 13.5px !important;
+    font-weight: 700 !important;
+    padding: 12px 16px !important;
+    border-right: 1px solid var(--sa-grid-border) !important;
+    border-bottom: 1px solid var(--sa-grid-border) !important;
+    letter-spacing: 0.2px !important;
+    text-transform: none !important;
+    white-space: nowrap !important;
+    vertical-align: middle !important;
+}
+
+/* Table Body Cells & Grid Lines */
+table.table td,
+.table-responsive table td,
+app-table td {
+    background-color: #ffffff;
+    color: #1e293b !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    padding: 11px 16px !important;
+    border-right: 1px solid var(--sa-grid-border) !important;
+    border-bottom: 1px solid var(--sa-grid-border) !important;
+    vertical-align: middle !important;
+    transition: background-color 0.15s ease;
+}
+
+/* Eliminate right border on the last column */
+table.table th:last-child,
+table.table td:last-child,
+.table-responsive table th:last-child,
+.table-responsive table td:last-child,
+app-table th:last-child,
+app-table td:last-child {
+    border-right: none !important;
+}
+
+/* Eliminate bottom border on the last row */
+table.table tbody tr:last-child td,
+.table-responsive table tbody tr:last-child td,
+app-table tbody tr:last-child td {
+    border-bottom: none !important;
+}
+
+/* Row Hover State */
+table.table tbody tr:hover td,
+.table-responsive table tbody tr:hover td,
+app-table tbody tr:hover td {
+    background-color: var(--sa-row-hover) !important;
+}
+
+/* Row Selected State */
+table.table tbody tr.row-selected td,
+.table-responsive table tbody tr.row-selected td,
+app-table tbody tr.row-selected td {
+    background-color: var(--sa-row-selected) !important;
+}
+
+/* ==========================================================================
+   2. CHECKBOXES (GREEN BORDER & ACCENT)
+   ========================================================================== */
+.table-checkbox,
+.custom-table-checkbox,
+app-table input[type="checkbox"] {
+    width: 17px !important;
+    height: 17px !important;
+    border: 1.5px solid var(--sa-grid-border) !important;
+    border-radius: 4px !important;
+    accent-color: #10b981 !important;
+    cursor: pointer !important;
+    vertical-align: middle !important;
+    margin: 0 !important;
+}
+
+.th-checkbox,
+.td-checkbox {
+    width: 44px !important;
+    min-width: 44px !important;
+    text-align: center !important;
+    padding: 10px 8px !important;
+}
+
+/* ==========================================================================
+   3. TABLE TOOLBAR & CONTROLS (EXACT SAMPLE MATCH)
+   ========================================================================== */
+.table-toolbar {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 10px 14px !important;
+    background: #ffffff !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    border-top-left-radius: 10px !important;
+    border-top-right-radius: 10px !important;
+    gap: 12px !important;
+}
+
+/* Search Box Container */
+.table-toolbar .search-box {
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    max-width: 320px !important;
+}
+
+.table-toolbar .search-box svg {
+    position: absolute !important;
+    left: 12px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    color: #94a3b8 !important;
+    pointer-events: none !important;
+}
+
+.table-toolbar .toolbar-search-input {
+    width: 100% !important;
+    height: 36px !important;
+    padding: 6px 12px 6px 36px !important;
+    border: 1.5px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    font-size: 13.5px !important;
+    color: #1e293b !important;
+    background: #ffffff !important;
+    transition: all 0.2s ease !important;
+}
+
+.table-toolbar .toolbar-search-input:focus {
+    border-color: var(--sa-grid-border) !important;
+    box-shadow: 0 0 0 3px rgba(72, 199, 142, 0.2) !important;
+    outline: none !important;
+}
+
+/* Toolbar Right Control Group */
+.table-toolbar .toolbar-right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+/* Dynamic Count Badge (Rounded green rectangle e.g. [ 14 ]) */
+.toolbar-count-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 32px !important;
+    height: 28px !important;
+    padding: 2px 8px !important;
+    border: 1.5px solid var(--sa-count-badge-border) !important;
+    border-radius: 6px !important;
+    color: var(--sa-count-badge-text) !important;
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    background: #ffffff !important;
+    box-shadow: 0 1px 2px rgba(72, 199, 142, 0.08) !important;
+}
+
+/* Toolbar Icon Action Buttons */
+.toolbar-action-btn,
+.table-toolbar button.btn-outline,
+.table-toolbar .export-dropdown > button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 32px !important;
+    padding: 0 8px !important;
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    color: var(--sa-header-text) !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    gap: 4px !important;
+}
+
+.toolbar-action-btn svg,
+.table-toolbar button.btn-outline svg,
+.table-toolbar .export-dropdown > button svg {
+    color: var(--sa-header-text) !important;
+    stroke: var(--sa-header-text) !important;
+    width: 16px !important;
+    height: 16px !important;
+}
+
+.toolbar-action-btn:hover,
+.table-toolbar button.btn-outline:hover,
+.table-toolbar .export-dropdown > button:hover {
+    background: #ecfdf5 !important;
+    border-color: #a7f3d0 !important;
+    color: #047857 !important;
+}
+
+/* Vertical Divider in Toolbar */
+.toolbar-v-divider {
+    width: 1px !important;
+    height: 18px !important;
+    background: #e2e8f0 !important;
+    margin: 0 2px !important;
+}
+
+/* ==========================================================================
+   4. STATUS & CATEGORY PILL BADGES (MATCHING SAMPLE DROPDOWN/PILLS)
+   ========================================================================== */
+.badge-tag {
+    display: inline-flex !important;
+    align-items: center !important;
+    padding: 2px 9px !important;
+    border-radius: 6px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.2px !important;
+    white-space: nowrap !important;
+}
+
+/* Emerald Green (Active / Maintenance) */
+.badge-tag-green,
+.badge-success,
+app-status-badge[status="active"] span,
+app-status-badge[status="Active"] span {
+    background: var(--tag-green-bg) !important;
+    color: var(--tag-green-text) !important;
+    border: 1px solid var(--tag-green-border) !important;
+    border-radius: 6px !important;
+    font-weight: 700 !important;
+}
+
+/* Indigo / Purple (Human Resources / Secondary) */
+.badge-tag-purple,
+.badge-type-secondary {
+    background: var(--tag-purple-bg) !important;
+    color: var(--tag-purple-text) !important;
+    border: 1px solid var(--tag-purple-border) !important;
+}
+
+/* Blue (HSEQ / Primary) */
+.badge-tag-blue,
+.badge-info,
+.badge-type-primary {
+    background: var(--tag-blue-bg) !important;
+    color: var(--tag-blue-text) !important;
+    border: 1px solid var(--tag-blue-border) !important;
+}
+
+/* Amber / Gold (Operations / Combined / Warning) */
+.badge-tag-amber,
+.badge-warning,
+.badge-type-combined {
+    background: var(--tag-amber-bg) !important;
+    color: var(--tag-amber-text) !important;
+    border: 1px solid var(--tag-amber-border) !important;
+}
+
+/* Coral Red (Suspended / Danger) */
+.badge-tag-red,
+.badge-danger,
+app-status-badge[status="suspended"] span,
+app-status-badge[status="Suspended"] span,
+app-status-badge[status="inactive"] span,
+app-status-badge[status="Inactive"] span {
+    background: var(--tag-red-bg) !important;
+    color: var(--tag-red-text) !important;
+    border: 1px solid var(--tag-red-border) !important;
+    border-radius: 6px !important;
+    font-weight: 700 !important;
+}
+
+/* Slate / Gray (IT / General) */
+.badge-tag-slate {
+    background: var(--tag-slate-bg) !important;
+    color: var(--tag-slate-text) !important;
+    border: 1px solid var(--tag-slate-border) !important;
+}
+
+/* Action Buttons inside Table Cells */
+app-table .btn-outline {
+    border-color: #cbd5e1 !important;
+    color: #334155 !important;
+    font-weight: 600 !important;
+    border-radius: 6px !important;
+}
+
+app-table .btn-outline:hover {
+    background: #f8fafc !important;
+    border-color: var(--sa-grid-border) !important;
+    color: var(--sa-header-text) !important;
+}
