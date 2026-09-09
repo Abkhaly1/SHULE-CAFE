@@ -38,11 +38,11 @@ if (empty($identifier) || empty($password)) {
 
 // Enforce strict Email / ShuleCafe ID only directive (disallow phone numbers)
 $cleanId = str_replace(' ', '', $identifier);
-if (preg_match('/^(\+?255|0)[67]\d{7,8}$/', $cleanId) || (preg_match('/^\+?\d{7,15}$/', $cleanId) && !str_contains($identifier, '@') && !stripos($identifier, 'S/CAFE'))) {
+if (preg_match('/^(\+?255|0)[67]\d{7,8}$/', $cleanId) || (preg_match('/^\+?\d{7,15}$/', $cleanId) && !str_contains($identifier, '@') && !stripos($identifier, 'S/CAFE') && !stripos($identifier, 'SC/'))) {
     http_response_code(200);
     echo json_encode([
         "success" => false,
-        "message" => "Phone number sign-in is not permitted. Please sign in using your School Email or official ShuleCafe School ID (e.g. S/CAFE-2026-0001)."
+        "message" => "Phone number sign-in is not permitted. Please sign in using your School Email or official ShuleCafe ID (e.g. S/CAFE-2026-0001 or SC/2026-0001/TCH-001)."
     ]);
     exit();
 }
@@ -61,28 +61,59 @@ if ($lockStatus['locked']) {
 }
 
 try {
-    $stmt = $conn->prepare("
-        SELECT u.id, u.user_code, u.full_name, u.email, u.phone, u.gender, u.password_hash, 
-               u.is_password_changed, u.first_login_completed, u.role, u.status, u.school_id 
-        FROM users u
-        LEFT JOIN schools s ON u.school_id = s.id
-        WHERE u.email = ? 
-           OR s.school_email = ?
-           OR s.school_code = ?
-           OR u.user_code = ?
-        ORDER BY 
-            (s.school_code = ? OR u.user_code = ?) DESC,
-            (u.email = ? OR s.school_email = ?) DESC,
-            (u.role IN ('tenant_admin', 'school_admin')) DESC,
-            u.created_at ASC
-        LIMIT 1
-    ");
-    $stmt->execute([
-        $identifier, $identifier, $identifier, $identifier,
-        $identifier, $identifier, $identifier, $identifier
-    ]);
+    $user = null;
 
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    // Strict Tenant-Scoped Identification for Option A IDs: SC/{YEAR}-{SCH_SEQ}/{ROLE}-{SEQ}
+    if (preg_match('#^SC/(\d{4}-\d{4})/([A-Z]{3}-\d+)#i', $identifier, $scMatch)) {
+        $schCore = $scMatch[1];
+        $stmtSc = $conn->prepare("
+            SELECT u.id, u.user_code, u.full_name, u.email, u.phone, u.gender, u.password_hash, 
+                   u.is_password_changed, u.first_login_completed, u.role, u.status, u.school_id 
+            FROM users u
+            JOIN schools s ON u.school_id = s.id
+            WHERE u.user_code = ? AND s.school_code LIKE ?
+            LIMIT 1
+        ");
+        $stmtSc->execute([$identifier, "%{$schCore}%"]);
+        $user = $stmtSc->fetch(PDO::FETCH_ASSOC);
+    } elseif (preg_match('#^SC/REG-([A-Z0-9]+)/OFF-(\d+)#i', $identifier)) {
+        // Strict Regional Officer Identification: SC/REG-{REGION}/OFF-{SEQ}
+        $stmtReg = $conn->prepare("
+            SELECT u.id, u.user_code, u.full_name, u.email, u.phone, u.gender, u.password_hash, 
+                   u.is_password_changed, u.first_login_completed, u.role, u.status, u.school_id 
+            FROM users u
+            WHERE u.user_code = ? AND u.role = 'regional_officer'
+            LIMIT 1
+        ");
+        $stmtReg->execute([$identifier]);
+        $user = $stmtReg->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Fallback standard lookup if not resolved via structured tenant pattern
+    if (!$user) {
+        $stmt = $conn->prepare("
+            SELECT u.id, u.user_code, u.full_name, u.email, u.phone, u.gender, u.password_hash, 
+                   u.is_password_changed, u.first_login_completed, u.role, u.status, u.school_id 
+            FROM users u
+            LEFT JOIN schools s ON u.school_id = s.id
+            WHERE u.email = ? 
+               OR s.school_email = ?
+               OR s.school_code = ?
+               OR u.user_code = ?
+            ORDER BY 
+                (s.school_code = ? OR u.user_code = ?) DESC,
+                (u.email = ? OR s.school_email = ?) DESC,
+                (u.role IN ('tenant_admin', 'school_admin')) DESC,
+                u.created_at ASC
+            LIMIT 1
+        ");
+        $stmt->execute([
+            $identifier, $identifier, $identifier, $identifier,
+            $identifier, $identifier, $identifier, $identifier
+        ]);
+
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
     if ($user) {
         // 2. Individual User Account Status Check

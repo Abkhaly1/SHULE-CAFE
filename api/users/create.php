@@ -3,6 +3,7 @@ session_start();
 header("Content-Type: application/json; charset=UTF-8");
 
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../utils/id_generator.php';
 
 if (!isset($_SESSION['user_id'])) {
     http_response_code(403);
@@ -73,13 +74,10 @@ if ($role !== 'student' && empty($phone)) {
     exit();
 }
 
-// Auto generate User Code (Student ID / Teacher ID / Parent ID) if empty
+// Auto generate Systematic User Code (Option A: SC/{YEAR}-{SCH_SEQ}/{ROLE}-{SEQ}) if empty
 if (empty($user_code)) {
-    $prefix = ($role === 'student') ? 'STD' : (($role === 'teacher') ? 'TCH' : (($role === 'parent') ? 'PAR' : 'USR'));
-    $cntStmt = $conn->prepare("SELECT COUNT(*) FROM users WHERE school_id = ? AND role = ?");
-    $cntStmt->execute([$school_id, $role]);
-    $nextSeq = (int)$cntStmt->fetchColumn() + 1;
-    $user_code = sprintf("%s/%s/%03d", $prefix, date('Y'), $nextSeq);
+    $regionInput = $input['region'] ?? $input['department'] ?? null;
+    $user_code = generateShuleCafeUserId($conn, $school_id, $role, $regionInput);
 }
 
 function generateStandardTempPassword() {

@@ -3,6 +3,7 @@ session_start();
 header("Content-Type: application/json; charset=UTF-8");
 
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../utils/id_generator.php';
 
 // Only Super Admin can create Regional Officers
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'super_admin') {
@@ -27,6 +28,8 @@ if (empty($data->full_name) || empty($data->phone) || empty($data->password)) {
 
 try {
     $phone = trim($data->phone);
+    $region = trim($data->region ?? 'MJINI MAGHARIBI');
+
     $check = $conn->prepare("SELECT id FROM users WHERE phone = ?");
     $check->execute([$phone]);
     if ($check->fetch()) {
@@ -42,16 +45,25 @@ try {
     );
     $hash = password_hash($data->password, PASSWORD_BCRYPT);
     
+    // Generate Option A Systematic Regional Officer ID: SC/REG-{REGION}/OFF-{SEQ}
+    $user_code = generateShuleCafeUserId($conn, null, 'regional_officer', $region);
+
     // regional_officer doesn't belong to a specific school (school_id is NULL)
-    $stmt = $conn->prepare("INSERT INTO users (id, school_id, full_name, phone, password_hash, role) VALUES (?, NULL, ?, ?, ?, 'regional_officer')");
+    $stmt = $conn->prepare("INSERT INTO users (id, school_id, user_code, full_name, phone, department, password_hash, role, status) VALUES (?, NULL, ?, ?, ?, ?, ?, 'regional_officer', 'active')");
     $stmt->execute([
         $user_id,
+        $user_code,
         trim($data->full_name),
         $phone,
+        $region,
         $hash
     ]);
 
-    echo json_encode(["success" => true, "message" => "Regional Officer registered successfully."]);
+    echo json_encode([
+        "success" => true,
+        "message" => "Regional Officer registered successfully.",
+        "user_code" => $user_code
+    ]);
 
 } catch (PDOException $e) {
     http_response_code(500);

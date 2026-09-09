@@ -2,6 +2,7 @@
 session_start();
 header('Content-Type: application/json; charset=UTF-8');
 require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../../utils/id_generator.php';
 
 if (!isset($_SESSION['user_id'])) {
     http_response_code(403);
@@ -274,10 +275,9 @@ try {
                 continue;
             }
 
-            // If user_code is empty (e.g. parents), generate one
+            // If user_code is empty, generate Option A Systematic ID
             if (empty($code)) {
-                $prefix = ($role === 'student') ? 'STD' : (($role === 'teacher') ? 'TCH' : 'PAR');
-                $code = sprintf("%s/%s/%04d", $prefix, $currentYear, rand(1000, 9999));
+                $code = generateShuleCafeUserId($conn, $schoolId, $role);
             }
 
             // Check if existing user

@@ -53,6 +53,32 @@
                     <input type="text" id="off_name" class="form-control" placeholder="e.g. Hon. Juma Ali" required>
                 </div>
                 <div class="form-group" style="margin-bottom: var(--sp-4);">
+                    <label class="form-label">Assigned Region <span style="color:var(--c-danger);">*</span></label>
+                    <select id="off_region" class="form-control" required>
+                        <option value="MJINI MAGHARIBI">Mjini Magharibi (MM)</option>
+                        <option value="DAR ES SALAAM">Dar es Salaam (DAR)</option>
+                        <option value="ARUSHA">Arusha (ARU)</option>
+                        <option value="DODOMA">Dodoma (DOD)</option>
+                        <option value="MWANZA">Mwanza (MWZ)</option>
+                        <option value="KILIMANJARO">Kilimanjaro (KIL)</option>
+                        <option value="MBEYA">Mbeya (MBY)</option>
+                        <option value="MOROGORO">Morogoro (MOR)</option>
+                        <option value="TANGA">Tanga (TAN)</option>
+                        <option value="TABORA">Tabora (TAB)</option>
+                        <option value="KIGOMA">Kigoma (KIG)</option>
+                        <option value="SHINYANGA">Shinyanga (SHY)</option>
+                        <option value="KAGERA">Kagera (KAG)</option>
+                        <option value="MARA">Mara (MAR)</option>
+                        <option value="MANYARA">Manyara (MAN)</option>
+                        <option value="SINGIDA">Singida (SNG)</option>
+                        <option value="PWANI">Pwani (PWN)</option>
+                        <option value="KASKAZINI UNGUJA">Kaskazini Unguja (KU)</option>
+                        <option value="KUSINI UNGUJA">Kusini Unguja (SU)</option>
+                        <option value="KASKAZINI PEMBA">Kaskazini Pemba (KP)</option>
+                        <option value="KUSINI PEMBA">Kusini Pemba (SP)</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: var(--sp-4);">
                     <label class="form-label">Phone Number (Username) <span style="color:var(--c-danger);">*</span></label>
                     <input type="text" id="off_phone" class="form-control" placeholder="e.g. +255755000111" required>
                 </div>
@@ -94,6 +120,7 @@
 
                 const data = {
                     full_name: document.getElementById('off_name').value,
+                    region: document.getElementById('off_region').value,
                     phone: document.getElementById('off_phone').value,
                     password: document.getElementById('off_password').value
                 };
@@ -130,6 +157,8 @@
 
             const columns = [
                 { key: 'user', label: 'Regional Officer Name', type: 'avatar' },
+                { key: 'user_code', label: 'Shule Cafe ID', type: 'badge' },
+                { key: 'region', label: 'Assigned Region', type: 'text' },
                 { key: 'phone', label: 'Phone Number', type: 'text' },
                 { key: 'status', label: 'Status', type: 'status' }
             ];
@@ -142,6 +171,8 @@
                     const regionsData = result.data.map(item => ({
                         id: item.id,
                         user: { initials: item.full_name ? item.full_name.charAt(0).toUpperCase() : 'O', name: item.full_name },
+                        user_code: item.user_code || 'N/A',
+                        region: item.region || 'Mjini Magharibi',
                         phone: item.phone || 'N/A',
                         status: item.status === 'active' ? 'Active' : 'Suspended'
                     }));

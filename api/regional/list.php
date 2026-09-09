@@ -20,7 +20,7 @@ if ($method !== 'GET') {
 
 try {
     $stmt = $conn->prepare("
-        SELECT id, full_name, phone, status, created_at
+        SELECT id, user_code, full_name, phone, department AS region, status, created_at
         FROM users
         WHERE role = 'regional_officer'
         ORDER BY created_at DESC

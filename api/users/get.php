@@ -3,6 +3,7 @@ session_start();
 header("Content-Type: application/json; charset=UTF-8");
 
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../utils/id_generator.php';
 
 $userId = $_SESSION['user_id'] ?? $_GET['user_id'] ?? null;
 $role = $_SESSION['role'] ?? 'super_admin';
@@ -53,15 +54,12 @@ try {
 
     // Ensure fallback user_code ID if null
     if (empty($user['user_code'])) {
-        if ($user['role'] === 'teacher') {
-            $user['user_code'] = 'TCH/2026/' . str_pad(substr($user['id'], -3), 3, '0', STR_PAD_LEFT);
-        } elseif ($user['role'] === 'student') {
-            $user['user_code'] = 'STD/2026/' . str_pad(substr($user['id'], -3), 3, '0', STR_PAD_LEFT);
-        } elseif ($user['role'] === 'tenant_admin') {
-            $user['user_code'] = 'ADM/2026/' . str_pad(substr($user['id'], -3), 3, '0', STR_PAD_LEFT);
-        } else {
-            $user['user_code'] = 'USR/2026/' . str_pad(substr($user['id'], -3), 3, '0', STR_PAD_LEFT);
-        }
+        $generatedCode = generateShuleCafeUserId($conn, $user['school_id'] ?? null, $user['role'], $user['department'] ?? null);
+        $user['user_code'] = $generatedCode;
+        try {
+            $updCode = $conn->prepare("UPDATE users SET user_code = ? WHERE id = ?");
+            $updCode->execute([$generatedCode, $user['id']]);
+        } catch (Throwable $e) {}
     }
 
     echo json_encode(["success" => true, "data" => $user]);

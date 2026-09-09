@@ -3,6 +3,7 @@ session_start();
 header("Content-Type: application/json; charset=UTF-8");
 
 require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../utils/id_generator.php';
 
 if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'] ?? '', ['tenant_admin', 'school_admin', 'headmaster', 'super_admin']) || empty($_SESSION['school_id'])) {
     http_response_code(403);
@@ -47,10 +48,12 @@ try {
         );
         $hash = password_hash($data->password, PASSWORD_BCRYPT);
         
-        $stmt = $conn->prepare("INSERT INTO users (id, school_id, full_name, phone, password_hash, role) VALUES (?, ?, ?, ?, ?, 'parent')");
+        $user_code = generateShuleCafeUserId($conn, $_SESSION['school_id'], 'parent');
+        $stmt = $conn->prepare("INSERT INTO users (id, school_id, user_code, full_name, phone, password_hash, role) VALUES (?, ?, ?, ?, ?, ?, 'parent')");
         $stmt->execute([
             $parent_id,
             $_SESSION['school_id'],
+            $user_code,
             trim($data->full_name),
             $phone,
             $hash
