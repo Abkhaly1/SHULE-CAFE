@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Root Administrator Console ‹ Super Admin ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/super-admin-theme.css">
+    
+    <script type="module" src="../layouts/global-layout.js"></script>
+    <script type="module" src="../js/auth/auth-guard.js"></script>
+
+    <style>
+        .executive-hero-card {
+            background: linear-gradient(135deg, #064e3b 0%, #0f172a 100%);
+            border: 1.5px solid var(--sa-grid-border);
+            border-radius: 12px;
+            padding: 20px 24px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 16px rgba(6, 78, 59, 0.12);
+        }
+        .executive-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            background: #10b981;
+            color: #ffffff;
+            font-size: 22px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+            border: 2px solid #34d399;
+            flex-shrink: 0;
+        }
+        .privilege-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 10px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid #34d399;
+            border-radius: 6px;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #6ee7b7;
+            letter-spacing: 0.3px;
+        }
+        .info-metric-box {
+            background: #ffffff;
+            border: 1px solid var(--c-border-light);
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .info-metric-box .metric-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .info-metric-box .metric-value {
+            font-size: 13.5px;
+            font-weight: 800;
+            color: #0f172a;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <app-sidebar role="super_admin" active-path="/super-admin/profile.html"></app-sidebar>
+        
+        <div class="app-main">
+            <app-topbar username="System Administrator"></app-topbar>
+            
+            <main class="app-content-wrapper">
+                <div class="app-content" style="padding: 0;">
+                    
+                    <!-- Compact Breadcrumbs -->
+                    <div style="margin-bottom: 6px;">
+                        <app-breadcrumb path="Super Admin, Master Account & Security Console"></app-breadcrumb>
+                    </div>
+
+                    <!-- Single-Row Compact Header Card -->
+                    <div class="card" style="margin-bottom: 8px; padding: 6px 14px; background: white; border-radius: 8px; border: 1.5px solid var(--sa-grid-border); box-shadow: 0 1px 2px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 26px; height: 26px; border-radius: 6px; background: var(--sa-primary); color: white; display: flex; align-items: center; justify-content: center;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            </div>
+                            <h2 style="margin: 0; font-size: 14px; font-weight: 800; color: var(--c-text-primary);">Root Administrator Profile & Security Console</h2>
+                        </div>
+                        <span class="badge-tag badge-tag-green" style="font-size: 11px;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><polyline points="20 6 9 17 4 12"/></svg>
+                            ROOT LEVEL 0 SOVEREIGN
+                        </span>
+                    </div>
+
+                    <!-- Executive Hero Identity Card -->
+                    <div class="executive-hero-card">
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div class="executive-avatar" id="heroAvatar">SA</div>
+                            <div>
+                                <h1 style="margin: 0 0 4px 0; font-size: 18px; font-weight: 900; color: #ffffff; letter-spacing: 0.2px;" id="heroFullName">Master System Administrator</h1>
+                                <div style="display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: #cbd5e1; flex-wrap: wrap;">
+                                    <span>System ID: <strong style="color: #34d399; font-family: monospace;" id="heroUserCode">S/CAFE-ADMIN-0001</strong></span>
+                                    <span>•</span>
+                                    <span>Jurisdiction: <strong style="color: #ffffff;">Platform-Wide Multi-Tenant Root</strong></span>
+                                    <span>•</span>
+                                    <span>Curriculum Engine: <strong style="color: #fde047;">Tanzania NECTA</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="privilege-badge">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5L10 10l1.5 1.5L8 15l-3 3v4h4l3-3 3.5-3.5 1.5 1.5 2.5-2.5-1.5-1.5 3.5-3.5z"/></svg>
+                                Full Sovereign Authority
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alert Notification Box -->
+                    <div id="profileAlert" class="alert" style="display: none; margin-bottom: 12px; font-size: 12.5px; padding: 10px 14px; border-radius: 8px;"></div>
+
+                    <!-- Main Grid: 2 Columns (Account Credentials & Root Privileges) -->
+                    <div style="display: grid; grid-template-columns: 3fr 2fr; gap: 14px; margin-bottom: 14px;">
+                        
+                        <!-- Left Column: Master Profile Details -->
+                        <div class="card" style="padding: 16px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 14px;">
+                                <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                    Administrator Credentials & Identity
+                                </h3>
+                                <span style="font-size: 11px; color: #64748b; font-weight: 600;">Editable by Root</span>
+                            </div>
+
+                            <form id="formUpdateProfile">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                                    <div class="form-group">
+                                        <label class="form-label" style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Administrator Full Name <span style="color: #dc2626;">*</span></label>
+                                        <input type="text" id="inpFullName" class="form-control" style="height: 36px; font-size: 13px; font-weight: 700;" placeholder="e.g. System Administrator" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">System Universal ID Code</label>
+                                        <input type="text" id="inpUserCode" class="form-control" style="height: 36px; font-size: 13px; font-weight: 800; font-family: monospace; background: #f8fafc; color: #047857; border-color: #a7f3d0;" readonly>
+                                    </div>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                                    <div class="form-group">
+                                        <label class="form-label" style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Primary System Email <span style="color: #dc2626;">*</span></label>
+                                        <input type="email" id="inpEmail" class="form-control" style="height: 36px; font-size: 13px; font-weight: 600;" placeholder="admin@shulecafe.com" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Emergency Phone Number <span style="color: #dc2626;">*</span></label>
+                                        <input type="text" id="inpPhone" class="form-control" style="height: 36px; font-size: 13px; font-weight: 700;" placeholder="e.g. +255700000000" required>
+                                    </div>
+                                </div>
+
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+                                    <div class="form-group">
+                                        <label class="form-label" style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Gender Specification</label>
+                                        <select id="inpGender" class="form-control" style="height: 36px; font-size: 13px; font-weight: 600;">
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Platform Governance Level</label>
+                                        <input type="text" value="Level 0 — Unrestricted Super Root" class="form-control" style="height: 36px; font-size: 12.5px; font-weight: 700; background: #f8fafc; color: #0284c7;" readonly>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; justify-content: flex-end;">
+                                    <button type="submit" id="btnSaveProfile" class="btn btn-primary" style="height: 36px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                                        Save Administrator Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Right Column: Sovereign Governance & Privileges -->
+                        <div class="card" style="padding: 16px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: #fafafa;">
+                            <div style="border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 14px;">
+                                <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    Root Privileges & Security Scope
+                                </h3>
+                            </div>
+
+                            <div style="display: flex; flex-direction: column; gap: 10px;">
+                                <div class="info-metric-box">
+                                    <span class="metric-label">Tenant Isolation Engine</span>
+                                    <span class="metric-value" style="color: #059669;">Isolated Row Filtering (school_id)</span>
+                                </div>
+                                <div class="info-metric-box">
+                                    <span class="metric-label">Software Anti-Theft Lock</span>
+                                    <span class="metric-value" style="color: #10b981;">license_guard.php & Domain Signature Active</span>
+                                </div>
+                                <div class="info-metric-box">
+                                    <span class="metric-label">Database Authority</span>
+                                    <span class="metric-value">Master DDL, Live Backups, SQL Dumps</span>
+                                </div>
+                                <div class="info-metric-box">
+                                    <span class="metric-label">Global Academic Catalog</span>
+                                    <span class="metric-value">Pre-Primary, Primary, O-Level & A-Level</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Master Password & Credentials Update -->
+                    <div class="card" style="padding: 16px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; margin-bottom: 14px;">
+                        <div style="border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 14px;">
+                            <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                Master Password & Security Protection
+                            </h3>
+                        </div>
+
+                        <form id="formChangePassword">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 14px;">
+                                <div>
+                                    <label class="form-label" style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Current Master Password <span style="color:#dc2626;">*</span></label>
+                                    <input type="password" id="inpCurrPass" class="form-control" style="height: 36px; font-size: 13px;" placeholder="Enter current master password" required>
+                                </div>
+                                <div>
+                                    <label class="form-label" style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">New Master Password <span style="color:#dc2626;">*</span></label>
+                                    <input type="password" id="inpNewPass" class="form-control" style="height: 36px; font-size: 13px;" placeholder="Minimum 8 characters with complexity" required>
+                                </div>
+                                <div>
+                                    <label class="form-label" style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Confirm New Password <span style="color:#dc2626;">*</span></label>
+                                    <input type="password" id="inpConfirmPass" class="form-control" style="height: 36px; font-size: 13px;" placeholder="Re-type new master password" required>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; justify-content: flex-end;">
+                                <button type="submit" id="btnSavePassword" class="btn btn-primary" style="height: 36px; font-size: 13px; font-weight: 700; background: #0369a1; border-color: #0369a1; display: inline-flex; align-items: center; gap: 6px;">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5L10 10l1.5 1.5L8 15l-3 3v4h4l3-3 3.5-3.5 1.5 1.5 2.5-2.5-1.5-1.5 3.5-3.5z"/></svg>
+                                    Update Master Password
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+                <app-footer></app-footer>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadSuperAdminProfile();
+
+            // Profile Form Submit
+            const formProfile = document.getElementById('formUpdateProfile');
+            const alertBox = document.getElementById('profileAlert');
+
+            if (formProfile) {
+                formProfile.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const btn = document.getElementById('btnSaveProfile');
+                    btn.disabled = true;
+                    btn.innerHTML = 'Saving Changes...';
+                    alertBox.style.display = 'none';
+
+                    const full_name = document.getElementById('inpFullName').value.trim();
+                    const email = document.getElementById('inpEmail').value.trim();
+                    const phone = document.getElementById('inpPhone').value.trim();
+                    const gender = document.getElementById('inpGender').value;
+
+                    try {
+                        const res = await fetch('/shule-cafe/api/auth/profile.php?action=update_profile', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({ full_name, email, phone, gender })
+                        });
+                        const result = await res.json();
+
+                        if (res.ok && result.success) {
+                            alertBox.className = 'alert alert-success';
+                            alertBox.style.background = '#ecfdf5';
+                            alertBox.style.borderColor = '#6ee7b7';
+                            alertBox.style.color = '#065f46';
+                            alertBox.innerHTML = `<strong>Success:</strong> ${result.message || 'Master profile updated successfully!'}`;
+                            alertBox.style.display = 'block';
+                            await loadSuperAdminProfile();
+                        } else {
+                            alertBox.className = 'alert alert-danger';
+                            alertBox.style.background = '#fef2f2';
+                            alertBox.style.borderColor = '#fca5a5';
+                            alertBox.style.color = '#991b1b';
+                            alertBox.innerHTML = `<strong>Error:</strong> ${result.message || 'Failed to update administrator profile.'}`;
+                            alertBox.style.display = 'block';
+                        }
+                    } catch (err) {
+                        alertBox.className = 'alert alert-danger';
+                        alertBox.textContent = 'Network or system communication error.';
+                        alertBox.style.display = 'block';
+                    } finally {
+                        btn.disabled = false;
+                        btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Administrator Changes`;
+                    }
+                });
+            }
+
+            // Password Form Submit
+            const formPwd = document.getElementById('formChangePassword');
+            if (formPwd) {
+                formPwd.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const btn = document.getElementById('btnSavePassword');
+                    btn.disabled = true;
+                    btn.innerHTML = 'Updating Password...';
+                    alertBox.style.display = 'none';
+
+                    const current_password = document.getElementById('inpCurrPass').value;
+                    const new_password = document.getElementById('inpNewPass').value;
+                    const confirm_password = document.getElementById('inpConfirmPass').value;
+
+                    try {
+                        const res = await fetch('/shule-cafe/api/auth/profile.php?action=change_password', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            credentials: 'include',
+                            body: JSON.stringify({ current_password, new_password, confirm_password })
+                        });
+                        const result = await res.json();
+
+                        if (res.ok && result.success) {
+                            alertBox.className = 'alert alert-success';
+                            alertBox.style.background = '#ecfdf5';
+                            alertBox.style.borderColor = '#6ee7b7';
+                            alertBox.style.color = '#065f46';
+                            alertBox.innerHTML = `<strong>Success:</strong> ${result.message || 'Master password changed successfully!'}`;
+                            alertBox.style.display = 'block';
+                            formPwd.reset();
+                        } else {
+                            alertBox.className = 'alert alert-danger';
+                            alertBox.style.background = '#fef2f2';
+                            alertBox.style.borderColor = '#fca5a5';
+                            alertBox.style.color = '#991b1b';
+                            alertBox.innerHTML = `<strong>Error:</strong> ${result.message || 'Failed to update master password.'}`;
+                            alertBox.style.display = 'block';
+                        }
+                    } catch (err) {
+                        alertBox.className = 'alert alert-danger';
+                        alertBox.textContent = 'Network or system communication error.';
+                        alertBox.style.display = 'block';
+                    } finally {
+                        btn.disabled = false;
+                        btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-1.5 1.5L14 9l-1.5-1.5L10 10l1.5 1.5L8 15l-3 3v4h4l3-3 3.5-3.5 1.5 1.5 2.5-2.5-1.5-1.5 3.5-3.5z"/></svg> Update Master Password`;
+                    }
+                });
+            }
+        });
+
+        async function loadSuperAdminProfile() {
+            try {
+                const res = await fetch('/shule-cafe/api/auth/profile.php?action=get', { credentials: 'include' });
+                const result = await res.json();
+                if (res.ok && result.success && result.user) {
+                    const u = result.user;
+                    const initial = u.full_name ? u.full_name.charAt(0).toUpperCase() : 'S';
+
+                    document.getElementById('heroAvatar').textContent = initial;
+                    document.getElementById('heroFullName').textContent = u.full_name || 'System Administrator';
+                    document.getElementById('heroUserCode').textContent = u.user_code || 'S/CAFE-ADMIN-0001';
+
+                    document.getElementById('inpFullName').value = u.full_name || '';
+                    document.getElementById('inpUserCode').value = u.user_code || 'S/CAFE-ADMIN-0001';
+                    document.getElementById('inpEmail').value = u.email || '';
+                    document.getElementById('inpPhone').value = u.phone || '';
+                    document.getElementById('inpGender').value = u.gender || 'Male';
+                }
+            } catch (err) {
+                console.error('Failed to load super admin profile:', err);
+            }
+        }
+    </script>
+</body>
+</html>

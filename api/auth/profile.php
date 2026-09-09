@@ -83,13 +83,28 @@ try {
             exit();
         }
 
-        // Execute Update (Full Name & Reg Code are NOT modifiable!)
-        $stmtUpd = $conn->prepare("
-            UPDATE users 
-            SET email = ?, phone = ?, gender = ?, updated_at = NOW() 
-            WHERE id = ?
-        ");
-        $stmtUpd->execute([$email, $phone, $gender, $userId]);
+        // Execute Update
+        $role = $_SESSION['role'] ?? '';
+        if ($role === 'super_admin' && !empty($input['full_name'])) {
+            $fullName = trim($input['full_name']);
+            $stmtUpd = $conn->prepare("
+                UPDATE users 
+                SET full_name = ?, email = ?, phone = ?, gender = ?, updated_at = NOW() 
+                WHERE id = ?
+            ");
+            $stmtUpd->execute([$fullName, $email, $phone, $gender, $userId]);
+            if (isset($_SESSION['user'])) {
+                $_SESSION['user']['full_name'] = $fullName;
+            }
+        } else {
+            // Standard user update (Full Name & Reg Code are preserved!)
+            $stmtUpd = $conn->prepare("
+                UPDATE users 
+                SET email = ?, phone = ?, gender = ?, updated_at = NOW() 
+                WHERE id = ?
+            ");
+            $stmtUpd->execute([$email, $phone, $gender, $userId]);
+        }
 
         // Update session cache
         if (isset($_SESSION['user'])) {

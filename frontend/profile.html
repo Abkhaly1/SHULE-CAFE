@@ -12,6 +12,10 @@
     <script>
         (function() {
             const role = localStorage.getItem('shule_role') || sessionStorage.getItem('shule_role') || 'headmaster';
+            if (role === 'super_admin') {
+                window.location.replace('super-admin/profile.html');
+                return;
+            }
             const themeMap = {
                 'super_admin': 'css/super-admin-theme.css',
                 'regional_officer': 'css/regional-theme.css',
