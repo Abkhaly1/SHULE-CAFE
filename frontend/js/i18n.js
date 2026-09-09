@@ -10,7 +10,7 @@ export const translations = {
             dashboard:           'Dashboard',
             schools:             'Schools',
             regionalOffices:     'Regions',
-            academicTemplates:   'Templates',
+            academicTemplates:   'Curriculum & Standards',
             platformUsers:       'Users',
             databaseBackups:     'Backups',
             reports:             'Reports',
