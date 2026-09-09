@@ -330,10 +330,10 @@
                 const ruleLen = document.getElementById('ruleLen');
                 if (val.length >= 8) {
                     ruleLen.className = 'rule-item valid';
-                    ruleLen.textContent = ' At least 8 characters long';
+                    ruleLen.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polyline points="20 6 9 17 4 12"/></svg> At least 8 characters long';
                 } else {
                     ruleLen.className = 'rule-item invalid';
-                    ruleLen.textContent = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> At least 8 characters long';
+                    ruleLen.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> At least 8 characters long';
                 }
 
                 // Rule 2: Complexity (Upper, Lower, Digit, Special)
@@ -345,20 +345,20 @@
 
                 if (hasUpper && hasLower && hasDigit && hasSpecial) {
                     ruleComplexity.className = 'rule-item valid';
-                    ruleComplexity.textContent = ' Uppercase, Lowercase, Number & Symbol satisfied!';
+                    ruleComplexity.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polyline points="20 6 9 17 4 12"/></svg> Uppercase, Lowercase, Number & Symbol satisfied!';
                 } else {
                     ruleComplexity.className = 'rule-item invalid';
-                    ruleComplexity.textContent = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Must include Uppercase, Lowercase, Number & Symbol (@, #, $, !)';
+                    ruleComplexity.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Must include Uppercase, Lowercase, Number & Symbol (@, #, $, !)';
                 }
 
                 // Rule 3: Not initial Reg Code
                 const ruleNotInitial = document.getElementById('ruleNotInitial');
                 if (userCode && val.toLowerCase() === userCode) {
                     ruleNotInitial.className = 'rule-item invalid';
-                    ruleNotInitial.textContent = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Cannot be your initial Registration Code / Staff ID';
+                    ruleNotInitial.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Cannot be your initial Registration Code / Staff ID';
                 } else {
                     ruleNotInitial.className = 'rule-item valid';
-                    ruleNotInitial.textContent = ' Different from initial Registration Code / Staff ID';
+                    ruleNotInitial.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polyline points="20 6 9 17 4 12"/></svg> Different from initial Registration Code / Staff ID';
                 }
 
                 // Rule 4: Not name parts
@@ -376,10 +376,10 @@
 
                 if (containsName) {
                     ruleNotName.className = 'rule-item invalid';
-                    ruleNotName.textContent = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Cannot contain your name or parts of your name';
+                    ruleNotName.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Cannot contain your name or parts of your name';
                 } else {
                     ruleNotName.className = 'rule-item valid';
-                    ruleNotName.textContent = ' Does not contain your name or name parts';
+                    ruleNotName.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polyline points="20 6 9 17 4 12"/></svg> Does not contain your name or name parts';
                 }
             }
 
