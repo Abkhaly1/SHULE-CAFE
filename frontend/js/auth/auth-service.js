@@ -8,6 +8,13 @@ export const AuthService = {
     // Token Management (JWT)
     // ------------------------------------------------------------------------
     setToken(token, rememberMe, role) {
+        // Clear all previous role/token data to prevent cross-account session contamination
+        localStorage.removeItem('shule_token');
+        localStorage.removeItem('shule_role');
+        sessionStorage.removeItem('shule_token');
+        sessionStorage.removeItem('shule_role');
+        sessionStorage.removeItem('shule_user');
+
         if (rememberMe) {
             localStorage.setItem('shule_token', token);
             if (role) localStorage.setItem('shule_role', role);
@@ -18,11 +25,11 @@ export const AuthService = {
     },
 
     getToken() {
-        return localStorage.getItem('shule_token') || sessionStorage.getItem('shule_token');
+        return sessionStorage.getItem('shule_token') || localStorage.getItem('shule_token');
     },
 
     getUserRole() {
-        return sessionStorage.getItem('shule_role') || localStorage.getItem('shule_role') || 'tenant_admin';
+        return sessionStorage.getItem('shule_role') || localStorage.getItem('shule_role') || '';
     },
 
     removeToken() {

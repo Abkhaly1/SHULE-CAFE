@@ -10,6 +10,17 @@
     
     <script type="module" src="../layouts/global-layout.js"></script>
     <script type="module" src="../js/auth/auth-guard.js"></script>
+    <script>
+        // Enforce active portal theme immediately
+        const _params = new URLSearchParams(window.location.search);
+        const _role = _params.get('from') || sessionStorage.getItem('shule_role') || localStorage.getItem('shule_role');
+        if (_role === 'teacher') {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = '../css/teacher-theme.css';
+            document.head.appendChild(link);
+        }
+    </script>
     <style>
         @media print {
             .app-sidebar, .app-topbar, .btn-print-hide { display: none !important; }
@@ -20,16 +31,21 @@
 </head>
 <body>
     <div class="app-layout">
-        <app-sidebar active-path="/reports/student-report-card.html"></app-sidebar>
+        <app-sidebar id="reportSidebar" active-path="/reports/student-report-card.html"></app-sidebar>
         
         <div class="app-main">
-            <app-topbar username="SHULE CAFE Portal"></app-topbar>
+            <app-topbar id="reportTopbar" username="SHULE CAFE Portal"></app-topbar>
             
             <main class="app-content-wrapper">
                 <div class="app-content">
                     <div class="btn-print-hide" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <app-breadcrumb path="Reports, Student 360° Progress Report Card"></app-breadcrumb>
-                        <button class="btn btn-primary" onclick="window.print()" style="font-weight: 800;"> Print Report Card</button>
+                        <app-breadcrumb id="reportBreadcrumb" path="Reports, Student 360° Progress Report Card"></app-breadcrumb>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <a id="btnBackPortal" href="#" class="btn btn-secondary" style="font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Back
+                            </a>
+                            <button class="btn btn-primary" onclick="window.print()" style="font-weight: 800;"> Print Report Card</button>
+                        </div>
                     </div>
 
                     <div class="card" style="padding: 30px; background: white;" id="reportCardContent">
@@ -115,6 +131,52 @@
             currentStudentId = params.get('student_id') || '';
             currentYear = params.get('year') || new Date().getFullYear().toString();
             currentTerm = params.get('term') || 'Term 1';
+
+            const fromParam = params.get('from');
+            const sessionRole = sessionStorage.getItem('shule_role') || localStorage.getItem('shule_role');
+            const role = (fromParam === 'teacher' || sessionRole === 'teacher') ? 'teacher' 
+                       : (fromParam === 'parent' || sessionRole === 'parent' || sessionRole === 'guardian') ? 'parent' 
+                       : 'tenant_admin';
+
+            const sidebar = document.getElementById('reportSidebar');
+            const topbar = document.getElementById('reportTopbar');
+            const breadcrumb = document.getElementById('reportBreadcrumb');
+            const backBtn = document.getElementById('btnBackPortal');
+
+            if (role === 'teacher') {
+                if (sidebar) {
+                    sidebar.setAttribute('role', 'teacher');
+                    sidebar.setAttribute('active-path', '/teacher/class-ledger.html');
+                }
+                if (topbar) topbar.setAttribute('username', 'Teacher Portal');
+                if (breadcrumb) breadcrumb.setAttribute('path', 'Teacher, Classroom Performance Ledger, Student Report Card');
+                if (backBtn) {
+                    backBtn.href = '../teacher/class-ledger.html';
+                    backBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Back to Ledger';
+                }
+            } else if (role === 'parent') {
+                if (sidebar) {
+                    sidebar.setAttribute('role', 'parent');
+                    sidebar.setAttribute('active-path', '/parent/children.html');
+                }
+                if (topbar) topbar.setAttribute('username', 'Parent Portal');
+                if (breadcrumb) breadcrumb.setAttribute('path', 'My Children, Student Report Card');
+                if (backBtn) {
+                    backBtn.href = '../parent/children.html';
+                    backBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Back to Children';
+                }
+            } else {
+                if (sidebar) {
+                    sidebar.setAttribute('role', 'tenant_admin');
+                    sidebar.setAttribute('active-path', '/headmaster/reports/index.html');
+                }
+                if (topbar) topbar.setAttribute('username', 'Headmaster Portal');
+                if (breadcrumb) breadcrumb.setAttribute('path', 'Reports, Student 360° Progress Report Card');
+                if (backBtn) {
+                    backBtn.href = '../headmaster/reports/index.html';
+                    backBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Back to Reports';
+                }
+            }
 
             if (currentStudentId) {
                 loadReportCard();

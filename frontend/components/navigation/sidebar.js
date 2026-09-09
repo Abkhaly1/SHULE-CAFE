@@ -35,7 +35,7 @@ class AppSidebar extends HTMLElement {
     get role() {
         const attr = this.getAttribute('role');
         if (attr) return attr;
-        return localStorage.getItem('shule_role') || sessionStorage.getItem('shule_role') || 'headmaster';
+        return sessionStorage.getItem('shule_role') || localStorage.getItem('shule_role') || 'default';
     }
 
     get activePath() {

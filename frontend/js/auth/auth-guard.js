@@ -35,6 +35,13 @@ class AuthGuard {
             const currentPath = window.location.pathname;
             const userRole = AuthService.getUserRole();
 
+            // Guard against empty or corrupted role data
+            if (!userRole) {
+                console.warn('[AuthGuard] Authenticated token exists but no valid user role found. Purging stale session.');
+                AuthService.logout();
+                return;
+            }
+
             // If on login page, redirect to correct role dashboard
             if (currentPath.endsWith('login.html')) {
                 AuthService.redirectBasedOnRole(userRole);
