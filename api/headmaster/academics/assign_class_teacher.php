@@ -35,11 +35,11 @@ try {
             ON DUPLICATE KEY UPDATE teacher_id = VALUES(teacher_id)
         ");
         $stmt->execute([$schoolId, $classStreamId, $teacherId]);
-        $msg = "Form Master assigned successfully.";
+        $msg = "Class Teacher assigned successfully.";
     } else {
         $stmt = $conn->prepare("DELETE FROM class_teachers WHERE school_id = ? AND academic_year_id = '" . date('Y') . "' AND class_stream_id = ?");
         $stmt->execute([$schoolId, $classStreamId]);
-        $msg = "Form Master unassigned.";
+        $msg = "Class Teacher unassigned.";
     }
 
     echo json_encode(["success" => true, "message" => $msg]);

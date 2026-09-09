@@ -501,7 +501,7 @@ try {
         ");
         $stmt->execute([$schoolId, $year, $term, $studentId, $userId, $comment]);
 
-        echo json_encode(['success' => true, 'message' => 'Form Master conduct comment saved successfully.']);
+        echo json_encode(['success' => true, 'message' => 'Class Teacher conduct comment saved successfully.']);
         exit();
     }
 

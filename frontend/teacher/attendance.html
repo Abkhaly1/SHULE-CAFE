@@ -223,7 +223,7 @@
                         </div>
                     </div>
 
-                    <!-- ACCESS CONTROL GUARD (NON-FORM MASTER) -->
+                    <!-- ACCESS CONTROL GUARD (NON-CLASS TEACHER) -->
                     <div id="guardNotFormMaster" style="display: none;" class="card">
                         <div style="padding: 40px; text-align: center;">
                             <div style="width: 44px; height: 44px; border-radius: 50%; background: #fef3c7; color: #b45309; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
@@ -540,7 +540,7 @@
 
                 if (!data.success) throw new Error(data.message || 'Failed to load roll-call');
 
-                // Check Form Master Access
+                // Check Class Teacher Access
                 if (!data.is_form_master) {
                     document.getElementById('guardNotFormMaster').style.display = 'block';
                     document.getElementById('workspaceMain').style.display = 'none';

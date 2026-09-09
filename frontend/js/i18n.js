@@ -136,7 +136,7 @@ export const translations = {
             filterYear:         'Academic Year:',
             filterMonth:        'Month:',
             filterRoom:         'Classroom Stream:',
-            accessDeniedTitle:  'Access Restricted: Class Guider / Form Master Only',
+            accessDeniedTitle:  'Access Restricted: Class Teacher Only',
             savedMsg:           'Attendance saved successfully!',
             errorSaving:        'Error saving attendance. Please try again.',
             networkError:       'Network error. Please check your connection.',
@@ -176,7 +176,7 @@ export const translations = {
         teacherDashboard: {
             mySubjects:         'My Subjects',
             totalStudents:      'Total Students',
-            formMasterClass:    'Form Master Class',
+            formMasterClass:    'Class Teacher Class',
             todayPeriods:       "Today's Periods",
             myTodaySchedule:    "Today's Teaching Schedule",
             day:                'Day',
