@@ -464,6 +464,33 @@
                 document.getElementById('addItemModal').style.display = 'flex';
             };
 
+            window.deleteSubjectTemplate = async function (id, name) {
+                const confirmed = confirm(`Are you sure you want to delete master subject "${name}" from this education level?`);
+                if (!confirmed) return;
+
+                try {
+                    const res = await fetch('/shule-cafe/api/templates/delete.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ id })
+                    });
+                    const result = await res.json();
+                    if (result.success) {
+                        alert(`Subject "${name}" deleted successfully.`);
+                        loadLevelTemplates();
+                    } else {
+                        alert(result.message || 'Could not delete subject.');
+                    }
+                } catch (err) {
+                    alert('Network error deleting subject.');
+                }
+            };
+
+            function escapeQuotes(str) {
+                return String(str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            }
+
             window.openSubjectGradeModal = function (id = null, minMark = '', maxMark = '', grade = '', points = '', remark = '') {
                 document.getElementById('sg_id').value = id || '';
                 document.getElementById('sg_min_mark').value = minMark;
@@ -789,23 +816,42 @@
 
                 let rowsHtml = '';
                 list.forEach((s, idx) => {
+                    let details = {};
+                    try { details = JSON.parse(s.details || '{}'); } catch (e) {}
+                    const courseCode = details.course_code || s.code;
+                    const abbr = details.abbr || s.code;
+                    const category = details.category || 'Standard';
+
                     rowsHtml += `
                         <tr style="transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='white';">
-                            <td style="padding: 12px 16px; border: 1px solid #e2e8f0; font-weight: 700; color: #64748b; text-align: center; width: 50px;">${idx + 1}</td>
+                            <td style="padding: 12px 16px; border: 1px solid #e2e8f0; font-weight: 700; color: #64748b; text-align: center; width: 45px;">${idx + 1}</td>
                             <td style="padding: 12px 16px; border: 1px solid #e2e8f0;">
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <span style="font-size: 15px;"></span>
-                                    <strong style="font-size: 14px; font-weight: 800; color: #0f172a;">${s.name}</strong>
-                                </div>
+                                <span style="font-family: monospace; font-weight: 800; font-size: 12px; color: #1e40af; background: #eff6ff; border: 1px solid #bfdbfe; padding: 3px 8px; border-radius: 6px;">
+                                    ${courseCode}
+                                </span>
                             </td>
                             <td style="padding: 12px 16px; border: 1px solid #e2e8f0;">
-                                <span style="font-family: monospace; font-weight: 800; font-size: 13px; color: #1d4ed8; background: #eff6ff; border: 1px solid #bfdbfe; padding: 4px 10px; border-radius: 6px;">${s.code || 'N/A'}</span>
+                                <span style="font-family: monospace; font-weight: 800; font-size: 12px; color: #334155; background: #f8fafc; border: 1px solid #cbd5e1; padding: 3px 8px; border-radius: 6px;">
+                                    ${abbr}
+                                </span>
                             </td>
-                            <td style="padding: 12px 16px; border: 1px solid #e2e8f0; font-size: 13px; color: #475569;">${s.description || '-'}</td>
+                            <td style="padding: 12px 16px; border: 1px solid #e2e8f0;">
+                                <strong style="font-size: 14px; font-weight: 800; color: #0f172a;">${s.name}</strong>
+                                ${s.description ? `<div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">${s.description}</div>` : ''}
+                            </td>
+                            <td style="padding: 12px 16px; border: 1px solid #e2e8f0; font-size: 12.5px; color: #475569; font-weight: 600;">
+                                ${category}
+                            </td>
                             <td style="padding: 12px 16px; border: 1px solid #e2e8f0; text-align: center;">
                                 <span style="display: inline-flex; align-items: center; gap: 6px; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-weight: 800; font-size: 12px; padding: 4px 12px; border-radius: 9999px;">
                                     <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></span>Active
                                 </span>
+                            </td>
+                            <td style="padding: 12px 16px; border: 1px solid #e2e8f0; text-align: right;">
+                                <button type="button" class="btn btn-outline btn-xs" style="color: #dc2626; border-color: #fecaca; font-weight: 700; padding: 3px 8px;" onclick="deleteSubjectTemplate('${s.id}', '${escapeQuotes(s.name)}')">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                    <span>Delete</span>
+                                </button>
                             </td>
                         </tr>
                     `;
@@ -815,12 +861,14 @@
                     <div style="overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px;">
                         <table style="width: 100%; border-collapse: collapse; font-size: 13px; text-align: left; border: 1px solid #e2e8f0;">
                             <thead>
-                                <tr style="background: #f8fafc; color: #475569; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;">
-                                    <th style="padding: 12px 16px; font-weight: 700; border: 1px solid #e2e8f0; text-align: center; width: 50px;">#</th>
+                                <tr style="background: #f8fafc; color: #475569; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em;">
+                                    <th style="padding: 12px 16px; font-weight: 700; border: 1px solid #e2e8f0; text-align: center; width: 45px;">#</th>
+                                    <th style="padding: 12px 16px; font-weight: 700; border: 1px solid #e2e8f0; width: 120px;">Course Code</th>
+                                    <th style="padding: 12px 16px; font-weight: 700; border: 1px solid #e2e8f0; width: 90px;">Abbr</th>
                                     <th style="padding: 12px 16px; font-weight: 700; border: 1px solid #e2e8f0;">Subject Name</th>
-                                    <th style="padding: 12px 16px; font-weight: 700; border: 1px solid #e2e8f0;">Code</th>
-                                    <th style="padding: 12px 16px; font-weight: 700; border: 1px solid #e2e8f0;">Description</th>
-                                    <th style="padding: 12px 16px; font-weight: 700; border: 1px solid #e2e8f0; text-align: center;">Status</th>
+                                    <th style="padding: 12px 16px; font-weight: 700; border: 1px solid #e2e8f0; width: 160px;">Category</th>
+                                    <th style="padding: 12px 16px; font-weight: 700; border: 1px solid #e2e8f0; text-align: center; width: 90px;">Status</th>
+                                    <th style="padding: 12px 16px; font-weight: 700; border: 1px solid #e2e8f0; text-align: right; width: 90px;">Action</th>
                                 </tr>
                             </thead>
                             <tbody>${rowsHtml}</tbody>

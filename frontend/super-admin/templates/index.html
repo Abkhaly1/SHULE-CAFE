@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academic Curriculum & Subject Catalog ‹ Super Admin ‹ SHULE CAFE</title>
-    
+    <title>Curriculum & Standards Catalog ‹ Super Admin ‹ SHULE CAFE</title>
+
     <link rel="stylesheet" href="../../css/design-system.css">
     <link rel="stylesheet" href="../../css/layout.css">
     <link rel="stylesheet" href="../../css/super-admin-theme.css">
-    
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script type="module" src="../../layouts/global-layout.js"></script>
     <script type="module" src="../../js/auth/auth-guard.js"></script>
 
@@ -17,9 +19,11 @@
             cursor: pointer;
             transition: background 0.15s ease;
         }
+
         .tier-row:hover {
             background: #f8fafc;
         }
+
         .clean-modal-overlay {
             position: fixed;
             inset: 0;
@@ -28,73 +32,302 @@
             align-items: center;
             justify-content: center;
             z-index: 9999;
+            backdrop-filter: blur(2px);
         }
+
         .clean-modal-box {
             background: #ffffff;
             border-radius: 12px;
             width: 100%;
-            max-width: 500px;
-            padding: 20px 24px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            max-width: 540px;
+            padding: 22px 26px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
             border: 1px solid var(--c-border-light);
+        }
+
+        .filter-pill {
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 9999px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .filter-pill:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .filter-pill.active {
+            background: #047857;
+            color: #ffffff;
+            border-color: #047857;
         }
     </style>
 </head>
+
 <body>
     <div class="app-layout">
         <app-sidebar role="super_admin" active-path="/super-admin/templates/index.html"></app-sidebar>
-        
+
         <div class="app-main">
             <app-topbar username="System Administrator"></app-topbar>
-            
+
             <main class="app-content-wrapper">
                 <div class="app-content" style="padding: 0;">
-                    
+
                     <!-- Compact Breadcrumb Ribbon -->
                     <div style="margin-bottom: 6px;">
-                        <app-breadcrumb path="Super Admin, Academic Curriculum & Subject Catalog"></app-breadcrumb>
+                        <app-breadcrumb path="Super Admin, Curriculum & Standards Catalog"></app-breadcrumb>
                     </div>
 
-                    <!-- Single-Row Compact Header Box -->
-                    <div class="card" style="margin-bottom: 10px; padding: 6px 14px; background: #ffffff; border-radius: 8px; border: 1px solid var(--c-border-light); box-shadow: 0 1px 2px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between;">
+                    <!-- Single-Row Compact Header Box with Embedded Tabs -->
+                    <div class="card"
+                        style="margin-bottom: 10px; padding: 6px 14px; background: #ffffff; border-radius: 8px; border: 1px solid var(--c-border-light); box-shadow: 0 1px 2px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <div style="width: 26px; height: 26px; border-radius: 6px; background: var(--sa-primary, #047857); color: white; display: flex; align-items: center; justify-content: center;">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                            <div
+                                style="width: 26px; height: 26px; border-radius: 6px; background: var(--sa-primary, #047857); color: white; display: flex; align-items: center; justify-content: center;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                                </svg>
                             </div>
-                            <h2 style="margin: 0; font-size: 14px; font-weight: 800; color: #0f172a;">Academic Curriculum & Subject Catalog</h2>
+                            <h2 style="margin: 0; font-size: 14px; font-weight: 800; color: #0f172a;">Curriculum &
+                                Standards Catalog</h2>
                         </div>
-                        <button id="openAddTierBtn" class="btn btn-primary" style="height: 30px; font-size: 12px; font-weight: 700; padding: 0 12px; display: inline-flex; align-items: center; gap: 6px;">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                            Add Education Tier
-                        </button>
+
+                        <!-- Embedded Tabs on the Same Line -->
+                        <app-workspace-tabs active-tab="tiers" id="mainCatalogTabs">
+                            <button class="workspace-tab active" data-target="tiers"
+                                style="font-weight: 700; font-size: 12px; display: inline-flex; align-items: center; gap: 6px;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="7" height="7" />
+                                    <rect x="14" y="3" width="7" height="7" />
+                                    <rect x="14" y="14" width="7" height="7" />
+                                    <rect x="3" y="14" width="7" height="7" />
+                                </svg>
+                                <span>Education Tiers</span>
+                            </button>
+                            <button class="workspace-tab" data-target="subjects"
+                                style="font-weight: 700; font-size: 12px; display: inline-flex; align-items: center; gap: 6px;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                                </svg>
+                                <span>Master Subjects Catalog</span>
+                            </button>
+                            <button class="workspace-tab" data-target="combinations"
+                                style="font-weight: 700; font-size: 12px; display: inline-flex; align-items: center; gap: 6px;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                                    <polyline points="2 17 12 22 22 17" />
+                                    <polyline points="2 12 12 17 22 12" />
+                                </svg>
+                                <span>A-Level Combinations</span>
+                            </button>
+                        </app-workspace-tabs>
+
+                        <!-- Dynamic Header Actions -->
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <button id="openAddTierBtn" class="btn btn-primary"
+                                style="height: 30px; font-size: 12px; font-weight: 700; padding: 0 12px; display: inline-flex; align-items: center; gap: 6px;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19" />
+                                    <line x1="5" y1="12" x2="19" y2="12" />
+                                </svg>
+                                <span>Add Tier</span>
+                            </button>
+
+                            <button id="openAddSubjectBtn" class="btn btn-primary"
+                                style="height: 30px; font-size: 12px; font-weight: 700; padding: 0 12px; display: none; align-items: center; gap: 6px; background: #047857; border-color: #047857;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="12" y1="5" x2="12" y2="19" />
+                                    <line x1="5" y1="12" x2="19" y2="12" />
+                                </svg>
+                                <span>Add Master Subject</span>
+                            </button>
+
+                            <button id="btnSyncGlobalSchools" class="btn btn-outline"
+                                style="height: 30px; font-size: 12px; font-weight: 700; padding: 0 12px; display: none; align-items: center; gap: 6px; color: #047857; border-color: #a7f3d0; background: #f0fdf4;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+                                </svg>
+                                <span>Sync to Schools</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Summary KPI Cards -->
+                    <div style="margin-bottom: 10px;">
+                        <app-workspace-summary>
+                            <app-workspace-summary-card id="kpiTiersCount" label="Education Tiers"
+                                value="4 Tiers"></app-workspace-summary-card>
+                            <app-workspace-summary-card id="kpiSubjectsCount" label="Master Subjects"
+                                value="56 Subjects"></app-workspace-summary-card>
+                            <app-workspace-summary-card id="kpiCombinationsCount" label="A-Level Combinations"
+                                value="14 Streams"></app-workspace-summary-card>
+                            <app-workspace-summary-card id="kpiComplianceStatus" label="Curriculum Standard"
+                                value="Official NECTA"></app-workspace-summary-card>
+                        </app-workspace-summary>
                     </div>
 
                     <!-- Notification Alert Box -->
-                    <div id="catalogAlert" class="alert" style="display: none; margin-bottom: 12px; font-size: 12.5px; padding: 10px 14px; border-radius: 8px;"></div>
-
-                    <!-- Dynamic Tiers Table Card -->
-                    <div class="card" style="padding: 0; overflow: hidden; border-radius: 10px; border: 1px solid var(--c-border-light); background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
-                        <table class="table" style="margin-bottom: 0; width: 100%; border-collapse: collapse; text-align: left;">
-                            <thead>
-                                <tr style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0; color: #475569; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">
-                                    <th style="padding: 12px 18px; font-weight: 700; width: 110px;">Code</th>
-                                    <th style="padding: 12px 18px; font-weight: 700;">Education Tier Name</th>
-                                    <th style="padding: 12px 18px; font-weight: 700;">Classes Scope & Range</th>
-                                    <th style="padding: 12px 18px; font-weight: 700;">Curriculum Structure</th>
-                                    <th style="padding: 12px 18px; font-weight: 700; text-align: center; width: 120px;">Subjects</th>
-                                    <th style="padding: 12px 18px; font-weight: 700; text-align: center; width: 90px;">Status</th>
-                                    <th style="padding: 12px 18px; font-weight: 700; text-align: right; width: 140px;">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tierTableBody">
-                                <tr>
-                                    <td colspan="7" style="padding: 30px; text-align: center; color: #64748b; font-size: 13px;">
-                                        Loading education curriculum tiers...
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div id="catalogAlert" class="alert"
+                        style="display: none; margin-bottom: 12px; font-size: 12.5px; padding: 10px 14px; border-radius: 8px;">
                     </div>
+
+                    <!-- ── TAB 1: EDUCATION TIERS ── -->
+                    <app-workspace-content tab-id="tiers" active="true">
+                        <div class="card"
+                            style="padding: 0; overflow: hidden; border-radius: 10px; border: 1px solid var(--c-border-light); background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                            <table class="table"
+                                style="margin-bottom: 0; width: 100%; border-collapse: collapse; text-align: left;">
+                                <thead>
+                                    <tr
+                                        style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0; color: #475569; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        <th style="padding: 12px 18px; font-weight: 700; width: 110px;">Code</th>
+                                        <th style="padding: 12px 18px; font-weight: 700;">Education Tier Name</th>
+                                        <th style="padding: 12px 18px; font-weight: 700;">Classes Scope & Range</th>
+                                        <th style="padding: 12px 18px; font-weight: 700;">Curriculum Framework</th>
+                                        <th
+                                            style="padding: 12px 18px; font-weight: 700; text-align: center; width: 120px;">
+                                            Subjects</th>
+                                        <th
+                                            style="padding: 12px 18px; font-weight: 700; text-align: center; width: 90px;">
+                                            Status</th>
+                                        <th
+                                            style="padding: 12px 18px; font-weight: 700; text-align: right; width: 140px;">
+                                            Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tierTableBody">
+                                    <tr>
+                                        <td colspan="7"
+                                            style="padding: 30px; text-align: center; color: #64748b; font-size: 13px;">
+                                            Loading education curriculum tiers...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </app-workspace-content>
+
+                    <!-- ── TAB 2: MASTER SUBJECTS CATALOG ── -->
+                    <app-workspace-content tab-id="subjects">
+                        <div class="card"
+                            style="padding: 0; overflow: hidden; border-radius: 10px; border: 1px solid var(--c-border-light); background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+
+                            <!-- Unified Filter Bar -->
+                            <div
+                                style="padding: 12px 18px; background: #ffffff; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                    <span style="font-size: 12px; font-weight: 700; color: #64748b;">Level:</span>
+                                    <button class="filter-pill active" data-level="ALL"
+                                        onclick="filterSubjectsByLevel('ALL')">All Levels (<span
+                                            id="cntAllSubjects">56</span>)</button>
+                                    <button class="filter-pill" data-level="O-LEVEL"
+                                        onclick="filterSubjectsByLevel('O-LEVEL')">O-Level (<span
+                                            id="cntOlvlSubjects">23</span>)</button>
+                                    <button class="filter-pill" data-level="A-LEVEL"
+                                        onclick="filterSubjectsByLevel('A-LEVEL')">A-Level (<span
+                                            id="cntAlvlSubjects">21</span>)</button>
+                                    <button class="filter-pill" data-level="PRIM"
+                                        onclick="filterSubjectsByLevel('PRIM')">Primary (<span
+                                            id="cntPrimSubjects">7</span>)</button>
+                                    <button class="filter-pill" data-level="NURSERY"
+                                        onclick="filterSubjectsByLevel('NURSERY')">Nursery (<span
+                                            id="cntNurSubjects">5</span>)</button>
+                                </div>
+
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="position: relative;">
+                                        <input type="text" id="txtSearchSubjects" class="form-control"
+                                            placeholder="Search subject, code, category..."
+                                            style="height: 32px; font-size: 12.5px; width: 260px; padding-left: 28px;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            style="position: absolute; left: 9px; top: 10px; color: #94a3b8;">
+                                            <circle cx="11" cy="11" r="8" />
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Subjects Table -->
+                            <div style="overflow-x: auto;">
+                                <table class="table"
+                                    style="margin-bottom: 0; width: 100%; border-collapse: collapse; text-align: left;">
+                                    <thead>
+                                        <tr
+                                            style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0; color: #475569; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                            <th style="padding: 12px 16px; font-weight: 700; width: 45px; text-align: center;">#</th>
+                                            <th style="padding: 12px 16px; font-weight: 700; width: 120px;">Course Code</th>
+                                            <th style="padding: 12px 16px; font-weight: 700; width: 90px;">Abbr</th>
+                                            <th style="padding: 12px 16px; font-weight: 700;">Subject Name</th>
+                                            <th style="padding: 12px 16px; font-weight: 700; width: 170px;">Category</th>
+                                            <th style="padding: 12px 16px; font-weight: 700; width: 120px;">Education Tier</th>
+                                            <th style="padding: 12px 16px; font-weight: 700; width: 90px; text-align: center;">Status</th>
+                                            <th style="padding: 12px 16px; font-weight: 700; width: 140px; text-align: right;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="subjectsTableBody">
+                                        <tr>
+                                            <td colspan="8"
+                                                style="padding: 30px; text-align: center; color: #64748b; font-size: 13px;">
+                                                Loading master subjects catalog...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </app-workspace-content>
+
+                    <!-- ── TAB 3: A-LEVEL COMBINATIONS ── -->
+                    <app-workspace-content tab-id="combinations">
+                        <div class="card"
+                            style="padding: 0; overflow: hidden; border-radius: 10px; border: 1px solid var(--c-border-light); background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                            <div style="overflow-x: auto;">
+                                <table class="table"
+                                    style="margin-bottom: 0; width: 100%; border-collapse: collapse; text-align: left;">
+                                    <thead>
+                                        <tr
+                                            style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0; color: #475569; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                            <th style="padding: 12px 16px; font-weight: 700; width: 45px; text-align: center;">#</th>
+                                            <th style="padding: 12px 16px; font-weight: 700; width: 110px;">Course Code</th>
+                                            <th style="padding: 12px 16px; font-weight: 700; width: 85px;">Abbr</th>
+                                            <th style="padding: 12px 16px; font-weight: 700;">Combination Name</th>
+                                            <th style="padding: 12px 16px; font-weight: 700; width: 160px;">Academic Stream</th>
+                                            <th style="padding: 12px 16px; font-weight: 700;">Principal Subjects (3)</th>
+                                            <th style="padding: 12px 16px; font-weight: 700; width: 140px;">Subsidiaries</th>
+                                            <th style="padding: 12px 16px; font-weight: 700; width: 80px; text-align: center;">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="combinationsTableBody">
+                                        <tr>
+                                            <td colspan="8"
+                                                style="padding: 30px; text-align: center; color: #64748b; font-size: 13px;">
+                                                Loading A-Level combinations catalog...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </app-workspace-content>
 
                 </div>
                 <app-footer></app-footer>
@@ -102,112 +335,224 @@
         </div>
     </div>
 
-    <!-- Modal: Add Education Level Tier -->
+    <!-- Modal: Add / Edit Education Level Tier -->
     <div id="addTierModal" class="clean-modal-overlay">
         <div class="clean-modal-box">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 14px;">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 14px;">
                 <h3 style="margin: 0; font-size: 14px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                    </svg>
                     Add Education Level Tier
                 </h3>
-                <button type="button" id="closeTierModalBtn" style="background: none; border: none; font-size: 18px; cursor: pointer; color: #94a3b8;">&times;</button>
+                <button type="button" id="closeTierModalBtn"
+                    style="background: none; border: none; font-size: 18px; cursor: pointer; color: #94a3b8;">&times;</button>
             </div>
-            
-            <div id="modalAlert" class="alert alert-danger" style="display: none; margin-bottom: 12px; font-size: 12px; padding: 8px 12px; border-radius: 6px;"></div>
+
+            <div id="modalAlert" class="alert alert-danger"
+                style="display: none; margin-bottom: 12px; font-size: 12px; padding: 8px 12px; border-radius: 6px;"></div>
 
             <form id="addTierForm">
                 <input type="hidden" id="tier_type" value="level">
                 <div class="form-group" style="margin-bottom: 12px;">
-                    <label class="form-label" style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Education Tier Name <span style="color:#dc2626;">*</span></label>
-                    <input type="text" id="tier_name" class="form-control" style="height: 36px; font-size: 13px;" placeholder="e.g. Technical & Vocational Education" required>
+                    <label class="form-label"
+                        style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Education Tier
+                        Name <span style="color:#dc2626;">*</span></label>
+                    <input type="text" id="tier_name" class="form-control" style="height: 36px; font-size: 13px;"
+                        placeholder="e.g. Technical & Vocational Education" required>
                 </div>
                 <div class="form-group" style="margin-bottom: 12px;">
-                    <label class="form-label" style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Tier Code / Abbreviation <span style="color:#dc2626;">*</span></label>
-                    <input type="text" id="tier_code" class="form-control" style="height: 36px; font-size: 13px; font-weight: 700; font-family: monospace;" placeholder="e.g. VETA" required>
+                    <label class="form-label"
+                        style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Tier Code /
+                        Abbreviation <span style="color:#dc2626;">*</span></label>
+                    <input type="text" id="tier_code" class="form-control"
+                        style="height: 36px; font-size: 13px; font-weight: 700; font-family: monospace;"
+                        placeholder="e.g. VETA" required>
                 </div>
                 <div class="form-group" style="margin-bottom: 12px;">
-                    <label class="form-label" style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Curriculum Framework</label>
-                    <input type="text" id="tier_curriculum" class="form-control" style="height: 36px; font-size: 13px;" placeholder="e.g. National Vocational Curriculum">
+                    <label class="form-label"
+                        style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Curriculum
+                        Framework</label>
+                    <input type="text" id="tier_curriculum" class="form-control" style="height: 36px; font-size: 13px;"
+                        placeholder="e.g. National Vocational Curriculum">
                 </div>
                 <div class="form-group" style="margin-bottom: 16px;">
-                    <label class="form-label" style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Description</label>
-                    <textarea id="tier_desc" class="form-control" rows="2" style="font-size: 13px;" placeholder="Brief details about this curriculum tier..."></textarea>
+                    <label class="form-label"
+                        style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Description</label>
+                    <textarea id="tier_desc" class="form-control" rows="2" style="font-size: 13px;"
+                        placeholder="Brief details about this curriculum tier..."></textarea>
                 </div>
                 <div style="display: flex; gap: 8px; justify-content: flex-end;">
-                    <button type="button" id="cancelTierModalBtn" class="btn btn-outline" style="height: 34px; font-size: 12px; font-weight: 700;">Cancel</button>
-                    <button type="submit" id="saveTierBtn" class="btn btn-primary" style="height: 34px; font-size: 12px; font-weight: 700;">Save Education Tier</button>
+                    <button type="button" id="cancelTierModalBtn" class="btn btn-outline"
+                        style="height: 34px; font-size: 12px; font-weight: 700;">Cancel</button>
+                    <button type="submit" id="saveTierBtn" class="btn btn-primary"
+                        style="height: 34px; font-size: 12px; font-weight: 700;">Save Education Tier</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Add / Edit Master Subject -->
+    <div id="subjectModal" class="clean-modal-overlay">
+        <div class="clean-modal-box">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 14px;">
+                <h3 id="subjectModalTitle"
+                    style="margin: 0; font-size: 14px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                    </svg>
+                    Add Master Subject
+                </h3>
+                <button type="button" id="closeSubjectModalBtn"
+                    style="background: none; border: none; font-size: 18px; cursor: pointer; color: #94a3b8;">&times;</button>
+            </div>
+
+            <div id="subjectModalAlert" class="alert alert-danger"
+                style="display: none; margin-bottom: 12px; font-size: 12px; padding: 8px 12px; border-radius: 6px;"></div>
+
+            <form id="subjectForm">
+                <input type="hidden" id="sbj_id" value="">
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                    <div class="form-group">
+                        <label class="form-label"
+                            style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Subject Name <span style="color:#dc2626;">*</span></label>
+                        <input type="text" id="sbj_name" class="form-control" style="height: 36px; font-size: 13px;"
+                            placeholder="e.g. Basic Mathematics" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"
+                            style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Education Tier <span style="color:#dc2626;">*</span></label>
+                        <select id="sbj_level_code" class="form-control" style="height: 36px; font-size: 13px; font-weight: 700;" required>
+                            <option value="O-LEVEL">Ordinary Level (O-Level)</option>
+                            <option value="A-LEVEL">Advanced Level (A-Level)</option>
+                            <option value="PRIM">Primary Education</option>
+                            <option value="NURSERY">Nursery Education</option>
+                            <option value="ALL">All Tiers (General)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                    <div class="form-group">
+                        <label class="form-label"
+                            style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">System Code <span style="color:#dc2626;">*</span></label>
+                        <input type="text" id="sbj_code" class="form-control"
+                            style="height: 36px; font-size: 13px; font-weight: 700; font-family: monospace;"
+                            placeholder="e.g. 041-MATH" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"
+                            style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Course Code</label>
+                        <input type="text" id="sbj_course_code" class="form-control"
+                            style="height: 36px; font-size: 13px; font-weight: 700; font-family: monospace;"
+                            placeholder="e.g. 041/B-MATH">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                    <div class="form-group">
+                        <label class="form-label"
+                            style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Abbreviation</label>
+                        <input type="text" id="sbj_abbr" class="form-control"
+                            style="height: 36px; font-size: 13px; font-weight: 700; font-family: monospace;"
+                            placeholder="e.g. MATH">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"
+                            style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Subject Category</label>
+                        <select id="sbj_category" class="form-control" style="height: 36px; font-size: 13px;">
+                            <option value="Mathematics">Mathematics</option>
+                            <option value="Sciences">Sciences</option>
+                            <option value="Languages">Languages</option>
+                            <option value="Social Sciences">Social Sciences</option>
+                            <option value="Commercial">Commercial & Business</option>
+                            <option value="Creative Arts">Creative Arts & Games</option>
+                            <option value="Religious Studies">Religious Studies</option>
+                            <option value="Technical">Technical & Vocational</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 16px;">
+                    <label class="form-label"
+                        style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Description / Curriculum Notes</label>
+                    <textarea id="sbj_desc" class="form-control" rows="2" style="font-size: 13px;"
+                        placeholder="Official syllabus details, exam format, or paper info..."></textarea>
+                </div>
+
+                <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                    <button type="button" id="cancelSubjectModalBtn" class="btn btn-outline"
+                        style="height: 34px; font-size: 12px; font-weight: 700;">Cancel</button>
+                    <button type="submit" id="saveSubjectBtn" class="btn btn-primary"
+                        style="height: 34px; font-size: 12px; font-weight: 700;">Save Master Subject</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
+        let allMasterSubjects = [];
+        let allCombinations = [];
+        let allEducationTiers = [];
+        let activeSubjectLevelFilter = 'ALL';
+
         document.addEventListener('DOMContentLoaded', () => {
+            initTabs();
             loadEducationTiers();
-
-            const modal = document.getElementById('addTierModal');
-            const openBtn = document.getElementById('openAddTierBtn');
-            const closeBtn = document.getElementById('closeTierModalBtn');
-            const cancelBtn = document.getElementById('cancelTierModalBtn');
-            const form = document.getElementById('addTierForm');
-            const modalAlert = document.getElementById('modalAlert');
-
-            if (openBtn) openBtn.addEventListener('click', () => {
-                modalAlert.style.display = 'none';
-                form.reset();
-                modal.style.display = 'flex';
-            });
-
-            const closeModal = () => modal.style.display = 'none';
-            if (closeBtn) closeBtn.addEventListener('click', closeModal);
-            if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
-
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                modalAlert.style.display = 'none';
-
-                const saveBtn = document.getElementById('saveTierBtn');
-                saveBtn.disabled = true;
-                saveBtn.textContent = 'Saving...';
-
-                const payload = {
-                    type: 'level',
-                    name: document.getElementById('tier_name').value.trim(),
-                    code: document.getElementById('tier_code').value.trim().toUpperCase(),
-                    level_code: document.getElementById('tier_code').value.trim().toUpperCase(),
-                    description: document.getElementById('tier_desc').value.trim(),
-                    details: JSON.stringify({
-                        curriculum_type: document.getElementById('tier_curriculum').value.trim() || 'National Curriculum Standards'
-                    })
-                };
-
-                try {
-                    const res = await fetch('/shule-cafe/api/templates/create.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
-                        body: JSON.stringify(payload)
-                    });
-                    const result = await res.json();
-
-                    if (res.ok && result.success) {
-                        closeModal();
-                        showAlert('Education Tier created successfully.', 'success');
-                        await loadEducationTiers();
-                    } else {
-                        modalAlert.textContent = result.message || 'Error creating education tier.';
-                        modalAlert.style.display = 'block';
-                    }
-                } catch (err) {
-                    modalAlert.textContent = 'Network or connection error.';
-                    modalAlert.style.display = 'block';
-                } finally {
-                    saveBtn.disabled = false;
-                    saveBtn.textContent = 'Save Education Tier';
-                }
-            });
+            loadMasterSubjects();
+            loadCombinations();
+            initModals();
         });
 
+        // ── WORKSPACE TABS SWITCHING ────────────────────────────
+        function initTabs() {
+            const tabs = document.querySelectorAll('#mainCatalogTabs .workspace-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const target = tab.getAttribute('data-target');
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    document.querySelectorAll('app-workspace-content').forEach(c => {
+                        if (c.getAttribute('tab-id') === target) {
+                            c.setAttribute('active', 'true');
+                            c.style.display = 'block';
+                        } else {
+                            c.removeAttribute('active');
+                            c.style.display = 'none';
+                        }
+                    });
+
+                    // Dynamic action buttons visibility
+                    const btnAddTier = document.getElementById('openAddTierBtn');
+                    const btnAddSub = document.getElementById('openAddSubjectBtn');
+                    const btnSync = document.getElementById('btnSyncGlobalSchools');
+
+                    if (target === 'tiers') {
+                        btnAddTier.style.display = 'inline-flex';
+                        btnAddSub.style.display = 'none';
+                        btnSync.style.display = 'none';
+                    } else if (target === 'subjects') {
+                        btnAddTier.style.display = 'none';
+                        btnAddSub.style.display = 'inline-flex';
+                        btnSync.style.display = 'inline-flex';
+                    } else {
+                        btnAddTier.style.display = 'none';
+                        btnAddSub.style.display = 'none';
+                        btnSync.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        // ── 1. LOAD EDUCATION TIERS ────────────────────────────
         async function loadEducationTiers() {
             const tbody = document.getElementById('tierTableBody');
             try {
@@ -218,12 +563,15 @@
                     tbody.innerHTML = `
                         <tr>
                             <td colspan="7" style="padding: 24px; text-align: center; color: #64748b; font-size: 13px;">
-                                No education tiers configured yet. Click "Add Education Tier" to start.
+                                No education tiers configured yet. Click "Add Tier" to start.
                             </td>
                         </tr>
                     `;
                     return;
                 }
+
+                allEducationTiers = result.tiers;
+                document.getElementById('kpiTiersCount').setAttribute('value', `${allEducationTiers.length} Tiers`);
 
                 const badgeThemes = {
                     'NURSERY': { bg: '#fef3c7', text: '#b45309', border: '#fde68a' },
@@ -291,6 +639,463 @@
             }
         }
 
+        // ── 2. LOAD MASTER SUBJECTS CATALOG ────────────────────────────
+        async function loadMasterSubjects() {
+            const tbody = document.getElementById('subjectsTableBody');
+            try {
+                const res = await fetch('/shule-cafe/api/templates/list.php?type=subject', { credentials: 'include' });
+                const result = await res.json();
+
+                if (!res.ok || !result.success || !result.data) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="padding: 24px; text-align: center; color: #dc2626;">Error loading master subjects.</td></tr>';
+                    return;
+                }
+
+                allMasterSubjects = result.data.map(s => {
+                    let details = {};
+                    try { details = JSON.parse(s.details || '{}'); } catch (e) { }
+                    return {
+                        id: s.id,
+                        name: s.name,
+                        code: s.code,
+                        level_code: s.level_code || 'ALL',
+                        description: s.description || '',
+                        abbr: details.abbr || s.code,
+                        course_code: details.course_code || s.code,
+                        category: details.category || 'Standard',
+                        status: s.status || 'active'
+                    };
+                });
+
+                // Update metrics & filter counts
+                document.getElementById('kpiSubjectsCount').setAttribute('value', `${allMasterSubjects.length} Subjects`);
+                document.getElementById('cntAllSubjects').textContent = allMasterSubjects.length;
+                document.getElementById('cntOlvlSubjects').textContent = allMasterSubjects.filter(s => s.level_code === 'O-LEVEL').length;
+                document.getElementById('cntAlvlSubjects').textContent = allMasterSubjects.filter(s => s.level_code === 'A-LEVEL').length;
+                document.getElementById('cntPrimSubjects').textContent = allMasterSubjects.filter(s => s.level_code === 'PRIM').length;
+                document.getElementById('cntNurSubjects').textContent = allMasterSubjects.filter(s => s.level_code === 'NURSERY').length;
+
+                renderSubjectsTable();
+
+            } catch (err) {
+                console.error('Error loading subjects:', err);
+                tbody.innerHTML = '<tr><td colspan="8" style="padding: 24px; text-align: center; color: #dc2626;">Network error loading master subjects.</td></tr>';
+            }
+        }
+
+        window.filterSubjectsByLevel = function (level) {
+            activeSubjectLevelFilter = level;
+            document.querySelectorAll('.filter-pill').forEach(btn => {
+                if (btn.getAttribute('data-level') === level) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            renderSubjectsTable();
+        };
+
+        function renderSubjectsTable() {
+            const tbody = document.getElementById('subjectsTableBody');
+            const search = (document.getElementById('txtSearchSubjects').value || '').trim().toLowerCase();
+
+            let filtered = allMasterSubjects;
+            if (activeSubjectLevelFilter !== 'ALL') {
+                filtered = filtered.filter(s => s.level_code === activeSubjectLevelFilter || s.level_code === 'ALL');
+            }
+
+            if (search) {
+                filtered = filtered.filter(s =>
+                    s.name.toLowerCase().includes(search) ||
+                    s.code.toLowerCase().includes(search) ||
+                    s.course_code.toLowerCase().includes(search) ||
+                    s.abbr.toLowerCase().includes(search) ||
+                    s.category.toLowerCase().includes(search)
+                );
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="padding: 30px; text-align: center; color: #64748b; font-size: 13px;">
+                            No subjects found matching your filter criteria.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            const levelBadges = {
+                'O-LEVEL': { bg: '#eff6ff', text: '#1d4ed8', border: '#bfdbfe' },
+                'A-LEVEL': { bg: '#faf5ff', text: '#7e22ce', border: '#e9d5ff' },
+                'PRIM': { bg: '#ecfdf5', text: '#047857', border: '#a7f3d0' },
+                'NURSERY': { bg: '#fef3c7', text: '#b45309', border: '#fde68a' },
+                'ALL': { bg: '#f1f5f9', text: '#475569', border: '#cbd5e1' }
+            };
+
+            let html = '';
+            filtered.forEach((s, idx) => {
+                const lvlTheme = levelBadges[s.level_code] || levelBadges['ALL'];
+                const isActive = (s.status === 'active');
+
+                html += `
+                    <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='white';">
+                        <td style="padding: 12px 16px; text-align: center; font-weight: 700; color: #64748b; font-size: 12px;">${idx + 1}</td>
+                        <td style="padding: 12px 16px;">
+                            <span class="badge" style="background: #eff6ff; color: #1e40af; font-family: monospace; font-weight: 800; font-size: 12px; border: 1px solid #bfdbfe; padding: 3px 8px; border-radius: 6px;">
+                                ${s.course_code || s.code}
+                            </span>
+                        </td>
+                        <td style="padding: 12px 16px;">
+                            <span class="badge" style="background: #f8fafc; color: #334155; font-weight: 800; font-size: 12px; border: 1px solid #cbd5e1; padding: 3px 8px; border-radius: 6px;">
+                                ${s.abbr || s.code}
+                            </span>
+                        </td>
+                        <td style="padding: 12px 16px;">
+                            <strong style="font-size: 13.5px; font-weight: 800; color: #0f172a;">${s.name}</strong>
+                            ${s.description ? `<div style="font-size: 11.5px; color: #64748b; margin-top: 2px;">${s.description}</div>` : ''}
+                        </td>
+                        <td style="padding: 12px 16px; color: #475569; font-size: 12.5px; font-weight: 600;">
+                            ${s.category || 'Standard'}
+                        </td>
+                        <td style="padding: 12px 16px;">
+                            <span class="badge" style="background: ${lvlTheme.bg}; color: ${lvlTheme.text}; border: 1px solid ${lvlTheme.border}; font-weight: 800; font-size: 11px; padding: 3px 8px; border-radius: 6px;">
+                                ${s.level_code}
+                            </span>
+                        </td>
+                        <td style="padding: 12px 16px; text-align: center;">
+                            <span class="badge" style="background: ${isActive ? '#ecfdf5' : '#fef2f2'}; color: ${isActive ? '#047857' : '#dc2626'}; border: 1px solid ${isActive ? '#a7f3d0' : '#fecaca'}; font-weight: 800; font-size: 11px; padding: 3px 8px; border-radius: 9999px;">
+                                ${isActive ? 'Active' : 'Inactive'}
+                            </span>
+                        </td>
+                        <td style="padding: 12px 16px; text-align: right;">
+                            <div style="display: inline-flex; gap: 6px; align-items: center;">
+                                <button type="button" class="btn btn-outline btn-xs" style="font-weight: 700; padding: 3px 8px; font-size: 11.5px;" onclick="openEditSubjectModal('${s.id}')">
+                                    Edit
+                                </button>
+                                <button type="button" class="btn btn-outline btn-xs" style="font-weight: 700; padding: 3px 8px; font-size: 11.5px; color: ${isActive ? '#9a3412' : '#047857'};" onclick="toggleSubjectStatus('${s.id}', '${isActive ? 'inactive' : 'active'}')">
+                                    ${isActive ? 'Disable' : 'Enable'}
+                                </button>
+                                <button type="button" class="btn btn-outline btn-xs" style="color: #dc2626; border-color: #fecaca; font-weight: 700; padding: 3px 6px;" onclick="deleteSubject('${s.id}', '${escapeQuotes(s.name)}')">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        // ── 3. LOAD A-LEVEL COMBINATIONS ────────────────────────────
+        async function loadCombinations() {
+            const tbody = document.getElementById('combinationsTableBody');
+            try {
+                const res = await fetch('/shule-cafe/api/templates/list.php?type=combination', { credentials: 'include' });
+                const result = await res.json();
+
+                if (!res.ok || !result.success || !result.data) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="padding: 24px; text-align: center; color: #dc2626;">Error loading combinations.</td></tr>';
+                    return;
+                }
+
+                allCombinations = result.data.map(c => {
+                    let details = {};
+                    try { details = JSON.parse(c.details || '{}'); } catch (e) { }
+                    return {
+                        id: c.id,
+                        name: c.name,
+                        code: c.code,
+                        abbr: details.abbr || c.code.replace('COMB-', ''),
+                        course_code: details.course_code || '',
+                        stream: details.stream || 'General High School',
+                        principals: (details.principals || []).join(', ') || '-',
+                        subsidiaries: (details.subsidiaries || []).join(', ') || '-',
+                        status: c.status || 'active'
+                    };
+                });
+
+                document.getElementById('kpiCombinationsCount').setAttribute('value', `${allCombinations.length} Streams`);
+
+                if (allCombinations.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="padding: 24px; text-align: center; color: #64748b;">No combinations registered.</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                allCombinations.forEach((c, idx) => {
+                    html += `
+                        <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='white';">
+                            <td style="padding: 12px 16px; text-align: center; font-weight: 700; color: #64748b; font-size: 12px;">${idx + 1}</td>
+                            <td style="padding: 12px 16px;">
+                                <span class="badge" style="background: #faf5ff; color: #7e22ce; font-family: monospace; font-weight: 800; font-size: 12px; border: 1px solid #e9d5ff; padding: 3px 8px; border-radius: 6px;">
+                                    ${c.course_code || c.code}
+                                </span>
+                            </td>
+                            <td style="padding: 12px 16px;">
+                                <span class="badge" style="background: #f8fafc; color: #334155; font-weight: 800; font-size: 12px; border: 1px solid #cbd5e1; padding: 3px 8px; border-radius: 6px;">
+                                    ${c.abbr}
+                                </span>
+                            </td>
+                            <td style="padding: 12px 16px;">
+                                <strong style="font-size: 13.5px; font-weight: 800; color: #0f172a;">${c.name}</strong>
+                            </td>
+                            <td style="padding: 12px 16px; font-weight: 600; color: #475569; font-size: 12.5px;">
+                                ${c.stream}
+                            </td>
+                            <td style="padding: 12px 16px; font-size: 12.5px; color: #1e293b; font-weight: 600;">
+                                ${c.principals}
+                            </td>
+                            <td style="padding: 12px 16px; font-size: 12px; color: #64748b;">
+                                ${c.subsidiaries}
+                            </td>
+                            <td style="padding: 12px 16px; text-align: center;">
+                                <span class="badge" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-weight: 800; font-size: 11px; padding: 3px 8px; border-radius: 9999px;">
+                                    Active
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                tbody.innerHTML = html;
+            } catch (err) {
+                tbody.innerHTML = '<tr><td colspan="8" style="padding: 24px; text-align: center; color: #dc2626;">Network error loading combinations.</td></tr>';
+            }
+        }
+
+        // ── 4. MODALS & FORMS ────────────────────────────
+        function initModals() {
+            // Tier Modal
+            const tierModal = document.getElementById('addTierModal');
+            document.getElementById('openAddTierBtn').addEventListener('click', () => {
+                document.getElementById('modalAlert').style.display = 'none';
+                document.getElementById('addTierForm').reset();
+                tierModal.style.display = 'flex';
+            });
+            document.getElementById('closeTierModalBtn').addEventListener('click', () => tierModal.style.display = 'none');
+            document.getElementById('cancelTierModalBtn').addEventListener('click', () => tierModal.style.display = 'none');
+
+            document.getElementById('addTierForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const saveBtn = document.getElementById('saveTierBtn');
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Saving...';
+
+                const payload = {
+                    type: 'level',
+                    name: document.getElementById('tier_name').value.trim(),
+                    code: document.getElementById('tier_code').value.trim().toUpperCase(),
+                    level_code: document.getElementById('tier_code').value.trim().toUpperCase(),
+                    description: document.getElementById('tier_desc').value.trim(),
+                    details: JSON.stringify({
+                        curriculum_type: document.getElementById('tier_curriculum').value.trim() || 'National Curriculum Standards'
+                    })
+                };
+
+                try {
+                    const res = await fetch('/shule-cafe/api/templates/create.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await res.json();
+                    if (res.ok && result.success) {
+                        tierModal.style.display = 'none';
+                        showAlert('Education Tier created successfully.', 'success');
+                        await loadEducationTiers();
+                    } else {
+                        const alertBox = document.getElementById('modalAlert');
+                        alertBox.textContent = result.message || 'Error creating tier.';
+                        alertBox.style.display = 'block';
+                    }
+                } catch (err) {
+                    alert('Network error saving tier.');
+                } finally {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Save Education Tier';
+                }
+            });
+
+            // Subject Modal
+            const sbjModal = document.getElementById('subjectModal');
+            document.getElementById('openAddSubjectBtn').addEventListener('click', () => {
+                document.getElementById('subjectModalAlert').style.display = 'none';
+                document.getElementById('subjectForm').reset();
+                document.getElementById('sbj_id').value = '';
+                document.getElementById('subjectModalTitle').textContent = 'Add Master Subject';
+                if (activeSubjectLevelFilter !== 'ALL') {
+                    document.getElementById('sbj_level_code').value = activeSubjectLevelFilter;
+                }
+                sbjModal.style.display = 'flex';
+            });
+
+            document.getElementById('closeSubjectModalBtn').addEventListener('click', () => sbjModal.style.display = 'none');
+            document.getElementById('cancelSubjectModalBtn').addEventListener('click', () => sbjModal.style.display = 'none');
+
+            document.getElementById('subjectForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const saveBtn = document.getElementById('saveSubjectBtn');
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Saving...';
+
+                const id = document.getElementById('sbj_id').value;
+                const isEdit = Boolean(id);
+
+                const payload = {
+                    id: id || undefined,
+                    type: 'subject',
+                    name: document.getElementById('sbj_name').value.trim(),
+                    code: document.getElementById('sbj_code').value.trim().toUpperCase(),
+                    level_code: document.getElementById('sbj_level_code').value,
+                    course_code: document.getElementById('sbj_course_code').value.trim(),
+                    abbr: document.getElementById('sbj_abbr').value.trim().toUpperCase(),
+                    category: document.getElementById('sbj_category').value,
+                    description: document.getElementById('sbj_desc').value.trim(),
+                    status: 'active'
+                };
+
+                const endpoint = isEdit ? '/shule-cafe/api/templates/update.php' : '/shule-cafe/api/templates/create.php';
+
+                try {
+                    const res = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await res.json();
+
+                    if (res.ok && result.success) {
+                        sbjModal.style.display = 'none';
+                        showAlert(result.message || 'Master subject saved successfully.', 'success');
+                        await loadMasterSubjects();
+                    } else {
+                        const alertBox = document.getElementById('subjectModalAlert');
+                        alertBox.textContent = result.message || 'Error saving master subject.';
+                        alertBox.style.display = 'block';
+                    }
+                } catch (err) {
+                    alert('Network error saving subject.');
+                } finally {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Save Master Subject';
+                }
+            });
+
+            // Global Sync to Active Schools Button
+            document.getElementById('btnSyncGlobalSchools').addEventListener('click', async () => {
+                const targetLvl = activeSubjectLevelFilter;
+                const lvlText = targetLvl === 'ALL' ? 'all education levels' : targetLvl;
+                const confirmed = confirm(`Are you sure you want to broadcast and sync the Master Curriculum subjects for ${lvlText} to all active schools?`);
+                if (!confirmed) return;
+
+                const btn = document.getElementById('btnSyncGlobalSchools');
+                const origHtml = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Syncing...`;
+
+                try {
+                    const res = await fetch('/shule-cafe/api/templates/sync_schools.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ level_code: targetLvl })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showAlert(data.message, 'success');
+                    } else {
+                        showAlert(data.message || 'Sync failed.', 'danger');
+                    }
+                } catch (err) {
+                    alert('Network error during curriculum sync.');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = origHtml;
+                }
+            });
+
+            // Search input listener
+            document.getElementById('txtSearchSubjects').addEventListener('input', () => {
+                renderSubjectsTable();
+            });
+        }
+
+        // ── SUBJECT ACTIONS (EDIT / TOGGLE / DELETE) ────────────
+        window.openEditSubjectModal = function (id) {
+            const sbj = allMasterSubjects.find(s => s.id === id);
+            if (!sbj) return;
+
+            document.getElementById('subjectModalAlert').style.display = 'none';
+            document.getElementById('sbj_id').value = sbj.id;
+            document.getElementById('sbj_name').value = sbj.name;
+            document.getElementById('sbj_code').value = sbj.code;
+            document.getElementById('sbj_level_code').value = sbj.level_code;
+            document.getElementById('sbj_course_code').value = sbj.course_code;
+            document.getElementById('sbj_abbr').value = sbj.abbr;
+            document.getElementById('sbj_category').value = sbj.category || 'Mathematics';
+            document.getElementById('sbj_desc').value = sbj.description || '';
+
+            document.getElementById('subjectModalTitle').textContent = `Edit Master Subject — ${sbj.name}`;
+            document.getElementById('subjectModal').style.display = 'flex';
+        };
+
+        window.toggleSubjectStatus = async function (id, newStatus) {
+            const sbj = allMasterSubjects.find(s => s.id === id);
+            if (!sbj) return;
+
+            try {
+                const res = await fetch('/shule-cafe/api/templates/update.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        id: sbj.id,
+                        name: sbj.name,
+                        code: sbj.code,
+                        level_code: sbj.level_code,
+                        description: sbj.description,
+                        status: newStatus
+                    })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    showAlert(`Subject status changed to ${newStatus}.`, 'success');
+                    await loadMasterSubjects();
+                } else {
+                    showAlert(result.message || 'Error updating status.', 'danger');
+                }
+            } catch (err) {
+                alert('Network error updating status.');
+            }
+        };
+
+        window.deleteSubject = async function (id, name) {
+            const confirmed = confirm(`Are you sure you want to delete master subject "${name}"? This action cannot be undone.`);
+            if (!confirmed) return;
+
+            try {
+                const res = await fetch('/shule-cafe/api/templates/delete.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ id })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    showAlert(`Subject "${name}" deleted successfully.`, 'success');
+                    await loadMasterSubjects();
+                } else {
+                    showAlert(result.message || 'Error deleting subject.', 'danger');
+                }
+            } catch (err) {
+                alert('Network error deleting subject.');
+            }
+        };
+
         function showAlert(message, type = 'success') {
             const box = document.getElementById('catalogAlert');
             if (!box) return;
@@ -300,8 +1105,13 @@
             box.style.borderColor = type === 'success' ? '#6ee7b7' : '#fca5a5';
             box.style.color = type === 'success' ? '#065f46' : '#991b1b';
             box.textContent = message;
-            setTimeout(() => { box.style.display = 'none'; }, 4000);
+            setTimeout(() => { box.style.display = 'none'; }, 4500);
+        }
+
+        function escapeQuotes(str) {
+            return String(str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
         }
     </script>
 </body>
+
 </html>

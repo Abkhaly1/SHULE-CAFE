@@ -32,8 +32,37 @@ if (empty($id) || empty($name)) {
 }
 
 try {
-    $stmt = $conn->prepare("UPDATE academic_templates SET name = ?, code = ?, level_code = ?, description = ?, status = ? WHERE id = ?");
-    $stmt->execute([$name, $code, $level_code ?: null, $description, $status, $id]);
+    $existingStmt = $conn->prepare("SELECT type, details FROM academic_templates WHERE id = ?");
+    $existingStmt->execute([$id]);
+    $existing = $existingStmt->fetch(PDO::FETCH_ASSOC);
+
+    $detailsArr = [];
+    if (!empty($existing['details'])) {
+        $detailsArr = json_decode($existing['details'], true) ?: [];
+    }
+
+    if (isset($input['details'])) {
+        if (is_array($input['details'])) {
+            $detailsArr = array_merge($detailsArr, $input['details']);
+        } elseif (is_string($input['details'])) {
+            $parsed = json_decode($input['details'], true);
+            if (is_array($parsed)) $detailsArr = array_merge($detailsArr, $parsed);
+        }
+    }
+
+    if (isset($input['course_code'])) $detailsArr['course_code'] = trim($input['course_code']);
+    if (isset($input['abbr'])) $detailsArr['abbr'] = trim($input['abbr']);
+    if (isset($input['category'])) $detailsArr['category'] = trim($input['category']);
+    $detailsJson = !empty($detailsArr) ? json_encode($detailsArr) : null;
+
+    $stmt = $conn->prepare("UPDATE academic_templates SET name = ?, code = ?, level_code = ?, description = ?, details = ?, status = ? WHERE id = ?");
+    $stmt->execute([$name, $code, $level_code ?: null, $description, $detailsJson, $status, $id]);
+
+    // If subject, synchronize update to school_approved_subjects
+    if (($existing['type'] ?? '') === 'subject' && $code) {
+        $updApp = $conn->prepare("UPDATE school_approved_subjects SET subject_name = ?, status = ? WHERE subject_code = ?");
+        $updApp->execute([$name, $status, $code]);
+    }
 
     echo json_encode(["success" => true, "message" => "Academic template updated successfully."]);
 

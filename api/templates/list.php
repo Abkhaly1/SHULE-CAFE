@@ -18,7 +18,7 @@ try {
         $params[] = $type;
     }
 
-    if ($levelCode) {
+    if ($levelCode && strtoupper($levelCode) !== 'ALL') {
         $where[] = "(level_code = ? OR level_code = 'ALL')";
         $params[] = $levelCode;
     }

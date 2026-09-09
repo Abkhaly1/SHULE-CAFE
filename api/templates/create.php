@@ -24,6 +24,20 @@ $code = trim($input['code'] ?? '');
 $level_code = trim($input['level_code'] ?? '');
 $description = trim($input['description'] ?? '');
 
+$details = $input['details'] ?? null;
+if (is_string($details)) {
+    $detailsArr = json_decode($details, true) ?: [];
+} elseif (is_array($details)) {
+    $detailsArr = $details;
+} else {
+    $detailsArr = [];
+}
+
+if (!empty($input['course_code'])) $detailsArr['course_code'] = trim($input['course_code']);
+if (!empty($input['abbr'])) $detailsArr['abbr'] = trim($input['abbr']);
+if (!empty($input['category'])) $detailsArr['category'] = trim($input['category']);
+$detailsJson = !empty($detailsArr) ? json_encode($detailsArr) : null;
+
 if (empty($type) || empty($name)) {
     http_response_code(400);
     echo json_encode(["success" => false, "message" => "Type and Name are required."]);
@@ -41,8 +55,8 @@ try {
     $conn->beginTransaction();
 
     $id = generateUuidV4();
-    $stmt = $conn->prepare("INSERT INTO academic_templates (id, type, name, code, level_code, description, status) VALUES (?, ?, ?, ?, ?, ?, 'active')");
-    $stmt->execute([$id, $type, $name, $code, $level_code ?: null, $description]);
+    $stmt = $conn->prepare("INSERT INTO academic_templates (id, type, name, code, level_code, description, details, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'active')");
+    $stmt->execute([$id, $type, $name, $code, $level_code ?: null, $description, $detailsJson]);
 
     // Real-Time Synchronization for New Subject Templates
     if ($type === 'subject' && $code) {
