@@ -2,6 +2,8 @@
 session_start();
 header("Content-Type: application/json; charset=UTF-8");
 
+require_once __DIR__ . '/../config/db.php';
+
 // Templates listing endpoint
 
 $type = $_GET['type'] ?? null;
