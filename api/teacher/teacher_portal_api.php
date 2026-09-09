@@ -579,37 +579,29 @@ try {
         $classroomName = $selectedRoom['classroom_name'];
         $yearForRoom   = $selectedRoom['academic_year'];
 
-        // 2. Fetch existing daily master ledger record if taken on target date
-        $stmtMaster = $conn->prepare("SELECT id, general_remarks FROM daily_attendance WHERE classroom_id = ? AND attendance_date = ?");
-        $stmtMaster->execute([$classroomId, $targetDate]);
-        $master = $stmtMaster->fetch(PDO::FETCH_ASSOC);
-        $attendanceId = $master ? $master['id'] : null;
-
-        // 3. Fetch Roster & Join details status from unified student_attendance table
+        // 2. Fetch Roster & Join daily status from student_attendance table
         $stmtRoster = $conn->prepare("
             SELECT u.id AS student_id, u.full_name, u.user_code, u.gender,
-                   COALESCE(sa.status, dad.status, 'Present') AS status,
+                   COALESCE(sa.status, 'Present') AS status,
                    sa.updated_at AS marked_at
             FROM student_classroom_allocations sca
             JOIN users u ON sca.student_id = u.id
             JOIN classrooms c ON sca.classroom_id = c.id
             LEFT JOIN student_attendance sa ON (sa.student_id = u.id AND sa.classroom_id = c.id AND sa.attendance_date = :target_date)
-            LEFT JOIN daily_attendance_details dad ON (dad.daily_attendance_id = :att_id AND dad.student_id = u.id)
             WHERE c.id = :cid AND sca.academic_year = :year AND sca.status = 'Active'
             ORDER BY u.full_name ASC
         ");
         $stmtRoster->execute([
             ':target_date' => $targetDate,
-            ':att_id'      => $attendanceId,
             ':cid'         => $classroomId,
             ':year'        => $yearForRoom
         ]);
         $roster = $stmtRoster->fetchAll(PDO::FETCH_ASSOC);
 
-        // Check if attendance has already been officially recorded for this target
+        // Check if attendance has already been officially recorded for this target date
         $hasSaved = false;
         foreach ($roster as $r) {
-            if (!empty($r['marked_at']) || !empty($master)) {
+            if (!empty($r['marked_at'])) {
                 $hasSaved = true;
                 break;
             }
@@ -636,7 +628,7 @@ try {
             "date_formatted" => $dateFormatted,
             "is_update_mode" => $hasSaved,
             "has_saved_records" => $hasSaved,
-            "general_remarks" => $master ? $master['general_remarks'] : '',
+            "general_remarks" => '',
             "managed_classes" => $managedClasses,
             "headcount" => [
                 "total"   => $total,
@@ -674,7 +666,7 @@ try {
 
         $conn->beginTransaction();
 
-        // 1. SYNC DIRECTLY TO CENTRAL student_attendance TABLE (Used by Admin Global Ledger)
+        // Sync directly to central student_attendance table (Shared with School Admin Global Register)
         $stmtStudentAtt = $conn->prepare("
             INSERT INTO student_attendance (
                 school_id, academic_year, classroom_id, student_id, attendance_date, status, recorded_by
@@ -687,6 +679,7 @@ try {
                 updated_at = NOW()
         ");
 
+        $savedCount = 0;
         foreach ($studentStatuses as $sid => $status) {
             $statusVal = in_array($status, $allowedStatuses) ? $status : 'Present';
             $stmtStudentAtt->execute([
@@ -698,88 +691,44 @@ try {
                 ':status'          => $statusVal,
                 ':recorded_by'     => $teacherId
             ]);
-        }
-
-        // 2. Also keep legacy daily_attendance & details in sync for backwards compatibility
-        $checkStmt = $conn->prepare("SELECT id FROM daily_attendance WHERE classroom_id = :class_id AND attendance_date = :date");
-        $checkStmt->execute([':class_id' => $classroomId, ':date' => $date]);
-        $attendanceId = $checkStmt->fetchColumn();
-
-        if ($attendanceId) {
-            $updateMaster = $conn->prepare("UPDATE daily_attendance SET general_remarks = :remarks, recorded_by_teacher_id = :teacher_id WHERE id = :id");
-            $updateMaster->execute([':remarks' => $remarks, ':teacher_id' => $teacherId, ':id' => $attendanceId]);
-        } else {
-            $insertMaster = $conn->prepare("
-                INSERT INTO daily_attendance (academic_year_id, classroom_id, attendance_date, recorded_by_teacher_id, general_remarks) 
-                VALUES (:year_id, :class_id, :date, :teacher_id, :remarks)
-            ");
-            $insertMaster->execute([
-                ':year_id'    => $roomYear,
-                ':class_id'   => $classroomId,
-                ':date'       => $date,
-                ':teacher_id' => $teacherId,
-                ':remarks'    => $remarks
-            ]);
-            $attendanceId = $conn->lastInsertId();
-        }
-
-        $clearDetails = $conn->prepare("DELETE FROM daily_attendance_details WHERE daily_attendance_id = :id");
-        $clearDetails->execute([':id' => $attendanceId]);
-
-        $insertDetails = $conn->prepare("
-            INSERT INTO daily_attendance_details (daily_attendance_id, student_id, status) 
-            VALUES (:master_id, :student_id, :status)
-        ");
-
-        foreach ($studentStatuses as $sid => $status) {
-            $legacyStatus = in_array($status, ['Present', 'Absent', 'Excused']) ? $status : ($status === 'Late' ? 'Present' : 'Present');
-            $insertDetails->execute([
-                ':master_id'  => $attendanceId,
-                ':student_id' => $sid,
-                ':status'     => $legacyStatus
-            ]);
+            $savedCount++;
         }
 
         $conn->commit();
         echo json_encode([
             "success" => true,
-            "message" => "Attendance successfully saved and synced with School Admin register.",
+            "message" => "Attendance successfully saved for $savedCount students and synced with School Admin register.",
             "date" => $date
         ]);
         exit();
     }
 
     if ($action === 'get_attendance_history') {
-        $yearParam   = $_GET['year'] ?? 'All';
-        $monthParam  = $_GET['month'] ?? 'All';
         $classroomId = intval($_GET['classroom_id'] ?? 0);
 
         $sql = "
-            SELECT da.id, da.classroom_id, c.classroom_name, c.academic_year, da.attendance_date, da.general_remarks, da.created_at,
-                   (SELECT COUNT(*) FROM daily_attendance_details dad WHERE dad.daily_attendance_id = da.id) AS total_students,
-                   (SELECT COUNT(*) FROM daily_attendance_details dad WHERE dad.daily_attendance_id = da.id AND dad.status = 'Present') AS present_count,
-                   (SELECT COUNT(*) FROM daily_attendance_details dad WHERE dad.daily_attendance_id = da.id AND dad.status = 'Absent') AS absent_count,
-                   (SELECT COUNT(*) FROM daily_attendance_details dad WHERE dad.daily_attendance_id = da.id AND dad.status = 'Excused') AS excused_count
-            FROM daily_attendance da
-            JOIN classrooms c ON da.classroom_id = c.id
-            WHERE da.recorded_by_teacher_id = :teacher_id
+            SELECT sa.attendance_date, sa.classroom_id, c.classroom_name, sa.academic_year,
+                   COUNT(sa.id) AS total_students,
+                   SUM(CASE WHEN sa.status = 'Present' THEN 1 ELSE 0 END) AS present_count,
+                   SUM(CASE WHEN sa.status = 'Absent' THEN 1 ELSE 0 END) AS absent_count,
+                   SUM(CASE WHEN sa.status = 'Late' THEN 1 ELSE 0 END) AS late_count,
+                   SUM(CASE WHEN sa.status = 'Excused' THEN 1 ELSE 0 END) AS excused_count
+            FROM student_attendance sa
+            JOIN classrooms c ON sa.classroom_id = c.id
         ";
-        $params = [':teacher_id' => $teacherId];
+        $where = [];
+        $params = [];
 
-        if ($yearParam !== 'All') {
-            $sql .= " AND (da.academic_year_id = :year OR c.academic_year = :year)";
-            $params[':year'] = $yearParam;
-        }
-        if ($monthParam !== 'All') {
-            $sql .= " AND MONTH(da.attendance_date) = :month";
-            $params[':month'] = intval($monthParam);
-        }
         if ($classroomId > 0) {
-            $sql .= " AND da.classroom_id = :cid";
+            $where[] = "sa.classroom_id = :cid";
             $params[':cid'] = $classroomId;
         }
 
-        $sql .= " ORDER BY da.attendance_date DESC, da.id DESC";
+        if (!empty($where)) {
+            $sql .= " WHERE " . implode(' AND ', $where);
+        }
+
+        $sql .= " GROUP BY sa.attendance_date, sa.classroom_id, c.classroom_name, sa.academic_year ORDER BY sa.attendance_date DESC LIMIT 30";
 
         $stmt = $conn->prepare($sql);
         $stmt->execute($params);
@@ -787,6 +736,7 @@ try {
 
         foreach ($history as &$h) {
             $h['date_formatted'] = date('l, M j, Y', strtotime($h['attendance_date']));
+            $h['general_remarks'] = '';
         }
 
         echo json_encode([
