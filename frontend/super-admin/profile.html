@@ -153,17 +153,17 @@
                             <form id="formUpdateProfile">
                                 <div class="form-group-clean">
                                     <label>Full Name</label>
-                                    <input type="text" id="inpFullName" class="form-control" style="font-weight: 700;" placeholder="System Administrator" required>
+                                    <input type="text" id="inpFullName" class="form-control" style="font-weight: 700;" placeholder="e.g. System Director" required>
                                 </div>
 
                                 <div class="form-group-clean">
-                                    <label>System ID</label>
-                                    <input type="text" id="inpUserCode" class="form-control" style="font-weight: 700; font-family: monospace; background: #f8fafc; color: #047857;" readonly>
+                                    <label>Root Access ID / User Code</label>
+                                    <input type="text" id="inpUserCode" class="form-control" style="font-weight: 700; font-family: monospace;" placeholder="e.g. SC/ROOT-9821" required>
                                 </div>
 
                                 <div class="form-group-clean">
                                     <label>Email Address</label>
-                                    <input type="email" id="inpEmail" class="form-control" placeholder="admin@shulecafe.com" required>
+                                    <input type="email" id="inpEmail" class="form-control" placeholder="e.g. director@yourdomain.com" required>
                                 </div>
 
                                 <div class="form-group-clean">
@@ -247,6 +247,7 @@
                     alertBox.style.display = 'none';
 
                     const full_name = document.getElementById('inpFullName').value.trim();
+                    const user_code = document.getElementById('inpUserCode').value.trim();
                     const email = document.getElementById('inpEmail').value.trim();
                     const phone = document.getElementById('inpPhone').value.trim();
                     const gender = document.getElementById('inpGender').value;
@@ -256,7 +257,7 @@
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             credentials: 'include',
-                            body: JSON.stringify({ full_name, email, phone, gender })
+                            body: JSON.stringify({ full_name, user_code, email, phone, gender })
                         });
                         const result = await res.json();
 

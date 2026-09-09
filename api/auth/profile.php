@@ -85,16 +85,38 @@ try {
 
         // Execute Update
         $role = $_SESSION['role'] ?? '';
-        if ($role === 'super_admin' && !empty($input['full_name'])) {
-            $fullName = trim($input['full_name']);
+        if ($role === 'super_admin') {
+            $fullName = !empty($input['full_name']) ? trim($input['full_name']) : '';
+            $newUserCode = !empty($input['user_code']) ? trim($input['user_code']) : '';
+
+            if (!empty($newUserCode)) {
+                if (strlen($newUserCode) < 4 || strlen($newUserCode) > 60) {
+                    echo json_encode(['success' => false, 'message' => 'Custom Root Identifier must be between 4 and 60 characters.']);
+                    exit();
+                }
+                $stmtCheckCode = $conn->prepare("SELECT id FROM users WHERE user_code = ? AND id != ? LIMIT 1");
+                $stmtCheckCode->execute([$newUserCode, $userId]);
+                if ($stmtCheckCode->fetch()) {
+                    echo json_encode(['success' => false, 'message' => 'This Identifier is already in use by another account.']);
+                    exit();
+                }
+            }
+
             $stmtUpd = $conn->prepare("
                 UPDATE users 
-                SET full_name = ?, email = ?, phone = ?, gender = ?, updated_at = NOW() 
+                SET full_name = COALESCE(NULLIF(?, ''), full_name),
+                    user_code = COALESCE(NULLIF(?, ''), user_code),
+                    email = ?, 
+                    phone = ?, 
+                    gender = ?, 
+                    updated_at = NOW() 
                 WHERE id = ?
             ");
-            $stmtUpd->execute([$fullName, $email, $phone, $gender, $userId]);
+            $stmtUpd->execute([$fullName, $newUserCode, $email, $phone, $gender, $userId]);
+
             if (isset($_SESSION['user'])) {
-                $_SESSION['user']['full_name'] = $fullName;
+                if (!empty($fullName)) $_SESSION['user']['full_name'] = $fullName;
+                if (!empty($newUserCode)) $_SESSION['user']['user_code'] = $newUserCode;
             }
         } else {
             // Standard user update (Full Name & Reg Code are preserved!)
