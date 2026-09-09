@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Master Attendance & History ‹ Form Master ‹ SHULE CAFE</title>
+    <title>Daily Attendance Register ‹ Teacher ‹ SHULE CAFE</title>
     
     <link rel="stylesheet" href="../css/design-system.css">
     <link rel="stylesheet" href="../css/layout.css">
@@ -13,853 +13,859 @@
     <script type="module" src="../js/auth/auth-guard.js"></script>
 
     <style>
-        .headcount-bar {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 14px;
-            margin-bottom: 24px;
+        /* Compact, crisp design styling per PAGE_RULES.md */
+        .stat-card-compact {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            position: relative;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
-
-        .hc-card {
-            background: white;
-            border: 1px solid var(--c-border-light);
-            border-radius: 10px;
-            padding: 14px 18px;
+        .stat-card-compact:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.04);
+        }
+        .stat-card-compact-lbl {
+            font-size: 10px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
         }
-
-        .hc-card .num {
-            font-size: 24px;
+        .stat-card-compact-val {
+            font-size: 20px;
             font-weight: 800;
+            color: #0f172a;
+            line-height: 1.2;
+        }
+        .stat-card-compact-sub {
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: 2px;
         }
 
-        .hc-card .lbl {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--c-text-muted);
-            text-transform: uppercase;
-        }
-
-        .att-toggle-group {
-            display: flex;
-            gap: 8px;
-        }
-
-        .att-btn {
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 700;
-            border: 1.5px solid var(--c-border-light);
-            background: #f8fafc;
-            color: var(--c-text-muted);
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-
-        .att-btn.active-present {
-            background: #10b981 !important;
-            border-color: #10b981 !important;
-            color: white !important;
-        }
-
-        .att-btn.active-absent {
-            background: #ef4444 !important;
-            border-color: #ef4444 !important;
-            color: white !important;
-        }
-
-        .att-btn.active-excused {
-            background: #f59e0b !important;
-            border-color: #f59e0b !important;
-            color: white !important;
-        }
-
-        .tab-btn-bar {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--c-border-light);
-            padding-bottom: 12px;
-        }
-
-        .tab-btn {
-            padding: 10px 20px;
+        /* Filter bar rules */
+        .compact-filter-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
             border-radius: 8px;
-            font-weight: 800;
-            font-size: 14px;
-            border: 1.5px solid #cbd5e1;
-            background: white;
-            color: #475569;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .filter-row-grid {
+            display: grid;
+            grid-template-columns: 220px auto 1fr auto;
+            gap: 8px;
+            align-items: center;
+        }
+        @media (max-width: 900px) {
+            .filter-row-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .form-control-compact {
+            height: 28px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            border: 1px solid #cbd5e1;
+            border-radius: 5px;
+            background-color: #ffffff;
+            color: #0f172a;
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+        .form-control-compact:focus {
+            border-color: #047857;
+            box-shadow: 0 0 0 2px rgba(4, 120, 87, 0.1);
+        }
+
+        /* Square grid attendance status toggles */
+        .status-grid-group {
+            display: inline-flex;
+            gap: 3px;
+            background: #f1f5f9;
+            padding: 2px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        .status-square-btn {
+            width: 28px;
+            height: 24px;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
         }
-
-        .tab-btn.active {
-            background: #d97706;
+        .status-square-btn:hover {
+            background: #ffffff;
+            color: #0f172a;
+        }
+        .status-square-btn.active-P {
+            background: #10b981;
+            color: #ffffff;
+            border-color: #059669;
+            box-shadow: 0 1px 2px rgba(16, 185, 129, 0.25);
+        }
+        .status-square-btn.active-A {
+            background: #ef4444;
+            color: #ffffff;
+            border-color: #dc2626;
+            box-shadow: 0 1px 2px rgba(239, 68, 68, 0.25);
+        }
+        .status-square-btn.active-L {
+            background: #f59e0b;
+            color: #ffffff;
             border-color: #d97706;
-            color: white;
-            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
+            box-shadow: 0 1px 2px rgba(245, 158, 11, 0.25);
+        }
+        .status-square-btn.active-E {
+            background: #3b82f6;
+            color: #ffffff;
+            border-color: #2563eb;
+            box-shadow: 0 1px 2px rgba(59, 130, 246, 0.25);
         }
 
-        .filter-panel {
-            background: white;
-            border: 1px solid var(--c-border-light);
-            border-radius: 10px;
-            padding: 16px 20px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
+        /* Compact Table Styles */
+        .compact-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            text-align: left;
+        }
+        .compact-table th {
+            background: #f8fafc;
+            color: #475569;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 6px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            border-top: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+        .compact-table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
+            vertical-align: middle;
+        }
+        .compact-table tbody tr:hover {
+            background: #f8fafc;
+        }
+        .compact-table tbody tr.row-absent {
+            background: rgba(254, 242, 242, 0.5);
+        }
+        .compact-table tbody tr.row-late {
+            background: rgba(254, 243, 199, 0.3);
         }
     </style>
 </head>
 <body>
     <div class="app-layout">
+        <!-- 1. Standard Sidebar -->
         <app-sidebar role="teacher" active-path="/teacher/attendance.html"></app-sidebar>
         
         <div class="app-main">
+            <!-- 2. Standard Topbar -->
             <app-topbar username="Teacher Portal"></app-topbar>
             
+            <!-- 3. Content Wrapper with Zero-Padding Container per PAGE_RULES.md -->
             <main class="app-content-wrapper">
-                <div class="app-content">
-                    <app-breadcrumb path="Teacher, Master Daily Attendance Hub"></app-breadcrumb>
+                <div class="app-content" style="padding: 0;">
+                    
+                    <!-- 4. Compact Breadcrumb Ribbon -->
+                    <div style="margin-bottom: 6px;">
+                        <app-breadcrumb path="Teacher, Daily Roll-Call Register"></app-breadcrumb>
+                    </div>
 
-                    <!-- ACCESS CONTROL GUARD / NOT FORM MASTER WARNING -->
-                    <div id="notFormMasterAlert" style="display: none;" class="card">
-                        <div style="padding: 40px; text-align: center;">
-                            <div style="font-size: 48px; margin-bottom: 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
-                            <h3 style="margin: 0 0 8px; color: var(--c-text-primary); font-weight: 800;" id="notFormMasterTitle">Access Restricted: Class Guider / Form Master Only</h3>
-                            <p id="notFormMasterMsg" style="color: var(--c-text-muted); max-width: 500px; margin: 0 auto; font-size: 14px;"></p>
+                    <!-- 5. Single-Row Compact Header Box with Embedded Tabs -->
+                    <div class="card" style="margin-bottom: 6px; padding: 6px 14px; background: white; border-radius: 8px; border: 1px solid var(--c-primary-border); box-shadow: 0 1px 2px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 26px; height: 26px; border-radius: 6px; background: #0284c7; color: white; display: flex; align-items: center; justify-content: center;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/>
+                                    <polyline points="10 15 13 18 18 12"/>
+                                </svg>
+                            </div>
+                            <h2 style="margin: 0; font-size: 14px; font-weight: 800; color: var(--c-text-primary);">Classroom Roll-Call Register</h2>
+                            <span id="syncBadge" style="font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 12px; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;">
+                                Synced with School Admin
+                            </span>
+                        </div>
+
+                        <!-- Right-Aligned Embedded Workspace Tabs on Same Line -->
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <app-workspace-tabs active-tab="tabEntry">
+                                <button class="workspace-tab active" data-target="tabEntry" style="font-weight: 700; font-size: 12px;">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> Daily Roll-Call
+                                </button>
+                                <button class="workspace-tab" data-target="tabHistory" style="font-weight: 700; font-size: 12px;">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Attendance Logs
+                                </button>
+                            </app-workspace-tabs>
                         </div>
                     </div>
 
-                    <!-- FORM MASTER DAILY ATTENDANCE HUB WORKSPACE -->
-                    <div id="formMasterWorkspace" style="display: none;">
-                        
-                        <!-- TAB SWITCHER BAR -->
-                        <div class="tab-btn-bar">
-                            <button id="btnTabEntry" class="tab-btn active">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Daily Roll-Call Register
-                            </button>
-                            <button id="btnTabHistory" class="tab-btn">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Attendance History Logs
-                            </button>
+                    <!-- ACCESS CONTROL GUARD (NON-FORM MASTER) -->
+                    <div id="guardNotFormMaster" style="display: none;" class="card">
+                        <div style="padding: 40px; text-align: center;">
+                            <div style="width: 44px; height: 44px; border-radius: 50%; background: #fef3c7; color: #b45309; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            </div>
+                            <h3 style="margin: 0 0 6px; font-size: 15px; font-weight: 800; color: #0f172a;">Class Teacher Assignment Required</h3>
+                            <p style="color: #64748b; font-size: 12px; max-width: 460px; margin: 0 auto;">
+                                You are not currently assigned as a Class Teacher for any stream. Daily classroom roll-call is maintained by designated Class Teachers and School Administrators.
+                            </p>
                         </div>
+                    </div>
 
-                        <!-- TAB 1: DAILY ROLL-CALL ENTRY WORKSPACE -->
-                        <div id="tabContentEntry">
-                            
-                            <!-- CONTROLS & HEADER CARD -->
-                            <div class="card" style="padding: 20px; margin-bottom: 20px; background: linear-gradient(135deg, #451a03 0%, #78350f 100%); color: white; border-radius: 12px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                    <!-- 6. Main Workspace Content Area -->
+                    <div class="workspace-main-area" id="workspaceMain" style="display: none;">
+
+                        <!-- TAB 1: DAILY ROLL-CALL REGISTER -->
+                        <app-workspace-content tab-id="tabEntry" active="true">
+
+                            <!-- Unified White Filter Bar -->
+                            <div class="compact-filter-card">
+                                <div class="filter-row-grid">
+                                    
+                                    <!-- Managed Classroom Selector -->
+                                    <div style="display: flex; align-items: center; gap: 6px;">
+                                        <label for="selClassroom" style="font-size: 11px; font-weight: 700; color: #475569; white-space: nowrap;">Class:</label>
+                                        <select id="selClassroom" class="form-control-compact" style="width: 100%;">
+                                            <option value="">Loading classes...</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Date Controls: Prev, Input, Next, Today -->
+                                    <div style="display: flex; align-items: center; gap: 4px;">
+                                        <button id="btnPrevDate" class="btn btn-sm" title="Previous Day" style="height: 28px; width: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #cbd5e1;">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                                        </button>
+                                        <input type="date" id="inpDate" class="form-control-compact" style="width: 125px;">
+                                        <button id="btnNextDate" class="btn btn-sm" title="Next Day" style="height: 28px; width: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #cbd5e1;">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                                        </button>
+                                        <button id="btnToday" class="btn btn-sm" style="height: 28px; padding: 0 8px; font-size: 11px; font-weight: 700; background: #f1f5f9; border: 1px solid #cbd5e1; color: #334155;">
+                                            Today
+                                        </button>
+                                    </div>
+
+                                    <!-- Student Quick Search -->
+                                    <div style="position: relative;">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 9px; top: 8px;">
+                                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                        </svg>
+                                        <input type="text" id="inpSearch" class="form-control-compact" placeholder="Search student name or ID..." style="width: 100%; padding-left: 28px;">
+                                    </div>
+
+                                    <!-- Refresh Button -->
                                     <div>
-                                        <div style="font-size: 12px; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.5px;" id="lblHubTitle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> MASTER DAILY ATTENDANCE HUB</div>
-                                        <h2 style="margin: 4px 0 0 0; font-size: 22px; font-weight: 800; color: white;" id="hubClassroomName">Classroom: Loading...</h2>
+                                        <button id="btnRefreshRoster" class="btn btn-sm" style="height: 28px; padding: 0 10px; font-size: 11px; font-weight: 700; background: #0284c7; color: white; border: none; display: inline-flex; align-items: center; gap: 4px;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Fetch
+                                        </button>
                                     </div>
 
-                                    <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
-                                        <!-- Stream Selector -->
-                                        <div>
-                                            <label style="font-size: 11px; font-weight: 800; color: #fef3c7; display: block; margin-bottom: 2px;" id="lblSelClassroom"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Select Classroom Stream:</label>
-                                            <select id="selManagedClassroom" class="form-control" style="font-size: 13px; font-weight: 700; height: 36px; padding: 4px 10px; background: white; color: #334155; border-radius: 6px;"></select>
-                                        </div>
-
-                                        <!-- Date Selector -->
-                                        <div>
-                                            <label style="font-size: 11px; font-weight: 800; color: #fef3c7; display: block; margin-bottom: 2px;" id="lblSelDate"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Select Date:</label>
-                                            <input type="date" id="inpAttendanceDate" class="form-control" style="font-size: 13px; font-weight: 700; height: 36px; padding: 4px 10px; background: white; color: #334155; border-radius: 6px;">
-                                        </div>
-
-                                        <div style="margin-top: 14px;">
-                                            <span id="updateModeBadge" class="badge" style="background: #059669; color: white; font-weight: 800; font-size: 12px; padding: 6px 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Saved &amp; Sealed</span>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
 
-                            <!-- <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> HEADCOUNT SUMMARY BAR -->
-                            <div class="headcount-bar">
-                                <div class="hc-card" style="border-left: 4px solid #64748b;">
-                                    <div>
-                                        <div class="lbl" id="lblTotalRoster">Total Roster</div>
-                                        <div class="num" id="hcTotal" style="color: #334155;">0</div>
+                            <!-- Real-time Headcount Ribbon (4 Standard Compact Cards) -->
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-bottom: 8px;">
+                                
+                                <div class="stat-card-compact" style="border-left: 4px solid #3b82f6;">
+                                    <div class="stat-card-compact-lbl">
+                                        <span>Roster Size</span>
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                                     </div>
-                                    <div style="font-size: 24px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                                    <div class="stat-card-compact-val" id="kpiTotal">0</div>
+                                    <div class="stat-card-compact-sub" style="color: #64748b;" id="kpiClassroomLabel">Assigned Class</div>
                                 </div>
 
-                                <div class="hc-card" style="border-left: 4px solid #10b981;">
-                                    <div>
-                                        <div class="lbl" id="lblPresent"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px;"></span> Present</div>
-                                        <div class="num" id="hcPresent" style="color: #10b981;">0</div>
+                                <div class="stat-card-compact" style="border-left: 4px solid #10b981;">
+                                    <div class="stat-card-compact-lbl">
+                                        <span>Present</span>
+                                        <span id="kpiPresentRate" style="color: #047857; font-weight: 800;">0%</span>
                                     </div>
-                                    <div style="font-size: 24px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+                                    <div class="stat-card-compact-val" style="color: #047857;" id="kpiPresent">0</div>
+                                    <div class="stat-card-compact-sub" style="color: #10b981;">In attendance</div>
                                 </div>
 
-                                <div class="hc-card" style="border-left: 4px solid #ef4444;">
-                                    <div>
-                                        <div class="lbl" id="lblAbsent"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:4px;"></span> Absent</div>
-                                        <div class="num" id="hcAbsent" style="color: #ef4444;">0</div>
+                                <div class="stat-card-compact" style="border-left: 4px solid #ef4444;">
+                                    <div class="stat-card-compact-lbl">
+                                        <span>Absent</span>
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
                                     </div>
-                                    <div style="font-size: 24px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
+                                    <div class="stat-card-compact-val" style="color: #b91c1c;" id="kpiAbsent">0</div>
+                                    <div class="stat-card-compact-sub" style="color: #ef4444;">Unexcused Absence</div>
                                 </div>
 
-                                <div class="hc-card" style="border-left: 4px solid #f59e0b;">
-                                    <div>
-                                        <div class="lbl" id="lblExcused"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;margin-right:4px;"></span> Excused</div>
-                                        <div class="num" id="hcExcused" style="color: #f59e0b;">0</div>
+                                <div class="stat-card-compact" style="border-left: 4px solid #f59e0b;">
+                                    <div class="stat-card-compact-lbl">
+                                        <span>Late / Excused</span>
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                     </div>
-                                    <div style="font-size: 24px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+                                    <div class="stat-card-compact-val" style="color: #b45309;" id="kpiLateExcused">0</div>
+                                    <div class="stat-card-compact-sub" style="color: #d97706;">Tardy or permitted</div>
                                 </div>
+
                             </div>
 
-                            <!-- NOTIFICATION NOTICE ALERT -->
-                            <div id="attNotice" class="alert alert-success" style="display: none; margin-bottom: 20px; font-weight: 700;"></div>
+                            <!-- Batch Actions & Save Bar -->
+                            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase;">Batch Actions:</span>
+                                    
+                                    <button id="btnMarkAllPresent" class="btn btn-sm" style="height: 26px; padding: 0 8px; font-size: 11px; font-weight: 700; background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Mark All Present
+                                    </button>
 
-                            <!-- ROSTER TABLE SHEET -->
-                            <div class="card" style="padding: 24px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 12px;">
-                                    <div>
-                                        <h3 style="margin: 0; font-size: 17px; font-weight: 800; color: var(--c-text-primary);" id="lblRosterTitle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Student Roll-Call Roster Sheet</h3>
-                                        <p style="margin: 4px 0 0 0; font-size: 13px; color: var(--c-text-muted);" id="lblDateFormatted">Date: -</p>
-                                    </div>
-                                    <input type="text" id="inpSearchStudent" placeholder="Search student by name or ID..." class="form-control" style="max-width: 300px; font-size: 13px;">
+                                    <button id="btnMarkAllAbsent" class="btn btn-sm" style="height: 26px; padding: 0 8px; font-size: 11px; font-weight: 700; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Mark All Absent
+                                    </button>
                                 </div>
 
-                                <div style="overflow-x: auto;">
-                                    <table class="table" style="width: 100%; border-collapse: collapse;">
-                                        <thead>
-                                            <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left;">
-                                                <th style="padding: 12px; font-size: 12px; font-weight: 800;" id="thNum">#</th>
-                                                <th style="padding: 12px; font-size: 12px; font-weight: 800;" id="thRegId">Student Reg ID</th>
-                                                <th style="padding: 12px; font-size: 12px; font-weight: 800;" id="thName">Full Name</th>
-                                                <th style="padding: 12px; font-size: 12px; font-weight: 800; text-align: right;" id="thStatusCol">Attendance Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="tbRoster">
-                                            <tr>
-                                                <td colspan="4" style="text-align: center; padding: 40px; color: #94a3b8;">Loading roster...</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                <!-- REMARKS FIELD -->
-                                <div style="margin-top: 24px;">
-                                    <label class="form-label" style="font-weight: 700; font-size: 13px;" id="lblRemarks"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Additional Remarks / Notes (Optional):</label>
-                                    <textarea id="inpRemarks" class="form-control" rows="2" placeholder="Enter optional remarks for this date (e.g. Baraka had a family emergency)..." style="width: 100%; font-size: 13px;"></textarea>
-                                </div>
-
-                                <!-- ACTION BUTTONS CONTAINER -->
-                                <div id="actionButtonsContainer" style="margin-top: 24px;">
-                                    <!-- Rendered dynamically by updateUIState() -->
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- TAB 2: ATTENDANCE HISTORY LOGS -->
-                        <div id="tabContentHistory" style="display: none;">
-                            
-                            <!-- FILTER PANEL -->
-                            <div class="filter-panel">
-                                <div>
-                                    <label style="font-size: 12px; font-weight: 800; color: #475569; display: block; margin-bottom: 4px;" id="lblFilterYear"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Academic Year:</label>
-                                    <select id="histFilterYear" class="form-control" style="font-size: 13px; font-weight: 700; padding: 6px 12px; height: 38px;">
-                                        <!-- populated by JS -->
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label style="font-size: 12px; font-weight: 800; color: #475569; display: block; margin-bottom: 4px;" id="lblFilterMonth"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Month:</label>
-                                    <select id="histFilterMonth" class="form-control" style="font-size: 13px; font-weight: 700; padding: 6px 12px; height: 38px;">
-                                        <!-- populated by JS with i18n month names -->
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label style="font-size: 12px; font-weight: 800; color: #475569; display: block; margin-bottom: 4px;" id="lblFilterRoom"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Classroom Stream:</label>
-                                    <select id="histFilterRoom" class="form-control" style="font-size: 13px; font-weight: 700; padding: 6px 12px; height: 38px;">
-                                        <option value="0">All Classroom Streams</option>
-                                    </select>
-                                </div>
-
-                                <div style="margin-top: 20px;">
-                                    <button type="button" id="btnFilterHistory" class="btn btn-primary" style="font-weight: 800; background: #0284c7; border-color: #0284c7; height: 38px; padding: 0 20px;">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Filter History
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <input type="text" id="inpGeneralRemarks" class="form-control-compact" placeholder="Optional roll-call remarks..." style="width: 220px;">
+                                    
+                                    <button id="btnSaveAttendance" class="btn btn-sm" style="height: 28px; padding: 0 14px; font-size: 11px; font-weight: 800; background: #047857; color: white; border: none; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 1px 3px rgba(4,120,87,0.3);">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Attendance
                                     </button>
                                 </div>
                             </div>
 
-                            <!-- HISTORY LIST CARD -->
-                            <div class="card" style="padding: 24px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
-                                    <h3 style="margin: 0; font-size: 17px; font-weight: 800; color: var(--c-text-primary);" id="lblHistoryTitle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Saved Attendance Roll-Call Logs</h3>
-                                    <span class="badge" style="background: #047857; color: white; font-weight: 800;" id="histCountBadge">0 Records</span>
-                                </div>
-
-                                <div style="overflow-x: auto;">
-                                    <table class="table" style="width: 100%; border-collapse: collapse;">
-                                        <thead>
-                                            <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left;">
-                                                <th style="padding: 12px; font-size: 12px; font-weight: 800;" id="thHistDate">Date &amp; Day</th>
-                                                <th style="padding: 12px; font-size: 12px; font-weight: 800;" id="thHistClass">Classroom &amp; Year</th>
-                                                <th style="padding: 12px; font-size: 12px; font-weight: 800;" id="thHistBreakdown">Student Attendance Breakdown</th>
-                                                <th style="padding: 12px; font-size: 12px; font-weight: 800;" id="thHistRemarks">Remarks</th>
-                                                <th style="padding: 12px; font-size: 12px; font-weight: 800; text-align: right;" id="thHistAction">Action</th>
+                            <!-- Student Roster Table Card -->
+                            <div class="card" style="background: white; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+                                <div style="overflow-x: auto; max-height: calc(100vh - 280px);">
+                                    <table class="compact-table" id="rosterTable">
+                                        <thead style="position: sticky; top: 0; z-index: 10;">
+                                            <tr>
+                                                <th style="width: 35px; text-align: center;">#</th>
+                                                <th style="width: 150px;">Student ID</th>
+                                                <th>Student Full Name</th>
+                                                <th style="width: 60px; text-align: center;">Gender</th>
+                                                <th style="width: 170px; text-align: center;">Roll-Call Status (P / A / L / E)</th>
                                             </tr>
                                         </thead>
-                                        <tbody id="tbHistory">
+                                        <tbody id="rosterTbody">
                                             <tr>
-                                                <td colspan="5" style="text-align: center; padding: 40px; color: #94a3b8;">Loading history...</td>
+                                                <td colspan="5" style="text-align: center; padding: 40px 10px; color: #64748b;">
+                                                    Loading classroom roster...
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-                        </div>
+
+                        </app-workspace-content>
+
+                        <!-- TAB 2: ATTENDANCE HISTORY LOGS -->
+                        <app-workspace-content tab-id="tabHistory">
+                            <div class="card" style="background: white; border-radius: 8px; border: 1px solid #e2e8f0; padding: 12px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 13px; font-weight: 800; color: #0f172a;">Attendance History &amp; Audit Logs</h3>
+                                        <p style="margin: 2px 0 0; font-size: 11px; color: #64748b;">Past daily roll-call records submitted for your assigned classroom streams.</p>
+                                    </div>
+                                    <button id="btnRefreshHistory" class="btn btn-sm" style="height: 26px; padding: 0 10px; font-size: 11px; font-weight: 700; background: #f8fafc; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 4px;">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Refresh Logs
+                                    </button>
+                                </div>
+
+                                <div style="overflow-x: auto;">
+                                    <table class="compact-table" id="historyTable">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 140px;">Date</th>
+                                                <th>Classroom Stream</th>
+                                                <th style="width: 220px;">Headcount Breakdown</th>
+                                                <th>Teacher Remarks</th>
+                                                <th style="width: 90px; text-align: center;">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="historyTbody">
+                                            <tr>
+                                                <td colspan="5" style="text-align: center; padding: 25px; color: #64748b;">Loading history records...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </app-workspace-content>
 
                     </div>
+
                 </div>
             </main>
         </div>
     </div>
 
-    <script type="module">
-        import { t as getTranslations, getLang } from '../js/i18n.js';
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
+    <!-- JAVASCRIPT LOGIC                                                       -->
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
+    <script>
+        const TeacherAttState = {
+            today: new Date().toISOString().split('T')[0],
+            selectedDate: new Date().toISOString().split('T')[0],
+            selectedClassroom: 0,
+            managedClasses: [],
+            roster: [],
+            searchQuery: '',
+            hasUnsavedChanges: false
+        };
 
         document.addEventListener('DOMContentLoaded', async () => {
-            const currentLang = getLang();
-            const i18n = getTranslations();
-            // Convenience shorthand matching old `t` variable
-            const t = {
-                accessRestricted:   i18n.attendance.accessDeniedTitle,
-                tabEntry:           i18n.attendance.tabEntry,
-                tabHistory:         i18n.attendance.tabHistory,
-                hubTitle:           i18n.attendance.hubTitle,
-                selClassroom:       i18n.attendance.selectClassroom,
-                selDate:            i18n.attendance.selectDate,
-                modeLocked:         i18n.attendance.modeLocked,
-                modeEdit:           i18n.attendance.modeEdit,
-                totalRoster:        i18n.attendance.totalRoster,
-                present:            `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px;"></span> ${i18n.common.present}`,
-                absent:             `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:4px;"></span> ${i18n.common.absent}`,
-                excused:            `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;margin-right:4px;"></span> ${i18n.common.excused}`,
-                rosterTitle:        i18n.attendance.rosterTitle,
-                searchPlaceholder:  i18n.attendance.searchPlaceholder,
-                colNum:             i18n.attendance.colNum,
-                colRegId:           i18n.attendance.colRegId,
-                colName:            i18n.attendance.colName,
-                colStatus:          i18n.attendance.colStatus,
-                colStatusLocked:    i18n.attendance.colStatusLocked,
-                remarksLabel:       i18n.attendance.remarksLabel,
-                remarksPlaceholder: i18n.attendance.remarksPlaceholder,
-                savedNotice:        i18n.attendance.savedNotice,
-                btnEdit:            i18n.attendance.btnEdit,
-                btnSave:            i18n.attendance.btnSave,
-                btnCancel:          i18n.attendance.btnCancel,
-                filterYear:         i18n.attendance.filterYear,
-                filterMonth:        i18n.attendance.filterMonth,
-                filterRoom:         i18n.attendance.filterRoom,
-                btnFilter:          i18n.attendance.btnFilter,
-                historyTitle:       i18n.attendance.historyTitle,
-                histColDate:        i18n.attendance.histColDate,
-                histColClass:       i18n.attendance.histColClass,
-                histColBreakdown:   i18n.attendance.histColBreakdown,
-                histColRemarks:     i18n.attendance.histColRemarks,
-                histColAction:      i18n.attendance.histColAction,
-                histNoRemarks:      i18n.common.noRemarks,
-                noStudents:         i18n.attendance.noStudents,
-                noHistory:          i18n.attendance.noHistory,
-                allStreams:         i18n.common.allStreams,
-                saving:             i18n.attendance.saving,
-                savedMsg:           i18n.attendance.savedMsg,
-                errorSaving:        i18n.attendance.errorSaving,
-                networkError:       i18n.attendance.networkError,
-            };
+            const dateInput = document.getElementById('inpDate');
+            dateInput.value = TeacherAttState.today;
+            dateInput.max = TeacherAttState.today;
 
-            // Apply static text labels
-            document.getElementById('btnTabEntry').textContent = t.tabEntry;
-            document.getElementById('btnTabHistory').textContent = t.tabHistory;
-            document.getElementById('lblHubTitle').textContent = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${t.hubTitle}`;
-            document.getElementById('lblSelClassroom').textContent = t.selClassroom;
-            document.getElementById('lblSelDate').textContent = t.selDate;
-            document.getElementById('lblTotalRoster').textContent = t.totalRoster;
-            document.getElementById('lblPresent').textContent = t.present;
-            document.getElementById('lblAbsent').textContent = t.absent;
-            document.getElementById('lblExcused').textContent = t.excused;
-            document.getElementById('lblRosterTitle').textContent = t.rosterTitle;
-            document.getElementById('inpSearchStudent').placeholder = t.searchPlaceholder;
-            document.getElementById('thNum').textContent = t.colNum;
-            document.getElementById('thRegId').textContent = t.colRegId;
-            document.getElementById('thName').textContent = t.colName;
-            document.getElementById('lblRemarks').textContent = t.remarksLabel;
-            document.getElementById('inpRemarks').placeholder = t.remarksPlaceholder;
-            document.getElementById('lblFilterYear').textContent = t.filterYear;
-            document.getElementById('lblFilterMonth').textContent = t.filterMonth;
-            document.getElementById('lblFilterRoom').textContent = t.filterRoom;
-            document.getElementById('btnFilterHistory').textContent = t.btnFilter;
-            document.getElementById('lblHistoryTitle').textContent = t.historyTitle;
-            document.getElementById('thHistDate').textContent = t.histColDate;
-            document.getElementById('thHistClass').textContent = t.histColClass;
-            document.getElementById('thHistBreakdown').textContent = t.histColBreakdown;
-            document.getElementById('thHistRemarks').textContent = t.histColRemarks;
-            document.getElementById('thHistAction').textContent = t.histColAction;
-
-            // ── Populate Year filter ──────────────────────────────────────────
-            const histFilterYearEl = document.getElementById('histFilterYear');
-            const thisYear = new Date().getFullYear();
-            histFilterYearEl.innerHTML = `<option value="All">${i18n.common.allYears}</option>`;
-            for (let y = thisYear; y >= thisYear - 5; y--) {
-                histFilterYearEl.innerHTML += `<option value="${y}" ${y === thisYear ? 'selected' : ''}>${y}</option>`;
-            }
-
-            // ── Populate Month filter with i18n names ─────────────────────────
-            const monthKeys = ['january','february','march','april','may','june',
-                               'july','august','september','october','november','december'];
-            const histFilterMonthEl = document.getElementById('histFilterMonth');
-            histFilterMonthEl.innerHTML = `<option value="All">${i18n.common.allMonths}</option>`;
-            monthKeys.forEach((mk, idx) => {
-                histFilterMonthEl.innerHTML += `<option value="${idx + 1}">${i18n.common[mk]}</option>`;
-            });
-
-            const notFormMasterAlert = document.getElementById('notFormMasterAlert');
-            const notFormMasterMsg   = document.getElementById('notFormMasterMsg');
-            const formMasterWorkspace = document.getElementById('formMasterWorkspace');
-
-            const btnTabEntry   = document.getElementById('btnTabEntry');
-            const btnTabHistory = document.getElementById('btnTabHistory');
-            const tabContentEntry   = document.getElementById('tabContentEntry');
-            const tabContentHistory = document.getElementById('tabContentHistory');
-
-            const selManagedClassroom = document.getElementById('selManagedClassroom');
-            const inpAttendanceDate   = document.getElementById('inpAttendanceDate');
-            const hubClassroomName    = document.getElementById('hubClassroomName');
-            const updateModeBadge     = document.getElementById('updateModeBadge');
-            const lblDateFormatted    = document.getElementById('lblDateFormatted');
-
-            const hcTotal   = document.getElementById('hcTotal');
-            const hcPresent = document.getElementById('hcPresent');
-            const hcAbsent  = document.getElementById('hcAbsent');
-            const hcExcused = document.getElementById('hcExcused');
-
-            const thStatusCol             = document.getElementById('thStatusCol');
-            const tbRoster                = document.getElementById('tbRoster');
-            const inpRemarks              = document.getElementById('inpRemarks');
-            const inpSearchStudent        = document.getElementById('inpSearchStudent');
-            const actionButtonsContainer = document.getElementById('actionButtonsContainer');
-            const attNotice               = document.getElementById('attNotice');
-
-            const histFilterYear  = document.getElementById('histFilterYear');
-            const histFilterMonth = document.getElementById('histFilterMonth');
-            const histFilterRoom  = document.getElementById('histFilterRoom');
-            const btnFilterHistory = document.getElementById('btnFilterHistory');
-            const tbHistory       = document.getElementById('tbHistory');
-            const histCountBadge  = document.getElementById('histCountBadge');
-
-            // Default date to TODAY YYYY-MM-DD
-            const todayStr = new Date().toISOString().split('T')[0];
-            inpAttendanceDate.value = todayStr;
-
-            let currentRosterData = [];
-            let currentStatusMap  = {}; // student_id => 'Present'|'Absent'|'Excused'
-            let isSavedRecord = false;
-            let isEditMode    = false;
-
-            // Tab Switching
-            btnTabEntry.addEventListener('click', () => {
-                btnTabEntry.classList.add('active');
-                btnTabHistory.classList.remove('active');
-                tabContentEntry.style.display = 'block';
-                tabContentHistory.style.display = 'none';
-            });
-
-            btnTabHistory.addEventListener('click', async () => {
-                btnTabHistory.classList.add('active');
-                btnTabEntry.classList.remove('active');
-                tabContentHistory.style.display = 'block';
-                tabContentEntry.style.display = 'none';
-                await loadAttendanceHistory();
-            });
-
-            // Initial Load of Daily Attendance
+            setupEventListeners();
             await loadDailyAttendance();
-
-            // Date or Classroom Dropdown Change Listener
-            inpAttendanceDate.addEventListener('change', async () => {
-                await loadDailyAttendance();
-            });
-
-            selManagedClassroom.addEventListener('change', async () => {
-                await loadDailyAttendance();
-            });
-
-            // Search Student Listener
-            inpSearchStudent.addEventListener('input', () => {
-                renderRosterTable();
-            });
-
-            // Filter History Button Listener
-            btnFilterHistory.addEventListener('click', async () => {
-                await loadAttendanceHistory();
-            });
-
-            // Core Function 1: Load Daily Attendance Roll-Call
-            async function loadDailyAttendance() {
-                try {
-                    const reqDate = inpAttendanceDate.value || todayStr;
-                    const reqCid  = selManagedClassroom.value || 0;
-
-                    const res = await fetch(`/shule-cafe/api/teacher/teacher_portal_api.php?action=get_daily_attendance&date=${reqDate}&classroom_id=${reqCid}`, { credentials: 'include' });
-                    const data = await res.json();
-
-                    if (!data.success || !data.is_form_master) {
-                        notFormMasterAlert.style.display = 'block';
-                        notFormMasterMsg.textContent = data.message || t.accessRestricted;
-                        formMasterWorkspace.style.display = 'none';
-                        return;
-                    }
-
-                    // User is a valid Form Master
-                    notFormMasterAlert.style.display = 'none';
-                    formMasterWorkspace.style.display = 'block';
-
-                    // Populate Managed Classes Dropdown if empty
-                    if (data.managed_classes && data.managed_classes.length > 0) {
-                        if (selManagedClassroom.children.length === 0) {
-                            selManagedClassroom.innerHTML = data.managed_classes.map(c => 
-                                `<option value="${c.classroom_id}">${c.classroom_name} (${c.academic_year})</option>`
-                            ).join('');
-
-                            // Also populate history filter dropdown
-                            histFilterRoom.innerHTML = `<option value="0">${t.allStreams}</option>` +
-                                data.managed_classes.map(c => `<option value="${c.classroom_id}">${c.classroom_name} (${c.academic_year})</option>`).join('');
-                        }
-                        selManagedClassroom.value = data.classroom_id;
-                    }
-
-                    hubClassroomName.textContent = `Classroom: ${data.classroom_name} (${data.academic_year})`;
-                    lblDateFormatted.textContent = `Date: ${data.date_formatted}`;
-                    inpRemarks.value = data.general_remarks || '';
-
-                    isSavedRecord = data.is_update_mode === true;
-                    // If it is ALREADY a saved record, default to LOCKED/SEALED mode!
-                    // If it is a NEW record, default directly to EDIT mode so teacher can take attendance!
-                    isEditMode = !isSavedRecord;
-
-                    currentRosterData = data.roster || [];
-                    currentStatusMap = {};
-                    currentRosterData.forEach(r => {
-                        currentStatusMap[r.student_id] = r.status || 'Present';
-                    });
-
-                    updateHeadcountUI();
-                    renderUIState();
-
-                } catch(e) {
-                    console.error('Error loading daily attendance:', e);
-                }
-            }
-
-            // Update UI State (Locked vs Edit Mode)
-            function renderUIState() {
-                if (isEditMode) {
-                    // EDIT MODE ACTIVE
-                    updateModeBadge.innerHTML = t.modeEdit;
-                    updateModeBadge.style.background = '#0284c7';
-                    thStatusCol.textContent = t.colStatus;
-
-                    inpRemarks.readOnly = false;
-                    inpRemarks.style.background = '#ffffff';
-
-                    actionButtonsContainer.innerHTML = `
-                        <div style="display: flex; justify-content: flex-end; align-items: center; gap: 12px;">
-                            ${isSavedRecord ? `
-                                <button type="button" id="btnCancelEdit" class="btn btn-outline" style="font-weight: 700; font-size: 14px; padding: 10px 20px;">
-                                    ${t.btnCancel}
-                                </button>
-                            ` : ''}
-                            <button type="button" id="btnSaveAttendance" class="btn btn-primary" style="font-weight: 800; background: #047857; border-color: #047857; padding: 12px 28px; font-size: 15px;">
-                                ${t.btnSave}
-                            </button>
-                        </div>
-                    `;
-
-                    // Attach event listeners for dynamic buttons
-                    const btnSave = document.getElementById('btnSaveAttendance');
-                    if (btnSave) btnSave.addEventListener('click', saveAttendanceHandler);
-
-                    const btnCancel = document.getElementById('btnCancelEdit');
-                    if (btnCancel) {
-                        btnCancel.addEventListener('click', async () => {
-                            isEditMode = false;
-                            await loadDailyAttendance();
-                        });
-                    }
-
-                } else {
-                    // LOCKED / SEALED MODE
-                    updateModeBadge.innerHTML = t.modeLocked;
-                    updateModeBadge.style.background = '#059669';
-                    thStatusCol.textContent = t.colStatus;
-
-                    inpRemarks.readOnly = true;
-                    inpRemarks.style.background = '#f8fafc';
-
-                    actionButtonsContainer.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; align-items: center; background: #ecfdf5; border: 1.5px solid #a7f3d0; padding: 16px 20px; border-radius: 10px; flex-wrap: wrap; gap: 12px;">
-                            <div style="display: flex; align-items: center; gap: 10px; color: #047857; font-weight: 800; font-size: 14px;">
-                                <span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-                                <span>${t.savedNotice}</span>
-                            </div>
-                            <button type="button" id="btnEnableEdit" class="btn btn-primary" style="font-weight: 800; background: #d97706; border-color: #d97706; padding: 10px 24px; font-size: 14px;">
-                                ${t.btnEdit}
-                            </button>
-                        </div>
-                    `;
-
-                    const btnEnableEdit = document.getElementById('btnEnableEdit');
-                    if (btnEnableEdit) {
-                        btnEnableEdit.addEventListener('click', () => {
-                            isEditMode = true;
-                            renderUIState();
-                        });
-                    }
-                }
-
-                renderRosterTable();
-            }
-
-            // Render Roster Table (Switches between Locked Badges vs Active Toggles)
-            function renderRosterTable() {
-                const search = inpSearchStudent.value.toLowerCase().trim();
-                const filtered = currentRosterData.filter(r => 
-                    r.full_name.toLowerCase().includes(search) || 
-                    (r.user_code && r.user_code.toLowerCase().includes(search))
-                );
-
-                if (filtered.length === 0) {
-                    tbRoster.innerHTML = `
-                        <tr>
-                            <td colspan="4" style="text-align: center; padding: 40px; color: #94a3b8;">
-                                ${t.noStudents}
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-
-                let html = '';
-                filtered.forEach((r, idx) => {
-                    const st = currentStatusMap[r.student_id] || 'Present';
-
-                    let statusCellHTML = '';
-                    if (isEditMode) {
-                        // INTERACTIVE TOGGLES IN EDIT MODE
-                        const isPres = st === 'Present' ? 'active-present' : '';
-                        const isAbs  = st === 'Absent' ? 'active-absent' : '';
-                        const isExc  = st === 'Excused' ? 'active-excused' : '';
-
-                        statusCellHTML = `
-                            <div class="att-toggle-group" style="justify-content: flex-end;">
-                                <button type="button" class="att-btn ${isPres}" onclick="window.setStudentStatus('${r.student_id}', 'Present')"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px;"></span> ${i18n.common.present}</button>
-                                <button type="button" class="att-btn ${isAbs}" onclick="window.setStudentStatus('${r.student_id}', 'Absent')"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:4px;"></span> ${i18n.common.absent}</button>
-                                <button type="button" class="att-btn ${isExc}" onclick="window.setStudentStatus('${r.student_id}', 'Excused')"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;margin-right:4px;"></span> ${i18n.common.excused}</button>
-                            </div>
-                        `;
-                    } else {
-                        // LOCKED ELEGANT BADGES IN SEALED MODE
-                        if (st === 'Present') {
-                            statusCellHTML = `<span class="badge" style="background: #ecfdf5; color: #047857; border: 1.5px solid #a7f3d0; font-size: 13px; font-weight: 800; padding: 6px 16px; border-radius: 20px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px;"></span> ${i18n.common.present}</span>`;
-                        } else if (st === 'Absent') {
-                            statusCellHTML = `<span class="badge" style="background: #fef2f2; color: #b91c1c; border: 1.5px solid #fecaca; font-size: 13px; font-weight: 800; padding: 6px 16px; border-radius: 20px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:4px;"></span> ${i18n.common.absent}</span>`;
-                        } else {
-                            statusCellHTML = `<span class="badge" style="background: #fffbeb; color: #b45309; border: 1.5px solid #fde68a; font-size: 13px; font-weight: 800; padding: 6px 16px; border-radius: 20px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;margin-right:4px;"></span> ${i18n.common.excused}</span>`;
-                        }
-                    }
-
-                    html += `
-                        <tr style="border-bottom: 1px solid #e2e8f0;">
-                            <td style="padding: 12px; font-weight: 700; color: #64748b;">${idx + 1}</td>
-                            <td style="padding: 12px;">
-                                <code style="font-family: monospace; font-weight: 800; color: #047857; background: #ecfdf5; padding: 3px 8px; border-radius: 4px;">${r.user_code || 'N/A'}</code>
-                            </td>
-                            <td style="padding: 12px; font-weight: 700; color: #1e293b;">${r.full_name}</td>
-                            <td style="padding: 12px; text-align: right;">
-                                ${statusCellHTML}
-                            </td>
-                        </tr>
-                    `;
-                });
-
-                tbRoster.innerHTML = html;
-            }
-
-            // Window level method to toggle student status
-            window.setStudentStatus = (studentId, status) => {
-                if (!isEditMode) return;
-                currentStatusMap[studentId] = status;
-                updateHeadcountUI();
-                renderRosterTable();
-            };
-
-            // Save Handler
-            async function saveAttendanceHandler() {
-                const btnSave = document.getElementById('btnSaveAttendance');
-                const selectedCid = selManagedClassroom.value;
-                const selectedDate = inpAttendanceDate.value;
-                const remarks = inpRemarks.value.trim();
-
-                if (!selectedCid) {
-                    alert(i18n.attendance.selectClassroom);
-                    return;
-                }
-
-                if (btnSave) {
-                    btnSave.disabled = true;
-                    btnSave.textContent = t.saving;
-                }
-                attNotice.style.display = 'none';
-
-                try {
-                    const res = await fetch('/shule-cafe/api/teacher/teacher_portal_api.php?action=save_daily_attendance', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        credentials: 'include',
-                        body: JSON.stringify({
-                            classroom_id: selectedCid,
-                            attendance_date: selectedDate,
-                            statuses: currentStatusMap,
-                            remarks: remarks
-                        })
-                    });
-
-                    const data = await res.json();
-
-                    if (res.ok && data.success) {
-                        attNotice.className = 'alert alert-success';
-                        attNotice.textContent = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> ' + (data.message || t.savedMsg);
-                        attNotice.style.display = 'block';
-                        
-                        // Switch back to LOCKED state immediately after save!
-                        isEditMode = false;
-                        await loadDailyAttendance();
-                    } else {
-                        attNotice.className = 'alert alert-danger';
-                        attNotice.textContent = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> ' + (data.message || t.errorSaving);
-                        attNotice.style.display = 'block';
-                    }
-                } catch(e) {
-                    attNotice.className = 'alert alert-danger';
-                    attNotice.textContent = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> ' + t.networkError;
-                    attNotice.style.display = 'block';
-                } finally {
-                    if (btnSave) {
-                        btnSave.disabled = false;
-                        btnSave.textContent = t.btnSave;
-                    }
-                }
-            }
-
-            // Update Headcount Cards
-            function updateHeadcountUI() {
-                const total = currentRosterData.length;
-                let pres = 0, abs = 0, exc = 0;
-                Object.values(currentStatusMap).forEach(s => {
-                    if (s === 'Present') pres++;
-                    else if (s === 'Absent') abs++;
-                    else if (s === 'Excused') exc++;
-                });
-
-                hcTotal.textContent = total;
-                hcPresent.textContent = pres;
-                hcAbsent.textContent = abs;
-                hcExcused.textContent = exc;
-            }
-
-            // Core Function 2: Load Attendance History
-            async function loadAttendanceHistory() {
-                try {
-                    const yr = histFilterYear.value;
-                    const mo = histFilterMonth.value;
-                    const cid = histFilterRoom.value;
-
-                    tbHistory.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:#94a3b8;">${i18n.common.loading}</td></tr>`;
-
-                    const res = await fetch(`/shule-cafe/api/teacher/teacher_portal_api.php?action=get_attendance_history&year=${yr}&month=${mo}&classroom_id=${cid}`, { credentials: 'include' });
-                    const data = await res.json();
-
-                    if (!data.success || !data.history) {
-                        tbHistory.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:#94a3b8;">${t.noHistory}</td></tr>`;
-                        histCountBadge.textContent = '0 Records';
-                        return;
-                    }
-
-                    histCountBadge.textContent = `${data.count} Records`;
-
-                    if (data.history.length === 0) {
-                        tbHistory.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:#94a3b8;">${t.noHistory}</td></tr>`;
-                        return;
-                    }
-
-                    let html = '';
-                    data.history.forEach(h => {
-                        html += `
-                            <tr style="border-bottom: 1px solid #e2e8f0;">
-                                <td style="padding: 12px; font-weight: 800; color: #1e293b;">
-                                    ${h.date_formatted}
-                                </td>
-                                <td style="padding: 12px;">
-                                    <span class="badge" style="background: #0284c7; color: white; font-weight: 700;">${h.classroom_name} (${h.academic_year})</span>
-                                </td>
-                                <td style="padding: 12px;">
-                                    <span style="color: #10b981; font-weight: 700;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px;"></span> ${h.present_count} ${i18n.common.present}</span> • 
-                                    <span style="color: #ef4444; font-weight: 700;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-right:4px;"></span> ${h.absent_count} ${i18n.common.absent}</span> • 
-                                    <span style="color: #f59e0b; font-weight: 700;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#f59e0b;margin-right:4px;"></span> ${h.excused_count} ${i18n.common.excused}</span>
-                                </td>
-                                <td style="padding: 12px; font-size: 13px; color: #64748b;">
-                                    ${h.general_remarks ? htmlspecialchars(h.general_remarks) : `<i style="color:#cbd5e1;">${t.histNoRemarks}</i>`}
-                                </td>
-                                <td style="padding: 12px; text-align: right;">
-                                    <button type="button" class="btn btn-sm" style="background: #d97706; color: white; font-weight: 700;" onclick="window.editHistoryEntry('${h.attendance_date}', '${h.classroom_id}')">
-                                        ${t.btnEdit}
-                                    </button>
-                                </td>
-                            </tr>
-                        `;
-                    });
-
-                    tbHistory.innerHTML = html;
-
-                } catch(e) {
-                    console.error('Error loading attendance history:', e);
-                }
-            }
-
-            // Window level method to edit historical roll call entry
-            window.editHistoryEntry = async (dateStr, cidStr) => {
-                inpAttendanceDate.value = dateStr;
-                if (cidStr) selManagedClassroom.value = cidStr;
-
-                // Switch to Entry Tab
-                btnTabEntry.click();
-
-                // Load that date's attendance & enable edit mode directly
-                await loadDailyAttendance();
-                isEditMode = true;
-                renderUIState();
-            };
-
-            function htmlspecialchars(str) {
-                return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-            }
+            await loadAttendanceHistory();
         });
+
+        function setupEventListeners() {
+            // Date navigation
+            document.getElementById('inpDate').addEventListener('change', (e) => {
+                TeacherAttState.selectedDate = e.target.value;
+                onFilterChanged();
+            });
+
+            document.getElementById('btnPrevDate').addEventListener('click', () => {
+                const d = new Date(TeacherAttState.selectedDate);
+                d.setDate(d.getDate() - 1);
+                TeacherAttState.selectedDate = d.toISOString().split('T')[0];
+                document.getElementById('inpDate').value = TeacherAttState.selectedDate;
+                onFilterChanged();
+            });
+
+            document.getElementById('btnNextDate').addEventListener('click', () => {
+                const d = new Date(TeacherAttState.selectedDate);
+                d.setDate(d.getDate() + 1);
+                TeacherAttState.selectedDate = d.toISOString().split('T')[0];
+                document.getElementById('inpDate').value = TeacherAttState.selectedDate;
+                onFilterChanged();
+            });
+
+            document.getElementById('btnToday').addEventListener('click', () => {
+                TeacherAttState.selectedDate = TeacherAttState.today;
+                document.getElementById('inpDate').value = TeacherAttState.today;
+                onFilterChanged();
+            });
+
+            // Classroom selector
+            document.getElementById('selClassroom').addEventListener('change', (e) => {
+                TeacherAttState.selectedClassroom = parseInt(e.target.value) || 0;
+                onFilterChanged();
+            });
+
+            // Search filter
+            let searchTimeout = null;
+            document.getElementById('inpSearch').addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    TeacherAttState.searchQuery = e.target.value.trim().toLowerCase();
+                    renderRosterTable();
+                }, 200);
+            });
+
+            document.getElementById('btnRefreshRoster').addEventListener('click', () => {
+                loadDailyAttendance();
+            });
+
+            // Batch actions
+            document.getElementById('btnMarkAllPresent').addEventListener('click', () => {
+                batchSetStatus('Present');
+            });
+
+            document.getElementById('btnMarkAllAbsent').addEventListener('click', () => {
+                batchSetStatus('Absent');
+            });
+
+            // Save attendance
+            document.getElementById('btnSaveAttendance').addEventListener('click', () => {
+                saveAttendance();
+            });
+
+            document.getElementById('btnRefreshHistory').addEventListener('click', () => {
+                loadAttendanceHistory();
+            });
+        }
+
+        async function onFilterChanged() {
+            if (TeacherAttState.hasUnsavedChanges) {
+                if (!confirm('You have unsaved roll-call changes on this sheet. Discard and reload?')) {
+                    return;
+                }
+            }
+            await loadDailyAttendance();
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // 1. LOAD DAILY ATTENDANCE
+        // ─────────────────────────────────────────────────────────────────────
+        async function loadDailyAttendance() {
+            const tbody = document.getElementById('rosterTbody');
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:#64748b;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 6px; display:block; animation:spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+                Fetching classroom roll-call...
+            </td></tr>`;
+
+            try {
+                const params = new URLSearchParams({
+                    action: 'get_daily_attendance',
+                    date: TeacherAttState.selectedDate,
+                    classroom_id: TeacherAttState.selectedClassroom
+                });
+
+                const res = await fetch(`/shule-cafe/api/teacher/teacher_portal_api.php?${params.toString()}`);
+                const data = await res.json();
+
+                if (!data.success) throw new Error(data.message || 'Failed to load roll-call');
+
+                // Check Form Master Access
+                if (!data.is_form_master) {
+                    document.getElementById('guardNotFormMaster').style.display = 'block';
+                    document.getElementById('workspaceMain').style.display = 'none';
+                    return;
+                }
+
+                document.getElementById('guardNotFormMaster').style.display = 'none';
+                document.getElementById('workspaceMain').style.display = 'block';
+
+                // Populate Classrooms Dropdown if not done yet
+                TeacherAttState.managedClasses = data.managed_classes || [];
+                const sel = document.getElementById('selClassroom');
+                sel.innerHTML = TeacherAttState.managedClasses.map(c => `
+                    <option value="${c.classroom_id}" ${c.classroom_id == data.classroom_id ? 'selected' : ''}>
+                        ${c.classroom_name} (${c.academic_year})
+                    </option>
+                `).join('');
+
+                TeacherAttState.selectedClassroom = data.classroom_id;
+                TeacherAttState.roster = data.roster || [];
+                TeacherAttState.hasUnsavedChanges = false;
+
+                // Sync Badge
+                setSyncBadge(data.has_saved_records ? 'Official Records Saved' : 'Unsaved Draft Sheet', data.has_saved_records);
+
+                document.getElementById('inpGeneralRemarks').value = data.general_remarks || '';
+                document.getElementById('kpiClassroomLabel').innerText = data.classroom_name || 'Assigned Class';
+
+                renderRosterTable();
+                updateRealtimeKPIs();
+            } catch (err) {
+                console.error('Teacher load error:', err);
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:25px; color:#b91c1c;">
+                    Failed to load attendance roster: ${err.message}
+                </td></tr>`;
+            }
+        }
+
+        function renderRosterTable() {
+            const tbody = document.getElementById('rosterTbody');
+            const roster = TeacherAttState.roster;
+
+            if (roster.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:40px; color:#64748b;">
+                    No students currently allocated to this classroom.
+                </td></tr>`;
+                return;
+            }
+
+            const search = TeacherAttState.searchQuery;
+            let visibleCount = 0;
+
+            const html = roster.map((s, idx) => {
+                if (search && !s.full_name.toLowerCase().includes(search) && !(s.user_code || '').toLowerCase().includes(search)) {
+                    return '';
+                }
+                visibleCount++;
+
+                const status = s.status || 'Present';
+                let trClass = '';
+                if (status === 'Absent') trClass = 'row-absent';
+                else if (status === 'Late') trClass = 'row-late';
+
+                const genderBadge = s.gender === 'Female' 
+                    ? `<span style="font-size:10px; font-weight:700; color:#db2777; background:#fdf2f8; padding:1px 5px; border-radius:4px; border:1px solid #fbcfe8;">F</span>`
+                    : `<span style="font-size:10px; font-weight:700; color:#2563eb; background:#eff6ff; padding:1px 5px; border-radius:4px; border:1px solid #bfdbfe;">M</span>`;
+
+                return `
+                    <tr class="${trClass}" data-student-id="${s.student_id}">
+                        <td style="text-align:center; color:#94a3b8; font-weight:600;">${idx + 1}</td>
+                        <td>
+                            <span style="font-family:monospace; font-size:10px; font-weight:700; background:#f1f5f9; padding:2px 6px; border-radius:4px; border:1px solid #e2e8f0; color:#334155;">
+                                ${s.user_code || 'SC/STD-' + s.student_id}
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <div style="width:20px; height:20px; border-radius:50%; background:#f1f5f9; color:#475569; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; border:1px solid #cbd5e1;">
+                                    ${(s.full_name || 'S').charAt(0).toUpperCase()}
+                                </div>
+                                <span style="font-weight:700; color:#0f172a;">${s.full_name}</span>
+                            </div>
+                        </td>
+                        <td style="text-align:center;">${genderBadge}</td>
+                        <td style="text-align:center;">
+                            <div class="status-grid-group" data-student-id="${s.student_id}">
+                                <button type="button" class="status-square-btn ${status === 'Present' ? 'active-P' : ''}" onclick="setStatus('${s.student_id}', 'Present')" title="Mark Present">P</button>
+                                <button type="button" class="status-square-btn ${status === 'Absent' ? 'active-A' : ''}" onclick="setStatus('${s.student_id}', 'Absent')" title="Mark Absent">A</button>
+                                <button type="button" class="status-square-btn ${status === 'Late' ? 'active-L' : ''}" onclick="setStatus('${s.student_id}', 'Late')" title="Mark Late">L</button>
+                                <button type="button" class="status-square-btn ${status === 'Excused' ? 'active-E' : ''}" onclick="setStatus('${s.student_id}', 'Excused')" title="Mark Excused">E</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            if (visibleCount === 0 && roster.length > 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:25px; color:#64748b;">
+                    No students match search query "<strong>${search}</strong>".
+                </td></tr>`;
+            } else {
+                tbody.innerHTML = html;
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // 2. STATUS TOGGLES & REAL-TIME RECALCULATION
+        // ─────────────────────────────────────────────────────────────────────
+        window.setStatus = function(studentId, newStatus) {
+            const student = TeacherAttState.roster.find(s => s.student_id == studentId);
+            if (!student) return;
+
+            student.status = newStatus;
+            TeacherAttState.hasUnsavedChanges = true;
+            setSyncBadge('Unsaved Changes *', false);
+
+            const group = document.querySelector(`.status-grid-group[data-student-id="${studentId}"]`);
+            if (group) {
+                const btns = group.querySelectorAll('.status-square-btn');
+                btns.forEach(b => {
+                    b.className = 'status-square-btn';
+                    if (b.innerText === newStatus.charAt(0)) {
+                        b.classList.add(`active-${newStatus.charAt(0)}`);
+                    }
+                });
+            }
+
+            const tr = document.querySelector(`tr[data-student-id="${studentId}"]`);
+            if (tr) {
+                tr.classList.remove('row-absent', 'row-late');
+                if (newStatus === 'Absent') tr.classList.add('row-absent');
+                else if (newStatus === 'Late') tr.classList.add('row-late');
+            }
+
+            updateRealtimeKPIs();
+        };
+
+        function batchSetStatus(status) {
+            if (TeacherAttState.roster.length === 0) return;
+            TeacherAttState.roster.forEach(s => s.status = status);
+            TeacherAttState.hasUnsavedChanges = true;
+            setSyncBadge('Unsaved Changes *', false);
+            renderRosterTable();
+            updateRealtimeKPIs();
+        }
+
+        function updateRealtimeKPIs() {
+            const roster = TeacherAttState.roster;
+            const total = roster.length;
+            let present = 0, absent = 0, late = 0, excused = 0;
+
+            roster.forEach(s => {
+                const st = s.status || 'Present';
+                if (st === 'Present') present++;
+                else if (st === 'Absent') absent++;
+                else if (st === 'Late') late++;
+                else if (st === 'Excused') excused++;
+            });
+
+            const rate = total > 0 ? Math.round(((present + late) / total) * 1000) / 10 : 100.0;
+
+            document.getElementById('kpiTotal').innerText = total;
+            document.getElementById('kpiPresent').innerText = present;
+            document.getElementById('kpiPresentRate').innerText = rate + '%';
+            document.getElementById('kpiAbsent').innerText = absent;
+            document.getElementById('kpiLateExcused').innerText = (late + excused);
+        }
+
+        function setSyncBadge(text, isSynced) {
+            const badge = document.getElementById('syncBadge');
+            badge.innerText = text;
+            if (isSynced) {
+                badge.style.background = '#ecfdf5';
+                badge.style.color = '#047857';
+                badge.style.borderColor = '#a7f3d0';
+            } else {
+                badge.style.background = '#fef3c7';
+                badge.style.color = '#b45309';
+                badge.style.borderColor = '#fde68a';
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // 3. SAVE ATTENDANCE (SYNCS DIRECTLY TO ADMIN REGISTER)
+        // ─────────────────────────────────────────────────────────────────────
+        async function saveAttendance() {
+            if (TeacherAttState.roster.length === 0) {
+                showToast('No students loaded on the current sheet.', 'warning');
+                return;
+            }
+
+            const btnSave = document.getElementById('btnSaveAttendance');
+            const origHtml = btnSave.innerHTML;
+            btnSave.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg> Saving...`;
+            btnSave.disabled = true;
+
+            const statuses = {};
+            TeacherAttState.roster.forEach(s => {
+                statuses[s.student_id] = s.status || 'Present';
+            });
+
+            try {
+                const res = await fetch('/shule-cafe/api/teacher/teacher_portal_api.php?action=save_daily_attendance', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        classroom_id: TeacherAttState.selectedClassroom,
+                        attendance_date: TeacherAttState.selectedDate,
+                        statuses: statuses,
+                        remarks: document.getElementById('inpGeneralRemarks').value.trim()
+                    })
+                });
+
+                const data = await res.json();
+                if (!data.success) throw new Error(data.message || 'Failed to save attendance');
+
+                TeacherAttState.hasUnsavedChanges = false;
+                setSyncBadge('Synced with School Admin', true);
+                showToast(data.message, 'success');
+
+                // Refresh history logs
+                loadAttendanceHistory();
+            } catch (err) {
+                console.error('Teacher save error:', err);
+                showToast('Failed to save attendance: ' + err.message, 'error');
+            } finally {
+                btnSave.innerHTML = origHtml;
+                btnSave.disabled = false;
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // 4. ATTENDANCE HISTORY LOGS
+        // ─────────────────────────────────────────────────────────────────────
+        async function loadAttendanceHistory() {
+            const tbody = document.getElementById('historyTbody');
+
+            try {
+                const res = await fetch(`/shule-cafe/api/teacher/teacher_portal_api.php?action=get_attendance_history&classroom_id=${TeacherAttState.selectedClassroom}`);
+                const data = await res.json();
+
+                if (!data.success || !data.history || data.history.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:25px; color:#64748b;">
+                        No previous attendance records submitted yet.
+                    </td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = data.history.map(h => `
+                    <tr>
+                        <td style="font-weight:700; color:#0f172a;">${h.date_formatted}</td>
+                        <td><span style="font-size:10px; font-weight:700; background:#f1f5f9; padding:2px 6px; border-radius:4px; border:1px solid #e2e8f0; color:#334155;">${h.classroom_name}</span></td>
+                        <td>
+                            <span style="color:#047857; font-weight:700;">${h.present_count} Present</span> &bull; 
+                            <span style="color:#b91c1c; font-weight:700;">${h.absent_count} Absent</span> &bull; 
+                            <span style="color:#b45309; font-weight:700;">${h.excused_count} Exc/Late</span>
+                        </td>
+                        <td style="color:#64748b; font-size:11px;">
+                            ${h.general_remarks ? h.general_remarks : '<span style="color:#cbd5e1; font-style:italic;">No remarks logged</span>'}
+                        </td>
+                        <td style="text-align:center;">
+                            <button class="btn btn-sm" onclick="editHistory('${h.attendance_date}', '${h.classroom_id}')" style="height:24px; padding:0 8px; font-size:11px; font-weight:700; background:#f8fafc; border:1px solid #cbd5e1; color:#334155; border-radius:4px; cursor:pointer;">
+                                Review
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error('History load error:', err);
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:#b91c1c;">Failed to load history logs.</td></tr>`;
+            }
+        }
+
+        window.editHistory = function(dateStr, cid) {
+            TeacherAttState.selectedDate = dateStr;
+            document.getElementById('inpDate').value = dateStr;
+            if (cid) {
+                TeacherAttState.selectedClassroom = parseInt(cid);
+                document.getElementById('selClassroom').value = cid;
+            }
+
+            // Switch to entry tab
+            const tabBtn = document.querySelector('.workspace-tab[data-target="tabEntry"]');
+            if (tabBtn) tabBtn.click();
+
+            loadDailyAttendance();
+        };
+
+        // Toast Helper
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.right = '20px';
+            toast.style.padding = '8px 14px';
+            toast.style.borderRadius = '6px';
+            toast.style.fontSize = '12px';
+            toast.style.fontWeight = '700';
+            toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            toast.style.zIndex = '99999';
+            toast.style.display = 'flex';
+            toast.style.alignItems = 'center';
+            toast.style.gap = '8px';
+            toast.style.transition = 'all 0.2s ease';
+
+            if (type === 'success') {
+                toast.style.background = '#047857';
+                toast.style.color = '#ffffff';
+            } else if (type === 'error') {
+                toast.style.background = '#b91c1c';
+                toast.style.color = '#ffffff';
+            } else {
+                toast.style.background = '#0f172a';
+                toast.style.color = '#ffffff';
+            }
+
+            toast.innerHTML = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
     </script>
 </body>
 </html>
