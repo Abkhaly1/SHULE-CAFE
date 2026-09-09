@@ -18,18 +18,23 @@ class AppBreadcrumb extends HTMLElement {
     }
 
     get path() {
-        // Expected format: "Headmaster, Settings, Assessment Config"
-        return this.getAttribute('path') || 'Headmaster';
+        // Expected format: "School Admin, Settings, Assessment Config"
+        return this.getAttribute('path') || 'School Admin';
     }
 
     render() {
-        const parts = this.path.split(',').map(p => p.trim());
+        const parts = this.path.split(',').map(p => {
+            let clean = p.trim();
+            if (clean === 'Headmaster') clean = 'School Admin';
+            return clean;
+        });
         
         const currentPath = window.location.pathname;
         const frontendIndex = currentPath.indexOf('/frontend/');
         const basePath = (frontendIndex !== -1) ? currentPath.substring(0, frontendIndex + '/frontend/'.length) : '/frontend/';
         
         const routeMap = {
+            'School Admin': basePath + 'headmaster/dashboard.html',
             'Headmaster': basePath + 'headmaster/dashboard.html',
             'Dashboard': basePath + 'headmaster/dashboard.html',
             'Super Admin': basePath + 'super-admin/dashboard.html',

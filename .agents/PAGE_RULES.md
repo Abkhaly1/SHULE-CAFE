@@ -1,6 +1,6 @@
 # SHULE CAFE — Official Page Design & Frontend UI Architecture Rules
 
-This document defines the strict, non-negotiable frontend design patterns and page layout rules for SHULE CAFE. Every portal (Headmaster, Teacher, Super Admin, Parent, Regional Officer) must strictly adhere to these standards.
+This document defines the strict, non-negotiable frontend design patterns and page layout rules for SHULE CAFE. Every portal (School Admin, Teacher, Super Admin, Parent, Regional Officer) must strictly adhere to these standards.
 
 ---
 
@@ -50,7 +50,7 @@ All portal pages must strictly follow this outer DOM structure:
     
     <div class="app-main">
         <!-- 2. Standard Topbar -->
-        <app-topbar username="Headmaster Portal"></app-topbar>
+        <app-topbar username="School Admin Portal"></app-topbar>
         
         <!-- 3. Content Wrapper with Zero-Padding Content Container -->
         <main class="app-content-wrapper">
@@ -58,7 +58,7 @@ All portal pages must strictly follow this outer DOM structure:
                 
                 <!-- 4. Compact Breadcrumb Ribbon -->
                 <div style="margin-bottom: 6px;">
-                    <app-breadcrumb path="Headmaster, Section Name"></app-breadcrumb>
+                    <app-breadcrumb path="School Admin, Section Name"></app-breadcrumb>
                 </div>
 
                 <!-- 5. Single-Row Compact Header Box -->

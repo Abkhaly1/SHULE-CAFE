@@ -22,7 +22,11 @@ class AppTopbar extends HTMLElement {
     }
 
     get username() {
-        return this.getAttribute('username') || 'User';
+        const val = this.getAttribute('username');
+        if (val === 'Headmaster Portal' || val === 'Headmaster') {
+            return 'School Admin Portal';
+        }
+        return val || 'School Admin Portal';
     }
 
     render() {
