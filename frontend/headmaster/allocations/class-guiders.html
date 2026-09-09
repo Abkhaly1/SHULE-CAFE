@@ -175,30 +175,38 @@
             }
 
             rooms.forEach(r => {
-                let teacherOptions = '<option value="">-- Unassigned (No Class Guider) --</option>';
+                const isUndivided = Boolean(r.is_undivided);
+                let defaultOptionLabel = isUndivided ? '-- Unassigned (No Grade Teacher) --' : '-- Unassigned (No Class Guider) --';
+                let teacherOptions = `<option value="">${defaultOptionLabel}</option>`;
                 allTeachers.forEach(t => {
                     const sel = (r.guider_id == t.id) ? 'selected' : '';
                     teacherOptions += `<option value="${t.id}" ${sel}>${t.full_name} (${t.user_code || 'TCH'})</option>`;
                 });
 
-                const statusBadge = r.guider_id 
-                    ? `<span class="badge badge-success" style="font-size:11px;"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:4px;"></span> ${r.guider_name}</span>`
-                    : `<span class="badge badge-danger" style="font-size:11px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Unassigned</span>`;
+                const streamCol = isUndivided
+                    ? `<strong style="color:#b45309;font-size:14px;">${r.grade_name}</strong> <span class="badge" style="background:#fef3c7;color:#92400e;border:1px solid #fcd34d;font-size:11px;font-weight:700;margin-left:6px;display:inline-flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg> Undivided Cohort</span>`
+                    : `<strong style="color:var(--c-primary);font-size:14px;">${r.grade_name} ${r.classroom_name}</strong>`;
+
+                const seatsCol = isUndivided
+                    ? `<span style="color:#64748b;font-size:12px;font-style:italic;">Grade-wide</span>`
+                    : `${r.capacity} Seats`;
+
+                const btnLabel = isUndivided ? 'Save Grade Teacher' : 'Save Guider';
 
                 tbody.append(`
                     <tr>
                         <td><strong>${r.level_code}</strong></td>
                         <td>${r.grade_name}</td>
-                        <td><strong style="color:var(--c-primary);font-size:14px;">${r.grade_name} ${r.classroom_name}</strong></td>
-                        <td>${r.capacity} Seats</td>
+                        <td>${streamCol}</td>
+                        <td>${seatsCol}</td>
                         <td>
-                            <select class="form-control sel-guider-teacher" data-room="${r.classroom_id}" style="width:100%;max-width:280px;font-weight:600;">
+                            <select class="form-control sel-guider-teacher" data-room="${r.classroom_id}" data-grade="${r.grade_id}" data-undivided="${isUndivided ? '1' : '0'}" style="width:100%;max-width:280px;font-weight:600;">
                                 ${teacherOptions}
                             </select>
                         </td>
                         <td style="text-align:right;">
-                            <button type="button" class="btn btn-primary btn-sm btn-save-guider" data-room="${r.classroom_id}">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Guider
+                            <button type="button" class="btn btn-primary btn-sm btn-save-guider" data-room="${r.classroom_id}" data-grade="${r.grade_id}" data-undivided="${isUndivided ? '1' : '0'}">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> ${btnLabel}
                             </button>
                         </td>
                     </tr>
@@ -208,6 +216,8 @@
 
         $(document).on('click', '.btn-save-guider', async function() {
             const roomId = $(this).attr('data-room');
+            const gradeId = $(this).attr('data-grade');
+            const isUndivided = $(this).attr('data-undivided') === '1';
             const teacherId = $(this).closest('tr').find('.sel-guider-teacher').val();
 
             try {
@@ -215,7 +225,13 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
-                    body: JSON.stringify({ action: 'assign_guider', classroom_id: roomId, teacher_id: teacherId })
+                    body: JSON.stringify({
+                        action: 'assign_guider',
+                        classroom_id: roomId,
+                        grade_id: gradeId,
+                        is_undivided: isUndivided ? 1 : 0,
+                        teacher_id: teacherId
+                    })
                 });
                 const data = await res.json();
                 if (res.ok && data.success) {

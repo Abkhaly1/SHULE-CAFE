@@ -50,9 +50,10 @@ try {
 
     // 2. Fetch Form Master Managed Class Stream (Dual Role Check)
     $stmtFormMaster = $conn->prepare("
-        SELECT COALESCE(c.classroom_name, ct.class_stream_id) as managed_class_name
+        SELECT COALESCE(c.classroom_name, CONCAT(g.name, ' (Whole Grade)'), ct.class_stream_id) as managed_class_name
         FROM class_teachers ct
         LEFT JOIN classrooms c ON (ct.class_stream_id = c.classroom_name OR ct.class_stream_id = CAST(c.id AS CHAR))
+        LEFT JOIN grades g ON ct.grade_id = g.id
         WHERE ct.teacher_id = :teacher_id AND ct.academic_year_id = :year_id
         LIMIT 1
     ");

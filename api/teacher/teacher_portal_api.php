@@ -83,9 +83,10 @@ try {
 
         // Check Form Master
         $stmtFM = $conn->prepare("
-            SELECT COALESCE(c.classroom_name, ct.class_stream_id) AS form_master_class
+            SELECT COALESCE(c.classroom_name, CONCAT(g.name, ' (Whole Grade)'), ct.class_stream_id) AS form_master_class
             FROM class_teachers ct
             LEFT JOIN classrooms c ON (ct.class_stream_id = c.classroom_name OR ct.class_stream_id = CAST(c.id AS CHAR))
+            LEFT JOIN grades g ON ct.grade_id = g.id
             WHERE ct.teacher_id = ? AND ct.academic_year_id = ? LIMIT 1
         ");
         $stmtFM->execute([$teacherId, $academicYearId]);
@@ -537,11 +538,14 @@ try {
         $targetDate  = $_GET['date'] ?? date('Y-m-d');
         $classroomId = intval($_GET['classroom_id'] ?? 0);
 
-        // 1. Fetch all classrooms where teacher is/was assigned as Class Guider (Mwalimu wa Darasa)
+        // 1. Fetch all classrooms where teacher is/was assigned as Class Guider
         $stmtFM = $conn->prepare("
             SELECT DISTINCT c.id AS classroom_id, c.classroom_name, c.academic_year
             FROM class_teachers ct
-            JOIN classrooms c ON (ct.class_stream_id = c.classroom_name OR ct.class_stream_id = CAST(c.id AS CHAR))
+            JOIN classrooms c ON (
+                (ct.class_stream_id = c.classroom_name OR ct.class_stream_id = CAST(c.id AS CHAR))
+                OR (ct.class_stream_id = 'GRADE_WIDE' AND c.grade_id = ct.grade_id AND c.school_id = ct.school_id)
+            )
             WHERE ct.teacher_id = :teacher_id
             ORDER BY c.academic_year DESC, c.classroom_name ASC
         ");

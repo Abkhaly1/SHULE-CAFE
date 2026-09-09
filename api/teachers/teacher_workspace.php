@@ -31,10 +31,12 @@ try {
 
     // 2. Fetch Class Guider (Form Master / Class Teacher) Responsibility
     $stmtCM = $conn->prepare("
-        SELECT c.classroom_name, g.name AS grade_name
+        SELECT COALESCE(c.classroom_name, 'Whole Grade') AS classroom_name, 
+               COALESCE(g.name, g2.name) AS grade_name
         FROM class_teachers ct
-        JOIN classrooms c ON ct.class_stream_id = c.id
-        JOIN grades g ON c.grade_id = g.id
+        LEFT JOIN classrooms c ON (ct.class_stream_id = c.id OR ct.class_stream_id = c.classroom_name)
+        LEFT JOIN grades g ON c.grade_id = g.id
+        LEFT JOIN grades g2 ON ct.grade_id = g2.id
         WHERE ct.teacher_id = ?
         LIMIT 1
     ");

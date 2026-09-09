@@ -35,10 +35,13 @@ try {
 
     // 3. Fetch Class Teacher / Form Master Role
     $stmtCM = $conn->prepare("
-        SELECT c.id AS classroom_id, c.classroom_name, g.name AS grade_name
+        SELECT COALESCE(c.id, 0) AS classroom_id, 
+               COALESCE(c.classroom_name, 'Whole Grade') AS classroom_name, 
+               COALESCE(g.name, g2.name) AS grade_name
         FROM class_teachers ct
-        JOIN classrooms c ON ct.class_stream_id = c.id
-        JOIN grades g ON c.grade_id = g.id
+        LEFT JOIN classrooms c ON (ct.class_stream_id = c.id OR ct.class_stream_id = c.classroom_name)
+        LEFT JOIN grades g ON c.grade_id = g.id
+        LEFT JOIN grades g2 ON ct.grade_id = g2.id
         WHERE ct.teacher_id = ?
         LIMIT 1
     ");
