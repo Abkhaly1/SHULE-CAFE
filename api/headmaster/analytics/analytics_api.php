@@ -58,7 +58,7 @@ try {
             exit();
         }
 
-        $levelType = $gradingManager->normalizeLevelType($student['level_type'] ?? 'O-Level');
+        $levelType = $gradingManager->normalizeLevelType(($student['level_type'] ?? '') . ' ' . ($student['grade_name'] ?? ''));
 
         // Helper to process marks for a specific term using GradingManager
         $processTermMarks = function($targetTerm) use ($conn, $studentId, $year, $levelType, $gradingManager) {

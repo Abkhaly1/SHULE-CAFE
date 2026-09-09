@@ -683,15 +683,67 @@
                     renderYearsStep();
 
                     populateAssessmentTypeDropdown();
-
-                    const selSub = document.getElementById('gridSubjectSelect');
-                    selSub.innerHTML = '';
-                    (data.subjects || []).forEach(s => {
-                        selSub.innerHTML += `<option value="${s.code}">${s.name} (${s.code})</option>`;
-                    });
+                    filterSubjectDropdownByActiveLevel();
                 }
             } catch(e) {
                 console.error(e);
+            }
+        }
+
+        function updateSubjectDropdown(subjects, preserveValue = true) {
+            const selSub = document.getElementById('gridSubjectSelect');
+            if (!selSub) return;
+            const currentVal = selSub.value;
+            selSub.innerHTML = '';
+
+            if (!subjects || subjects.length === 0) {
+                selSub.innerHTML = '<option value="">No subjects available</option>';
+                return;
+            }
+
+            subjects.forEach(s => {
+                selSub.innerHTML += `<option value="${s.code}">${s.name} (${s.code})</option>`;
+            });
+
+            if (preserveValue && currentVal && subjects.some(s => s.code === currentVal)) {
+                selSub.value = currentVal;
+            } else {
+                selSub.selectedIndex = 0;
+            }
+        }
+
+        function filterSubjectDropdownByActiveLevel() {
+            if (!currentScopes) return;
+
+            let isALevel = false;
+            if (selectedGradeId) {
+                const gObj = (currentScopes.grades || []).find(g => String(g.id) === String(selectedGradeId));
+                if (gObj) {
+                    const lObj = (currentScopes.levels || []).find(l => String(l.id) === String(gObj.level_id));
+                    if (lObj && (lObj.code === 'A-LEVEL' || (lObj.name && lObj.name.includes('A-Level')))) {
+                        isALevel = true;
+                    }
+                    if (gObj.name && (gObj.name.includes('Form 5') || gObj.name.includes('Form 6'))) {
+                        isALevel = true;
+                    }
+                }
+            } else if (selectedClassroomId) {
+                const cObj = (currentScopes.classrooms || []).find(c => String(c.id) === String(selectedClassroomId));
+                if (cObj && (cObj.level_code === 'A-LEVEL' || (cObj.grade_name && (cObj.grade_name.includes('Form 5') || cObj.grade_name.includes('Form 6'))))) {
+                    isALevel = true;
+                }
+            } else if (selectedLevel) {
+                if (selectedLevel.includes('A-Level')) isALevel = true;
+            }
+
+            const targetLevel = isALevel ? 'A-Level' : 'O-Level';
+            const filtered = (currentScopes.subjects || []).filter(s => {
+                const sl = s.level_type || ((s.code && (s.code.includes('ADV') || s.code === 'GS' || s.code === 'BAM')) ? 'A-Level' : 'O-Level');
+                return sl === targetLevel;
+            });
+
+            if (filtered.length > 0) {
+                updateSubjectDropdown(filtered, true);
             }
         }
 
@@ -822,6 +874,7 @@
                 renderGradesStep();
             } else if (step === 'WORKSPACE') {
                 backLabel.textContent = 'Back to Grades';
+                filterSubjectDropdownByActiveLevel();
                 populateAssessmentTypeDropdown();
                 populateClassFilterDropdown();
                 
@@ -980,6 +1033,11 @@
                 document.getElementById('btnModeSingle').classList.add('active');
                 document.getElementById('btnModeAll').classList.remove('active');
                 document.getElementById('singleSubPickGroup').style.display = 'inline-flex';
+                if (activeSubjects && activeSubjects.length > 0) {
+                    updateSubjectDropdown(activeSubjects, true);
+                } else {
+                    filterSubjectDropdownByActiveLevel();
+                }
             }
             autoLoadSheet();
         }
@@ -999,6 +1057,7 @@
                 if (res.ok && data.success) {
                     sheetData = data;
                     activeSubjects = data.subjects || [];
+                    updateSubjectDropdown(activeSubjects, true);
 
                     // Restore any locally cached marks if present
                     restoreMarksFromLocalStorage();
