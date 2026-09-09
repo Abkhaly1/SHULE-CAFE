@@ -9,9 +9,44 @@
 
 class GradingManager {
     private $db;
+    private $subsidiarySubjectsCache = null;
 
     public function __construct(PDO $databaseConnection) {
         $this->db = $databaseConnection;
+    }
+
+    /**
+     * Dynamically fetch subsidiary subject codes from academic_templates (Shule Cafe Admin Single Source of Truth)
+     */
+    public function getSubsidiarySubjects() {
+        if ($this->subsidiarySubjectsCache !== null) {
+            return $this->subsidiarySubjectsCache;
+        }
+
+        $codes = [
+            'GS', 'BAM', '111-GS', '112-BAM', '111/GS', '112/BAM', 'GS-A', 'BAM-A',
+            '111', '112', 'GENERAL STUDIES', 'BASIC APPLIED MATHEMATICS'
+        ];
+
+        try {
+            $stmt = $this->db->query("
+                SELECT code, details 
+                FROM academic_templates 
+                WHERE type = 'subject' AND level_code = 'A-LEVEL' 
+                  AND (details LIKE '%\"is_subsidiary\":1%' OR details LIKE '%\"is_subsidiary\": 1%')
+            ");
+            if ($stmt) {
+                while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                    $codes[] = strtoupper(trim($r['code']));
+                    $det = json_decode($r['details'] ?? '{}', true) ?: [];
+                    if (!empty($det['abbr'])) $codes[] = strtoupper(trim($det['abbr']));
+                    if (!empty($det['course_code'])) $codes[] = strtoupper(trim($det['course_code']));
+                }
+            }
+        } catch (Exception $e) {}
+
+        $this->subsidiarySubjectsCache = array_unique($codes);
+        return $this->subsidiarySubjectsCache;
     }
 
     /**
@@ -187,13 +222,10 @@ class GradingManager {
         $bestSubjects = [];
 
         if ($levelType === 'A-Level') {
-            // A-Level: Filter out subsidiary subjects (GS, BAM) when calculating 3-Principal points
-            $principalSubjects = array_filter($evaluatedSubjects, function($s) {
+            // A-Level: Dynamically filter out subsidiary subjects (from academic_templates) when calculating 3-Principal points
+            $subsidiaryCodes = $this->getSubsidiarySubjects();
+            $principalSubjects = array_filter($evaluatedSubjects, function($s) use ($subsidiaryCodes) {
                 $sc = strtoupper(trim($s['subject']));
-                $subsidiaryCodes = [
-                    'GS', 'BAM', '111-GS', '112-BAM', '111/GS', '112/BAM', 'GS-A', 'BAM-A',
-                    '111', '112', 'GENERAL STUDIES', 'BASIC APPLIED MATHEMATICS'
-                ];
                 return !in_array($sc, $subsidiaryCodes);
             });
 

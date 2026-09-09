@@ -77,19 +77,38 @@ try {
         $stmtClassrooms->execute([$schoolId]);
         $classrooms = $stmtClassrooms->fetchAll(PDO::FETCH_ASSOC);
 
-        // Subjects
+        // Subjects - Central Single Source of Truth from academic_templates
         $stmtSubj = $conn->prepare("
-            SELECT id, name, code, level_type 
-            FROM subjects 
-            WHERE (school_id = ? OR school_id IS NULL OR school_id = '') AND level_type IN ('O-Level', 'A-Level')
-            ORDER BY level_type ASC, is_core DESC, name ASC
+            SELECT id, name, code, level_code, details 
+            FROM academic_templates 
+            WHERE type = 'subject' AND status = 'active'
+            ORDER BY level_code ASC, name ASC
         ");
-        $stmtSubj->execute([$schoolId]);
-        $subjects = $stmtSubj->fetchAll(PDO::FETCH_ASSOC);
+        $stmtSubj->execute();
+        $rawSubjs = $stmtSubj->fetchAll(PDO::FETCH_ASSOC);
+        $subjects = [];
+        foreach ($rawSubjs as $rs) {
+            $det = json_decode($rs['details'] ?? '{}', true) ?: [];
+            $lvlType = ($rs['level_code'] === 'A-LEVEL') ? 'A-Level' : 'O-Level';
+            $subjects[] = [
+                'id' => $rs['code'],
+                'name' => $rs['name'],
+                'code' => !empty($det['abbr']) ? $det['abbr'] : $rs['code'],
+                'level_type' => $lvlType,
+                'is_core' => !empty($det['is_core']) ? 1 : 0
+            ];
+        }
 
+        // Fallback to tenant subjects table if template items are not yet populated
         if (empty($subjects)) {
-            $stmtAllSubj = $conn->query("SELECT id, name, code, level_type FROM subjects WHERE level_type IN ('O-Level', 'A-Level') ORDER BY level_type ASC, name ASC");
-            $subjects = $stmtAllSubj->fetchAll(PDO::FETCH_ASSOC);
+            $stmtSubjTenant = $conn->prepare("
+                SELECT id, name, code, level_type 
+                FROM subjects 
+                WHERE (school_id = ? OR school_id IS NULL OR school_id = '') AND level_type IN ('O-Level', 'A-Level')
+                ORDER BY level_type ASC, is_core DESC, name ASC
+            ");
+            $stmtSubjTenant->execute([$schoolId]);
+            $subjects = $stmtSubjTenant->fetchAll(PDO::FETCH_ASSOC);
         }
 
         // Active Assessment Types
@@ -247,32 +266,24 @@ try {
             $allSubjects = $stmtAppSubjs->fetchAll(PDO::FETCH_ASSOC);
         }
 
+        // 2. CENTRAL SINGLE SOURCE OF TRUTH: Inherit dynamically from academic_templates (managed by Shule Cafe Admin)
         if (empty($allSubjects)) {
-            if ($levelTypeKey === 'A-Level') {
-                $allSubjects = [
-                    ['code' => 'GS', 'name' => 'General Studies', 'is_core' => 1],
-                    ['code' => 'BAM', 'name' => 'Basic Applied Mathematics', 'is_core' => 0],
-                    ['code' => 'ADV-MATH', 'name' => 'Advanced Mathematics', 'is_core' => 0],
-                    ['code' => 'PHY', 'name' => 'Physics', 'is_core' => 0],
-                    ['code' => 'CHEM', 'name' => 'Chemistry', 'is_core' => 0],
-                    ['code' => 'BIO', 'name' => 'Biology', 'is_core' => 0],
-                    ['code' => 'GEO', 'name' => 'Geography', 'is_core' => 0],
-                    ['code' => 'HIST', 'name' => 'History', 'is_core' => 0],
-                    ['code' => 'ENG', 'name' => 'English Language', 'is_core' => 0],
-                    ['code' => 'KISW', 'name' => 'Kiswahili', 'is_core' => 0],
-                    ['code' => 'ECON', 'name' => 'Economics', 'is_core' => 0]
-                ];
-            } else {
-                $allSubjects = [
-                    ['code' => 'CIV', 'name' => 'Civics', 'is_core' => 1],
-                    ['code' => 'HIST', 'name' => 'History', 'is_core' => 1],
-                    ['code' => 'GEO', 'name' => 'Geography', 'is_core' => 1],
-                    ['code' => 'KISW', 'name' => 'Kiswahili', 'is_core' => 1],
-                    ['code' => 'ENG', 'name' => 'English Language', 'is_core' => 1],
-                    ['code' => 'PHY', 'name' => 'Physics', 'is_core' => 1],
-                    ['code' => 'CHEM', 'name' => 'Chemistry', 'is_core' => 1],
-                    ['code' => 'BIO', 'name' => 'Biology', 'is_core' => 1],
-                    ['code' => 'MATH', 'name' => 'Basic Mathematics', 'is_core' => 1]
+            $stmtCentral = $conn->prepare("
+                SELECT code, name, details, level_code
+                FROM academic_templates
+                WHERE type = 'subject' AND (level_code = ? OR level_code = 'ALL') AND status = 'active'
+                ORDER BY name ASC
+            ");
+            $stmtCentral->execute([$levelTypeKey === 'A-Level' ? 'A-LEVEL' : 'O-LEVEL']);
+            $centralRows = $stmtCentral->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($centralRows as $cr) {
+                $det = json_decode($cr['details'] ?? '{}', true) ?: [];
+                $subCode = !empty($det['abbr']) ? $det['abbr'] : $cr['code'];
+                $isCore = !empty($det['is_core']) ? 1 : 0;
+                $allSubjects[] = [
+                    'code' => $subCode,
+                    'name' => $cr['name'],
+                    'is_core' => $isCore
                 ];
             }
         }
@@ -772,32 +783,24 @@ try {
             $allSubjects = $stmtAppSubjs->fetchAll(PDO::FETCH_ASSOC);
         }
 
+        // 2. CENTRAL SINGLE SOURCE OF TRUTH: Inherit dynamically from academic_templates (managed by Shule Cafe Admin)
         if (empty($allSubjects)) {
-            if ($levelTypeKey === 'A-Level') {
-                $allSubjects = [
-                    ['code' => 'GS', 'name' => 'General Studies', 'is_core' => 1],
-                    ['code' => 'BAM', 'name' => 'Basic Applied Mathematics', 'is_core' => 0],
-                    ['code' => 'ADV-MATH', 'name' => 'Advanced Mathematics', 'is_core' => 0],
-                    ['code' => 'PHY', 'name' => 'Physics', 'is_core' => 0],
-                    ['code' => 'CHEM', 'name' => 'Chemistry', 'is_core' => 0],
-                    ['code' => 'BIO', 'name' => 'Biology', 'is_core' => 0],
-                    ['code' => 'GEO', 'name' => 'Geography', 'is_core' => 0],
-                    ['code' => 'HIST', 'name' => 'History', 'is_core' => 0],
-                    ['code' => 'ENG', 'name' => 'English Language', 'is_core' => 0],
-                    ['code' => 'KISW', 'name' => 'Kiswahili', 'is_core' => 0],
-                    ['code' => 'ECON', 'name' => 'Economics', 'is_core' => 0]
-                ];
-            } else {
-                $allSubjects = [
-                    ['code' => 'CIV', 'name' => 'Civics', 'is_core' => 1],
-                    ['code' => 'HIST', 'name' => 'History', 'is_core' => 1],
-                    ['code' => 'GEO', 'name' => 'Geography', 'is_core' => 1],
-                    ['code' => 'KISW', 'name' => 'Kiswahili', 'is_core' => 1],
-                    ['code' => 'ENG', 'name' => 'English Language', 'is_core' => 1],
-                    ['code' => 'PHY', 'name' => 'Physics', 'is_core' => 1],
-                    ['code' => 'CHEM', 'name' => 'Chemistry', 'is_core' => 1],
-                    ['code' => 'BIO', 'name' => 'Biology', 'is_core' => 1],
-                    ['code' => 'MATH', 'name' => 'Basic Mathematics', 'is_core' => 1]
+            $stmtCentral = $conn->prepare("
+                SELECT code, name, details, level_code
+                FROM academic_templates
+                WHERE type = 'subject' AND (level_code = ? OR level_code = 'ALL') AND status = 'active'
+                ORDER BY name ASC
+            ");
+            $stmtCentral->execute([$levelTypeKey === 'A-Level' ? 'A-LEVEL' : 'O-LEVEL']);
+            $centralRows = $stmtCentral->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($centralRows as $cr) {
+                $det = json_decode($cr['details'] ?? '{}', true) ?: [];
+                $subCode = !empty($det['abbr']) ? $det['abbr'] : $cr['code'];
+                $isCore = !empty($det['is_core']) ? 1 : 0;
+                $allSubjects[] = [
+                    'code' => $subCode,
+                    'name' => $cr['name'],
+                    'is_core' => $isCore
                 ];
             }
         }
