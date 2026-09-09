@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Attendance Register ‹ Headmaster ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../../css/design-system.css">
+    <link rel="stylesheet" href="../../css/layout.css">
+    <link rel="stylesheet" href="../../css/headmaster-theme.css">
+    
+    <script type="module" src="../../layouts/global-layout.js"></script>
+    <script type="module" src="../../js/auth/auth-guard.js"></script>
+
+    <style>
+        /* Compact, crisp design styling per PAGE_RULES.md */
+        .stat-card-compact {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            position: relative;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .stat-card-compact:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.04);
+        }
+        .stat-card-compact-lbl {
+            font-size: 10px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .stat-card-compact-val {
+            font-size: 20px;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.2;
+        }
+        .stat-card-compact-sub {
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        /* Filter bar rules */
+        .compact-filter-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .filter-row-grid {
+            display: grid;
+            grid-template-columns: auto 110px 140px 140px 160px 1fr auto;
+            gap: 8px;
+            align-items: center;
+        }
+        @media (max-width: 1200px) {
+            .filter-row-grid {
+                grid-template-columns: auto 110px 1fr 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            .filter-row-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .form-control-compact {
+            height: 28px;
+            padding: 2px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            border: 1px solid #cbd5e1;
+            border-radius: 5px;
+            background-color: #ffffff;
+            color: #0f172a;
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+        .form-control-compact:focus {
+            border-color: #047857;
+            box-shadow: 0 0 0 2px rgba(4, 120, 87, 0.1);
+        }
+
+        /* Square grid attendance status toggles */
+        .status-grid-group {
+            display: inline-flex;
+            gap: 3px;
+            background: #f1f5f9;
+            padding: 2px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        .status-square-btn {
+            width: 28px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+        }
+        .status-square-btn:hover {
+            background: #ffffff;
+            color: #0f172a;
+        }
+        .status-square-btn.active-P {
+            background: #10b981;
+            color: #ffffff;
+            border-color: #059669;
+            box-shadow: 0 1px 2px rgba(16, 185, 129, 0.25);
+        }
+        .status-square-btn.active-A {
+            background: #ef4444;
+            color: #ffffff;
+            border-color: #dc2626;
+            box-shadow: 0 1px 2px rgba(239, 68, 68, 0.25);
+        }
+        .status-square-btn.active-L {
+            background: #f59e0b;
+            color: #ffffff;
+            border-color: #d97706;
+            box-shadow: 0 1px 2px rgba(245, 158, 11, 0.25);
+        }
+        .status-square-btn.active-E {
+            background: #3b82f6;
+            color: #ffffff;
+            border-color: #2563eb;
+            box-shadow: 0 1px 2px rgba(59, 130, 246, 0.25);
+        }
+
+        /* Compact Table Styles */
+        .compact-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            text-align: left;
+        }
+        .compact-table th {
+            background: #f8fafc;
+            color: #475569;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 6px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            border-top: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+        .compact-table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
+            vertical-align: middle;
+        }
+        .compact-table tbody tr:hover {
+            background: #f8fafc;
+        }
+        .compact-table tbody tr.row-absent {
+            background: rgba(254, 242, 242, 0.5);
+        }
+        .compact-table tbody tr.row-late {
+            background: rgba(254, 243, 199, 0.3);
+        }
+
+        /* Modal / Window Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(3px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+        .modal-window {
+            background: #ffffff;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 680px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: modalFadeIn 0.18s ease-out;
+        }
+        .modal-window-lg {
+            max-width: 860px;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-header {
+            padding: 10px 14px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .modal-title {
+            margin: 0;
+            font-size: 13px;
+            font-weight: 800;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .modal-body {
+            padding: 14px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .modal-footer {
+            padding: 8px 14px;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        /* Print Sheet Formatting */
+        @media print {
+            body {
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+            app-sidebar, app-topbar, app-breadcrumb, .card:first-child, .compact-filter-card, .btn, .status-grid-group button:not(.active-P):not(.active-A):not(.active-L):not(.active-E), #batchActionBar, .modal-overlay {
+                display: none !important;
+            }
+            .app-main, .app-content-wrapper, .app-content {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            .print-header {
+                display: block !important;
+                margin-bottom: 15px;
+                border-bottom: 2px solid #000;
+                padding-bottom: 8px;
+            }
+            .compact-table {
+                font-size: 10px !important;
+            }
+            .compact-table th, .compact-table td {
+                padding: 4px 6px !important;
+                border: 1px solid #cbd5e1 !important;
+            }
+        }
+        .print-header {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <!-- 1. Standard Sidebar -->
+        <app-sidebar role="tenant_admin" active-path="/headmaster/attendance/index.html"></app-sidebar>
+        
+        <div class="app-main">
+            <!-- 2. Standard Topbar -->
+            <app-topbar username="Headmaster Portal"></app-topbar>
+            
+            <!-- 3. Content Wrapper with Zero-Padding Container per PAGE_RULES.md -->
+            <main class="app-content-wrapper">
+                <div class="app-content" style="padding: 0;">
+                    
+                    <!-- 4. Compact Breadcrumb Ribbon -->
+                    <div style="margin-bottom: 6px;">
+                        <app-breadcrumb path="Headmaster, Global Attendance Register"></app-breadcrumb>
+                    </div>
+
+                    <!-- 5. Single-Row Compact Header Box with Embedded Tabs -->
+                    <div class="card" style="margin-bottom: 6px; padding: 6px 14px; background: white; border-radius: 8px; border: 1px solid var(--c-primary-border); box-shadow: 0 1px 2px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 26px; height: 26px; border-radius: 6px; background: var(--c-primary); color: white; display: flex; align-items: center; justify-content: center;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                                </svg>
+                            </div>
+                            <h2 style="margin: 0; font-size: 14px; font-weight: 800; color: var(--c-text-primary);">Global Attendance Register</h2>
+                            <span id="syncIndicator" style="font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 12px; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;">
+                                Up to date
+                            </span>
+                        </div>
+
+                        <!-- Right-Aligned Embedded Workspace Tabs & Quick Action Modals -->
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <app-workspace-tabs active-tab="tabRegister">
+                                <button class="workspace-tab active" data-target="tabRegister" style="font-weight: 700; font-size: 12px;">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Daily Register
+                                </button>
+                                <button class="workspace-tab" data-target="tabMissing" style="font-weight: 700; font-size: 12px;">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Missing Attendance <span id="badgeMissingCount" style="display:none; background:#ef4444; color:#fff; padding:1px 6px; border-radius:10px; font-size:10px; font-weight:800; margin-left:3px;">0</span>
+                                </button>
+                            </app-workspace-tabs>
+
+                            <!-- On-Demand Window Triggers -->
+                            <button id="btnOpenAnalyticsModal" class="btn btn-sm" style="height: 28px; padding: 0 10px; font-size: 11px; font-weight: 700; background: #f8fafc; border: 1px solid #cbd5e1; color: #1e293b; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Analytics Board
+                            </button>
+
+                            <button id="btnOpenExportModal" class="btn btn-sm" style="height: 28px; padding: 0 10px; font-size: 11px; font-weight: 700; background: #f8fafc; border: 1px solid #cbd5e1; color: #1e293b; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Print Title Header (Visible only when printed) -->
+                    <div class="print-header" id="printHeader">
+                        <div style="text-align: center; margin-bottom: 6px;">
+                            <h2 style="margin: 0; font-size: 16px; font-weight: 800; text-transform: uppercase;">SHULE CAFE — Official Daily Attendance Sheet</h2>
+                            <p style="margin: 2px 0 0; font-size: 12px; color: #475569;" id="printMetaDetails">Date: -- | Class: -- | Academic Year: --</p>
+                        </div>
+                    </div>
+
+                    <!-- 6. Main Workspace Content -->
+                    <div class="workspace-main-area">
+
+                        <!-- TAB 1: DAILY ATTENDANCE REGISTER -->
+                        <app-workspace-content tab-id="tabRegister" active="true">
+
+                            <!-- Unified White Filter Card with Date Stepper -->
+                            <div class="compact-filter-card">
+                                <div class="filter-row-grid">
+                                    
+                                    <!-- Date Controls: Prev, Date Input, Next, Today -->
+                                    <div style="display: flex; align-items: center; gap: 4px;">
+                                        <button id="btnPrevDate" class="btn btn-sm" title="Previous Day" style="height: 28px; width: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #cbd5e1;">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                                        </button>
+                                        <input type="date" id="filterDate" class="form-control-compact" style="width: 125px;">
+                                        <button id="btnNextDate" class="btn btn-sm" title="Next Day" style="height: 28px; width: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center; background: #f8fafc; border: 1px solid #cbd5e1;">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                                        </button>
+                                        <button id="btnToday" class="btn btn-sm" style="height: 28px; padding: 0 8px; font-size: 11px; font-weight: 700; background: #f1f5f9; border: 1px solid #cbd5e1; color: #334155;">
+                                            Today
+                                        </button>
+                                    </div>
+
+                                    <!-- Academic Year -->
+                                    <div>
+                                        <select id="filterYear" class="form-control-compact" style="width: 100%;">
+                                            <option value="">Year...</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Education Level -->
+                                    <div>
+                                        <select id="filterLevel" class="form-control-compact" style="width: 100%;">
+                                            <option value="0">All Levels</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Grade Tier -->
+                                    <div>
+                                        <select id="filterGrade" class="form-control-compact" style="width: 100%;">
+                                            <option value="0">All Grades</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Classroom Stream -->
+                                    <div>
+                                        <select id="filterClassroom" class="form-control-compact" style="width: 100%;">
+                                            <option value="0">All Classrooms</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Student Search -->
+                                    <div style="position: relative;">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 9px; top: 8px;">
+                                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                        </svg>
+                                        <input type="text" id="filterSearch" class="form-control-compact" placeholder="Search student name or ID..." style="width: 100%; padding-left: 28px;">
+                                    </div>
+
+                                    <!-- Reload Button -->
+                                    <div>
+                                        <button id="btnReloadSheet" class="btn btn-sm" title="Refresh Roster" style="height: 28px; padding: 0 10px; font-size: 11px; font-weight: 700; background: #047857; color: white; border: none; display: inline-flex; align-items: center; gap: 4px;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Fetch
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- Real-time Headcount Ribbon (4 Standard Compact Cards) -->
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-bottom: 8px;">
+                                
+                                <div class="stat-card-compact" style="border-left: 4px solid #3b82f6;">
+                                    <div class="stat-card-compact-lbl">
+                                        <span>Roster Size</span>
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                    </div>
+                                    <div class="stat-card-compact-val" id="kpiTotal">0</div>
+                                    <div class="stat-card-compact-sub" style="color: #64748b;" id="kpiScopeText">Active Students</div>
+                                </div>
+
+                                <div class="stat-card-compact" style="border-left: 4px solid #10b981;">
+                                    <div class="stat-card-compact-lbl">
+                                        <span>Present</span>
+                                        <span id="kpiPresentPct" style="color: #047857; font-weight: 800;">0%</span>
+                                    </div>
+                                    <div class="stat-card-compact-val" style="color: #047857;" id="kpiPresent">0</div>
+                                    <div class="stat-card-compact-sub" style="color: #10b981;">Present in Roll Call</div>
+                                </div>
+
+                                <div class="stat-card-compact" style="border-left: 4px solid #ef4444;">
+                                    <div class="stat-card-compact-lbl">
+                                        <span>Absent</span>
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                                    </div>
+                                    <div class="stat-card-compact-val" style="color: #b91c1c;" id="kpiAbsent">0</div>
+                                    <div class="stat-card-compact-sub" style="color: #ef4444;">Unexcused Absence</div>
+                                </div>
+
+                                <div class="stat-card-compact" style="border-left: 4px solid #f59e0b;">
+                                    <div class="stat-card-compact-lbl">
+                                        <span>Late / Excused</span>
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                    </div>
+                                    <div class="stat-card-compact-val" style="color: #b45309;" id="kpiLateExcused">0</div>
+                                    <div class="stat-card-compact-sub" style="color: #d97706;">Late arrivals &amp; permissions</div>
+                                </div>
+
+                            </div>
+
+                            <!-- Batch Actions & Save Bar -->
+                            <div id="batchActionBar" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase;">Batch Set:</span>
+                                    
+                                    <button id="btnMarkAllPresent" class="btn btn-sm" style="height: 26px; padding: 0 8px; font-size: 11px; font-weight: 700; background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Mark All Present
+                                    </button>
+
+                                    <button id="btnMarkAllAbsent" class="btn btn-sm" style="height: 26px; padding: 0 8px; font-size: 11px; font-weight: 700; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Mark All Absent
+                                    </button>
+
+                                    <div style="height: 16px; width: 1px; background: #e2e8f0; margin: 0 4px;"></div>
+
+                                    <!-- Direct Deep-Links to Reports Hub per Rule -->
+                                    <a id="lnkClassReport" href="../reports/index.html?tab=tabRoster" target="_blank" class="btn btn-sm" style="height: 26px; padding: 0 8px; font-size: 11px; font-weight: 600; text-decoration: none; background: #f8fafc; border: 1px solid #cbd5e1; color: #475569; display: inline-flex; align-items: center; gap: 4px;">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Class Report
+                                    </a>
+
+                                    <a id="lnkLevelReport" href="../reports/index.html?tab=tabAnalytics" target="_blank" class="btn btn-sm" style="height: 26px; padding: 0 8px; font-size: 11px; font-weight: 600; text-decoration: none; background: #f8fafc; border: 1px solid #cbd5e1; color: #475569; display: inline-flex; align-items: center; gap: 4px;">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Level Analytics
+                                    </a>
+                                </div>
+
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span id="saveNotice" style="font-size: 11px; color: #64748b; font-weight: 600;"></span>
+                                    <button id="btnSaveAttendance" class="btn btn-sm" style="height: 28px; padding: 0 14px; font-size: 11px; font-weight: 800; background: #047857; color: white; border: none; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 1px 3px rgba(4,120,87,0.3);">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Attendance
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Student Roster Table Card -->
+                            <div class="card" style="background: white; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+                                <div style="overflow-x: auto; max-height: calc(100vh - 280px);">
+                                    <table class="compact-table" id="rosterTable">
+                                        <thead style="position: sticky; top: 0; z-index: 10;">
+                                            <tr>
+                                                <th style="width: 35px; text-align: center;">#</th>
+                                                <th style="width: 140px;">Student ID</th>
+                                                <th>Student Name</th>
+                                                <th style="width: 60px; text-align: center;">Gender</th>
+                                                <th style="width: 130px;">Classroom</th>
+                                                <th style="width: 160px; text-align: center;">Status (P / A / L / E)</th>
+                                                <th style="width: 70px; text-align: center;">Timeline</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="rosterTbody">
+                                            <tr>
+                                                <td colspan="7" style="text-align: center; padding: 40px 10px; color: #64748b;">
+                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 8px; display: block;"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+                                                    Loading student attendance register...
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </app-workspace-content>
+
+                        <!-- TAB 2: MISSING ATTENDANCE & REMINDER SYSTEM -->
+                        <app-workspace-content tab-id="tabMissing">
+                            <div class="card" style="background: white; border-radius: 8px; border: 1px solid #e2e8f0; padding: 12px; margin-bottom: 8px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <div>
+                                        <h3 style="margin: 0; font-size: 13px; font-weight: 800; color: #0f172a;">Daily Attendance Compliance Ledger</h3>
+                                        <p style="margin: 2px 0 0; font-size: 11px; color: #64748b;">Classrooms with enrolled students that have not submitted morning roll-call for <strong id="lblMissingDate">Today</strong>.</p>
+                                    </div>
+                                    <button id="btnRefreshMissing" class="btn btn-sm" style="height: 26px; padding: 0 10px; font-size: 11px; font-weight: 700; background: #f8fafc; border: 1px solid #cbd5e1; display: inline-flex; align-items: center; gap: 4px;">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Re-check
+                                    </button>
+                                </div>
+
+                                <div style="overflow-x: auto;">
+                                    <table class="compact-table" id="tableMissing">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 35px; text-align: center;">#</th>
+                                                <th>Classroom Stream</th>
+                                                <th>Education Level &amp; Grade</th>
+                                                <th style="width: 110px; text-align: center;">Enrolled Students</th>
+                                                <th>Assigned Class Teacher</th>
+                                                <th style="width: 180px; text-align: center;">Direct Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbodyMissing">
+                                            <tr>
+                                                <td colspan="6" style="text-align: center; padding: 30px; color: #64748b;">Checking attendance compliance...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </app-workspace-content>
+
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
+    <!-- ON-DEMAND WINDOW 1: ANALYTICS BOARD MODAL                               -->
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
+    <div class="modal-overlay" id="modalAnalyticsBoard">
+        <div class="modal-window modal-window-lg">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <div style="width: 22px; height: 22px; border-radius: 4px; background: #ecfdf5; color: #047857; display: flex; align-items: center; justify-content: center;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                    </div>
+                    <span>School Attendance Analytics Board</span>
+                </div>
+                <button class="modal-close-btn" style="background: none; border: none; cursor: pointer; color: #64748b; font-size: 16px; font-weight: 800;" onclick="closeModal('modalAnalyticsBoard')">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                
+                <!-- Level Breakdown Grid -->
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between;">
+                        <span>Attendance by Education Level</span>
+                        <span id="lblAnalyticsDate" style="color: #64748b; font-weight: 600;">--</span>
+                    </div>
+                    <div id="analyticsLevelGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px;">
+                        <!-- Rendered dynamically -->
+                    </div>
+                </div>
+
+                <!-- Grade Breakdown -->
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 8px;">
+                        Grade Tier Progress
+                    </div>
+                    <div id="analyticsGradeList" style="display: flex; flex-direction: column; gap: 6px;">
+                        <!-- Rendered dynamically -->
+                    </div>
+                </div>
+
+                <!-- Truancy Watchlist / Frequent Absentees -->
+                <div>
+                    <div style="font-size: 11px; font-weight: 800; color: #b91c1c; text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 4px;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        Truancy Watchlist (Students with Multiple Unexcused Absences)
+                    </div>
+                    <div style="max-height: 180px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px;">
+                        <table class="compact-table" id="tableChronic">
+                            <thead>
+                                <tr>
+                                    <th style="width: 130px;">Student ID</th>
+                                    <th>Full Name</th>
+                                    <th>Classroom</th>
+                                    <th style="width: 80px; text-align: center;">Absences</th>
+                                    <th style="width: 70px; text-align: center;">Timeline</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbodyChronic">
+                                <!-- Rendered dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <a href="../reports/index.html?tab=tabAnalytics" target="_blank" class="btn btn-sm" style="height: 26px; padding: 0 10px; font-size: 11px; font-weight: 700; text-decoration: none; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; display: inline-flex; align-items: center; gap: 4px;">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> Open Full Attendance Reports Hub
+                </a>
+                <button class="btn btn-sm" style="height: 26px; padding: 0 10px; font-size: 11px; font-weight: 700; background: #f8fafc; border: 1px solid #cbd5e1;" onclick="closeModal('modalAnalyticsBoard')">
+                    Close Window
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
+    <!-- ON-DEMAND WINDOW 2: SINGLE STUDENT TIMELINE MODAL                      -->
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
+    <div class="modal-overlay" id="modalStudentTimeline">
+        <div class="modal-window">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <div style="width: 22px; height: 22px; border-radius: 4px; background: #eff6ff; color: #1d4ed8; display: flex; align-items: center; justify-content: center;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <span>Individual Attendance Timeline</span>
+                </div>
+                <button class="modal-close-btn" style="background: none; border: none; cursor: pointer; color: #64748b; font-size: 16px; font-weight: 800;" onclick="closeModal('modalStudentTimeline')">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body" id="modalStudentTimelineBody">
+                <div style="text-align: center; padding: 20px; color: #64748b;">Loading timeline...</div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-sm" style="height: 26px; padding: 0 10px; font-size: 11px; font-weight: 700; background: #f8fafc; border: 1px solid #cbd5e1;" onclick="closeModal('modalStudentTimeline')">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
+    <!-- ON-DEMAND WINDOW 3: EXPORT MODAL (CSV & PRINT/PDF)                     -->
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
+    <div class="modal-overlay" id="modalExport">
+        <div class="modal-window" style="max-width: 460px;">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <div style="width: 22px; height: 22px; border-radius: 4px; background: #f1f5f9; color: #334155; display: flex; align-items: center; justify-content: center;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    </div>
+                    <span>Export Attendance Register</span>
+                </div>
+                <button class="modal-close-btn" style="background: none; border: none; cursor: pointer; color: #64748b; font-size: 16px; font-weight: 800;" onclick="closeModal('modalExport')">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-top: 0; font-size: 12px; color: #475569;">
+                    Choose an export format for the current roster of <strong id="lblExportCount">0</strong> students.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    
+                    <button id="btnExportCSV" class="btn" style="display: flex; align-items: center; justify-content: flex-start; gap: 10px; padding: 10px 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; text-align: left; cursor: pointer;">
+                        <div style="width: 32px; height: 32px; border-radius: 6px; background: #ecfdf5; color: #047857; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; font-weight: 800; color: #0f172a;">Export to CSV / Excel (.csv)</div>
+                            <div style="font-size: 11px; color: #64748b;">Full student roster with ID numbers, classes, and daily roll-call statuses.</div>
+                        </div>
+                    </button>
+
+                    <button id="btnExportPDF" class="btn" style="display: flex; align-items: center; justify-content: flex-start; gap: 10px; padding: 10px 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; text-align: left; cursor: pointer;">
+                        <div style="width: 32px; height: 32px; border-radius: 6px; background: #fef2f2; color: #b91c1c; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; font-weight: 800; color: #0f172a;">Print / Save as PDF Layout</div>
+                            <div style="font-size: 11px; color: #64748b;">Formatted official attendance sheet ready for signing and physical archiving.</div>
+                        </div>
+                    </button>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-sm" style="height: 26px; padding: 0 10px; font-size: 11px; font-weight: 700; background: #f8fafc; border: 1px solid #cbd5e1;" onclick="closeModal('modalExport')">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
+    <!-- LOGIC SCRIPT                                                           -->
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
+    <script>
+        // Global State
+        const AppState = {
+            today: new Date().toISOString().split('T')[0],
+            selectedDate: new Date().toISOString().split('T')[0],
+            selectedYear: new Date().getFullYear().toString(),
+            selectedLevel: 0,
+            selectedGrade: 0,
+            selectedClassroom: 0,
+            searchQuery: '',
+            filterData: { years: [], levels: [], grades: [], classrooms: [] },
+            currentRoster: [], // Array of student objects
+            hasUnsavedChanges: false,
+            missingClassrooms: []
+        };
+
+        // Window open/close helpers
+        window.openModal = function(modalId) {
+            const el = document.getElementById(modalId);
+            if (el) el.style.display = 'flex';
+        };
+        window.closeModal = function(modalId) {
+            const el = document.getElementById(modalId);
+            if (el) el.style.display = 'none';
+        };
+
+        // Close on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                ['modalAnalyticsBoard', 'modalStudentTimeline', 'modalExport'].forEach(id => closeModal(id));
+            }
+        });
+
+        // Initialize Workspace
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Set date input to today
+            const dateInput = document.getElementById('filterDate');
+            dateInput.value = AppState.today;
+            dateInput.max = AppState.today;
+
+            setupEventListeners();
+            await loadFilters();
+            await loadSheet();
+            await loadMissingAttendance();
+        });
+
+        function setupEventListeners() {
+            // Date navigation
+            document.getElementById('filterDate').addEventListener('change', (e) => {
+                AppState.selectedDate = e.target.value;
+                onFilterChanged();
+            });
+
+            document.getElementById('btnPrevDate').addEventListener('click', () => {
+                const d = new Date(AppState.selectedDate);
+                d.setDate(d.getDate() - 1);
+                AppState.selectedDate = d.toISOString().split('T')[0];
+                document.getElementById('filterDate').value = AppState.selectedDate;
+                onFilterChanged();
+            });
+
+            document.getElementById('btnNextDate').addEventListener('click', () => {
+                const d = new Date(AppState.selectedDate);
+                d.setDate(d.getDate() + 1);
+                AppState.selectedDate = d.toISOString().split('T')[0];
+                document.getElementById('filterDate').value = AppState.selectedDate;
+                onFilterChanged();
+            });
+
+            document.getElementById('btnToday').addEventListener('click', () => {
+                AppState.selectedDate = AppState.today;
+                document.getElementById('filterDate').value = AppState.today;
+                onFilterChanged();
+            });
+
+            // Filter dropdowns
+            document.getElementById('filterYear').addEventListener('change', (e) => {
+                AppState.selectedYear = e.target.value;
+                onFilterChanged();
+            });
+
+            document.getElementById('filterLevel').addEventListener('change', (e) => {
+                AppState.selectedLevel = parseInt(e.target.value) || 0;
+                populateGradesDropdown();
+                populateClassroomsDropdown();
+                onFilterChanged();
+            });
+
+            document.getElementById('filterGrade').addEventListener('change', (e) => {
+                AppState.selectedGrade = parseInt(e.target.value) || 0;
+                populateClassroomsDropdown();
+                onFilterChanged();
+            });
+
+            document.getElementById('filterClassroom').addEventListener('change', (e) => {
+                AppState.selectedClassroom = parseInt(e.target.value) || 0;
+                onFilterChanged();
+            });
+
+            // Quick search
+            let searchTimeout = null;
+            document.getElementById('filterSearch').addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    AppState.searchQuery = e.target.value.trim();
+                    filterRosterLocally();
+                }, 250);
+            });
+
+            document.getElementById('btnReloadSheet').addEventListener('click', () => {
+                loadSheet();
+            });
+
+            // Batch actions
+            document.getElementById('btnMarkAllPresent').addEventListener('click', () => {
+                batchSetStatus('Present');
+            });
+
+            document.getElementById('btnMarkAllAbsent').addEventListener('click', () => {
+                batchSetStatus('Absent');
+            });
+
+            // Save attendance
+            document.getElementById('btnSaveAttendance').addEventListener('click', () => {
+                saveAttendance();
+            });
+
+            // Modal openers
+            document.getElementById('btnOpenAnalyticsModal').addEventListener('click', () => {
+                openAnalyticsBoard();
+            });
+
+            document.getElementById('btnOpenExportModal').addEventListener('click', () => {
+                document.getElementById('lblExportCount').innerText = AppState.currentRoster.length;
+                openModal('modalExport');
+            });
+
+            document.getElementById('btnExportCSV').addEventListener('click', () => {
+                exportToCSV();
+                closeModal('modalExport');
+            });
+
+            document.getElementById('btnExportPDF').addEventListener('click', () => {
+                closeModal('modalExport');
+                printAttendanceSheet();
+            });
+
+            document.getElementById('btnRefreshMissing').addEventListener('click', () => {
+                loadMissingAttendance();
+            });
+        }
+
+        async function onFilterChanged() {
+            if (AppState.hasUnsavedChanges) {
+                if (!confirm('You have unsaved attendance changes on this sheet. Discard and switch filters?')) {
+                    return;
+                }
+            }
+            await loadSheet();
+            await loadMissingAttendance();
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // 1. LOAD FILTERS
+        // ─────────────────────────────────────────────────────────────────────
+        async function loadFilters() {
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/attendance/global_attendance_api.php?action=filters');
+                const data = await res.json();
+                if (!data.success) throw new Error(data.message || 'Failed to load filters');
+
+                AppState.filterData = data;
+                AppState.today = data.today || AppState.today;
+
+                // Populate Academic Years
+                const selYear = document.getElementById('filterYear');
+                selYear.innerHTML = data.years.map(y => `<option value="${y}">${y}</option>`).join('');
+                if (data.years.length > 0) {
+                    AppState.selectedYear = data.years[0];
+                    selYear.value = AppState.selectedYear;
+                }
+
+                // Populate Education Levels
+                const selLevel = document.getElementById('filterLevel');
+                selLevel.innerHTML = '<option value="0">All Levels</option>' + 
+                    data.levels.map(l => `<option value="${l.id}">${l.name}</option>`).join('');
+
+                populateGradesDropdown();
+                populateClassroomsDropdown();
+            } catch (err) {
+                console.error('Error loading filters:', err);
+                showToast('Failed to load school filter parameters: ' + err.message, 'error');
+            }
+        }
+
+        function populateGradesDropdown() {
+            const selGrade = document.getElementById('filterGrade');
+            let filteredGrades = AppState.filterData.grades || [];
+
+            if (AppState.selectedLevel > 0) {
+                filteredGrades = filteredGrades.filter(g => parseInt(g.level_id) === AppState.selectedLevel);
+            }
+
+            selGrade.innerHTML = '<option value="0">All Grades</option>' + 
+                filteredGrades.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+            AppState.selectedGrade = 0;
+        }
+
+        function populateClassroomsDropdown() {
+            const selRoom = document.getElementById('filterClassroom');
+            let filteredRooms = AppState.filterData.classrooms || [];
+
+            if (AppState.selectedGrade > 0) {
+                filteredRooms = filteredRooms.filter(r => parseInt(r.grade_id) === AppState.selectedGrade);
+            } else if (AppState.selectedLevel > 0) {
+                filteredRooms = filteredRooms.filter(r => parseInt(r.level_id) === AppState.selectedLevel);
+            }
+
+            selRoom.innerHTML = '<option value="0">All Classrooms</option>' + 
+                filteredRooms.map(r => `<option value="${r.id}">${r.classroom_name} (${r.student_count || 0})</option>`).join('');
+            AppState.selectedClassroom = 0;
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // 2. LOAD SHEET (Roster & Daily Attendance)
+        // ─────────────────────────────────────────────────────────────────────
+        async function loadSheet() {
+            const tbody = document.getElementById('rosterTbody');
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#64748b;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 6px; display:block; animation:spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg>
+                Fetching student roster...
+            </td></tr>`;
+
+            try {
+                const params = new URLSearchParams({
+                    action: 'sheet',
+                    date: AppState.selectedDate,
+                    year: AppState.selectedYear,
+                    level_id: AppState.selectedLevel,
+                    grade_id: AppState.selectedGrade,
+                    classroom_id: AppState.selectedClassroom
+                });
+
+                const res = await fetch(`/shule-cafe/api/headmaster/attendance/global_attendance_api.php?${params.toString()}`);
+                const data = await res.json();
+                if (!data.success) throw new Error(data.message || 'Failed to fetch attendance sheet');
+
+                AppState.currentRoster = data.roster || [];
+                AppState.hasUnsavedChanges = false;
+                setSyncStatus(data.has_saved_records ? 'Official Records Saved' : 'Unsaved Draft Sheet', data.has_saved_records);
+
+                // Update Report Deep-Links
+                updateDeepLinks();
+
+                renderRosterTable();
+                updateRealtimeKPIs();
+            } catch (err) {
+                console.error('Error loading sheet:', err);
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#b91c1c;">
+                    Failed to load attendance register: ${err.message}
+                </td></tr>`;
+            }
+        }
+
+        function renderRosterTable() {
+            const tbody = document.getElementById('rosterTbody');
+            const roster = AppState.currentRoster;
+
+            if (roster.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px; color:#64748b;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 8px; display:block;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    No students found matching selected academic filters.
+                </td></tr>`;
+                return;
+            }
+
+            const search = AppState.searchQuery.toLowerCase();
+            let visibleCount = 0;
+
+            const rowsHtml = roster.map((s, idx) => {
+                // Filter search
+                if (search && !s.full_name.toLowerCase().includes(search) && !(s.user_code || '').toLowerCase().includes(search)) {
+                    return '';
+                }
+                visibleCount++;
+
+                const status = s.status || 'Present';
+                let trClass = '';
+                if (status === 'Absent') trClass = 'row-absent';
+                else if (status === 'Late') trClass = 'row-late';
+
+                const genderBadge = s.gender === 'Female' 
+                    ? `<span style="font-size:10px; font-weight:700; color:#db2777; background:#fdf2f8; padding:1px 5px; border-radius:4px; border:1px solid #fbcfe8;">F</span>`
+                    : `<span style="font-size:10px; font-weight:700; color:#2563eb; background:#eff6ff; padding:1px 5px; border-radius:4px; border:1px solid #bfdbfe;">M</span>`;
+
+                return `
+                    <tr class="${trClass}" data-student-id="${s.student_id}">
+                        <td style="text-align:center; color:#94a3b8; font-weight:600;">${idx + 1}</td>
+                        <td>
+                            <span style="font-family:monospace; font-size:10px; font-weight:700; background:#f1f5f9; padding:2px 6px; border-radius:4px; border:1px solid #e2e8f0; color:#334155;">
+                                ${s.user_code || 'SC/STD-' + s.student_id}
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <div style="width:20px; height:20px; border-radius:50%; background:#f1f5f9; color:#475569; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:800; border:1px solid #cbd5e1;">
+                                    ${(s.full_name || 'S').charAt(0).toUpperCase()}
+                                </div>
+                                <span style="font-weight:700; color:#0f172a; cursor:pointer;" onclick="openStudentTimeline('${s.student_id}')" title="Click to view timeline">${s.full_name}</span>
+                            </div>
+                        </td>
+                        <td style="text-align:center;">${genderBadge}</td>
+                        <td>
+                            <span style="font-size:10px; font-weight:600; color:#475569; background:#f8fafc; padding:2px 6px; border-radius:4px; border:1px solid #e2e8f0;">
+                                ${s.classroom_name || 'Stream'}
+                            </span>
+                        </td>
+                        <td style="text-align:center;">
+                            <div class="status-grid-group" data-student-id="${s.student_id}">
+                                <button type="button" class="status-square-btn ${status === 'Present' ? 'active-P' : ''}" onclick="setStatus('${s.student_id}', 'Present')" title="Mark Present">P</button>
+                                <button type="button" class="status-square-btn ${status === 'Absent' ? 'active-A' : ''}" onclick="setStatus('${s.student_id}', 'Absent')" title="Mark Absent">A</button>
+                                <button type="button" class="status-square-btn ${status === 'Late' ? 'active-L' : ''}" onclick="setStatus('${s.student_id}', 'Late')" title="Mark Late">L</button>
+                                <button type="button" class="status-square-btn ${status === 'Excused' ? 'active-E' : ''}" onclick="setStatus('${s.student_id}', 'Excused')" title="Mark Excused">E</button>
+                            </div>
+                        </td>
+                        <td style="text-align:center;">
+                            <button class="btn btn-sm" onclick="openStudentTimeline('${s.student_id}')" title="View 60-Day History" style="height:22px; width:26px; padding:0; display:inline-flex; align-items:center; justify-content:center; background:#ffffff; border:1px solid #cbd5e1; border-radius:4px;">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            if (visibleCount === 0 && roster.length > 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:#64748b;">
+                    No students match search query "<strong>${AppState.searchQuery}</strong>".
+                </td></tr>`;
+            } else {
+                tbody.innerHTML = rowsHtml;
+            }
+        }
+
+        function filterRosterLocally() {
+            renderRosterTable();
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // 3. SQUARE GRID STATUS TOGGLES & REAL-TIME RECALCULATION
+        // ─────────────────────────────────────────────────────────────────────
+        window.setStatus = function(studentId, newStatus) {
+            const student = AppState.currentRoster.find(s => s.student_id == studentId);
+            if (!student) return;
+
+            student.status = newStatus;
+            AppState.hasUnsavedChanges = true;
+            setSyncStatus('Unsaved Changes *', false);
+
+            // Update DOM row buttons
+            const group = document.querySelector(`.status-grid-group[data-student-id="${studentId}"]`);
+            if (group) {
+                const btns = group.querySelectorAll('.status-square-btn');
+                btns.forEach(b => {
+                    b.className = 'status-square-btn';
+                    if (b.innerText === newStatus.charAt(0)) {
+                        b.classList.add(`active-${newStatus.charAt(0)}`);
+                    }
+                });
+            }
+
+            // Update row background
+            const tr = document.querySelector(`tr[data-student-id="${studentId}"]`);
+            if (tr) {
+                tr.classList.remove('row-absent', 'row-late');
+                if (newStatus === 'Absent') tr.classList.add('row-absent');
+                else if (newStatus === 'Late') tr.classList.add('row-late');
+            }
+
+            updateRealtimeKPIs();
+        };
+
+        function batchSetStatus(status) {
+            if (AppState.currentRoster.length === 0) return;
+            AppState.currentRoster.forEach(s => s.status = status);
+            AppState.hasUnsavedChanges = true;
+            setSyncStatus('Unsaved Changes *', false);
+            renderRosterTable();
+            updateRealtimeKPIs();
+        }
+
+        function updateRealtimeKPIs() {
+            const roster = AppState.currentRoster;
+            const total = roster.length;
+            let present = 0, absent = 0, late = 0, excused = 0;
+
+            roster.forEach(s => {
+                const st = s.status || 'Present';
+                if (st === 'Present') present++;
+                else if (st === 'Absent') absent++;
+                else if (st === 'Late') late++;
+                else if (st === 'Excused') excused++;
+            });
+
+            const rate = total > 0 ? Math.round(((present + late) / total) * 1000) / 10 : 100.0;
+
+            document.getElementById('kpiTotal').innerText = total;
+            document.getElementById('kpiPresent').innerText = present;
+            document.getElementById('kpiPresentPct').innerText = rate + '%';
+            document.getElementById('kpiAbsent').innerText = absent;
+            document.getElementById('kpiLateExcused').innerText = (late + excused);
+
+            // Print details update
+            const dateStr = new Date(AppState.selectedDate).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+            document.getElementById('printMetaDetails').innerText = `Date: ${dateStr} | Academic Year: ${AppState.selectedYear} | Total Students: ${total} | Present Rate: ${rate}%`;
+        }
+
+        function setSyncStatus(text, isSynced) {
+            const badge = document.getElementById('syncIndicator');
+            badge.innerText = text;
+            if (isSynced) {
+                badge.style.background = '#ecfdf5';
+                badge.style.color = '#047857';
+                badge.style.borderColor = '#a7f3d0';
+            } else {
+                badge.style.background = '#fef3c7';
+                badge.style.color = '#b45309';
+                badge.style.borderColor = '#fde68a';
+            }
+        }
+
+        function updateDeepLinks() {
+            const classId = AppState.selectedClassroom;
+            const lnkClass = document.getElementById('lnkClassReport');
+            const lnkLevel = document.getElementById('lnkLevelReport');
+
+            if (classId > 0) {
+                lnkClass.href = `../reports/index.html?tab=tabRoster&classroom_id=${classId}`;
+            } else {
+                lnkClass.href = `../reports/index.html?tab=tabRoster`;
+            }
+
+            lnkLevel.href = `../reports/index.html?tab=tabAnalytics`;
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // 4. SAVE ATTENDANCE BATCH
+        // ─────────────────────────────────────────────────────────────────────
+        async function saveAttendance() {
+            if (AppState.currentRoster.length === 0) {
+                showToast('No students loaded on the current sheet.', 'warning');
+                return;
+            }
+
+            const btnSave = document.getElementById('btnSaveAttendance');
+            const origHtml = btnSave.innerHTML;
+            btnSave.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg> Saving...`;
+            btnSave.disabled = true;
+
+            const records = AppState.currentRoster.map(s => ({
+                student_id: s.student_id,
+                classroom_id: s.classroom_id,
+                status: s.status || 'Present'
+            }));
+
+            try {
+                const res = await fetch('/shule-cafe/api/headmaster/attendance/global_attendance_api.php?action=save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        date: AppState.selectedDate,
+                        year: AppState.selectedYear,
+                        classroom_id: AppState.selectedClassroom,
+                        records: records
+                    })
+                });
+
+                const data = await res.json();
+                if (!data.success) throw new Error(data.message || 'Failed to save attendance');
+
+                AppState.hasUnsavedChanges = false;
+                setSyncStatus('Official Records Saved', true);
+                showToast(data.message, 'success');
+
+                // Refresh missing attendance ledger in background
+                loadMissingAttendance();
+            } catch (err) {
+                console.error('Save error:', err);
+                showToast('Failed to save attendance: ' + err.message, 'error');
+            } finally {
+                btnSave.innerHTML = origHtml;
+                btnSave.disabled = false;
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // 5. MISSING ATTENDANCE TAB & REMINDER SYSTEM
+        // ─────────────────────────────────────────────────────────────────────
+        async function loadMissingAttendance() {
+            const tbody = document.getElementById('tbodyMissing');
+            const badge = document.getElementById('badgeMissingCount');
+            const lblDate = document.getElementById('lblMissingDate');
+            lblDate.innerText = AppState.selectedDate;
+
+            try {
+                const params = new URLSearchParams({
+                    action: 'missing',
+                    date: AppState.selectedDate,
+                    year: AppState.selectedYear
+                });
+
+                const res = await fetch(`/shule-cafe/api/headmaster/attendance/global_attendance_api.php?${params.toString()}`);
+                const data = await res.json();
+                if (!data.success) throw new Error(data.message);
+
+                AppState.missingClassrooms = data.missing_classrooms || [];
+                const count = AppState.missingClassrooms.length;
+
+                if (count > 0) {
+                    badge.innerText = count;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+
+                if (count === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:#047857;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 6px; display:block;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        <strong>100% Attendance Compliance!</strong> All active classrooms have submitted attendance for ${AppState.selectedDate}.
+                    </td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = AppState.missingClassrooms.map((c, i) => `
+                    <tr>
+                        <td style="text-align:center; color:#94a3b8; font-weight:600;">${i + 1}</td>
+                        <td style="font-weight:700; color:#0f172a;">${c.classroom_name}</td>
+                        <td style="color:#475569;">${c.level_name} ‹ ${c.grade_name}</td>
+                        <td style="text-align:center; font-weight:700; color:#0f172a;">${c.enrolled_students}</td>
+                        <td style="color:#334155; font-weight:600;">
+                            ${c.class_guider_name ? c.class_guider_name : '<span style="color:#94a3b8; font-style:italic;">No Class Teacher Assigned</span>'}
+                        </td>
+                        <td style="text-align:center;">
+                            <div style="display:inline-flex; gap:4px;">
+                                <button class="btn btn-sm" onclick="takeAttendanceForClass(${c.classroom_id})" style="height:24px; padding:0 8px; font-size:11px; font-weight:700; background:#047857; color:#fff; border:none; border-radius:4px; display:inline-flex; align-items:center; gap:4px; cursor:pointer;">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Fill Now
+                                </button>
+                                <button class="btn btn-sm" onclick="sendTeacherReminder('${c.classroom_name}', '${c.class_guider_name || 'Class Teacher'}')" style="height:24px; padding:0 8px; font-size:11px; font-weight:600; background:#f8fafc; border:1px solid #cbd5e1; color:#475569; border-radius:4px; display:inline-flex; align-items:center; gap:4px; cursor:pointer;">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> Remind
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                console.error('Missing load error:', err);
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:#b91c1c;">Failed to check missing attendance.</td></tr>`;
+            }
+        }
+
+        window.takeAttendanceForClass = function(classroomId) {
+            document.getElementById('filterClassroom').value = classroomId;
+            AppState.selectedClassroom = classroomId;
+            
+            // Switch to Register tab
+            const tabBtn = document.querySelector('.workspace-tab[data-target="tabRegister"]');
+            if (tabBtn) tabBtn.click();
+
+            loadSheet();
+        };
+
+        window.sendTeacherReminder = function(className, teacherName) {
+            showToast(`Attendance reminder dispatched to ${teacherName} for ${className}.`, 'success');
+        };
+
+        // ─────────────────────────────────────────────────────────────────────
+        // 6. ON-DEMAND WINDOW: ANALYTICS BOARD
+        // ─────────────────────────────────────────────────────────────────────
+        async function openAnalyticsBoard() {
+            openModal('modalAnalyticsBoard');
+            const levelGrid = document.getElementById('analyticsLevelGrid');
+            const gradeList = document.getElementById('analyticsGradeList');
+            const tbodyChronic = document.getElementById('tbodyChronic');
+            document.getElementById('lblAnalyticsDate').innerText = AppState.selectedDate;
+
+            levelGrid.innerHTML = '<div style="padding:15px; color:#64748b;">Loading level data...</div>';
+            gradeList.innerHTML = '<div style="padding:10px; color:#64748b;">Loading grade data...</div>';
+            tbodyChronic.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:15px; color:#64748b;">Loading...</td></tr>';
+
+            try {
+                const params = new URLSearchParams({
+                    action: 'analytics',
+                    date: AppState.selectedDate,
+                    year: AppState.selectedYear
+                });
+
+                const res = await fetch(`/shule-cafe/api/headmaster/attendance/global_attendance_api.php?${params.toString()}`);
+                const data = await res.json();
+                if (!data.success) throw new Error(data.message);
+
+                // 1. Level cards
+                if (!data.levels || data.levels.length === 0) {
+                    levelGrid.innerHTML = '<div style="padding:12px; color:#64748b; font-size:11px;">No recorded level data for this date.</div>';
+                } else {
+                    levelGrid.innerHTML = data.levels.map(l => {
+                        const tot = parseInt(l.total_records) || 0;
+                        const pres = parseInt(l.present_count) || 0;
+                        const rate = tot > 0 ? Math.round((pres / tot) * 1000) / 10 : 0;
+                        return `
+                            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px;">
+                                <div style="font-size:11px; font-weight:800; color:#0f172a; margin-bottom:4px;">${l.level_name}</div>
+                                <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                                    <span style="font-size:18px; font-weight:800; color:#047857;">${rate}%</span>
+                                    <span style="font-size:10px; color:#64748b; font-weight:600;">${pres} / ${tot} Present</span>
+                                </div>
+                                <div style="background:#e2e8f0; border-radius:4px; height:5px; width:100%; margin-top:6px; overflow:hidden;">
+                                    <div style="background:#047857; width:${rate}%; height:100%;"></div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                // 2. Grade progress bars
+                if (!data.grades || data.grades.length === 0) {
+                    gradeList.innerHTML = '<div style="padding:8px; color:#64748b; font-size:11px;">No grade records.</div>';
+                } else {
+                    gradeList.innerHTML = data.grades.map(g => {
+                        const tot = parseInt(g.total_records) || 0;
+                        const pres = parseInt(g.present_count) || 0;
+                        const rate = tot > 0 ? Math.round((pres / tot) * 1000) / 10 : 0;
+                        return `
+                            <div style="background:#ffffff; border:1px solid #e2e8f0; border-radius:6px; padding:6px 10px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                                <div style="width:110px; font-size:11px; font-weight:700; color:#0f172a;">${g.grade_name}</div>
+                                <div style="flex:1; background:#e2e8f0; border-radius:4px; height:6px; overflow:hidden;">
+                                    <div style="background:#10b981; width:${rate}%; height:100%;"></div>
+                                </div>
+                                <div style="font-size:11px; font-weight:800; color:#0f172a; width:45px; text-align:right;">${rate}%</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                // 3. Chronic Absentees
+                if (!data.chronic_absentees || data.chronic_absentees.length === 0) {
+                    tbodyChronic.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:15px; color:#047857; font-weight:600;">No frequent absentees flagged in this academic year.</td></tr>';
+                } else {
+                    tbodyChronic.innerHTML = data.chronic_absentees.map(s => `
+                        <tr>
+                            <td><span style="font-family:monospace; font-size:10px; font-weight:700; background:#f1f5f9; padding:2px 4px; border-radius:3px;">${s.user_code || 'ID-' + s.student_id}</span></td>
+                            <td style="font-weight:700; color:#0f172a;">${s.full_name}</td>
+                            <td style="color:#64748b;">${s.classroom_name}</td>
+                            <td style="text-align:center;"><span style="color:#b91c1c; font-weight:800; background:#fee2e2; padding:2px 8px; border-radius:12px; font-size:11px;">${s.absence_count} days</span></td>
+                            <td style="text-align:center;">
+                                <button class="btn btn-sm" onclick="openStudentTimeline('${s.student_id}')" style="height:20px; padding:0 6px; font-size:10px; font-weight:700; background:#f8fafc; border:1px solid #cbd5e1;">View</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Analytics load error:', err);
+                levelGrid.innerHTML = '<div style="color:#b91c1c; font-size:11px;">Failed to load analytics data.</div>';
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // 7. ON-DEMAND WINDOW: SINGLE STUDENT TIMELINE
+        // ─────────────────────────────────────────────────────────────────────
+        window.openStudentTimeline = async function(studentId) {
+            openModal('modalStudentTimeline');
+            const body = document.getElementById('modalStudentTimelineBody');
+            body.innerHTML = '<div style="text-align:center; padding:25px; color:#64748b;">Loading student attendance timeline...</div>';
+
+            try {
+                const params = new URLSearchParams({
+                    action: 'student_history',
+                    student_id: studentId,
+                    year: AppState.selectedYear
+                });
+
+                const res = await fetch(`/shule-cafe/api/headmaster/attendance/global_attendance_api.php?${params.toString()}`);
+                const data = await res.json();
+                if (!data.success) throw new Error(data.message);
+
+                const st = data.student;
+                const stats = data.stats;
+                const history = data.history || [];
+
+                body.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid #e2e8f0;">
+                        <div style="width:40px; height:40px; border-radius:8px; background:#eff6ff; color:#1d4ed8; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:800; border:1px solid #bfdbfe;">
+                            ${(st.full_name || 'S').charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                            <div style="font-size:13px; font-weight:800; color:#0f172a;">${st.full_name}</div>
+                            <div style="font-size:11px; color:#64748b; margin-top:2px;">
+                                <span style="font-family:monospace; background:#f1f5f9; padding:1px 5px; border-radius:3px;">${st.user_code || 'ID-' + st.id}</span>
+                                &bull; ${st.classroom_name || 'Classroom'} &bull; ${st.gender || 'Student'}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:14px;">
+                        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px; text-align:center;">
+                            <div style="font-size:10px; font-weight:700; color:#64748b; text-transform:uppercase;">Attendance</div>
+                            <div style="font-size:16px; font-weight:800; color:#047857;">${stats.rate}%</div>
+                        </div>
+                        <div style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:6px; padding:8px; text-align:center;">
+                            <div style="font-size:10px; font-weight:700; color:#047857; text-transform:uppercase;">Present</div>
+                            <div style="font-size:16px; font-weight:800; color:#047857;">${stats.present}</div>
+                        </div>
+                        <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:6px; padding:8px; text-align:center;">
+                            <div style="font-size:10px; font-weight:700; color:#b91c1c; text-transform:uppercase;">Absent</div>
+                            <div style="font-size:16px; font-weight:800; color:#b91c1c;">${stats.absent}</div>
+                        </div>
+                        <div style="background:#fef3c7; border:1px solid #fde68a; border-radius:6px; padding:8px; text-align:center;">
+                            <div style="font-size:10px; font-weight:700; color:#b45309; text-transform:uppercase;">Late/Exc</div>
+                            <div style="font-size:16px; font-weight:800; color:#b45309;">${stats.late + stats.excused}</div>
+                        </div>
+                    </div>
+
+                    <div style="font-size:11px; font-weight:800; color:#475569; text-transform:uppercase; margin-bottom:6px;">
+                        Recent 60 Sessions Log
+                    </div>
+                    <div style="max-height:220px; overflow-y:auto; border:1px solid #e2e8f0; border-radius:6px;">
+                        <table class="compact-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Recorded By</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${history.length === 0 ? '<tr><td colspan="3" style="text-align:center; padding:15px; color:#64748b;">No attendance history logged yet.</td></tr>' : 
+                                    history.map(h => {
+                                        let badgeColor = '#047857';
+                                        let badgeBg = '#ecfdf5';
+                                        if (h.status === 'Absent') { badgeColor = '#b91c1c'; badgeBg = '#fee2e2'; }
+                                        else if (h.status === 'Late') { badgeColor = '#b45309'; badgeBg = '#fef3c7'; }
+                                        else if (h.status === 'Excused') { badgeColor = '#1d4ed8'; badgeBg = '#eff6ff'; }
+                                        return `
+                                            <tr>
+                                                <td style="font-weight:600; color:#0f172a;">${h.attendance_date}</td>
+                                                <td><span style="font-size:10px; font-weight:800; color:${badgeColor}; background:${badgeBg}; padding:2px 6px; border-radius:10px;">${h.status}</span></td>
+                                                <td style="color:#64748b; font-size:10px;">${h.recorder_name || 'System Admin'}</td>
+                                            </tr>
+                                        `;
+                                    }).join('')
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } catch (err) {
+                console.error('Timeline error:', err);
+                body.innerHTML = '<div style="color:#b91c1c; padding:20px; text-align:center;">Failed to load timeline.</div>';
+            }
+        };
+
+        // ─────────────────────────────────────────────────────────────────────
+        // 8. EXPORTS (CSV / EXCEL & PRINT LAYOUT)
+        // ─────────────────────────────────────────────────────────────────────
+        function exportToCSV() {
+            const roster = AppState.currentRoster;
+            if (roster.length === 0) {
+                showToast('No student data to export.', 'warning');
+                return;
+            }
+
+            const headers = ['#', 'Student ID', 'Full Name', 'Gender', 'Education Level', 'Grade', 'Classroom', 'Attendance Date', 'Status'];
+            const rows = roster.map((s, idx) => [
+                idx + 1,
+                `"${s.user_code || ''}"`,
+                `"${s.full_name || ''}"`,
+                `"${s.gender || ''}"`,
+                `"${s.level_name || ''}"`,
+                `"${s.grade_name || ''}"`,
+                `"${s.classroom_name || ''}"`,
+                `"${AppState.selectedDate}"`,
+                `"${s.status || 'Present'}"`
+            ]);
+
+            const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', `Attendance_${AppState.selectedDate}_${AppState.selectedYear}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('Attendance sheet exported to CSV successfully.', 'success');
+        }
+
+        function printAttendanceSheet() {
+            window.print();
+        }
+
+        // Notification Toast Helper
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.right = '20px';
+            toast.style.padding = '8px 14px';
+            toast.style.borderRadius = '6px';
+            toast.style.fontSize = '12px';
+            toast.style.fontWeight = '700';
+            toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            toast.style.zIndex = '99999';
+            toast.style.display = 'flex';
+            toast.style.alignItems = 'center';
+            toast.style.gap = '8px';
+            toast.style.transition = 'all 0.2s ease';
+
+            if (type === 'success') {
+                toast.style.background = '#047857';
+                toast.style.color = '#ffffff';
+            } else if (type === 'error') {
+                toast.style.background = '#b91c1c';
+                toast.style.color = '#ffffff';
+            } else {
+                toast.style.background = '#0f172a';
+                toast.style.color = '#ffffff';
+            }
+
+            toast.innerHTML = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
