@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Batch Student Progress Report Cards ‹ SHULE CAFE</title>
+    
+    <link rel="stylesheet" href="../css/design-system.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    
+    <script type="module" src="../layouts/global-layout.js"></script>
+    <script type="module" src="../js/auth/auth-guard.js"></script>
+    <script>
+        const _params = new URLSearchParams(window.location.search);
+        const _role = _params.get('from') || sessionStorage.getItem('shule_role') || localStorage.getItem('shule_role');
+        if (_role === 'teacher') {
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = '../css/teacher-theme.css';
+            document.head.appendChild(link);
+        }
+    </script>
+    <style>
+        body {
+            background: #f1f5f9;
+            color: #0f172a;
+            margin: 0;
+            padding: 0;
+        }
+
+        .sticky-toolbar {
+            position: sticky;
+            top: 0;
+            background: #0f172a;
+            color: white;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .report-card-page {
+            max-width: 860px;
+            margin: 20px auto;
+            background: white;
+            padding: 24px 28px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            page-break-after: always;
+            break-after: page;
+        }
+
+        .report-header {
+            text-align: center;
+            border-bottom: 2px solid #0f172a;
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+        }
+
+        .report-school-title {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 900;
+            color: #0f172a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .report-school-motto {
+            margin-top: 2px;
+            font-size: 12px;
+            font-style: italic;
+            color: #475569;
+        }
+
+        .report-school-meta {
+            margin-top: 3px;
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .report-badge-title {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 3px 12px;
+            background: #0f172a;
+            color: white;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            background: #f8fafc;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 14px;
+        }
+
+        .meta-item label {
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .meta-item .val {
+            font-size: 13px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-top: 1px;
+        }
+
+        .report-table {
+            width: 100%;
+            margin: 0;
+            font-size: 12px;
+            border-collapse: collapse;
+        }
+
+        .report-table th {
+            padding: 8px 10px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            background: #0f172a;
+            color: white;
+        }
+
+        .report-table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 14px;
+            margin-bottom: 14px;
+        }
+
+        .summary-card {
+            border-radius: 6px;
+            padding: 8px 10px;
+            text-align: center;
+        }
+
+        .summary-card .lbl {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .summary-card .val {
+            font-size: 18px;
+            font-weight: 900;
+            margin-top: 2px;
+        }
+
+        .conduct-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px 14px;
+            margin-top: 12px;
+        }
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 8mm 10mm;
+            }
+            html, body {
+                background: white !important;
+                font-size: 11px !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                color: #000 !important;
+            }
+            .sticky-toolbar, .no-print, .btn-print-hide {
+                display: none !important;
+            }
+            .report-card-page {
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: none !important;
+                box-shadow: none !important;
+                page-break-after: always !important;
+                break-after: page !important;
+            }
+            .meta-grid {
+                background: #f8fafc !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                padding: 6px 10px !important;
+                margin-bottom: 10px !important;
+            }
+            .report-table th {
+                background: #0f172a !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                padding: 5px 8px !important;
+            }
+            .report-table td {
+                padding: 4px 8px !important;
+            }
+            .summary-card {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                padding: 6px !important;
+            }
+            .conduct-box {
+                margin-top: 10px !important;
+                padding: 8px 12px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sticky Toolbar (Hidden on Print) -->
+    <div class="sticky-toolbar no-print">
+        <div style="display: flex; align-items: center; gap: 14px;">
+            <a id="btnBack" href="../teacher/class-ledger.html" class="btn btn-secondary" style="font-size: 12px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.25);">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Back to Ledger
+            </a>
+            <div>
+                <strong id="barClassTitle" style="font-size: 15px; font-weight: 800;">Batch Classroom Report Cards</strong>
+                <div id="barSubtitle" style="font-size: 11px; color: #94a3b8;">Loading classroom records...</div>
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button class="btn btn-primary" onclick="window.print()" style="font-weight: 800; font-size: 13px; display: inline-flex; align-items: center; gap: 8px; background: #059669; border-color: #059669; padding: 8px 16px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                Print / Save All as PDF
+            </button>
+        </div>
+    </div>
+
+    <!-- Batch Pages Container -->
+    <div id="batchContainer">
+        <div style="padding: 60px; text-align: center; color: #64748b; font-weight: 700;">
+            Loading batch report cards...
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const stream = params.get('stream') || '';
+            const classroomId = params.get('classroom_id') || '';
+            const term = params.get('term') || 'Term 1';
+            const year = params.get('year') || new Date().getFullYear().toString();
+            const from = params.get('from') || 'teacher';
+
+            if (from === 'teacher') {
+                document.getElementById('btnBack').href = '../teacher/class-ledger.html';
+            } else {
+                document.getElementById('btnBack').href = '../headmaster/reports/index.html';
+                document.getElementById('btnBack').textContent = 'Back to Reports';
+            }
+
+            try {
+                const url = `/shule-cafe/api/headmaster/analytics/analytics_api.php?action=batch_classroom_report_cards&stream=${encodeURIComponent(stream)}&classroom_id=${encodeURIComponent(classroomId)}&term=${encodeURIComponent(term)}&year=${encodeURIComponent(year)}`;
+                const res = await fetch(url, { credentials: 'include' });
+                const data = await res.json();
+
+                if (!res.ok || !data.success) {
+                    document.getElementById('batchContainer').innerHTML = `<div style="padding: 60px; text-align: center; color: #dc2626; font-weight: 800;">${data.message || 'Failed to load batch report cards.'}</div>`;
+                    return;
+                }
+
+                const sch = data.school || {};
+                const schName = sch.name || 'SHULE CAFE SECONDARY SCHOOL';
+                const schMotto = sch.motto ? `"${sch.motto}"` : '"Excellence in Academic and Moral Integrity"';
+                let schMeta = `Registration No: ${sch.registration_number || 'TZ-REG-99201'}`;
+                if (sch.address) schMeta += ` · ${sch.address}`;
+                if (sch.region) schMeta += `, ${sch.region}`;
+                if (sch.phone) schMeta += ` · Tel: ${sch.phone}`;
+
+                document.getElementById('barClassTitle').textContent = `${data.classroom_name} — Batch Report Cards`;
+                document.getElementById('barSubtitle').textContent = `${data.term} (${data.year}) · Total Students: ${data.total_students}`;
+
+                const cards = data.report_cards || [];
+                if (cards.length === 0) {
+                    document.getElementById('batchContainer').innerHTML = '<div style="padding: 60px; text-align: center; color: #64748b;">No active students found in this classroom.</div>';
+                    return;
+                }
+
+                let html = '';
+                cards.forEach(c => {
+                    const stu = c.student || {};
+                    const sum = c.summary || {};
+                    const subjects = c.subject_marks || [];
+
+                    let tableRows = '';
+                    if (subjects.length === 0) {
+                        tableRows = '<tr><td colspan="7" style="text-align:center; padding:16px; color:#64748b; font-style:italic;">No evaluated subjects recorded.</td></tr>';
+                    } else {
+                        subjects.forEach((m, idx) => {
+                            const isFail = (m.grade === 'F' || m.score < 35);
+                            tableRows += `
+                                <tr>
+                                    <td style="font-weight:700; color:#64748b;">${idx + 1}</td>
+                                    <td style="font-weight:700; color:#0f172a;">${m.subject_name || m.subject_code} <span style="font-size:11px; color:#64748b; font-weight:500;">(${m.subject_code})</span></td>
+                                    <td style="text-align:center; font-weight:800; color:#0f172a;">${m.score}</td>
+                                    <td style="text-align:center; font-weight:800; color:${isFail ? '#dc2626' : '#047857'};">${m.grade || '-'}</td>
+                                    <td style="text-align:center; font-weight:700; color:#475569;">${m.points !== undefined ? m.points : '-'}</td>
+                                    <td style="text-align:center; font-weight:800; color:#0369a1;">${m.position || '-'}</td>
+                                    <td style="text-align:center;">
+                                        <span class="badge ${isFail ? 'badge-danger' : 'badge-success'}" style="font-weight:700; font-size:10px; padding: 2px 8px;">${m.remark || '-'}</span>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    }
+
+                    html += `
+                        <div class="report-card-page">
+                            <div class="report-header">
+                                <h1 class="report-school-title">${schName}</h1>
+                                <div class="report-school-motto">${schMotto}</div>
+                                <div class="report-school-meta">${schMeta}</div>
+                                <div><span class="report-badge-title">OFFICIAL TERMINAL PROGRESS REPORT CARD</span></div>
+                            </div>
+
+                            <div class="meta-grid">
+                                <div class="meta-item">
+                                    <label>Student Full Name</label>
+                                    <div class="val">${stu.full_name}</div>
+                                </div>
+                                <div class="meta-item">
+                                    <label>Registration / Code</label>
+                                    <div class="val" style="color: #475569;">${stu.user_code || 'STD'}</div>
+                                </div>
+                                <div class="meta-item">
+                                    <label>Classroom Stream</label>
+                                    <div class="val">${stu.classroom_name || data.classroom_name}</div>
+                                </div>
+                                <div class="meta-item">
+                                    <label>Term & Year</label>
+                                    <div class="val" style="color: #047857;">${data.term} (${data.year})</div>
+                                </div>
+                                <div class="meta-item">
+                                    <label>Class Position</label>
+                                    <div class="val" style="color: #b45309;">${sum.class_position || '-'}</div>
+                                </div>
+                            </div>
+
+                            <div style="border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; margin-bottom: 12px;">
+                                <table class="report-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 36px; text-align: left;">#</th>
+                                            <th style="text-align: left;">Subject Course</th>
+                                            <th style="text-align: center; width: 90px;">Score (100)</th>
+                                            <th style="text-align: center; width: 60px;">Grade</th>
+                                            <th style="text-align: center; width: 60px;">Points</th>
+                                            <th style="text-align: center; width: 85px;">Position</th>
+                                            <th style="text-align: center; width: 110px;">Remark</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${tableRows}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="summary-grid">
+                                <div class="summary-card" style="background: #ecfdf5; border: 1px solid #a7f3d0;">
+                                    <div class="lbl" style="color: #065f46;">Total Aggregate</div>
+                                    <div class="val" style="color: #047857;">${sum.total_score !== undefined ? sum.total_score : '-'}</div>
+                                </div>
+                                <div class="summary-card" style="background: #f0fdf4; border: 1px solid #bbf7d0;">
+                                    <div class="lbl" style="color: #166534;">Division Points</div>
+                                    <div class="val" style="color: #15803d;">${sum.total_points !== undefined ? sum.total_points : '-'}</div>
+                                </div>
+                                <div class="summary-card" style="background: #eff6ff; border: 1px solid #bfdbfe;">
+                                    <div class="lbl" style="color: #1e40af;">Division Result</div>
+                                    <div class="val" style="color: #1d4ed8;">${sum.division || '-'}</div>
+                                </div>
+                                <div class="summary-card" style="background: #fef3c7; border: 1px solid #fde68a;">
+                                    <div class="lbl" style="color: #92400e;">GPA Average</div>
+                                    <div class="val" style="color: #b45309;">${sum.average_score !== undefined ? sum.average_score + '%' : '-'}</div>
+                                </div>
+                            </div>
+
+                            <div class="conduct-box">
+                                <label style="font-size: 11px; font-weight: 800; color: #0f172a; display: block; margin-bottom: 4px;">
+                                    Form Master Conduct & Recommendation:
+                                </label>
+                                <div style="font-size: 12px; font-weight: 600; color: #334155; line-height: 1.4;">
+                                    ${c.conduct_comment || 'Demonstrates commendable discipline and active academic effort.'}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                document.getElementById('batchContainer').innerHTML = html;
+
+            } catch(e) {
+                console.error('Batch report error:', e);
+                document.getElementById('batchContainer').innerHTML = `<div style="padding: 60px; text-align: center; color: #dc2626; font-weight: 800;">Error rendering batch report cards: ${e.message}</div>`;
+            }
+        });
+    </script>
+</body>
+</html>

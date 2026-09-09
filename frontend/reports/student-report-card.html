@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>360° Student Progress Report Card ‹ SHULE CAFE</title>
+    <title>Student Progress Report Card ‹ SHULE CAFE</title>
     
     <link rel="stylesheet" href="../css/design-system.css">
     <link rel="stylesheet" href="../css/layout.css">
@@ -22,10 +22,217 @@
         }
     </script>
     <style>
+        .report-page-container {
+            max-width: 860px;
+            margin: 0 auto;
+            background: white;
+            padding: 24px 28px;
+            border-radius: 8px;
+            border: 1px solid var(--c-border-light);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+
+        .report-header {
+            text-align: center;
+            border-bottom: 2px solid #0f172a;
+            padding-bottom: 12px;
+            margin-bottom: 14px;
+        }
+
+        .report-school-title {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 900;
+            color: #0f172a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .report-school-motto {
+            margin-top: 2px;
+            font-size: 12px;
+            font-style: italic;
+            color: #475569;
+        }
+
+        .report-school-meta {
+            margin-top: 3px;
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .report-badge-title {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 3px 12px;
+            background: #0f172a;
+            color: white;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            background: #f8fafc;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--c-border-light);
+            margin-bottom: 14px;
+        }
+
+        .meta-item label {
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--c-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .meta-item .val {
+            font-size: 13px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-top: 1px;
+        }
+
+        .report-table {
+            width: 100%;
+            margin: 0;
+            font-size: 12px;
+            border-collapse: collapse;
+        }
+
+        .report-table th {
+            padding: 8px 10px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            background: #0f172a;
+            color: white;
+        }
+
+        .report-table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 14px;
+            margin-bottom: 14px;
+        }
+
+        .summary-card {
+            border-radius: 6px;
+            padding: 8px 10px;
+            text-align: center;
+        }
+
+        .summary-card .lbl {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .summary-card .val {
+            font-size: 18px;
+            font-weight: 900;
+            margin-top: 2px;
+        }
+
+        .conduct-box {
+            background: #f8fafc;
+            border: 1px solid var(--c-border-light);
+            border-radius: 6px;
+            padding: 10px 14px;
+            margin-top: 12px;
+        }
+
+        /* Modal Overlay */
+        .export-modal-backdrop {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            backdrop-filter: blur(3px);
+        }
+
+        .export-modal-box {
+            background: white;
+            border-radius: 10px;
+            padding: 24px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
         @media print {
-            .app-sidebar, .app-topbar, .btn-print-hide { display: none !important; }
-            .app-main { margin: 0 !important; padding: 0 !important; }
-            .card { border: none !important; box-shadow: none !important; }
+            @page {
+                size: A4 portrait;
+                margin: 8mm 10mm;
+            }
+            html, body {
+                background: white !important;
+                font-size: 11px !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                color: #000 !important;
+            }
+            .app-sidebar, .app-topbar, .btn-print-hide, .export-modal-backdrop {
+                display: none !important;
+            }
+            .app-main, .app-content-wrapper, .app-content {
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
+            .report-page-container {
+                max-width: 100% !important;
+                padding: 0 !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+            .meta-grid {
+                background: #f8fafc !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                padding: 6px 10px !important;
+                margin-bottom: 10px !important;
+            }
+            .report-table th {
+                background: #0f172a !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                padding: 5px 8px !important;
+            }
+            .report-table td {
+                padding: 4px 8px !important;
+            }
+            .summary-card {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                padding: 6px !important;
+            }
+            .conduct-box {
+                margin-top: 10px !important;
+                padding: 8px 12px !important;
+            }
         }
     </style>
 </head>
@@ -38,88 +245,138 @@
             
             <main class="app-content-wrapper">
                 <div class="app-content">
-                    <div class="btn-print-hide" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    
+                    <!-- Top Ribbon Navigation -->
+                    <div class="btn-print-hide" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; gap: 10px; flex-wrap: wrap;">
                         <app-breadcrumb id="reportBreadcrumb" path="Teacher, Student Report Card"></app-breadcrumb>
-                        <div style="display: flex; gap: 10px; align-items: center;">
+                        <div style="display: flex; gap: 8px; align-items: center;">
                             <a id="btnBackPortal" href="#" class="btn btn-secondary" style="font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 6px 12px;">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Back
                             </a>
-                            <button class="btn btn-primary" onclick="window.print()" title="Download / Print Report Card" aria-label="Download Report Card" style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0; border-radius: 6px; cursor: pointer;">
+                            <button id="btnDownloadAction" class="btn btn-primary" onclick="openExportModal()" title="Download / Print Report Card" aria-label="Download / Print Report Card" style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; padding: 0; border-radius: 6px; cursor: pointer;">
                                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                             </button>
                         </div>
                     </div>
 
-                    <div class="card" style="padding: 30px; background: white;" id="reportCardContent">
-                        <div style="text-align: center; border-bottom: 2px solid var(--c-border-light); padding-bottom: 20px; margin-bottom: 20px;">
-                            <h1 style="margin: 0 0 4px; font-size: 24px; font-weight: 800; color: #0f172a;">SHULE CAFE ACADEMIC REPORT CARD</h1>
-                            <p style="margin: 0; font-size: 13px; color: var(--c-text-muted);">Official Terminal Performance Summary & Conduct Profile</p>
-                        </div>
-
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; background: #f8fafc; padding: 18px; border-radius: 8px; border: 1px solid var(--c-border-light); margin-bottom: 24px;">
+                    <!-- Single Compact Printable Report Card -->
+                    <div class="report-page-container" id="reportCardContent">
+                        <!-- Official School Header -->
+                        <div class="report-header">
+                            <h1 class="report-school-title" id="lblSchoolName">SHULE CAFE SECONDARY SCHOOL</h1>
+                            <div class="report-school-motto" id="lblSchoolMotto">"Excellence in Academic and Moral Integrity"</div>
+                            <div class="report-school-meta" id="lblSchoolMeta">Registration No: TZ-REG-99201 · P.O. Box 100, Tanzania</div>
                             <div>
-                                <label style="font-size: 11px; font-weight: 700; color: var(--c-text-muted); text-transform: uppercase;">Student Full Name</label>
-                                <div id="lblStudentName" style="font-size: 16px; font-weight: 800; color: #0f172a;">-</div>
-                            </div>
-                            <div>
-                                <label style="font-size: 11px; font-weight: 700; color: var(--c-text-muted); text-transform: uppercase;">Registration / User Code</label>
-                                <div id="lblUserCode" style="font-size: 15px; font-weight: 800; color: #475569;">-</div>
-                            </div>
-                            <div>
-                                <label style="font-size: 11px; font-weight: 700; color: var(--c-text-muted); text-transform: uppercase;">Classroom Stream</label>
-                                <div id="lblClassroom" style="font-size: 15px; font-weight: 800; color: #0f172a;">-</div>
-                            </div>
-                            <div>
-                                <label style="font-size: 11px; font-weight: 700; color: var(--c-text-muted); text-transform: uppercase;">Academic Term & Year</label>
-                                <div id="lblTermYear" style="font-size: 15px; font-weight: 800; color: #047857;">-</div>
+                                <span class="report-badge-title">OFFICIAL TERMINAL PROGRESS REPORT CARD</span>
                             </div>
                         </div>
 
-                        <div style="border: 1px solid var(--c-border-light); border-radius: 8px; overflow: hidden; margin-bottom: 24px;">
-                            <table class="table" style="width: 100%; margin: 0; font-size: 13px; border-collapse: collapse;">
+                        <!-- Student Metadata Grid -->
+                        <div class="meta-grid">
+                            <div class="meta-item">
+                                <label>Student Full Name</label>
+                                <div class="val" id="lblStudentName">-</div>
+                            </div>
+                            <div class="meta-item">
+                                <label>Registration / Code</label>
+                                <div class="val" id="lblUserCode" style="color: #475569;">-</div>
+                            </div>
+                            <div class="meta-item">
+                                <label>Classroom Stream</label>
+                                <div class="val" id="lblClassroom">-</div>
+                            </div>
+                            <div class="meta-item">
+                                <label>Term & Academic Year</label>
+                                <div class="val" id="lblTermYear" style="color: #047857;">-</div>
+                            </div>
+                            <div class="meta-item">
+                                <label>Class Position</label>
+                                <div class="val" id="lblClassPosition" style="color: #b45309;">-</div>
+                            </div>
+                        </div>
+
+                        <!-- Academic Evaluation Table -->
+                        <div style="border: 1px solid var(--c-border-light); border-radius: 6px; overflow: hidden; margin-bottom: 12px;">
+                            <table class="report-table">
                                 <thead id="reportSubjectHead">
-                                    <tr style="background: #0f172a; color: white;">
-                                        <th style="padding: 10px 14px; text-align: left; width: 40px;">#</th>
-                                        <th style="padding: 10px 14px; text-align: left;">Subject Course</th>
-                                        <th style="padding: 10px 14px; text-align: center;">Score (100)</th>
-                                        <th style="padding: 10px 14px; text-align: center;">Grade</th>
-                                        <th style="padding: 10px 14px; text-align: center;">Points</th>
-                                        <th style="padding: 10px 14px; text-align: center;">Remark</th>
+                                    <tr>
+                                        <th style="width: 36px; text-align: left;">#</th>
+                                        <th style="text-align: left;">Subject Course</th>
+                                        <th style="text-align: center; width: 90px;">Score (100)</th>
+                                        <th style="text-align: center; width: 60px;">Grade</th>
+                                        <th style="text-align: center; width: 60px;">Points</th>
+                                        <th style="text-align: center; width: 85px;">Position</th>
+                                        <th style="text-align: center; width: 110px;">Remark</th>
                                     </tr>
                                 </thead>
                                 <tbody id="reportSubjectRows">
-                                    <!-- Rows -->
+                                    <!-- Dynamic rows loaded here -->
                                 </tbody>
                             </table>
                         </div>
 
-                        <!-- Summary Cards -->
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 24px;">
-                            <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 14px; text-align: center;">
-                                <div style="font-size: 11px; font-weight: 700; color: #065f46;">TOTAL DIVISION POINTS</div>
-                                <div id="lblTotalPoints" style="font-size: 22px; font-weight: 900; color: #047857; margin-top: 4px;">-</div>
+                        <!-- Compact Summary Cards -->
+                        <div class="summary-grid">
+                            <div class="summary-card" style="background: #ecfdf5; border: 1px solid #a7f3d0;">
+                                <div class="lbl" style="color: #065f46;">Total Aggregate</div>
+                                <div class="val" id="lblTotalScore" style="color: #047857;">-</div>
                             </div>
-                            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; text-align: center;">
-                                <div style="font-size: 11px; font-weight: 700; color: #1e40af;">DIVISION RESULT</div>
-                                <div id="lblDivision" style="font-size: 20px; font-weight: 900; color: #1d4ed8; margin-top: 4px;">-</div>
+                            <div class="summary-card" style="background: #f0fdf4; border: 1px solid #bbf7d0;">
+                                <div class="lbl" style="color: #166534;">Division Points</div>
+                                <div class="val" id="lblTotalPoints" style="color: #15803d;">-</div>
                             </div>
-                            <div style="background: #fef3c7; border: 1px solid #fde68a; border-radius: 8px; padding: 14px; text-align: center;">
-                                <div style="font-size: 11px; font-weight: 700; color: #92400e;">OVERALL GPA AVERAGE</div>
-                                <div id="lblGPA" style="font-size: 22px; font-weight: 900; color: #b45309; margin-top: 4px;">-</div>
+                            <div class="summary-card" style="background: #eff6ff; border: 1px solid #bfdbfe;">
+                                <div class="lbl" style="color: #1e40af;">Division Result</div>
+                                <div class="val" id="lblDivision" style="color: #1d4ed8;">-</div>
+                            </div>
+                            <div class="summary-card" style="background: #fef3c7; border: 1px solid #fde68a;">
+                                <div class="lbl" style="color: #92400e;">GPA Average</div>
+                                <div class="val" id="lblGPA" style="color: #b45309;">-</div>
                             </div>
                         </div>
 
-                        <!-- Form Master Conduct Comment Textarea Block (Task 4.1) -->
-                        <div style="background: #fafafa; border: 1px solid var(--c-border-light); border-radius: 8px; padding: 18px; margin-bottom: 24px;">
-                            <label style="font-size: 13px; font-weight: 800; color: #0f172a; display: block; margin-bottom: 8px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Form Master General Conduct & Recommendation Comment:</label>
-                            <textarea id="txtConductComment" class="form-control" rows="3" style="font-weight: 600; font-size: 13px;" placeholder="Enter Form Master conduct and academic recommendation remark..."></textarea>
-                            <div class="btn-print-hide" style="text-align: right; margin-top: 10px;">
-                                <button class="btn btn-secondary" onclick="saveConductComment()" style="font-weight: 700; font-size: 12px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Conduct Remark</button>
+                        <!-- Form Master Conduct Comment -->
+                        <div class="conduct-box">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <label style="font-size: 12px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 6px;">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                    Form Master General Conduct & Recommendation:
+                                </label>
+                                <button class="btn btn-secondary btn-print-hide" onclick="saveConductComment()" style="font-weight: 700; font-size: 11px; padding: 4px 10px;">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:3px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Remark
+                                </button>
                             </div>
+                            <textarea id="txtConductComment" class="form-control" rows="2" style="font-weight: 600; font-size: 12px; line-height: 1.4;" placeholder="Enter Form Master conduct and academic recommendation remark..."></textarea>
                         </div>
                     </div>
+
                 </div>
             </main>
+        </div>
+    </div>
+
+    <!-- Print / Download Choice Modal -->
+    <div class="export-modal-backdrop" id="exportModal">
+        <div class="export-modal-box">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: #ecfdf5; color: #059669; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            </div>
+            <h3 style="margin: 0 0 6px; font-size: 17px; font-weight: 800; color: #0f172a;">Report Card Actions</h3>
+            <p style="margin: 0 0 18px; font-size: 13px; color: var(--c-text-muted);">Would you like to print this report card or download/save as a PDF document?</p>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button class="btn btn-primary" onclick="executePrint()" style="font-weight: 800; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                    Print Report Card
+                </button>
+                <button class="btn btn-secondary" onclick="executeDownloadPdf()" style="font-weight: 800; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Download as PDF
+                </button>
+                <button class="btn btn-outline" onclick="closeExportModal()" style="font-weight: 700; padding: 8px; font-size: 12px; margin-top: 4px;">
+                    Cancel
+                </button>
+            </div>
         </div>
     </div>
 
@@ -192,38 +449,54 @@
                 const res = await fetch(`/shule-cafe/api/headmaster/analytics/analytics_api.php?action=student_report_card&student_id=${encodeURIComponent(currentStudentId)}&year=${encodeURIComponent(currentYear)}&term=${encodeURIComponent(currentTerm)}`, { credentials: 'include' });
                 const data = await res.json();
                 if (res.ok && data.success) {
+                    // 1. Populate School Information
+                    const sch = data.school || {};
+                    if (sch.name) document.getElementById('lblSchoolName').textContent = sch.name;
+                    if (sch.motto) document.getElementById('lblSchoolMotto').textContent = sch.motto;
+                    let metaStr = `Registration No: ${sch.registration_number || 'TZ-REG-99201'}`;
+                    if (sch.address) metaStr += ` · ${sch.address}`;
+                    if (sch.region) metaStr += `, ${sch.region}`;
+                    if (sch.phone) metaStr += ` · Tel: ${sch.phone}`;
+                    document.getElementById('lblSchoolMeta').textContent = metaStr;
+
+                    // 2. Populate Student Metadata
                     const s = data.student || {};
                     document.getElementById('lblStudentName').textContent = s.full_name || 'N/A';
                     document.getElementById('lblUserCode').textContent = s.user_code || 'STD';
                     document.getElementById('lblClassroom').textContent = s.classroom_name || 'Unassigned';
                     document.getElementById('lblTermYear').textContent = `${data.term || currentTerm} (${data.year || currentYear})`;
 
+                    const sum = data.summary || {};
+                    document.getElementById('lblClassPosition').textContent = sum.class_position || '-';
+
+                    // 3. Populate Subjects Evaluation Table
                     const tbody = document.getElementById('reportSubjectRows');
                     tbody.innerHTML = '';
 
                     const subjects = data.subject_marks || [];
                     if (subjects.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--c-text-muted); font-style:italic;">No evaluated subjects recorded for this academic period.</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:24px; color:var(--c-text-muted); font-style:italic;">No evaluated subjects recorded for this academic period.</td></tr>';
                     } else {
                         subjects.forEach((m, idx) => {
                             const tr = document.createElement('tr');
-                            tr.style.borderBottom = '1px solid #f1f5f9';
                             const isFail = (m.grade === 'F' || m.score < 35);
                             tr.innerHTML = `
-                                <td style="padding: 10px 14px; font-weight:700; color:#64748b;">${idx + 1}</td>
-                                <td style="padding: 10px 14px; font-weight:700; color:#0f172a;">${m.subject_name || m.subject_code} <span style="font-size:11px; color:var(--c-text-muted); font-weight:500;">(${m.subject_code})</span></td>
-                                <td style="padding: 10px 14px; text-align:center; font-weight:800; color:#0f172a;">${m.score}</td>
-                                <td style="padding: 10px 14px; text-align:center; font-weight:800; color:${isFail ? '#dc2626' : '#047857'};">${m.grade || '-'}</td>
-                                <td style="padding: 10px 14px; text-align:center; font-weight:700; color:#475569;">${m.points !== undefined ? m.points : '-'}</td>
-                                <td style="padding: 10px 14px; text-align:center;">
-                                    <span class="badge ${isFail ? 'badge-danger' : 'badge-success'}" style="font-weight:700; font-size:11px;">${m.remark || '-'}</span>
+                                <td style="font-weight:700; color:#64748b;">${idx + 1}</td>
+                                <td style="font-weight:700; color:#0f172a;">${m.subject_name || m.subject_code} <span style="font-size:11px; color:var(--c-text-muted); font-weight:500;">(${m.subject_code})</span></td>
+                                <td style="text-align:center; font-weight:800; color:#0f172a;">${m.score}</td>
+                                <td style="text-align:center; font-weight:800; color:${isFail ? '#dc2626' : '#047857'};">${m.grade || '-'}</td>
+                                <td style="text-align:center; font-weight:700; color:#475569;">${m.points !== undefined ? m.points : '-'}</td>
+                                <td style="text-align:center; font-weight:800; color:#0369a1;">${m.position || '-'}</td>
+                                <td style="text-align:center;">
+                                    <span class="badge ${isFail ? 'badge-danger' : 'badge-success'}" style="font-weight:700; font-size:10px; padding: 2px 8px;">${m.remark || '-'}</span>
                                 </td>
                             `;
                             tbody.appendChild(tr);
                         });
                     }
 
-                    const sum = data.summary || {};
+                    // 4. Populate Summary Values
+                    document.getElementById('lblTotalScore').textContent = sum.total_score !== undefined ? sum.total_score : '-';
                     document.getElementById('lblTotalPoints').textContent = sum.total_points !== undefined ? sum.total_points : '-';
                     document.getElementById('lblDivision').textContent = sum.division || '-';
                     document.getElementById('lblGPA').textContent = sum.average_score !== undefined ? `${sum.average_score}%` : '-';
@@ -255,6 +528,25 @@
             } catch(e) {
                 alert('Error connecting to server.');
             }
+        }
+
+        function openExportModal() {
+            document.getElementById('exportModal').style.display = 'flex';
+        }
+
+        function closeExportModal() {
+            document.getElementById('exportModal').style.display = 'none';
+        }
+
+        function executePrint() {
+            closeExportModal();
+            window.print();
+        }
+
+        function executeDownloadPdf() {
+            closeExportModal();
+            // Opens native browser print dialog prepped for Save as PDF
+            window.print();
         }
     </script>
 </body>

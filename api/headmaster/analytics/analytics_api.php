@@ -59,9 +59,87 @@ try {
         }
 
         $levelType = $gradingManager->normalizeLevelType(($student['level_type'] ?? '') . ' ' . ($student['grade_name'] ?? ''));
+        $classroomId = intval($student['classroom_id'] ?? 0);
+
+        // Helper to compute subject rankings and overall class positions
+        $getClassroomRanks = function($targetTerm) use ($conn, $classroomId, $schoolId, $year) {
+            if (!$classroomId) return ['subject_ranks' => [], 'overall_ranks' => [], 'total_students' => 0];
+
+            $stmtClassStu = $conn->prepare("
+                SELECT u.id as student_id
+                FROM student_classroom_allocations sca
+                JOIN users u ON sca.student_id = u.id
+                WHERE sca.classroom_id = ? AND sca.school_id = ? AND sca.academic_year = ? AND sca.status = 'Active'
+            ");
+            $stmtClassStu->execute([$classroomId, $schoolId, $year]);
+            $stuIds = $stmtClassStu->fetchAll(PDO::FETCH_COLUMN);
+            $totalStudents = count($stuIds);
+            if ($totalStudents === 0) return ['subject_ranks' => [], 'overall_ranks' => [], 'total_students' => 0];
+
+            $stmtAllMarks = $conn->prepare("
+                SELECT me.student_id, me.subject_code, SUM(COALESCE(me.score, me.raw_score, 0)) AS total_score
+                FROM marks_entry_dynamic me
+                JOIN student_classroom_allocations sca ON me.student_id = sca.student_id
+                WHERE sca.classroom_id = ? AND me.school_id = ? AND me.academic_year = ? AND me.term = ?
+                GROUP BY me.student_id, me.subject_code
+            ");
+            $stmtAllMarks->execute([$classroomId, $schoolId, $year, $targetTerm]);
+            $allMarks = $stmtAllMarks->fetchAll(PDO::FETCH_ASSOC);
+
+            $bySubject = [];
+            $byStudentTotal = [];
+            foreach ($stuIds as $sid) {
+                $byStudentTotal[$sid] = 0;
+            }
+
+            foreach ($allMarks as $row) {
+                $sc = $row['subject_code'];
+                $sid = $row['student_id'];
+                $score = floatval($row['total_score']);
+                $bySubject[$sc][] = ['student_id' => $sid, 'score' => $score];
+                $byStudentTotal[$sid] = ($byStudentTotal[$sid] ?? 0) + $score;
+            }
+
+            $subjectRanks = [];
+            foreach ($bySubject as $sc => $list) {
+                usort($list, fn($a, $b) => $b['score'] <=> $a['score']);
+                $currentRank = 1;
+                $evalCount = count($list);
+                foreach ($list as $idx => $entry) {
+                    if ($idx > 0 && $entry['score'] < $list[$idx - 1]['score']) {
+                        $currentRank = $idx + 1;
+                    }
+                    $subjectRanks[$sc][$entry['student_id']] = "{$currentRank}/{$evalCount}";
+                }
+            }
+
+            arsort($byStudentTotal);
+            $overallRanks = [];
+            $currentRank = 1;
+            $idx = 0;
+            $prevScore = null;
+            foreach ($byStudentTotal as $sid => $totScore) {
+                if ($prevScore !== null && $totScore < $prevScore) {
+                    $currentRank = $idx + 1;
+                }
+                $overallRanks[$sid] = [
+                    'position' => $currentRank,
+                    'position_text' => "{$currentRank} / {$totalStudents}",
+                    'total_score' => round($totScore, 2)
+                ];
+                $prevScore = $totScore;
+                $idx++;
+            }
+
+            return [
+                'subject_ranks' => $subjectRanks,
+                'overall_ranks' => $overallRanks,
+                'total_students' => $totalStudents
+            ];
+        };
 
         // Helper to process marks for a specific term using GradingManager
-        $processTermMarks = function($targetTerm) use ($conn, $studentId, $year, $levelType, $gradingManager) {
+        $processTermMarks = function($targetTerm) use ($conn, $studentId, $year, $levelType, $gradingManager, $getClassroomRanks) {
             $stmtM = $conn->prepare("
                 SELECT me.subject_code, COALESCE(s.name, me.subject_code) AS subject_name,
                        COALESCE(me.score, me.raw_score, 0) AS score
@@ -82,6 +160,7 @@ try {
             }
 
             $perf = $gradingManager->calculateStudentPerformance($levelType, $subjectMarksMap);
+            $ranks = $getClassroomRanks($targetTerm);
 
             $items = [];
             foreach ($perf['all_subjects'] as $sub) {
@@ -92,11 +171,13 @@ try {
                     'score' => round($sub['mark'], 1),
                     'grade' => $sub['grade'],
                     'points' => $sub['points'],
+                    'position' => $ranks['subject_ranks'][$sc][$studentId] ?? '-',
                     'remark' => $sub['remark']
                 ];
             }
 
             $subCount = count($items);
+            $overallRankInfo = $ranks['overall_ranks'][$studentId] ?? null;
 
             return [
                 'term' => $targetTerm,
@@ -108,6 +189,9 @@ try {
                     'total_points' => $perf['total_points'],
                     'division' => $perf['division'],
                     'remark' => $perf['remark'],
+                    'class_position' => $overallRankInfo ? $overallRankInfo['position_text'] : '-',
+                    'class_position_number' => $overallRankInfo ? $overallRankInfo['position'] : null,
+                    'total_students' => $ranks['total_students'],
                     'subject_count' => $subCount,
                     'top_subjects_count' => $perf['top_subjects_count']
                 ]
@@ -205,6 +289,201 @@ try {
         exit();
     }
 
+    // BATCH CLASSROOM REPORT CARDS (FOR FORM MASTER BATCH PRINT / DOWNLOAD)
+    if ($action === 'batch_classroom_report_cards') {
+        $classroomId = intval($_GET['classroom_id'] ?? $input['classroom_id'] ?? 0);
+        $streamName = $_GET['stream'] ?? $input['stream'] ?? '';
+
+        if (!$classroomId && !empty($streamName)) {
+            $stmtC = $conn->prepare("SELECT id FROM classrooms WHERE (classroom_name = :cname OR CAST(id AS CHAR) = :cname) AND school_id = :sch LIMIT 1");
+            $stmtC->execute([':cname' => $streamName, ':sch' => $schoolId]);
+            $classroomId = intval($stmtC->fetchColumn());
+        }
+
+        if (!$classroomId) {
+            echo json_encode(['success' => false, 'message' => 'classroom_id or valid stream required.']);
+            exit();
+        }
+
+        // Fetch classroom name and grade level
+        $stmtC = $conn->prepare("
+            SELECT c.classroom_name, COALESCE(g.name, 'Secondary') AS grade_name, COALESCE(el.name, 'O-Level') AS level_type
+            FROM classrooms c
+            LEFT JOIN grades g ON c.grade_id = g.id
+            LEFT JOIN education_levels el ON g.level_id = el.id
+            WHERE c.id = ? AND c.school_id = ?
+        ");
+        $stmtC->execute([$classroomId, $schoolId]);
+        $cinfo = $stmtC->fetch(PDO::FETCH_ASSOC);
+        $cname = $cinfo['classroom_name'] ?? 'Classroom Stream';
+        $levelType = $gradingManager->normalizeLevelType(($cinfo['level_type'] ?? '') . ' ' . ($cinfo['grade_name'] ?? ''));
+
+        // Fetch School details
+        $stmtSch = $conn->prepare("
+            SELECT name, motto, COALESCE(school_email, '') AS email, COALESCE(school_phone, '') AS phone,
+                   COALESCE(postal_address, ward_address, '') AS address, COALESCE(region, 'Tanzania') AS region,
+                   COALESCE(necta_no, school_code, 'TZ-REG-99201') AS registration_number
+            FROM schools WHERE id = ? LIMIT 1
+        ");
+        $stmtSch->execute([$schoolId]);
+        $schoolInfo = $stmtSch->fetch(PDO::FETCH_ASSOC) ?: [
+            'name' => 'SHULE CAFE SECONDARY SCHOOL',
+            'motto' => '"Excellence in Academic and Moral Integrity"',
+            'email' => 'info@shulecafe.com',
+            'phone' => '+255 700 000 000',
+            'address' => 'P.O. Box 100',
+            'region' => 'Tanzania',
+            'registration_number' => 'TZ-REG-99201'
+        ];
+
+        // Fetch students in room
+        $stmtS = $conn->prepare("
+            SELECT u.id AS student_id, u.full_name, u.user_code, u.gender
+            FROM student_classroom_allocations sca
+            JOIN users u ON sca.student_id = u.id
+            WHERE sca.classroom_id = ? AND sca.school_id = ? AND sca.academic_year = ? AND sca.status = 'Active'
+            ORDER BY u.full_name ASC
+        ");
+        $stmtS->execute([$classroomId, $schoolId, $year]);
+        $students = $stmtS->fetchAll(PDO::FETCH_ASSOC);
+
+        // Fetch all marks for classroom and term
+        $stmtAllMarks = $conn->prepare("
+            SELECT me.student_id, me.subject_code, COALESCE(s.name, me.subject_code) AS subject_name,
+                   SUM(COALESCE(me.score, me.raw_score, 0)) AS total_score
+            FROM marks_entry_dynamic me
+            JOIN student_classroom_allocations sca ON me.student_id = sca.student_id
+            LEFT JOIN subjects s ON me.subject_code = s.code
+            WHERE sca.classroom_id = ? AND me.school_id = ? AND me.academic_year = ? AND me.term = ?
+            GROUP BY me.student_id, me.subject_code
+        ");
+        $stmtAllMarks->execute([$classroomId, $schoolId, $year, $term]);
+        $allMarks = $stmtAllMarks->fetchAll(PDO::FETCH_ASSOC);
+
+        // Fetch conduct comments for this classroom
+        $stmtComm = $conn->prepare("
+            SELECT student_id, conduct_comment 
+            FROM student_report_comments 
+            WHERE academic_year = ? AND term = ?
+        ");
+        $stmtComm->execute([$year, $term]);
+        $commentsMap = $stmtComm->fetchAll(PDO::FETCH_KEY_PAIR);
+
+        // Precompute subject ranks and total scores
+        $bySubject = [];
+        $byStudentMarks = [];
+        $byStudentTotal = [];
+        $subjectNamesMap = [];
+
+        foreach ($students as $stu) {
+            $byStudentTotal[$stu['student_id']] = 0;
+            $byStudentMarks[$stu['student_id']] = [];
+        }
+
+        foreach ($allMarks as $row) {
+            $sc = $row['subject_code'];
+            $sid = $row['student_id'];
+            $score = floatval($row['total_score']);
+            $bySubject[$sc][] = ['student_id' => $sid, 'score' => $score];
+            $byStudentTotal[$sid] = ($byStudentTotal[$sid] ?? 0) + $score;
+            $byStudentMarks[$sid][$sc] = $score;
+            $subjectNamesMap[$sc] = $row['subject_name'];
+        }
+
+        $totalStudents = count($students);
+        $subjectRanks = [];
+        foreach ($bySubject as $sc => $list) {
+            usort($list, fn($a, $b) => $b['score'] <=> $a['score']);
+            $currentRank = 1;
+            $evalCount = count($list);
+            foreach ($list as $idx => $entry) {
+                if ($idx > 0 && $entry['score'] < $list[$idx - 1]['score']) {
+                    $currentRank = $idx + 1;
+                }
+                $subjectRanks[$sc][$entry['student_id']] = "{$currentRank}/{$evalCount}";
+            }
+        }
+
+        arsort($byStudentTotal);
+        $overallRanks = [];
+        $currentRank = 1;
+        $idx = 0;
+        $prevScore = null;
+        foreach ($byStudentTotal as $sid => $totScore) {
+            if ($prevScore !== null && $totScore < $prevScore) {
+                $currentRank = $idx + 1;
+            }
+            $overallRanks[$sid] = [
+                'position' => $currentRank,
+                'position_text' => "{$currentRank} / {$totalStudents}",
+                'total_score' => round($totScore, 2)
+            ];
+            $prevScore = $totScore;
+            $idx++;
+        }
+
+        // Build report card object for each student
+        $reportCards = [];
+        foreach ($students as $s) {
+            $sid = $s['student_id'];
+            $sMarksMap = $byStudentMarks[$sid] ?? [];
+            $perf = $gradingManager->calculateStudentPerformance($levelType, $sMarksMap);
+
+            $subjItems = [];
+            foreach ($perf['all_subjects'] as $sub) {
+                $sc = $sub['subject'];
+                $subjItems[] = [
+                    'subject_code' => $sc,
+                    'subject_name' => $subjectNamesMap[$sc] ?? $sc,
+                    'score' => round($sub['mark'], 1),
+                    'grade' => $sub['grade'],
+                    'points' => $sub['points'],
+                    'position' => $subjectRanks[$sc][$sid] ?? '-',
+                    'remark' => $sub['remark']
+                ];
+            }
+
+            $overallRankInfo = $overallRanks[$sid] ?? null;
+
+            $reportCards[] = [
+                'student' => [
+                    'id' => $sid,
+                    'full_name' => $s['full_name'],
+                    'user_code' => $s['user_code'],
+                    'gender' => $s['gender'],
+                    'classroom_name' => $cname,
+                    'level_type' => $levelType
+                ],
+                'subject_marks' => $subjItems,
+                'summary' => [
+                    'total_score' => round($perf['total_evaluated_marks'] ?? 0, 1),
+                    'average_score' => $perf['average_score'],
+                    'total_points' => $perf['total_points'],
+                    'division' => $perf['division'],
+                    'remark' => $perf['remark'],
+                    'class_position' => $overallRankInfo ? $overallRankInfo['position_text'] : '-',
+                    'class_position_number' => $overallRankInfo ? $overallRankInfo['position'] : null,
+                    'total_students' => $totalStudents,
+                    'subject_count' => count($subjItems),
+                    'top_subjects_count' => $perf['top_subjects_count']
+                ],
+                'conduct_comment' => $commentsMap[$sid] ?? 'Demonstrates commendable discipline and active academic effort.'
+            ];
+        }
+
+        echo json_encode([
+            'success' => true,
+            'school' => $schoolInfo,
+            'classroom_name' => $cname,
+            'year' => $year,
+            'term' => $term,
+            'level_type' => $levelType,
+            'total_students' => $totalStudents,
+            'report_cards' => $reportCards
+        ]);
+        exit();
+    }
+
     // SAVE FORM MASTER CONDUCT COMMENT
     if ($action === 'save_conduct_comment') {
         $studentId = $input['student_id'] ?? '';
@@ -298,6 +577,22 @@ try {
             $s['failing_count'] = $failingCount;
             $s['total_aggregate'] = round($totalSum, 2);
         }
+        unset($s);
+
+        // Sort students by total aggregate descending to calculate classroom position
+        usort($students, function($a, $b) {
+            return $b['total_aggregate'] <=> $a['total_aggregate'];
+        });
+        $totalStudents = count($students);
+        $currRank = 1;
+        foreach ($students as $k => &$stu) {
+            if ($k > 0 && $stu['total_aggregate'] < $students[$k - 1]['total_aggregate']) {
+                $currRank = $k + 1;
+            }
+            $stu['position'] = "{$currRank}/{$totalStudents}";
+            $stu['rank_num'] = $currRank;
+        }
+        unset($stu);
 
         echo json_encode([
             'success' => true,
