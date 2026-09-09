@@ -142,9 +142,29 @@
                     <app-workspace-layout hide-back style="gap: 10px;">
                         
                         <!-- =================================================================== -->
+                        <!-- =================================================================== -->
                         <!-- STEP 1: MASTER STAFF ROSTER WORKSPACE                              -->
                         <!-- =================================================================== -->
                         <div id="viewStep1Roster" style="display: block;">
+                            <!-- Prerequisite Alert Banner if no curriculum subjects chosen yet -->
+                            <div id="bannerNoCurriculumSubjectsRoster" style="display: none; background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 14px 18px; margin-bottom: 14px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 36px; height: 36px; border-radius: 8px; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 800; font-size: 14px; color: #991b1b;">Curriculum Subjects Setup Required</div>
+                                            <div style="font-size: 12.5px; color: #b91c1c; margin-top: 2px;">You cannot assign teachers to subjects until your school chooses and activates curriculum subjects. Please configure your curriculum subjects first.</div>
+                                        </div>
+                                    </div>
+                                    <a href="../academics/index.html?tab=subjects" class="btn btn-sm" style="background: #dc2626; color: white; font-weight: 700; border-radius: 6px; padding: 7px 14px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                                        <span>Configure Curriculum Subjects</span>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                                    </a>
+                                </div>
+                            </div>
+
                             <div class="roster-card">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
                                     <div>
@@ -186,10 +206,25 @@
                         <!-- =================================================================== -->
                         <div id="viewTeacherPortfolio" style="display: none;">
                             
+                            <!-- Prerequisite Blocking Banner in Portfolio if 0 subjects -->
+                            <div id="bannerNoCurriculumSubjectsPortfolio" style="display: none; background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 22px; margin-bottom: 16px; text-align: center;">
+                                <div style="width: 44px; height: 44px; border-radius: 10px; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                                </div>
+                                <h4 style="margin: 0 0 6px 0; font-size: 16px; font-weight: 800; color: #991b1b;">No Curriculum Subjects Configured</h4>
+                                <p style="margin: 0 0 16px 0; font-size: 13px; color: #b91c1c; max-width: 550px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+                                    You cannot assign teachers to subjects because your school has not chosen or activated curriculum subjects yet. Please configure your school's curriculum subjects first.
+                                </p>
+                                <a href="../academics/index.html?tab=subjects" class="btn" style="background: #047857; color: white; font-weight: 700; border-radius: 8px; padding: 9px 18px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                                    <span>Configure Curriculum Subjects</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                                </a>
+                            </div>
+
                             <div class="portfolio-header">
                                 <div style="display: flex; align-items: center; gap: 10px;">
                                     <div style="width: 36px; height: 36px; border-radius: 8px; background: #f0fdf4; color: #047857; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800;">
-                                        
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11l-3-3-3 3"/><path d="M19 8v6"/></svg>
                                     </div>
                                     <div>
                                         <h2 id="lblPortfolioTeacherName" style="margin: 0; font-size: 16px; font-weight: 800; color: #0f172a;">
@@ -201,38 +236,42 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <button id="btnBackToDirectory" onclick="goBackToDirectory()" class="btn btn-outline btn-sm" style="border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer;">
-                                        ⬅ Back to Staff Directory
+                                    <button id="btnBackToDirectory" onclick="goBackToDirectory()" class="btn btn-outline btn-sm" style="border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                                        <span>Back to Staff Directory</span>
                                     </button>
                                 </div>
                             </div>
 
-                            <!-- O-Level Block -->
-                            <div class="level-block">
-                                <div class="level-block-title">
-                                    <span></span> Ordinary Level (O-Level) Curriculum
-                                    <span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:700; font-size:11px; margin-left:auto;">Forms 1, 2, 3, 4</span>
+                            <!-- Subject Grids Container (hidden if 0 subjects) -->
+                            <div id="step2GridsContainer">
+                                <!-- O-Level Block -->
+                                <div class="level-block">
+                                    <div class="level-block-title">
+                                        <span></span> Ordinary Level (O-Level) Curriculum
+                                        <span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:700; font-size:11px; margin-left:auto;">Forms 1, 2, 3, 4</span>
+                                    </div>
+                                    <div class="subject-grid" id="gridOLevelSubjects">
+                                        <div style="color:#64748b; font-size:12px;">Loading O-Level subjects...</div>
+                                    </div>
                                 </div>
-                                <div class="subject-grid" id="gridOLevelSubjects">
-                                    <div style="color:#64748b; font-size:12px;">Loading O-Level subjects...</div>
-                                </div>
-                            </div>
 
-                            <!-- A-Level Block -->
-                            <div class="level-block">
-                                <div class="level-block-title">
-                                    <span></span> Advanced Level (A-Level) Curriculum
-                                    <span class="badge" style="background:#fef3c7; color:#92400e; font-weight:700; font-size:11px; margin-left:auto;">Forms 5, 6</span>
+                                <!-- A-Level Block -->
+                                <div class="level-block">
+                                    <div class="level-block-title">
+                                        <span></span> Advanced Level (A-Level) Curriculum
+                                        <span class="badge" style="background:#fef3c7; color:#92400e; font-weight:700; font-size:11px; margin-left:auto;">Forms 5, 6</span>
+                                    </div>
+                                    <div class="subject-grid" id="gridALevelSubjects">
+                                        <div style="color:#64748b; font-size:12px;">Loading A-Level subjects...</div>
+                                    </div>
                                 </div>
-                                <div class="subject-grid" id="gridALevelSubjects">
-                                    <div style="color:#64748b; font-size:12px;">Loading A-Level subjects...</div>
-                                </div>
-                            </div>
 
-                            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px; background: #ffffff; padding: 12px 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                                <button id="btnSaveStep2Qualifications" onclick="saveMasterSubjects()" class="btn-action-primary">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Master Subjects
-                                </button>
+                                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px; background: #ffffff; padding: 12px 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                    <button id="btnSaveStep2Qualifications" onclick="saveMasterSubjects()" class="btn-action-primary">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Master Subjects
+                                    </button>
+                                </div>
                             </div>
 
                         </div>
@@ -322,6 +361,12 @@
 
                 allTeachers = data.teachers || [];
                 renderFacultyTable(allTeachers);
+
+                if (data.school_subjects_count !== undefined && data.school_subjects_count === 0) {
+                    $('#bannerNoCurriculumSubjectsRoster').show();
+                } else {
+                    $('#bannerNoCurriculumSubjectsRoster').hide();
+                }
             } catch (e) {
                 console.error("Error loading roster:", e);
                 $('#tblFacultyBody').html('<tr><td colspan="4" style="text-align:center; padding:24px; color:crimson;">Error connecting to server.</td></tr>');
@@ -432,7 +477,14 @@
                 $('#lblPortfolioTeacherName').text(`Master Subject Qualifications: ${teacherData.full_name}`);
                 $('#lblPortfolioMeta').text(`Staff Code: #${teacherData.user_code || teacherData.id} | Department: ${teacherData.department || 'General Faculty'}`);
 
-                renderStep2Grid();
+                if (!masterSubjects || masterSubjects.length === 0) {
+                    $('#bannerNoCurriculumSubjectsPortfolio').show();
+                    $('#step2GridsContainer').hide();
+                } else {
+                    $('#bannerNoCurriculumSubjectsPortfolio').hide();
+                    $('#step2GridsContainer').show();
+                    renderStep2Grid();
+                }
 
             } catch (e) {
                 console.error("Error loading portfolio:", e);

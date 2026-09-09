@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 header('Content-Type: application/json; charset=UTF-8');
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/TeacherAllocationEngine.php';
@@ -52,7 +54,16 @@ try {
             $t['classroom_assignments_count'] = intval($tc->fetchColumn());
         }
 
-        echo json_encode(['success' => true, 'teachers' => $teachers]);
+        // Check count of active approved curriculum subjects for this school
+        $countSubjStmt = $conn->prepare("SELECT COUNT(*) FROM school_approved_subjects WHERE school_id = ? AND status = 'active'");
+        $countSubjStmt->execute([$schoolId]);
+        $schoolApprovedSubjCount = (int)$countSubjStmt->fetchColumn();
+
+        echo json_encode([
+            'success' => true, 
+            'teachers' => $teachers,
+            'school_subjects_count' => $schoolApprovedSubjCount
+        ]);
         exit();
     }
 

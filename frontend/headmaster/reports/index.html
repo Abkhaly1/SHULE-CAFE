@@ -594,8 +594,24 @@
                     rosterState.page = 1;
                     loadClassroomRoster();
                 } else {
-                    sel.innerHTML = '<option value="">-- No Classrooms --</option>';
-                    document.getElementById('rosterTableBody').innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 24px; color: #64748b;">No classrooms available for this year.</td></tr>';
+                    sel.innerHTML = '<option value="">-- No Classrooms Configured --</option>';
+                    document.getElementById('rosterTableBody').innerHTML = `
+                        <tr>
+                            <td colspan="9" style="text-align:center; padding: 36px 20px;">
+                                <div style="width: 44px; height: 44px; border-radius: 10px; background: #fee2e2; color: #dc2626; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                </div>
+                                <h4 style="margin: 0 0 6px 0; font-size: 15px; font-weight: 800; color: #991b1b;">Classrooms Setup Required</h4>
+                                <p style="margin: 0 0 16px 0; font-size: 13px; color: #b91c1c; max-width: 480px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+                                    No active classrooms or streams were found for this school year. Please configure classrooms and streams before viewing attendance reports.
+                                </p>
+                                <a href="../classrooms/index.html" class="btn btn-sm" style="background: #047857; color: white; font-weight: 700; border-radius: 6px; padding: 7px 16px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                                    <span>Configure Classrooms</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                                </a>
+                            </td>
+                        </tr>
+                    `;
                 }
             } catch (err) {
                 console.error("Error loading classrooms:", err);
@@ -658,7 +674,23 @@
                         });
                         rosterBody.innerHTML = html;
                     } else {
-                        rosterBody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 24px; color: #64748b;">No students found matching search criteria.</td></tr>';
+                        rosterBody.innerHTML = `
+                            <tr>
+                                <td colspan="9" style="text-align:center; padding: 36px 20px;">
+                                    <div style="width: 44px; height: 44px; border-radius: 10px; background: #fffbeb; color: #d97706; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                                    </div>
+                                    <h4 style="margin: 0 0 6px 0; font-size: 15px; font-weight: 800; color: #92400e;">No Students Enrolled in this Stream</h4>
+                                    <p style="margin: 0 0 16px 0; font-size: 13px; color: #b45309; max-width: 480px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+                                        This classroom stream has no active student records assigned. Please enroll students to view attendance statistics and historical rosters.
+                                    </p>
+                                    <a href="../people/student_workspace.html" class="btn btn-sm" style="background: #d97706; color: white; font-weight: 700; border-radius: 6px; padding: 7px 16px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                                        <span>Allocate Students Now</span>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                                    </a>
+                                </td>
+                            </tr>
+                        `;
                     }
                 }
             } catch (err) {

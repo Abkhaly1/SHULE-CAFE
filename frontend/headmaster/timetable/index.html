@@ -144,8 +144,30 @@
                         <!-- STAGE 0: INITIALIZATION FALLBACK SCREEN                             -->
                         <!-- =================================================================== -->
                         <div id="viewStage0Fallback" style="display: none;">
-                            <div class="fallback-card">
-                                <div style="font-size: 48px; margin-bottom: 14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+                            <!-- Prerequisite Blocking Card (Shown when prerequisites are missing) -->
+                            <div id="cardTimetablePrereqBlock" style="display: none;" class="fallback-card">
+                                <div style="width: 56px; height: 56px; border-radius: 14px; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                </div>
+                                <h3 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 800; color: #991b1b;">
+                                    Prerequisite Setup Required Before Generating Timetables
+                                </h3>
+                                <p id="lblTimetablePrereqMsg" style="margin: 0 0 24px 0; color: #b91c1c; font-size: 14px; max-width: 580px; display: inline-block; line-height: 1.5; font-weight: 500;">
+                                    Teachers must be allocated to their curriculum subjects before timetable schedules can be generated.
+                                </p>
+                                <div>
+                                    <a id="btnTimetablePrereqCta" href="../allocations/subject-allocations.html" class="btn-action-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                                        <span id="lblTimetablePrereqCtaText">Allocate Teachers to Subjects</span>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Regular Initialization Card (Shown when prerequisites are met) -->
+                            <div id="cardTimetableReadyInit" class="fallback-card">
+                                <div style="width: 56px; height: 56px; border-radius: 14px; background: #ecfdf5; color: #047857; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                </div>
                                 <h3 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 800; color: #0f172a;">
                                     No Active Timetable Found for Academic Year <span class="current-year"></span>
                                 </h3>
@@ -243,7 +265,10 @@
                                     </div>
 
                                     <div style="display:flex; justify-content:space-between;">
-                                        <button class="btn btn-outline" onclick="navStage(1)" style="font-weight:700;">⬅ Back</button>
+                                        <button class="btn btn-outline" onclick="navStage(1)" style="font-weight:700; display:inline-flex; align-items:center; gap:4px;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                                            <span>Back</span>
+                                        </button>
                                         <button class="btn-action-primary" onclick="proceedToStage3()">
                                             Next: Periods & Time Matrix 
                                         </button>
@@ -295,7 +320,10 @@
                                     </div>
 
                                     <div style="display:flex; justify-content:space-between;">
-                                        <button class="btn btn-outline" onclick="navStage(2)" style="font-weight:700;">⬅ Back</button>
+                                        <button class="btn btn-outline" onclick="navStage(2)" style="font-weight:700; display:inline-flex; align-items:center; gap:4px;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                                            <span>Back</span>
+                                        </button>
                                         <button class="btn-action-primary" onclick="proceedToStage4()">
                                             Next: Subject Frequency Calibration 
                                         </button>
@@ -357,7 +385,10 @@
                                     </div>
 
                                     <div style="display:flex; justify-content:space-between;">
-                                        <button class="btn btn-outline" onclick="navStage(3)" style="font-weight:700;">⬅ Back</button>
+                                        <button class="btn btn-outline" onclick="navStage(3)" style="font-weight:700; display:inline-flex; align-items:center; gap:4px;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                                            <span>Back</span>
+                                        </button>
                                         <button id="btnWizardStage4Next" class="btn-action-primary" onclick="proceedToStage5()">
                                             Next: Run Automated Engine 
                                         </button>
@@ -399,7 +430,10 @@
                                     </div>
 
                                     <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;" id="barStage5Controls">
-                                        <button class="btn btn-outline" onclick="navStage(4)" style="font-weight:700;">⬅ Back</button>
+                                        <button class="btn btn-outline" onclick="navStage(4)" style="font-weight:700; display:inline-flex; align-items:center; gap:4px;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                                            <span>Back</span>
+                                        </button>
                                         <div style="display:flex; gap:10px; flex-wrap:wrap;">
                                             <button class="btn-action-primary" id="btnRunEngine" onclick="runAutomatedEngine()">
                                                  Run Automated Generator Now
@@ -532,12 +566,31 @@
                     $('#viewStage0Fallback').show();
                     $('#viewSetupWizard').hide();
                     $('#viewTimetableMatrix').hide();
+
+                    if (data && data.prerequisites_met === false) {
+                        $('#cardTimetablePrereqBlock').show();
+                        $('#cardTimetableReadyInit').hide();
+                        if (data.prerequisite_message) {
+                            $('#lblTimetablePrereqMsg').text(data.prerequisite_message);
+                        }
+                        if (data.cta_url) {
+                            $('#btnTimetablePrereqCta').attr('href', data.cta_url);
+                        }
+                        if (data.cta_text) {
+                            $('#lblTimetablePrereqCtaText').text(data.cta_text);
+                        }
+                    } else {
+                        $('#cardTimetablePrereqBlock').hide();
+                        $('#cardTimetableReadyInit').show();
+                    }
                 }
             } catch (e) {
                 console.error("Error checking timetable status:", e);
                 const warnEl = document.getElementById('warnTimetableTitle');
                 if (warnEl) warnEl.style.display = 'inline-flex';
                 $('#viewStage0Fallback').show();
+                $('#cardTimetablePrereqBlock').hide();
+                $('#cardTimetableReadyInit').show();
             }
         }
 

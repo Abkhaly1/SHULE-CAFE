@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 header('Content-Type: application/json; charset=UTF-8');
 
 require_once __DIR__ . '/../config/db.php';
@@ -47,10 +49,40 @@ try {
             $config['operational_days'] = json_decode($config['operational_days'], true) ?? [];
         }
 
+        // Check prerequisite conditions: classrooms and teacher subject allocations
+        $clsStmt = $conn->prepare("SELECT COUNT(*) FROM classrooms WHERE school_id = ? AND is_active = 1");
+        $clsStmt->execute([$schoolId]);
+        $totalClasses = (int)$clsStmt->fetchColumn();
+
+        $allocStmt = $conn->prepare("SELECT COUNT(*) FROM teacher_subject_assignments WHERE school_id = ?");
+        $allocStmt->execute([$schoolId]);
+        $totalAllocations = (int)$allocStmt->fetchColumn();
+
+        $prereqMet = ($totalClasses > 0 && $totalAllocations > 0);
+        $prereqMsg = null;
+        $prereqCtaUrl = null;
+        $prereqCtaText = null;
+
+        if ($totalClasses === 0) {
+            $prereqMsg = "Classrooms have not been created yet. Please create classrooms and streams before generating timetables.";
+            $prereqCtaUrl = "../classrooms/index.html";
+            $prereqCtaText = "Create Classrooms";
+        } elseif ($totalAllocations === 0) {
+            $prereqMsg = "Teacher Subject Allocations have not been configured yet. Master timetable periods cannot be scheduled without teacher-subject assignments.";
+            $prereqCtaUrl = "../allocations/subject-allocations.html";
+            $prereqCtaText = "Allocate Teachers to Subjects";
+        }
+
         echo json_encode([
             'success' => true,
             'has_active_config' => !empty($config),
-            'config' => $config ?: null
+            'config' => $config ?: null,
+            'prerequisites_met' => $prereqMet,
+            'prerequisite_message' => $prereqMsg,
+            'cta_url' => $prereqCtaUrl,
+            'cta_text' => $prereqCtaText,
+            'total_classrooms' => $totalClasses,
+            'total_allocations' => $totalAllocations
         ]);
         exit();
     }

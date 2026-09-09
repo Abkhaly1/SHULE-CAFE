@@ -170,7 +170,23 @@
         function renderClassroomsTable(rooms) {
             const tbody = $('#guidersTbody').empty();
             if (rooms.length === 0) {
-                tbody.append('<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--c-text-muted);">No classroom streams registered.</td></tr>');
+                tbody.append(`
+                    <tr>
+                        <td colspan="6" style="text-align:center; padding: 36px 20px;">
+                            <div style="width: 44px; height: 44px; border-radius: 10px; background: #fee2e2; color: #dc2626; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            </div>
+                            <h4 style="margin: 0 0 6px 0; font-size: 15px; font-weight: 800; color: #991b1b;">Classrooms & Streams Required</h4>
+                            <p style="margin: 0 0 16px 0; font-size: 13px; color: #b91c1c; max-width: 480px; margin-left: auto; margin-right: auto;">
+                                No active classroom streams are registered for this school. You must configure classrooms before assigning Class Guiders / Teacher Mentors.
+                            </p>
+                            <a href="../classrooms/index.html" class="btn btn-sm" style="background: #047857; color: white; font-weight: 700; border-radius: 6px; padding: 7px 16px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                                <span>Create Classrooms Now</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                            </a>
+                        </td>
+                    </tr>
+                `);
                 return;
             }
 

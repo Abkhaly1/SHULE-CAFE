@@ -81,7 +81,7 @@
                             <tbody>
                                 
                                 <!-- 1. School Profile -->
-                                <tr class="settings-list-row" onclick="window.location.href='school-profile.html';">
+                                <tr class="settings-list-row" id="row-school-profile" onclick="handleSettingClick('school_profile', 'school-profile.html')">
                                     <td style="padding: 16px 20px; vertical-align: middle;">
                                         <div style="display: flex; align-items: center; gap: 14px;">
                                             <div class="settings-icon-box" style="background: #fdf2f8; color: #db2777; border: 1px solid #fbcfe8;">
@@ -110,7 +110,7 @@
                                 </tr>
 
                                 <!-- 2. Academics Management -->
-                                <tr class="settings-list-row" onclick="window.location.href='../academics/index.html';">
+                                <tr class="settings-list-row" id="row-academics" onclick="handleSettingClick('academics', '../academics/index.html')">
                                     <td style="padding: 16px 20px; vertical-align: middle;">
                                         <div style="display: flex; align-items: center; gap: 14px;">
                                             <div class="settings-icon-box" style="background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe;">
@@ -139,7 +139,7 @@
                                 </tr>
 
                                 <!-- 3. Assessment Configuration -->
-                                <tr class="settings-list-row" onclick="window.location.href='../academics/assessment-config.html';">
+                                <tr class="settings-list-row" id="row-assessment-config" onclick="handleSettingClick('assessment_config', '../academics/assessment-config.html')">
                                     <td style="padding: 16px 20px; vertical-align: middle;">
                                         <div style="display: flex; align-items: center; gap: 14px;">
                                             <div class="settings-icon-box" style="background: #faf5ff; color: #7c3aed; border: 1px solid #ddd6fe;">
@@ -168,7 +168,7 @@
                                 </tr>
 
                                 <!-- 4. Classrooms Management -->
-                                <tr class="settings-list-row" onclick="window.location.href='../classrooms/index.html';">
+                                <tr class="settings-list-row" id="row-classrooms" onclick="handleSettingClick('classrooms', '../classrooms/index.html')">
                                     <td style="padding: 16px 20px; vertical-align: middle;">
                                         <div style="display: flex; align-items: center; gap: 14px;">
                                             <div class="settings-icon-box" style="background: #fffbeb; color: #d97706; border: 1px solid #fde68a;">
@@ -197,7 +197,7 @@
                                 </tr>
 
                                 <!-- 5. Class Guiders Allocation -->
-                                <tr class="settings-list-row" onclick="window.location.href='../allocations/class-guiders.html';">
+                                <tr class="settings-list-row" id="row-class-guiders" onclick="handleSettingClick('class_guiders', '../allocations/class-guiders.html')">
                                     <td style="padding: 16px 20px; vertical-align: middle;">
                                         <div style="display: flex; align-items: center; gap: 14px;">
                                             <div class="settings-icon-box" style="background: #f0fdfa; color: #0d9488; border: 1px solid #99f6e4;">
@@ -226,7 +226,7 @@
                                 </tr>
 
                                 <!-- 6. Subject Teacher Allocations -->
-                                <tr class="settings-list-row" onclick="window.location.href='../allocations/subject-allocations.html';">
+                                <tr class="settings-list-row" id="row-subject-allocations" onclick="handleSettingClick('subject_allocations', '../allocations/subject-allocations.html')">
                                     <td style="padding: 16px 20px; vertical-align: middle;">
                                         <div style="display: flex; align-items: center; gap: 14px;">
                                             <div class="settings-icon-box" style="background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0;">
@@ -255,7 +255,7 @@
                                 </tr>
 
                                 <!-- 7. Timetables & Schedules -->
-                                <tr class="settings-list-row" onclick="window.location.href='../timetable/index.html';">
+                                <tr class="settings-list-row" id="row-timetable" onclick="handleSettingClick('timetable', '../timetable/index.html')">
                                     <td style="padding: 16px 20px; vertical-align: middle;">
                                         <div style="display: flex; align-items: center; gap: 14px;">
                                             <div class="settings-icon-box" style="background: #f5f3ff; color: #8b5cf6; border: 1px solid #ddd6fe;">
@@ -293,16 +293,57 @@
         </div>
     </div>
 
+    <!-- Prerequisite Guidance Modal -->
+    <div id="modalPrerequisiteGuide" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.65); z-index:99999; align-items:center; justify-content:center; backdrop-filter:blur(3px);">
+        <div style="background:white; border-radius:14px; max-width:440px; width:90%; padding:24px; box-shadow:0 20px 25px -5px rgba(0,0,0,0.2), 0 10px 10px -5px rgba(0,0,0,0.04); text-align:center;">
+            <div style="width:48px; height:48px; border-radius:12px; background:#fef2f2; border:1px solid #fecaca; color:#dc2626; display:flex; align-items:center; justify-content:center; margin:0 auto 14px auto;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <h3 style="margin:0 0 8px 0; font-size:17px; font-weight:800; color:#0f172a;">Prerequisite Step Required</h3>
+            <p id="prereqModalMessage" style="font-size:13px; color:#475569; margin:0 0 20px 0; line-height:1.5; font-weight:500;"></p>
+            <div style="display:flex; gap:10px; justify-content:center;">
+                <button type="button" class="btn btn-outline" onclick="closePrereqModal()" style="font-weight:700; padding:9px 16px; border-radius:8px; font-size:13px;">Dismiss</button>
+                <a id="prereqModalCta" href="#" class="btn" style="background:#047857; color:white; font-weight:700; padding:9px 18px; border-radius:8px; text-decoration:none; font-size:13px; display:inline-flex; align-items:center; gap:6px;">
+                    <span>Complete Prerequisite Now</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
     <script>
+        let settingsData = {};
+
+        function handleSettingClick(key, defaultUrl) {
+            const item = settingsData[key];
+            if (item && item.prerequisites_met === false) {
+                document.getElementById('prereqModalMessage').textContent = item.prerequisite_message || 'Please complete prerequisite configurations first.';
+                const ctaBtn = document.getElementById('prereqModalCta');
+                ctaBtn.href = item.cta_url || defaultUrl;
+                if (item.cta_text) {
+                    ctaBtn.querySelector('span').textContent = item.cta_text;
+                } else {
+                    ctaBtn.querySelector('span').textContent = 'Complete Prerequisite Now';
+                }
+                document.getElementById('modalPrerequisiteGuide').style.display = 'flex';
+                return;
+            }
+            window.location.href = defaultUrl;
+        }
+
+        function closePrereqModal() {
+            document.getElementById('modalPrerequisiteGuide').style.display = 'none';
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const res = await fetch('/shule-cafe/api/headmaster/settings_status.php', { credentials: 'include' });
                 const json = await res.json();
                 if (json && json.success && json.settings) {
-                    const s = json.settings;
+                    settingsData = json.settings;
                     
                     const updateItem = (key, elemSuffix) => {
-                        const info = s[key];
+                        const info = settingsData[key];
                         if (!info) return;
                         const warnEl = document.getElementById(`warn-${elemSuffix}`);
                         const badgeEl = document.getElementById(`badge-${elemSuffix}`);
@@ -315,7 +356,11 @@
                         } else {
                             if (warnEl) warnEl.style.display = 'inline-flex';
                             if (badgeEl) {
-                                badgeEl.innerHTML = `<span class="badge" style="background:#fef3c7;color:#b45309;font-weight:700;font-size:12px;padding:5px 10px;border-radius:6px;border:1px solid #fde68a;">Needs Setup</span>`;
+                                if (info.prerequisites_met === false) {
+                                    badgeEl.innerHTML = `<span class="badge" style="background:#fef2f2;color:#b91c1c;font-weight:700;font-size:11px;padding:4px 8px;border-radius:6px;border:1px solid #fecaca;display:inline-flex;align-items:center;gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Locked: Needs Setup</span>`;
+                                } else {
+                                    badgeEl.innerHTML = `<span class="badge" style="background:#fef3c7;color:#b45309;font-weight:700;font-size:12px;padding:5px 10px;border-radius:6px;border:1px solid #fde68a;">Needs Setup</span>`;
+                                }
                             }
                         }
                     };

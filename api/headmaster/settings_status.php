@@ -59,16 +59,24 @@ try {
         $profileConfigured = ($hasEmail || $hasPhone) && $hasRegion;
     }
 
-    // 2. Academics (Grades / Levels) Check
-    $lvlCount = 0;
-    $grdCount = 0;
+    // 2. Academics (Curriculum Subjects & Levels Check)
+    $activeSubjCount = 0;
     try {
-        $lvlStmt = $conn->query("SELECT COUNT(*) FROM education_levels");
-        $lvlCount = (int)$lvlStmt->fetchColumn();
-        $grdStmt = $conn->query("SELECT COUNT(*) FROM grades");
-        $grdCount = (int)$grdStmt->fetchColumn();
-    } catch (Exception $e) {}
-    $academicsConfigured = ($lvlCount > 0 && $grdCount > 0);
+        $subStmt = $conn->prepare("
+            SELECT COUNT(*) FROM school_approved_subjects 
+            WHERE school_id = ? AND status = 'active'
+        ");
+        $subStmt->execute([$school_id]);
+        $activeSubjCount = (int)$subStmt->fetchColumn();
+        if ($activeSubjCount === 0) {
+            $gsStmt = $conn->prepare("SELECT COUNT(*) FROM grade_subjects WHERE school_id = ?");
+            $gsStmt->execute([$school_id]);
+            $activeSubjCount = (int)$gsStmt->fetchColumn();
+        }
+    } catch (Exception $e) {
+        $activeSubjCount = 0;
+    }
+    $academicsConfigured = ($activeSubjCount > 0);
 
     // 3. Assessment Configuration Check
     $assessConfigured = false;
@@ -95,11 +103,11 @@ try {
     } catch (Exception $e) {}
     $classroomsConfigured = ($totalClasses > 0);
 
-    // 5. Class Guiders Check
+    // 5. Class Guiders Check (Requires Classrooms to exist)
     $guidersConfigured = false;
     if ($totalClasses > 0) {
         try {
-            $gStmt = $conn->prepare("SELECT COUNT(*) FROM classrooms WHERE school_id = ? AND is_active = 1 AND class_teacher_id IS NOT NULL AND class_teacher_id > 0");
+            $gStmt = $conn->prepare("SELECT COUNT(*) FROM class_teachers WHERE school_id = ?");
             $gStmt->execute([$school_id]);
             $guidersCount = (int)$gStmt->fetchColumn();
             $guidersConfigured = ($guidersCount > 0);
@@ -108,7 +116,7 @@ try {
         }
     }
 
-    // 6. Subject Allocations Check
+    // 6. Subject Allocations Check (Requires Curriculum Subjects)
     $subAllocConfigured = false;
     try {
         $subStmt = $conn->prepare("SELECT COUNT(*) FROM teacher_subject_assignments WHERE school_id = ?");
@@ -119,7 +127,7 @@ try {
         $subAllocConfigured = false;
     }
 
-    // 7. Timetable Check
+    // 7. Timetable Check (Requires Classrooms and Subject Allocations)
     $ttConfigured = false;
     try {
         $ttStmt = $conn->prepare("SELECT COUNT(*) FROM class_timetables WHERE school_id = ? AND academic_year = ?");
@@ -130,39 +138,76 @@ try {
         $ttConfigured = false;
     }
 
+    // Build Prerequisite Gating Metadata
+    $settingsResponse = [
+        "school_profile" => [
+            "configured" => $profileConfigured,
+            "label" => $profileConfigured ? "Configured" : "Needs Setup",
+            "prerequisites_met" => true,
+            "prerequisite_message" => null,
+            "cta_url" => "school-profile.html",
+            "cta_text" => "Configure Profile"
+        ],
+        "academics" => [
+            "configured" => $academicsConfigured,
+            "label" => $academicsConfigured ? "Configured" : "Needs Setup",
+            "prerequisites_met" => true,
+            "prerequisite_message" => null,
+            "cta_url" => "../academics/index.html?tab=subjects",
+            "cta_text" => "Configure Curriculum Subjects"
+        ],
+        "assessment_config" => [
+            "configured" => $assessConfigured,
+            "label" => $assessConfigured ? "Ready" : "Needs Setup",
+            "prerequisites_met" => $academicsConfigured,
+            "prerequisite_message" => $academicsConfigured ? null : "Curriculum subjects must be configured before setting assessment weights and grading rules.",
+            "cta_url" => $academicsConfigured ? "../academics/assessment-config.html" : "../academics/index.html?tab=subjects",
+            "cta_text" => $academicsConfigured ? "Configure Assessments" : "Configure Curriculum Subjects First"
+        ],
+        "classrooms" => [
+            "configured" => $classroomsConfigured,
+            "label" => $classroomsConfigured ? "Active" : "Needs Setup",
+            "prerequisites_met" => true,
+            "prerequisite_message" => null,
+            "cta_url" => "../classrooms/index.html",
+            "cta_text" => "Configure Classrooms"
+        ],
+        "class_guiders" => [
+            "configured" => $guidersConfigured,
+            "label" => $guidersConfigured ? "Assigned" : "Needs Setup",
+            "prerequisites_met" => $classroomsConfigured,
+            "prerequisite_message" => $classroomsConfigured ? null : "Classrooms and streams must be created before assigning class guiders / mentors.",
+            "cta_url" => $classroomsConfigured ? "../allocations/class-guiders.html" : "../classrooms/index.html",
+            "cta_text" => $classroomsConfigured ? "Assign Class Guiders" : "Create Classrooms First"
+        ],
+        "subject_allocations" => [
+            "configured" => $subAllocConfigured,
+            "label" => $subAllocConfigured ? "Assigned" : "Needs Setup",
+            "prerequisites_met" => $academicsConfigured,
+            "prerequisite_message" => $academicsConfigured ? null : "You cannot assign teachers to subjects until your school chooses and activates curriculum subjects.",
+            "cta_url" => $academicsConfigured ? "../allocations/subject-allocations.html" : "../academics/index.html?tab=subjects",
+            "cta_text" => $academicsConfigured ? "Assign Teachers" : "Configure Curriculum Subjects First"
+        ],
+        "timetable" => [
+            "configured" => $ttConfigured,
+            "label" => $ttConfigured ? "Generated" : "Needs Setup",
+            "prerequisites_met" => ($classroomsConfigured && $subAllocConfigured),
+            "prerequisite_message" => (!$classroomsConfigured) 
+                ? "Classrooms must be created before timetable schedules can be generated." 
+                : ((!$subAllocConfigured) ? "Teachers must be allocated to their curriculum subjects before timetable schedules can be prepared." : null),
+            "cta_url" => (!$classroomsConfigured) 
+                ? "../classrooms/index.html" 
+                : ((!$subAllocConfigured) ? "../allocations/subject-allocations.html" : "../timetable/index.html"),
+            "cta_text" => (!$classroomsConfigured) 
+                ? "Create Classrooms First" 
+                : ((!$subAllocConfigured) ? "Allocate Subjects First" : "Prepare Timetable")
+        ]
+    ];
+
     echo json_encode([
         "success" => true,
         "school_id" => $school_id,
-        "settings" => [
-            "school_profile" => [
-                "configured" => $profileConfigured,
-                "label" => $profileConfigured ? "Configured" : "Needs Setup"
-            ],
-            "academics" => [
-                "configured" => $academicsConfigured,
-                "label" => $academicsConfigured ? "Configured" : "Needs Setup"
-            ],
-            "assessment_config" => [
-                "configured" => $assessConfigured,
-                "label" => $assessConfigured ? "Ready" : "Needs Setup"
-            ],
-            "classrooms" => [
-                "configured" => $classroomsConfigured,
-                "label" => $classroomsConfigured ? "Active" : "Needs Setup"
-            ],
-            "class_guiders" => [
-                "configured" => $guidersConfigured,
-                "label" => $guidersConfigured ? "Assigned" : "Needs Setup"
-            ],
-            "subject_allocations" => [
-                "configured" => $subAllocConfigured,
-                "label" => $subAllocConfigured ? "Assigned" : "Needs Setup"
-            ],
-            "timetable" => [
-                "configured" => $ttConfigured,
-                "label" => $ttConfigured ? "Generated" : "Needs Setup"
-            ]
-        ]
+        "settings" => $settingsResponse
     ]);
 
 } catch (Exception $e) {

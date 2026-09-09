@@ -1104,6 +1104,28 @@
             const isMulti = (currentMode === 'all');
             const targetSubjects = isMulti ? activeSubjects : activeSubjects.filter(s => s.code === document.getElementById('gridSubjectSelect').value);
 
+            if (!targetSubjects || targetSubjects.length === 0) {
+                thead.innerHTML = '';
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" style="text-align:center; padding: 40px 20px;">
+                            <div style="width: 48px; height: 48px; border-radius: 12px; background: #fef2f2; color: #dc2626; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            </div>
+                            <h4 style="margin: 0 0 6px 0; font-size: 16px; font-weight: 800; color: #991b1b;">Curriculum Subjects Missing</h4>
+                            <p style="margin: 0 0 16px 0; font-size: 13px; color: #b91c1c; max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+                                No active curriculum subjects are configured for this educational tier. You cannot record examination marks until your curriculum subjects are chosen and assigned.
+                            </p>
+                            <a href="../academics/index.html?tab=subjects" class="btn btn-sm" style="background: #047857; color: white; font-weight: 700; border-radius: 6px; padding: 8px 16px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                                <span>Configure Curriculum Subjects</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                            </a>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
             let thHtml = `
                 <tr>
                     <th class="sticky-col-idx">S/N</th>
@@ -1131,7 +1153,23 @@
 
             tbody.innerHTML = '';
             if (!sheetData.roster || sheetData.roster.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="${targetSubjects.length + 7}" style="text-align:center; padding:20px; color:#64748b;">No students found in this roster.</td></tr>`;
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="${targetSubjects.length + 7}" style="text-align:center; padding: 40px 20px;">
+                            <div style="width: 48px; height: 48px; border-radius: 12px; background: #fffbeb; color: #d97706; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            </div>
+                            <h4 style="margin: 0 0 6px 0; font-size: 16px; font-weight: 800; color: #92400e;">No Students Allocated to this Class Roster</h4>
+                            <p style="margin: 0 0 16px 0; font-size: 13px; color: #b45309; max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+                                Examination marks cannot be entered because there are currently no active students enrolled in this classroom or grade cohort.
+                            </p>
+                            <a href="../people/student_workspace.html" class="btn btn-sm" style="background: #d97706; color: white; font-weight: 700; border-radius: 6px; padding: 8px 16px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                                <span>Enroll & Allocate Students</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                            </a>
+                        </td>
+                    </tr>
+                `;
                 return;
             }
 

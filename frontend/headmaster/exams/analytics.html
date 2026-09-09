@@ -244,8 +244,26 @@
                     <!-- STEP 4: ANALYTICS RESULTS PANEL VIEW (High Density) -->
                     <div id="stepWorkspaceView" style="display: none;">
                         
-                        <!-- 1. Performance Overview Cards -->
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px;">
+                        <!-- Prerequisite / Incomplete Marks Guidance Card -->
+                        <div id="anEmptyGuidanceCard" style="display: none; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 40px 24px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.03); margin-top: 10px;">
+                            <div style="width: 52px; height: 52px; border-radius: 12px; background: #eff6ff; color: #2563eb; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px;">
+                                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                            </div>
+                            <h3 style="margin: 0 0 8px 0; font-size: 17px; font-weight: 800; color: #0f172a;">Examination Marks Entry Required</h3>
+                            <p id="anEmptyGuidanceMsg" style="margin: 0 0 20px 0; font-size: 13.5px; color: #475569; max-width: 540px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+                                Performance analytics, pass rates, and grade rankings are generated from recorded assessment marks. No examination marks have been submitted for this classroom cohort yet.
+                            </p>
+                            <div>
+                                <a id="anBtnGoToMarks" href="entry.html" class="btn btn-action-primary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 13px;">
+                                    <span>Enter Examination Marks</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div id="anMetricsContainer">
+                            <!-- 1. Performance Overview Cards -->
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px;">
                             <div class="stat-badge-box" style="border-left: 3px solid #059669;">
                                 <div>
                                     <div style="font-size: 10.5px; font-weight: 700; color: #64748b; text-transform: uppercase;">Total Evaluated</div>
@@ -318,9 +336,9 @@
                                 </div>
                             </div>
 
-                        </div>
+                        </div><!-- end anMetricsContainer -->
 
-                    </div>
+                    </div><!-- end stepWorkspaceView -->
 
                 </div>
             </main>
@@ -593,6 +611,20 @@
 
         function renderAnalyticsUI(data, year, term) {
             document.getElementById('pageHeading').innerHTML = `<span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> ${data.classroom.classroom_name} Analytics</span>`;
+
+            const scopeParam = selectedClassroomId ? `classroom_id=${selectedClassroomId}` : `grade_id=${selectedGradeId}`;
+            const totalEvaluated = parseInt(data.overall_metrics?.total_evaluated || 0, 10);
+
+            if (totalEvaluated === 0) {
+                document.getElementById('anEmptyGuidanceCard').style.display = 'block';
+                document.getElementById('anMetricsContainer').style.display = 'none';
+                document.getElementById('anEmptyGuidanceMsg').innerHTML = `Performance analytics, pass rates, and grade rankings are generated from recorded assessment marks. No examination marks have been submitted for <strong>${data.classroom.classroom_name}</strong> in <strong>${term} ${year}</strong> yet.`;
+                document.getElementById('anBtnGoToMarks').href = `entry.html?${scopeParam}&year=${year}&term=${encodeURIComponent(term)}`;
+                return;
+            }
+
+            document.getElementById('anEmptyGuidanceCard').style.display = 'none';
+            document.getElementById('anMetricsContainer').style.display = 'block';
 
             document.getElementById('anTotalEvaluated').textContent = data.overall_metrics.total_evaluated || 0;
             document.getElementById('anClassAvg').textContent = data.overall_metrics.class_average || '0.0';
