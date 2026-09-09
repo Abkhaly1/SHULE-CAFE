@@ -260,20 +260,8 @@ try {
 
         // Fetch distinct subjects evaluated in room
         $stmtSubj = $conn->prepare("
-            WITH unified_marks AS (
-                SELECT student_id, subject_code, school_id, academic_year, term
-                FROM marks_entry_dynamic
-                GROUP BY student_id, subject_code, school_id, academic_year, term
-                UNION ALL
-                SELECT student_id, subject_code, school_id, academic_year, term
-                FROM marks_entry m
-                WHERE NOT EXISTS (
-                    SELECT 1 FROM marks_entry_dynamic d
-                    WHERE d.student_id = m.student_id AND d.subject_code = m.subject_code AND d.academic_year = m.academic_year AND d.term = m.term
-                )
-            )
             SELECT DISTINCT me.subject_code, COALESCE(s.name, me.subject_code) AS subject_name
-            FROM unified_marks me
+            FROM marks_entry_dynamic me
             JOIN student_classroom_allocations sca ON me.student_id = sca.student_id
             LEFT JOIN subjects s ON me.subject_code = s.code
             WHERE sca.classroom_id = ? AND me.school_id = ? AND me.academic_year = ? AND me.term = ?
@@ -285,22 +273,11 @@ try {
         // Matrix map: student_id => [ subject_code => total_score ]
         $matrixMap = [];
         $stmtAllMarks = $conn->prepare("
-            WITH unified_marks AS (
-                SELECT student_id, subject_code, school_id, academic_year, term, SUM(score) AS total_score
-                FROM marks_entry_dynamic
-                GROUP BY student_id, subject_code, school_id, academic_year, term
-                UNION ALL
-                SELECT student_id, subject_code, school_id, academic_year, term, (COALESCE(continuous_assessment_mark, 0) + COALESCE(terminal_mark, 0)) AS total_score
-                FROM marks_entry m
-                WHERE NOT EXISTS (
-                    SELECT 1 FROM marks_entry_dynamic d
-                    WHERE d.student_id = m.student_id AND d.subject_code = m.subject_code AND d.academic_year = m.academic_year AND d.term = m.term
-                )
-            )
-            SELECT me.student_id, me.subject_code, me.total_score
-            FROM unified_marks me
+            SELECT me.student_id, me.subject_code, SUM(me.score) AS total_score
+            FROM marks_entry_dynamic me
             JOIN student_classroom_allocations sca ON me.student_id = sca.student_id
             WHERE sca.classroom_id = ? AND me.school_id = ? AND me.academic_year = ? AND me.term = ?
+            GROUP BY me.student_id, me.subject_code
         ");
         $stmtAllMarks->execute([$classroomId, $schoolId, $year, $term]);
         $allMarks = $stmtAllMarks->fetchAll(PDO::FETCH_ASSOC);

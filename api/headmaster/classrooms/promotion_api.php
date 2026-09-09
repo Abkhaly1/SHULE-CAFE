@@ -55,28 +55,20 @@ try {
 
         // Calculate GPA / Score for each student in the classroom to generate auto recommendation
         $stmtMarks = $conn->prepare("
-            WITH unified_marks AS (
+            WITH student_subject_scores AS (
                 SELECT student_id, subject_code, SUM(score) AS total_score
                 FROM marks_entry_dynamic
                 WHERE school_id = ? AND academic_year = ?
                 GROUP BY student_id, subject_code
-                UNION ALL
-                SELECT student_id, subject_code, (COALESCE(continuous_assessment_mark, 0) + COALESCE(terminal_mark, 0)) AS total_score
-                FROM marks_entry m
-                WHERE m.school_id = ? AND m.academic_year = ?
-                  AND NOT EXISTS (
-                    SELECT 1 FROM marks_entry_dynamic d
-                    WHERE d.student_id = m.student_id AND d.subject_code = m.subject_code AND d.academic_year = m.academic_year
-                  )
             )
             SELECT me.student_id, AVG(me.total_score) AS avg_score
-            FROM unified_marks me
+            FROM student_subject_scores me
             JOIN student_classroom_allocations sca ON me.student_id = sca.student_id
             WHERE sca.classroom_id = ? AND sca.school_id = ? AND sca.academic_year = ?
             GROUP BY me.student_id
         ");
         
-        $stmtMarks->execute([$schoolId, $fromYear, $schoolId, $fromYear, $classroomId, $schoolId, $fromYear]);
+        $stmtMarks->execute([$schoolId, $fromYear, $classroomId, $schoolId, $fromYear]);
         $averages = [];
         while ($row = $stmtMarks->fetch(PDO::FETCH_ASSOC)) {
             $averages[$row['student_id']] = $row['avg_score'];
