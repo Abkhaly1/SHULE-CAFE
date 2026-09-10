@@ -1263,13 +1263,17 @@
             const lnkClass = document.getElementById('lnkClassReport');
             const lnkLevel = document.getElementById('lnkLevelReport');
 
-            if (classId > 0) {
-                lnkClass.href = `../reports/index.html?tab=tabRoster&classroom_id=${classId}`;
-            } else {
-                lnkClass.href = `../reports/index.html?tab=tabRoster`;
+            if (lnkClass) {
+                if (classId > 0) {
+                    lnkClass.href = `../reports/index.html?tab=tabRoster&classroom_id=${classId}`;
+                } else {
+                    lnkClass.href = `../reports/index.html?tab=tabRoster`;
+                }
             }
 
-            lnkLevel.href = `../reports/index.html?tab=tabAnalytics`;
+            if (lnkLevel) {
+                lnkLevel.href = `../reports/index.html?tab=tabAnalytics`;
+            }
         }
 
         // ─────────────────────────────────────────────────────────────────────
