@@ -52,39 +52,30 @@ try {
         ");
         $stmt->execute([$schoolId, $classroomId, $year]);
         $roster = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $stmtClass = $conn->prepare("SELECT id, classroom_name, capacity, grade_id FROM classrooms WHERE id = ? AND school_id = ? LIMIT 1");
+        $stmtClass = $conn->prepare("SELECT id, classroom_name, grade_id FROM classrooms WHERE id = ? AND school_id = ? LIMIT 1");
         $stmtClass->execute([$classroomId, $schoolId]);
         $classroom = $stmtClass->fetch(PDO::FETCH_ASSOC);
-
-        $capacity = intval($classroom['capacity'] ?? 45);
-        $enrolledCount = count($roster);
-        $utilizationPct = $capacity > 0 ? round(($enrolledCount / $capacity) * 100, 1) : 100;
 
         echo json_encode([
             'success' => true,
             'roster' => $roster,
-            'count' => $enrolledCount,
-            'capacity' => $capacity,
-            'available_seats' => max(0, $capacity - $enrolledCount),
-            'utilization_percent' => $utilizationPct,
-            'is_over_capacity' => $enrolledCount > $capacity,
+            'count' => count($roster),
             'classroom' => $classroom
         ]);
         exit();
     }
 
-    // POST: Assign students to classroom (With Capacity Rule & User Sync)
+    // POST: Assign students to classroom (Unrestricted Capacity Allocation with User Sync)
     if ($method === 'POST' && $action === 'assign') {
         $classroomId = intval($input['classroom_id'] ?? 0);
         $studentIds  = $input['student_ids'] ?? [];
-        $overrideCapacity = !empty($input['override_capacity']);
 
         if (!$classroomId || empty($studentIds)) {
             echo json_encode(['success' => false, 'message' => 'Classroom and students are required.']);
             exit();
         }
 
-        $stmtClass = $conn->prepare("SELECT classroom_name, capacity, grade_id FROM classrooms WHERE id = ? AND school_id = ? LIMIT 1");
+        $stmtClass = $conn->prepare("SELECT classroom_name, grade_id FROM classrooms WHERE id = ? AND school_id = ? LIMIT 1");
         $stmtClass->execute([$classroomId, $schoolId]);
         $classroom = $stmtClass->fetch(PDO::FETCH_ASSOC);
 
@@ -94,30 +85,7 @@ try {
         }
 
         $cName = $classroom['classroom_name'] ?? 'Classroom Stream';
-        $capacity = intval($classroom['capacity'] ?? 0);
         $gradeId = intval($classroom['grade_id'] ?? 0);
-
-        // Check Capacity Rule
-        $stmtCurrent = $conn->prepare("SELECT COUNT(*) FROM student_classroom_allocations WHERE classroom_id = ? AND school_id = ? AND academic_year = ? AND status = 'Active'");
-        $stmtCurrent->execute([$classroomId, $schoolId, $year]);
-        $currentEnrolled = intval($stmtCurrent->fetchColumn());
-        $incomingCount = count($studentIds);
-        $projectedTotal = $currentEnrolled + $incomingCount;
-
-        if ($capacity > 0 && $projectedTotal > $capacity && !$overrideCapacity) {
-            $overflow = $projectedTotal - $capacity;
-            echo json_encode([
-                'success' => false,
-                'requires_confirmation' => true,
-                'capacity_exceeded' => true,
-                'classroom_capacity' => $capacity,
-                'current_enrolled' => $currentEnrolled,
-                'projected_total' => $projectedTotal,
-                'overflow_count' => $overflow,
-                'message' => "Capacity limit safeguard: Stream '{$cName}' has capacity for {$capacity} desks and currently has {$currentEnrolled} enrolled. Allocating {$incomingCount} additional student(s) will exceed capacity by {$overflow}. Please confirm if you wish to override room capacity."
-            ]);
-            exit();
-        }
 
         $conn->beginTransaction();
         $stmtAlloc = $conn->prepare("
