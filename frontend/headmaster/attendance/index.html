@@ -1792,9 +1792,13 @@
                 const data = await res.json();
                 if (!data.success) throw new Error(data.message);
 
-                const st = data.student;
-                const stats = data.stats;
-                const history = data.history || [];
+                const st = data.student || {};
+                const stats = data.stats || data.metrics || {};
+                const history = data.history || data.timeline || [];
+                const rate = stats.rate !== undefined ? stats.rate : (stats.present_days ? Math.round((stats.present_days / stats.total_days)*1000)/10 : 100.0);
+                const present = stats.present !== undefined ? stats.present : (stats.present_days || 0);
+                const absent = stats.absent !== undefined ? stats.absent : (stats.absent_days || 0);
+                const lateExcused = stats.late !== undefined ? (stats.late + (stats.excused || 0)) : ((stats.late_days || 0) + (stats.excused_days || 0));
 
                 body.innerHTML = `
                     <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid #e2e8f0;">
@@ -1802,9 +1806,9 @@
                             ${(st.full_name || 'S').charAt(0).toUpperCase()}
                         </div>
                         <div>
-                            <div style="font-size:13px; font-weight:800; color:#0f172a;">${st.full_name}</div>
+                            <div style="font-size:13px; font-weight:800; color:#0f172a;">${st.full_name || 'Student Profile'}</div>
                             <div style="font-size:11px; color:#64748b; margin-top:2px;">
-                                <span style="font-family:monospace; background:#f1f5f9; padding:1px 5px; border-radius:3px;">${st.user_code || 'ID-' + st.id}</span>
+                                <span style="font-family:monospace; background:#f1f5f9; padding:1px 5px; border-radius:3px;">${st.user_code || 'ID-' + (st.id || '')}</span>
                                 &bull; ${st.classroom_name || 'Classroom'} &bull; ${st.gender || 'Student'}
                             </div>
                         </div>
@@ -1813,19 +1817,19 @@
                     <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-bottom:14px;">
                         <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:8px; text-align:center;">
                             <div style="font-size:10px; font-weight:700; color:#64748b; text-transform:uppercase;">Attendance</div>
-                            <div style="font-size:16px; font-weight:800; color:#047857;">${stats.rate}%</div>
+                            <div style="font-size:16px; font-weight:800; color:#047857;">${rate}%</div>
                         </div>
                         <div style="background:#ecfdf5; border:1px solid #a7f3d0; border-radius:6px; padding:8px; text-align:center;">
                             <div style="font-size:10px; font-weight:700; color:#047857; text-transform:uppercase;">Present</div>
-                            <div style="font-size:16px; font-weight:800; color:#047857;">${stats.present}</div>
+                            <div style="font-size:16px; font-weight:800; color:#047857;">${present}</div>
                         </div>
                         <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:6px; padding:8px; text-align:center;">
                             <div style="font-size:10px; font-weight:700; color:#b91c1c; text-transform:uppercase;">Absent</div>
-                            <div style="font-size:16px; font-weight:800; color:#b91c1c;">${stats.absent}</div>
+                            <div style="font-size:16px; font-weight:800; color:#b91c1c;">${absent}</div>
                         </div>
                         <div style="background:#fef3c7; border:1px solid #fde68a; border-radius:6px; padding:8px; text-align:center;">
                             <div style="font-size:10px; font-weight:700; color:#b45309; text-transform:uppercase;">Late/Exc</div>
-                            <div style="font-size:16px; font-weight:800; color:#b45309;">${stats.late + stats.excused}</div>
+                            <div style="font-size:16px; font-weight:800; color:#b45309;">${lateExcused}</div>
                         </div>
                     </div>
 

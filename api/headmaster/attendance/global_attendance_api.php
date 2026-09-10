@@ -481,17 +481,26 @@ try {
 
         $rate = $totalDays > 0 ? round((($presentDays + $lateDays) / $totalDays) * 100, 1) : 100.0;
 
+        $statsData = [
+            'total' => $totalDays,
+            'present' => $presentDays,
+            'absent' => $absentDays,
+            'late' => $lateDays,
+            'excused' => $excusedDays,
+            'rate' => $rate,
+            'total_days' => $totalDays,
+            'present_days' => $presentDays,
+            'absent_days' => $absentDays,
+            'late_days' => $lateDays,
+            'excused_days' => $excusedDays
+        ];
+
         echo json_encode([
             'success' => true,
             'student' => $student,
-            'metrics' => [
-                'total_days' => $totalDays,
-                'present_days' => $presentDays,
-                'absent_days' => $absentDays,
-                'late_days' => $lateDays,
-                'excused_days' => $excusedDays,
-                'rate' => $rate
-            ],
+            'stats' => $statsData,
+            'metrics' => $statsData,
+            'history' => $logs,
             'timeline' => $logs
         ]);
         exit();
