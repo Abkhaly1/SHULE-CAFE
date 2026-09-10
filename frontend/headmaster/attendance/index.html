@@ -293,9 +293,156 @@
                 padding: 4px 6px !important;
                 border: 1px solid #cbd5e1 !important;
             }
-        }
         .print-header {
             display: none;
+        }
+
+        /* ───────────────────────────────────────────────────────────────────── */
+        /* GLOWING ACTION ICONS (BLACK, BLUE, RED, YELLOW, PURPLE)               */
+        /* ───────────────────────────────────────────────────────────────────── */
+        app-workspace-tabs.top-workspace-tabs {
+            display: contents !important;
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+        }
+
+        .glowing-icon-btn {
+            width: 34px !important;
+            height: 32px !important;
+            min-width: 34px !important;
+            padding: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 7px !important;
+            cursor: pointer !important;
+            transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            position: relative !important;
+            outline: none !important;
+            user-select: none !important;
+        }
+        .glowing-icon-btn svg {
+            width: 15px !important;
+            height: 15px !important;
+            transition: transform 0.18s ease, filter 0.18s ease !important;
+            display: block !important;
+        }
+        .glowing-icon-btn:hover {
+            transform: translateY(-1.5px) scale(1.06) !important;
+        }
+        .glowing-icon-btn:active {
+            transform: translateY(0) scale(0.97) !important;
+        }
+
+        /* 1. BLACK: Daily Register */
+        .glow-black {
+            order: 1;
+            background: #ffffff !important;
+            border: 1.5px solid #0f172a !important;
+            color: #0f172a !important;
+            box-shadow: 0 0 10px rgba(15, 23, 42, 0.4), inset 0 0 4px rgba(15, 23, 42, 0.08) !important;
+        }
+        .glow-black svg {
+            stroke: #0f172a !important;
+            filter: drop-shadow(0 0 2px rgba(15, 23, 42, 0.45));
+        }
+        .glow-black:hover, .glow-black.active {
+            background: #0f172a !important;
+            border-color: #0f172a !important;
+            box-shadow: 0 0 16px rgba(15, 23, 42, 0.8), 0 0 6px rgba(15, 23, 42, 0.95) !important;
+        }
+        .glow-black:hover svg, .glow-black.active svg {
+            stroke: #ffffff !important;
+            filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.9));
+        }
+
+        /* 2. BLUE: Attendance Report Window */
+        .glow-blue {
+            order: 2;
+            background: #eff6ff !important;
+            border: 1.5px solid #1d4ed8 !important;
+            color: #1d4ed8 !important;
+            box-shadow: 0 0 10px rgba(29, 78, 216, 0.5), inset 0 0 4px rgba(29, 78, 216, 0.12) !important;
+        }
+        .glow-blue svg {
+            stroke: #1d4ed8 !important;
+            filter: drop-shadow(0 0 3px rgba(29, 78, 216, 0.55));
+        }
+        .glow-blue:hover, .glow-blue:active {
+            background: #1d4ed8 !important;
+            border-color: #1d4ed8 !important;
+            box-shadow: 0 0 18px rgba(29, 78, 216, 0.9), 0 0 8px rgba(37, 99, 235, 1) !important;
+        }
+        .glow-blue:hover svg, .glow-blue:active svg {
+            stroke: #ffffff !important;
+            filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.9));
+        }
+
+        /* 3. RED: Missing Attendance */
+        .glow-red {
+            order: 3;
+            background: #fef2f2 !important;
+            border: 1.5px solid #b91c1c !important;
+            color: #b91c1c !important;
+            box-shadow: 0 0 10px rgba(185, 28, 28, 0.5), inset 0 0 4px rgba(185, 28, 28, 0.12) !important;
+        }
+        .glow-red svg {
+            stroke: #b91c1c !important;
+            filter: drop-shadow(0 0 3px rgba(185, 28, 28, 0.55));
+        }
+        .glow-red:hover, .glow-red.active {
+            background: #b91c1c !important;
+            border-color: #b91c1c !important;
+            box-shadow: 0 0 18px rgba(185, 28, 28, 0.9), 0 0 8px rgba(220, 38, 38, 1) !important;
+        }
+        .glow-red:hover svg, .glow-red.active svg {
+            stroke: #ffffff !important;
+            filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.9));
+        }
+
+        /* 4. YELLOW: Export Modal */
+        .glow-yellow {
+            order: 4;
+            background: #fefce8 !important;
+            border: 1.5px solid #b45309 !important;
+            color: #b45309 !important;
+            box-shadow: 0 0 10px rgba(217, 119, 6, 0.55), inset 0 0 4px rgba(217, 119, 6, 0.12) !important;
+        }
+        .glow-yellow svg {
+            stroke: #b45309 !important;
+            filter: drop-shadow(0 0 3px rgba(217, 119, 6, 0.55));
+        }
+        .glow-yellow:hover, .glow-yellow:active {
+            background: #d97706 !important;
+            border-color: #b45309 !important;
+            box-shadow: 0 0 18px rgba(217, 119, 6, 0.9), 0 0 8px rgba(245, 158, 11, 1) !important;
+        }
+        .glow-yellow:hover svg, .glow-yellow:active svg {
+            stroke: #ffffff !important;
+            filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.9));
+        }
+
+        /* 5. PURPLE: Analytics Board Modal */
+        .glow-purple {
+            order: 5;
+            background: #faf5ff !important;
+            border: 1.5px solid #6d28d9 !important;
+            color: #6d28d9 !important;
+            box-shadow: 0 0 10px rgba(109, 40, 217, 0.55), inset 0 0 4px rgba(109, 40, 217, 0.12) !important;
+        }
+        .glow-purple svg {
+            stroke: #6d28d9 !important;
+            filter: drop-shadow(0 0 3px rgba(109, 40, 217, 0.55));
+        }
+        .glow-purple:hover, .glow-purple:active {
+            background: #6d28d9 !important;
+            border-color: #6d28d9 !important;
+            box-shadow: 0 0 18px rgba(109, 40, 217, 0.9), 0 0 8px rgba(124, 58, 237, 1) !important;
+        }
+        .glow-purple:hover svg, .glow-purple:active svg {
+            stroke: #ffffff !important;
+            filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.9));
         }
     </style>
 </head>
@@ -331,24 +478,34 @@
                             </span>
                         </div>
 
-                        <!-- Right-Aligned Embedded Workspace Tabs & Quick Action Modals -->
+                        <!-- Right-Aligned Embedded Workspace Tabs & Quick Action Modals (Icons Only, Deep Glowing Colors) -->
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <app-workspace-tabs active-tab="tabRegister">
-                                <button class="workspace-tab active" data-target="tabRegister" style="font-weight: 700; font-size: 12px;">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Daily Register
+                            <app-workspace-tabs active-tab="tabRegister" class="top-workspace-tabs">
+                                <!-- 1. BLACK: Daily Register Tab -->
+                                <button class="workspace-tab active glowing-icon-btn glow-black" data-target="tabRegister" title="Daily Attendance Register" id="tabBtnRegister">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                                 </button>
-                                <button class="workspace-tab" data-target="tabMissing" style="font-weight: 700; font-size: 12px;">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Missing Attendance <span id="badgeMissingCount" style="display:none; background:#ef4444; color:#fff; padding:1px 6px; border-radius:10px; font-size:10px; font-weight:800; margin-left:3px;">0</span>
+                                
+                                <!-- 3. RED: Missing Attendance Tab -->
+                                <button class="workspace-tab glowing-icon-btn glow-red" data-target="tabMissing" title="Missing Attendance Ledger &amp; Alerts" id="tabBtnMissing">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                    <span id="badgeMissingCount" style="display:none; position:absolute; top:-5px; right:-5px; background:#ef4444; color:#fff; padding:0 5px; border-radius:10px; font-size:9px; font-weight:800; border:1.5px solid #ffffff; box-shadow:0 0 6px rgba(239,68,68,0.8); line-height:14px; min-width:14px; text-align:center;">0</span>
                                 </button>
                             </app-workspace-tabs>
 
-                            <!-- On-Demand Window Triggers -->
-                            <button id="btnOpenAnalyticsModal" class="btn btn-sm" style="height: 28px; padding: 0 10px; font-size: 11px; font-weight: 700; background: #f8fafc; border: 1px solid #cbd5e1; color: #1e293b; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Analytics Board
+                            <!-- 2. BLUE: Attendance Report Modal Trigger -->
+                            <button id="btnOpenReportModal" type="button" class="glowing-icon-btn glow-blue" title="Daily Attendance Register &amp; Compliance Report Window" onclick="openAttendanceReportWindow()">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><circle cx="10" cy="9" r="1"/></svg>
                             </button>
 
-                            <button id="btnOpenExportModal" class="btn btn-sm" style="height: 28px; padding: 0 10px; font-size: 11px; font-weight: 700; background: #f8fafc; border: 1px solid #cbd5e1; color: #1e293b; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export
+                            <!-- 4. YELLOW: Export Modal Trigger -->
+                            <button id="btnOpenExportModal" type="button" class="glowing-icon-btn glow-yellow" title="Export Attendance Records" onclick="openModal('modalExport')">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            </button>
+
+                            <!-- 5. PURPLE: Analytics Board Modal Trigger -->
+                            <button id="btnOpenAnalyticsModal" type="button" class="glowing-icon-btn glow-purple" title="School Attendance Analytics Board Window" onclick="openAnalyticsBoard()">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                             </button>
                         </div>
                     </div>
@@ -493,17 +650,6 @@
                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Mark All Absent
                                         </button>
                                     </div>
-
-                                    <div style="height: 18px; width: 1px; background: #e2e8f0; margin: 0 4px;"></div>
-
-                                    <!-- On-Demand Window Buttons (Icons Only, No Words) -->
-                                    <button type="button" id="btnOpenReportWindow" class="btn btn-sm" title="Attendance Register & Compliance Report Window" style="height: 26px; width: 30px; padding: 0; display: inline-flex; align-items: center; justify-content: center; background: #ffffff; border: 1.5px solid #86efac; border-radius: 6px; color: #15803d; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.03);" onclick="openAttendanceReportWindow()">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
-                                    </button>
-
-                                    <button type="button" id="btnOpenAnalyticsWindow" class="btn btn-sm" title="School Attendance Analytics Board Window" style="height: 26px; width: 30px; padding: 0; display: inline-flex; align-items: center; justify-content: center; background: #ffffff; border: 1.5px solid #86efac; border-radius: 6px; color: #15803d; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.03);" onclick="openAnalyticsBoard()">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                                    </button>
                                 </div>
 
                                 <div style="display: flex; align-items: center; gap: 8px;">
