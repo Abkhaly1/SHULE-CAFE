@@ -164,8 +164,8 @@
                         });
 
                         let failBadge = s.failing_count > 0
-                            ? `<span class="badge" style="background:#dc2626; color:#ffffff !important; font-weight:800; padding: 4px 9px; border-radius: 4px;">${s.failing_count} Course(s)</span>`
-                            : `<span class="badge" style="background:#059669; color:#ffffff !important; font-weight:800; padding: 4px 9px; border-radius: 4px;">0 Failing</span>`;
+                            ? `<span class="badge" style="background:#dc2626; color:#ffffff !important; font-weight:800; font-size:12px; padding: 4px 10px; border-radius: 4px; display:inline-block; min-width:28px; text-align:center;">${s.failing_count}</span>`
+                            : `<span class="badge" style="background:#059669; color:#ffffff !important; font-weight:800; font-size:12px; padding: 4px 10px; border-radius: 4px; display:inline-block; min-width:28px; text-align:center;">0</span>`;
 
                         html += `
                                 <td style="padding: 10px 14px; text-align: center; font-weight: 900; color: #0f172a;">${s.total_aggregate}</td>
