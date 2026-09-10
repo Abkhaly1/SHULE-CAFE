@@ -94,7 +94,8 @@ try {
         // Classrooms for School
         $stmtRooms = $conn->prepare("
             SELECT c.id, c.classroom_name, c.grade_id, c.academic_year, g.name AS grade_name, g.level_id,
-                   (SELECT COUNT(*) FROM student_classroom_allocations sca WHERE sca.classroom_id = c.id AND sca.academic_year = c.academic_year AND sca.status = 'Active') AS student_count
+                   (SELECT COUNT(*) FROM student_classroom_allocations sca WHERE sca.classroom_id = c.id AND sca.academic_year = c.academic_year AND sca.status = 'Active') AS student_count,
+                   0 AS is_general
             FROM classrooms c
             JOIN grades g ON c.grade_id = g.id
             WHERE c.school_id = ?
@@ -102,6 +103,34 @@ try {
         ");
         $stmtRooms->execute([$schoolId]);
         $classrooms = $stmtRooms->fetchAll(PDO::FETCH_ASSOC);
+
+        // Rule: If a grade level has no classrooms, the grade itself acts as a default classroom stream named "General"
+        $gradesWithRooms = array_flip(array_column($classrooms, 'grade_id'));
+        foreach ($grades as $g) {
+            $gid = intval($g['id']);
+            if (!isset($gradesWithRooms[$gid])) {
+                // Count active students enrolled in this grade
+                $stmtCnt = $conn->prepare("
+                    SELECT COUNT(*) 
+                    FROM users u 
+                    WHERE u.school_id = ? AND u.role = 'student' AND u.grade_id = ?
+                ");
+                $stmtCnt->execute([$schoolId, $gid]);
+                $cnt = intval($stmtCnt->fetchColumn());
+
+                $classrooms[] = [
+                    'id' => -1 * $gid, // Negative integer distinguishes virtual General stream
+                    'classroom_name' => 'General',
+                    'display_name' => "{$g['name']} - General",
+                    'grade_id' => $gid,
+                    'academic_year' => $currentYear,
+                    'grade_name' => $g['name'],
+                    'level_id' => intval($g['level_id']),
+                    'student_count' => $cnt,
+                    'is_general' => 1
+                ];
+            }
+        }
 
         echo json_encode([
             'success' => true,
@@ -131,15 +160,20 @@ try {
             $date = date('Y-m-d');
         }
 
-        // Build base student roster query
-        $where = ["sca.school_id = :school_id", "sca.academic_year = :year", "sca.status = 'Active'"];
+        // Build student roster query with General stream fallback
+        $where = ["u.school_id = :school_id", "u.role = 'student'"];
         $params = [':school_id' => $schoolId, ':year' => $year, ':att_date' => $date];
 
         if ($classroomId > 0) {
             $where[] = "c.id = :classroom_id";
             $params[':classroom_id'] = $classroomId;
+        } elseif ($classroomId < 0) {
+            // Virtual General stream: classroomId is -1 * grade_id
+            $targetGradeId = abs($classroomId);
+            $where[] = "((c.id IS NULL AND u.grade_id = :target_grade) OR (c.grade_id = :target_grade AND c.classroom_name = 'General'))";
+            $params[':target_grade'] = $targetGradeId;
         } elseif ($gradeId > 0) {
-            $where[] = "c.grade_id = :grade_id";
+            $where[] = "(c.grade_id = :grade_id OR (c.id IS NULL AND u.grade_id = :grade_id))";
             $params[':grade_id'] = $gradeId;
         } elseif ($levelId > 0) {
             $where[] = "g.level_id = :level_id";
@@ -155,17 +189,25 @@ try {
 
         $stmtRoster = $conn->prepare("
             SELECT u.id AS student_id, u.full_name, u.user_code, u.gender,
-                   c.id AS classroom_id, c.classroom_name,
+                   COALESCE(c.id, -1 * g.id) AS classroom_id, 
+                   COALESCE(c.classroom_name, 'General') AS classroom_name,
                    g.id AS grade_id, g.name AS grade_name,
                    el.name AS level_name,
                    COALESCE(sa.status, 'Present') AS status,
                    sa.attendance_date,
                    sa.updated_at AS marked_at,
                    sa.recorded_by
-            FROM student_classroom_allocations sca
-            JOIN users u ON sca.student_id = u.id
-            JOIN classrooms c ON sca.classroom_id = c.id
-            JOIN grades g ON c.grade_id = g.id
+            FROM users u
+            LEFT JOIN student_classroom_allocations sca ON (
+                sca.student_id = u.id 
+                AND sca.school_id = :school_id 
+                AND sca.academic_year = :year 
+                AND sca.status = 'Active'
+            )
+            LEFT JOIN classrooms c ON sca.classroom_id = c.id
+            JOIN grades g ON (
+                (c.grade_id = g.id) OR (c.id IS NULL AND u.grade_id = g.id)
+            )
             JOIN education_levels el ON g.level_id = el.id
             LEFT JOIN student_attendance sa ON (
                 sa.student_id = u.id 
@@ -328,10 +370,13 @@ try {
                 $status = 'Present';
             }
 
+            // If virtual General stream (cid <= 0), store classroom_id as NULL
+            $actualCid = ($cid > 0) ? $cid : null;
+
             $stmtSave->execute([
                 ':school_id'       => $schoolId,
                 ':academic_year'   => $year,
-                ':classroom_id'    => $cid ?: null,
+                ':classroom_id'    => $actualCid,
                 ':student_id'      => $sid,
                 ':attendance_date' => $date,
                 ':status'          => $status,
@@ -362,7 +407,7 @@ try {
             $date = date('Y-m-d');
         }
 
-        // Fetch all classrooms with total enrolled students and recorded count for target date
+        // 1. Fetch physical classrooms with missing attendance
         $stmtMissing = $conn->prepare("
             SELECT c.id AS classroom_id, c.classroom_name, c.academic_year,
                    g.id AS grade_id, g.name AS grade_name,
@@ -389,6 +434,35 @@ try {
             ':att_date'  => $date
         ]);
         $missingRooms = $stmtMissing->fetchAll(PDO::FETCH_ASSOC);
+
+        // 2. Fetch General streams (grades with students but no physical classrooms) with missing attendance
+        $stmtMissingGeneral = $conn->prepare("
+            SELECT (-1 * g.id) AS classroom_id,
+                   CONCAT(g.name, ' - General') AS classroom_name,
+                   :year AS academic_year,
+                   g.id AS grade_id,
+                   g.name AS grade_name,
+                   el.name AS level_name,
+                   COUNT(u.id) AS enrolled_students,
+                   (SELECT COUNT(*) FROM student_attendance sa WHERE sa.school_id = :school_id AND sa.attendance_date = :att_date AND sa.student_id IN (SELECT id FROM users WHERE grade_id = g.id AND school_id = :school_id)) AS recorded_count,
+                   'School Administration' AS class_guider_name
+            FROM grades g
+            JOIN education_levels el ON g.level_id = el.id
+            JOIN users u ON u.grade_id = g.id AND u.school_id = :school_id AND u.role = 'student'
+            WHERE g.id NOT IN (SELECT grade_id FROM classrooms WHERE school_id = :school_id AND academic_year = :year AND is_active = 1)
+            GROUP BY g.id, g.name, el.name
+            HAVING enrolled_students > 0 AND recorded_count = 0
+            ORDER BY g.order_seq ASC
+        ");
+        $stmtMissingGeneral->execute([
+            ':school_id' => $schoolId,
+            ':year'      => $year,
+            ':att_date'  => $date
+        ]);
+        $missingGeneral = $stmtMissingGeneral->fetchAll(PDO::FETCH_ASSOC);
+        if (!empty($missingGeneral)) {
+            $missingRooms = array_merge($missingRooms, $missingGeneral);
+        }
 
         echo json_encode([
             'success' => true,
