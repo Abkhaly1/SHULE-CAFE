@@ -55,59 +55,63 @@
         <div class="app-main">
             <app-topbar username="Student Portal"></app-topbar>
             <main class="app-content-wrapper">
-                <div class="app-content">
-                    <app-breadcrumb path="Student Portal, Academic Statements"></app-breadcrumb>
+                <div class="app-content" style="padding: 0;">
+                    <div style="margin-bottom: 6px;">
+                        <app-breadcrumb path="Student Portal, Academic Statements"></app-breadcrumb>
+                    </div>
 
-                    <!-- Top Control Header -->
-                    <div class="card no-print" style="padding: 16px 20px; margin-bottom: 20px; margin-top: 12px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
-                            <div>
-                                <h1 style="margin: 0 0 4px; font-size: 20px; font-weight: 800; color: var(--c-text-primary);">
-                                    Academic Statements & Grades
-                                </h1>
-                                <p style="margin: 0; font-size: 13px; color: var(--c-text-secondary);">
-                                    Official multi-year assessment scores, GPA calculations, and division standings.
-                                </p>
+                    <!-- Top Control Header (Compact Single-Row per PAGE_RULES.md) -->
+                    <div class="card no-print" style="margin-bottom: 8px; padding: 6px 14px; background: white; border-radius: 8px; border: 1px solid var(--c-primary-border); box-shadow: 0 1px 2px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 26px; height: 26px; border-radius: 6px; background: var(--c-primary); color: white; display: flex; align-items: center; justify-content: center;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                    <polyline points="10 9 9 9 8 9"></polyline>
+                                </svg>
                             </div>
-                            <div style="display: flex; gap: 10px; align-items: center;">
-                                <select id="yearSelector" class="form-control" style="width: 140px; font-weight: 700;">
-                                    <option value="2026">Academic 2026</option>
-                                    <option value="2025">Academic 2025</option>
-                                </select>
-                                <button class="btn btn-secondary" onclick="window.print()" style="display: flex; align-items: center; gap: 6px; font-weight: 700;">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-                                    <span>Print Statement</span>
-                                </button>
-                            </div>
+                            <h2 style="margin: 0; font-size: 14px; font-weight: 800; color: var(--c-text-primary);">Academic Statements & Grades</h2>
+                        </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <select id="yearSelector" class="form-control" style="width: 130px; padding: 4px 8px; height: 30px; font-size: 12px; font-weight: 700;">
+                                <option value="2026">Academic 2026</option>
+                                <option value="2025">Academic 2025</option>
+                            </select>
+                            <button class="btn btn-secondary" onclick="window.print()" style="display: flex; align-items: center; gap: 6px; font-weight: 700; height: 30px; padding: 4px 10px; font-size: 12px;">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                                <span>Print</span>
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Academic Performance Summary -->
-                    <div class="summary-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--c-border-light); padding-bottom: 14px;">
+                    <!-- Academic Performance Summary (Standardized KPI Style) -->
+                    <div class="summary-card" style="margin-bottom: 12px; padding: 14px 16px; border-radius: 10px; border: 1px solid var(--c-border-light);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--c-border-light); padding-bottom: 10px; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                             <div>
-                                <div style="font-size: 16px; font-weight: 800; color: var(--c-text-primary);" id="dispStudentName">Student Statement</div>
+                                <div style="font-size: 15px; font-weight: 800; color: var(--c-text-primary);" id="dispStudentName">Student Statement</div>
                                 <div style="font-size: 12px; color: var(--c-text-muted);" id="dispStudentMeta">Classroom: Loading... | Student ID: ...</div>
                             </div>
                             <div id="standingBadge">
-                                <span class="badge" style="background: #ecfdf5; color: #047857; font-weight: 800; font-size: 12px; padding: 6px 12px; border-radius: 6px;">Good Standing</span>
+                                <span class="badge" style="background: #ecfdf5; color: #047857; font-weight: 800; font-size: 11px; padding: 4px 10px; border-radius: 6px; border: 1px solid #a7f3d0;">Good Standing</span>
                             </div>
                         </div>
 
-                        <div class="metrics-grid">
-                            <div class="metric-box">
+                        <div class="metrics-grid" style="margin-top: 0;">
+                            <div class="metric-box" style="border-left: 4px solid var(--c-primary); background: #fff;">
                                 <div class="metric-label">Cumulative GPA</div>
                                 <div class="metric-val" style="color: var(--c-primary);" id="statGpa">-</div>
                             </div>
-                            <div class="metric-box">
+                            <div class="metric-box" style="border-left: 4px solid #047857; background: #fff;">
                                 <div class="metric-label">Division Standing</div>
                                 <div class="metric-val" style="color: #047857;" id="statDivision">-</div>
                             </div>
-                            <div class="metric-box">
+                            <div class="metric-box" style="border-left: 4px solid #3b82f6; background: #fff;">
                                 <div class="metric-label">Average Score</div>
                                 <div class="metric-val" id="statAverage">-</div>
                             </div>
-                            <div class="metric-box">
+                            <div class="metric-box" style="border-left: 4px solid #f59e0b; background: #fff;">
                                 <div class="metric-label">Subjects Evaluated</div>
                                 <div class="metric-val" id="statSubjectsCount">0</div>
                             </div>

@@ -64,15 +64,24 @@
     <div class="app-main">
         <app-topbar username="Student Portal"></app-topbar>
         <main class="app-content-wrapper">
-            <div class="app-content">
+            <div class="app-content" style="padding: 0;">
+                <div style="margin-bottom: 6px;">
+                    <app-breadcrumb path="Student Portal, My Subjects"></app-breadcrumb>
+                </div>
 
-                <div class="page-header">
-                    <div>
-                        <h1>My Subjects</h1>
-                        <p>Your enrolled subjects and assigned teachers for this academic year.</p>
+                <!-- Single-Row Compact Header per PAGE_RULES.md -->
+                <div class="card" style="margin-bottom: 12px; padding: 6px 14px; background: white; border-radius: 8px; border: 1px solid var(--c-primary-border); box-shadow: 0 1px 2px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="width: 26px; height: 26px; border-radius: 6px; background: var(--c-primary); color: white; display: flex; align-items: center; justify-content: center;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                            </svg>
+                        </div>
+                        <h2 style="margin: 0; font-size: 14px; font-weight: 800; color: var(--c-text-primary);">My Enrolled Subjects</h2>
                     </div>
-                    <div id="classroomBadge" style="display:none;" class="classroom-badge">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+                    <div id="classroomBadge" style="display:none;" class="classroom-badge" style="padding: 4px 12px; font-size: 11px; height: 28px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
                         <span id="classroomName">—</span>
                     </div>
                 </div>
@@ -92,22 +101,23 @@
 </div>
 
 <script>
+const BOOK_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`;
 const SUBJECT_META = {
-    'PHY'    :{ icon:'', accent:'linear-gradient(135deg,#1e40af,#3b82f6)', avatarBg:'#1e40af' },
-    'CHE'    :{ icon:'', accent:'linear-gradient(135deg,#7c3aed,#a78bfa)', avatarBg:'#7c3aed' },
-    'BIO'    :{ icon:'', accent:'linear-gradient(135deg,#065f46,#10b981)', avatarBg:'#065f46' },
-    'B-MATH' :{ icon:'', accent:'linear-gradient(135deg,#0369a1,#38bdf8)', avatarBg:'#0369a1' },
-    'ADD-MATH':{ icon:'∑',  accent:'linear-gradient(135deg,#0c4a6e,#0ea5e9)', avatarBg:'#0c4a6e' },
-    'AGRI'   :{ icon:'', accent:'linear-gradient(135deg,#3f6212,#84cc16)', avatarBg:'#3f6212' },
-    'ENG'    :{ icon:'', accent:'linear-gradient(135deg,#9a3412,#f97316)', avatarBg:'#9a3412' },
-    'KISW'   :{ icon:'',accent:'linear-gradient(135deg,#831843,#ec4899)', avatarBg:'#831843' },
-    'HIST'   :{ icon:'',accent:'linear-gradient(135deg,#78350f,#d97706)', avatarBg:'#78350f' },
-    'GEO'    :{ icon:'', accent:'linear-gradient(135deg,#134e4a,#14b8a6)', avatarBg:'#134e4a' },
-    'CIV'    :{ icon:'',accent:'linear-gradient(135deg,#3730a3,#818cf8)', avatarBg:'#3730a3' },
-    'COMM'   :{ icon:'', accent:'linear-gradient(135deg,#92400e,#f59e0b)', avatarBg:'#92400e' },
-    'BOOK'   :{ icon:'', accent:'linear-gradient(135deg,#1e3a5f,#60a5fa)', avatarBg:'#1e3a5f' },
-    'IK'     :{ icon:'', accent:'linear-gradient(135deg,#312e81,#6366f1)', avatarBg:'#312e81' },
-    'GS'     :{ icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>', accent:'linear-gradient(135deg,#374151,#9ca3af)', avatarBg:'#374151' },
+    'PHY'    :{ icon:BOOK_SVG, accent:'linear-gradient(135deg,#1e40af,#3b82f6)', avatarBg:'#1e40af' },
+    'CHE'    :{ icon:BOOK_SVG, accent:'linear-gradient(135deg,#7c3aed,#a78bfa)', avatarBg:'#7c3aed' },
+    'BIO'    :{ icon:BOOK_SVG, accent:'linear-gradient(135deg,#065f46,#10b981)', avatarBg:'#065f46' },
+    'B-MATH' :{ icon:BOOK_SVG, accent:'linear-gradient(135deg,#0369a1,#38bdf8)', avatarBg:'#0369a1' },
+    'ADD-MATH':{ icon:BOOK_SVG, accent:'linear-gradient(135deg,#0c4a6e,#0ea5e9)', avatarBg:'#0c4a6e' },
+    'AGRI'   :{ icon:BOOK_SVG, accent:'linear-gradient(135deg,#3f6212,#84cc16)', avatarBg:'#3f6212' },
+    'ENG'    :{ icon:BOOK_SVG, accent:'linear-gradient(135deg,#9a3412,#f97316)', avatarBg:'#9a3412' },
+    'KISW'   :{ icon:BOOK_SVG, accent:'linear-gradient(135deg,#831843,#ec4899)', avatarBg:'#831843' },
+    'HIST'   :{ icon:BOOK_SVG, accent:'linear-gradient(135deg,#78350f,#d97706)', avatarBg:'#78350f' },
+    'GEO'    :{ icon:BOOK_SVG, accent:'linear-gradient(135deg,#134e4a,#14b8a6)', avatarBg:'#134e4a' },
+    'CIV'    :{ icon:BOOK_SVG, accent:'linear-gradient(135deg,#3730a3,#818cf8)', avatarBg:'#3730a3' },
+    'COMM'   :{ icon:BOOK_SVG, accent:'linear-gradient(135deg,#92400e,#f59e0b)', avatarBg:'#92400e' },
+    'BOOK'   :{ icon:BOOK_SVG, accent:'linear-gradient(135deg,#1e3a5f,#60a5fa)', avatarBg:'#1e3a5f' },
+    'IK'     :{ icon:BOOK_SVG, accent:'linear-gradient(135deg,#312e81,#6366f1)', avatarBg:'#312e81' },
+    'GS'     :{ icon:BOOK_SVG, accent:'linear-gradient(135deg,#374151,#9ca3af)', avatarBg:'#374151' },
 };
 const DEFAULT_META = { icon:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>', accent:'linear-gradient(135deg,#047857,#10b981)', avatarBg:'#047857' };
 

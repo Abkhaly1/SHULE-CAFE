@@ -20,15 +20,29 @@
             <app-topbar username="System Administrator"></app-topbar>
             
             <main class="app-content-wrapper">
-                <div class="app-content">
-                    <app-breadcrumb path="Super Admin, Settings, Database Backups"></app-breadcrumb>
+                <div class="app-content" style="padding: 0;">
+                    <div style="margin-bottom: 6px;">
+                        <app-breadcrumb path="Super Admin, Settings, Database Backups"></app-breadcrumb>
+                    </div>
                     
-                    <app-page-header 
-                        title="Database Backups & Disaster Recovery" 
-                        subtitle="Automated periodic backups and instant emergency database dumps.">
-                    </app-page-header>
+                    <!-- Single-Row Compact Header per PAGE_RULES.md -->
+                    <div class="card" style="margin-bottom: 12px; padding: 6px 14px; background: white; border-radius: 8px; border: 1px solid var(--c-primary-border); box-shadow: 0 1px 2px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 26px; height: 26px; border-radius: 6px; background: var(--c-primary); color: white; display: flex; align-items: center; justify-content: center;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                    <polyline points="17 21 17 13 7 13 7 21"/>
+                                    <polyline points="7 3 7 8 15 8"/>
+                                </svg>
+                            </div>
+                            <h2 style="margin: 0; font-size: 14px; font-weight: 800; color: var(--c-text-primary);">Database Backups & Disaster Recovery</h2>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="badge" style="background: #eff6ff; color: #1d4ed8; font-weight: 800; font-size: 11px; padding: 4px 10px; border-radius: 6px; border: 1px solid #bfdbfe;">SQL Mirror Backups</span>
+                        </div>
+                    </div>
                     
-                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--sp-6); margin-top: var(--sp-4);">
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 14px;">
                         
                         <!-- Left Column: Backups List -->
                         <div class="card" style="padding: var(--sp-6);">

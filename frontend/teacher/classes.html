@@ -77,18 +77,23 @@
             <app-topbar username="Teacher Portal"></app-topbar>
             
             <main class="app-content-wrapper">
-                <div class="app-content">
-                    <app-breadcrumb path="Teacher, My Assigned Classes Workspace"></app-breadcrumb>
+                <div class="app-content" style="padding: 0;">
+                    <div style="margin-bottom: 6px;">
+                        <app-breadcrumb path="Teacher, Assigned Classes"></app-breadcrumb>
+                    </div>
 
-                    <!-- PAGE TITLE CARD -->
-                    <div class="card" style="padding: 22px; margin-bottom: 20px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
-                            <div>
-                                <h2 style="margin: 0 0 4px; font-size: 22px; font-weight: 800; color: var(--c-text-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> MY ASSIGNED CLASSES WORKSPACE</h2>
-                                <p style="margin: 0; font-size: 13px; color: var(--c-text-muted);">Explore details for your assigned classroom streams, taught subjects, student rosters, and academic progress reports.</p>
+                    <!-- Single-Row Compact Header per PAGE_RULES.md -->
+                    <div class="card" style="margin-bottom: 12px; padding: 6px 14px; background: white; border-radius: 8px; border: 1px solid var(--c-primary-border); box-shadow: 0 1px 2px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 26px; height: 26px; border-radius: 6px; background: var(--c-primary); color: white; display: flex; align-items: center; justify-content: center;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                                </svg>
                             </div>
-                            <div id="formMasterIndicator"></div>
+                            <h2 style="margin: 0; font-size: 14px; font-weight: 800; color: var(--c-text-primary);">Assigned Classes Workspace</h2>
                         </div>
+                        <div id="formMasterIndicator" style="display: flex; align-items: center; gap: 8px;"></div>
                     </div>
 
                     <!-- ASSIGNED CLASSROOM CARDS GRID -->

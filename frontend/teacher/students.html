@@ -20,25 +20,26 @@
             <app-topbar username="Teacher Portal"></app-topbar>
             
             <main class="app-content-wrapper">
-                <div class="app-content" style="padding: var(--sp-4) var(--sp-6);">
-                    
-                    <div class="card" style="margin-bottom: var(--sp-4); padding: var(--sp-4) var(--sp-6); background: white; border-radius: 8px; border: 1px solid var(--c-primary-border);">
-                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <div style="display: flex; align-items: center; gap: 16px;">
-                                <a href="dashboard.html" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 4px; text-decoration: none; font-weight: 600;">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                                    Back
-                                </a>
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <div style="width: 44px; height: 44px; border-radius: 8px; background: var(--c-primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800;">
-                                        STU
-                                    </div>
-                                    <div>
-                                        <h2 style="margin: 0; font-size: 20px; font-weight: 800; color: var(--c-text-primary);">My Students Roster</h2>
-                                        <span style="font-size: 13px; color: var(--c-text-muted);">View assigned class students and basic academic roster.</span>
-                                    </div>
-                                </div>
+                <div class="app-content" style="padding: 0;">
+                    <div style="margin-bottom: 6px;">
+                        <app-breadcrumb path="Teacher, My Students Roster"></app-breadcrumb>
+                    </div>
+
+                    <!-- Single-Row Compact Header per PAGE_RULES.md -->
+                    <div class="card" style="margin-bottom: 8px; padding: 6px 14px; background: white; border-radius: 8px; border: 1px solid var(--c-primary-border); box-shadow: 0 1px 2px rgba(0,0,0,0.03); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="width: 26px; height: 26px; border-radius: 6px; background: var(--c-primary); color: white; display: flex; align-items: center; justify-content: center;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                </svg>
                             </div>
+                            <h2 style="margin: 0; font-size: 14px; font-weight: 800; color: var(--c-text-primary);">My Students Roster</h2>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="badge" style="background: #f1f5f9; color: #334155; font-weight: 800; font-size: 11px; padding: 4px 10px; border-radius: 6px; border: 1px solid #e2e8f0;">Active Class Roster</span>
                         </div>
                     </div>
 
