@@ -472,36 +472,55 @@
 
                             </div>
 
-                            <!-- Batch Actions & Save Bar -->
-                            <div id="batchActionBar" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                            <!-- Action & Roll-Call Controls Bar -->
+                            <div id="batchActionBar" style="background: #ffffff; border: 1.5px solid #86efac; border-radius: 8px; padding: 6px 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; box-shadow: 0 1px 3px rgba(72,199,142,0.06);">
                                 <div style="display: flex; align-items: center; gap: 8px;">
-                                    <span style="font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase;">Batch Set:</span>
-                                    
-                                    <button id="btnMarkAllPresent" class="btn btn-sm" style="height: 26px; padding: 0 8px; font-size: 11px; font-weight: 700; background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Mark All Present
+                                    <!-- View Mode Badge -->
+                                    <span id="officialRegisterBadge" style="font-size: 11px; font-weight: 700; color: #15803d; background: #ecfdf5; border: 1px solid #a7f3d0; padding: 4px 10px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                        Official Attendance Register
+                                    </span>
+
+                                    <!-- Edit Mode Batch Controls (Hidden by Default) -->
+                                    <div id="batchSetControls" style="display: none; align-items: center; gap: 6px;">
+                                        <span style="font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase;">Batch Set:</span>
+                                        
+                                        <button id="btnMarkAllPresent" type="button" class="btn btn-sm" style="height: 26px; padding: 0 8px; font-size: 11px; font-weight: 700; background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Mark All Present
+                                        </button>
+
+                                        <button id="btnMarkAllAbsent" type="button" class="btn btn-sm" style="height: 26px; padding: 0 8px; font-size: 11px; font-weight: 700; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Mark All Absent
+                                        </button>
+                                    </div>
+
+                                    <div style="height: 18px; width: 1px; background: #e2e8f0; margin: 0 4px;"></div>
+
+                                    <!-- On-Demand Window Buttons (Icons Only, No Words) -->
+                                    <button type="button" id="btnOpenReportWindow" class="btn btn-sm" title="Attendance Register & Compliance Report Window" style="height: 26px; width: 30px; padding: 0; display: inline-flex; align-items: center; justify-content: center; background: #ffffff; border: 1.5px solid #86efac; border-radius: 6px; color: #15803d; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.03);" onclick="openAttendanceReportWindow()">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
                                     </button>
 
-                                    <button id="btnMarkAllAbsent" class="btn btn-sm" style="height: 26px; padding: 0 8px; font-size: 11px; font-weight: 700; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Mark All Absent
+                                    <button type="button" id="btnOpenAnalyticsWindow" class="btn btn-sm" title="School Attendance Analytics Board Window" style="height: 26px; width: 30px; padding: 0; display: inline-flex; align-items: center; justify-content: center; background: #ffffff; border: 1.5px solid #86efac; border-radius: 6px; color: #15803d; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.03);" onclick="openAnalyticsBoard()">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                                     </button>
-
-                                    <div style="height: 16px; width: 1px; background: #e2e8f0; margin: 0 4px;"></div>
-
-                                    <!-- Direct Deep-Links to Reports Hub per Rule -->
-                                    <a id="lnkClassReport" href="../reports/index.html?tab=tabRoster" target="_blank" class="btn btn-sm" style="height: 26px; padding: 0 8px; font-size: 11px; font-weight: 600; text-decoration: none; background: #f8fafc; border: 1px solid #cbd5e1; color: #475569; display: inline-flex; align-items: center; gap: 4px;">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Class Report
-                                    </a>
-
-                                    <a id="lnkLevelReport" href="../reports/index.html?tab=tabAnalytics" target="_blank" class="btn btn-sm" style="height: 26px; padding: 0 8px; font-size: 11px; font-weight: 600; text-decoration: none; background: #f8fafc; border: 1px solid #cbd5e1; color: #475569; display: inline-flex; align-items: center; gap: 4px;">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Level Analytics
-                                    </a>
                                 </div>
 
                                 <div style="display: flex; align-items: center; gap: 8px;">
                                     <span id="saveNotice" style="font-size: 11px; color: #64748b; font-weight: 600;"></span>
-                                    <button id="btnSaveAttendance" class="btn btn-sm" style="height: 28px; padding: 0 14px; font-size: 11px; font-weight: 800; background: #047857; color: white; border: none; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 1px 3px rgba(4,120,87,0.3);">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Attendance
+
+                                    <!-- View Mode: Edit Attendance Button -->
+                                    <button type="button" id="btnEnterEditMode" class="btn btn-sm" style="height: 28px; padding: 0 14px; font-size: 11px; font-weight: 800; background: #047857; color: white; border: none; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 1px 3px rgba(4,120,87,0.3);" onclick="enterEditMode()">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Edit Attendance
                                     </button>
+
+                                    <!-- Edit Mode: Cancel & Save Buttons (Hidden by Default) -->
+                                    <div id="editActionButtons" style="display: none; align-items: center; gap: 6px;">
+                                        <button type="button" id="btnCancelEditMode" class="btn btn-sm" style="height: 28px; padding: 0 10px; font-size: 11px; font-weight: 700; background: #ffffff; border: 1px solid #cbd5e1; color: #475569; border-radius: 6px; cursor: pointer;" onclick="cancelEditMode()">Cancel</button>
+                                        <button type="button" id="btnSaveAttendance" class="btn btn-sm" style="height: 28px; padding: 0 14px; font-size: 11px; font-weight: 800; background: #047857; color: white; border: none; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 1px 3px rgba(4,120,87,0.3);" onclick="saveAttendance()">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Attendance
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -516,7 +535,7 @@
                                                 <th>Student Name</th>
                                                 <th style="width: 60px; text-align: center;">Gender</th>
                                                 <th style="width: 130px;">Classroom</th>
-                                                <th style="width: 160px; text-align: center;">Status (P / A / L / E)</th>
+                                                <th id="thStatusCol" style="width: 140px; text-align: center;">Status</th>
                                                 <th style="width: 70px; text-align: center;">Timeline</th>
                                             </tr>
                                         </thead>
@@ -652,6 +671,71 @@
     </div>
 
     <!-- ─────────────────────────────────────────────────────────────────────── -->
+    <!-- ON-DEMAND WINDOW 1B: ATTENDANCE REPORT MODAL                            -->
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
+    <div class="modal-overlay" id="modalAttendanceReport">
+        <div class="modal-window modal-window-lg">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <div style="width: 22px; height: 22px; border-radius: 4px; background: #ecfdf5; color: #047857; display: flex; align-items: center; justify-content: center;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+                    </div>
+                    <span>Daily Attendance Register &amp; Compliance Report</span>
+                </div>
+                <button class="modal-close-btn" style="background: none; border: none; cursor: pointer; color: #64748b; font-size: 16px; font-weight: 800;" onclick="closeModal('modalAttendanceReport')">
+                    &times;
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 14px;">
+                <!-- Report metadata banner -->
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <div>
+                        <div style="font-size: 13px; font-weight: 800; color: #0f172a;" id="repSchoolAndClass">Attendance Report</div>
+                        <div style="font-size: 11px; color: #64748b;" id="repDateAndYear">Date: -- | Academic Year: --</div>
+                    </div>
+                    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                        <span id="repBadgePresent" style="font-size: 11px; font-weight: 700; color: #15803d; background: #dcfce7; padding: 3px 8px; border-radius: 4px; border: 1px solid #86efac;">0 Present (0%)</span>
+                        <span id="repBadgeAbsent" style="font-size: 11px; font-weight: 700; color: #b91c1c; background: #fee2e2; padding: 3px 8px; border-radius: 4px; border: 1px solid #fca5a5;">0 Absent</span>
+                        <span id="repBadgeLate" style="font-size: 11px; font-weight: 700; color: #b45309; background: #fef3c7; padding: 3px 8px; border-radius: 4px; border: 1px solid #fde68a;">0 Late / Excused</span>
+                    </div>
+                </div>
+
+                <!-- Report table container -->
+                <div style="max-height: 380px; overflow-y: auto; border: 1.5px solid #48c78e; border-radius: 8px;">
+                    <table class="compact-table" id="tableAttendanceReport">
+                        <thead style="position: sticky; top: 0; z-index: 5;">
+                            <tr>
+                                <th style="width: 35px; text-align: center;">#</th>
+                                <th style="width: 140px;">Student ID</th>
+                                <th>Student Name</th>
+                                <th style="width: 60px; text-align: center;">Gender</th>
+                                <th style="width: 130px;">Classroom</th>
+                                <th style="width: 110px; text-align: center;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyAttendanceReport">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: space-between;">
+                <div style="display: flex; gap: 6px;">
+                    <button class="btn btn-sm" style="height: 26px; padding: 0 10px; font-size: 11px; font-weight: 700; background: #047857; color: white; border: none; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;" onclick="printModalReport()">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Print Report
+                    </button>
+                    <button class="btn btn-sm" style="height: 26px; padding: 0 10px; font-size: 11px; font-weight: 700; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; cursor: pointer;" onclick="exportToCSV()">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export CSV
+                    </button>
+                </div>
+                <button class="btn btn-sm" style="height: 26px; padding: 0 10px; font-size: 11px; font-weight: 700; background: #f8fafc; border: 1px solid #cbd5e1;" onclick="closeModal('modalAttendanceReport')">
+                    Close Window
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─────────────────────────────────────────────────────────────────────── -->
     <!-- ON-DEMAND WINDOW 2: SINGLE STUDENT TIMELINE MODAL                      -->
     <!-- ─────────────────────────────────────────────────────────────────────── -->
     <div class="modal-overlay" id="modalStudentTimeline">
@@ -745,7 +829,9 @@
             searchQuery: '',
             filterData: { years: [], levels: [], grades: [], classrooms: [] },
             currentRoster: [], // Array of student objects
+            rosterBackup: null,
             hasUnsavedChanges: false,
+            isEditMode: false,
             missingClassrooms: []
         };
 
@@ -762,7 +848,7 @@
         // Close on escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                ['modalAnalyticsBoard', 'modalStudentTimeline', 'modalExport'].forEach(id => closeModal(id));
+                ['modalAnalyticsBoard', 'modalAttendanceReport', 'modalStudentTimeline', 'modalExport'].forEach(id => closeModal(id));
             }
         });
 
@@ -982,6 +1068,8 @@
 
                 AppState.currentRoster = data.roster || [];
                 AppState.hasUnsavedChanges = false;
+                AppState.isEditMode = false;
+                updateActionBarMode();
                 setSyncStatus(data.has_saved_records ? 'Official Records Saved' : 'Unsaved Draft Sheet', data.has_saved_records);
 
                 // Update Report Deep-Links
@@ -1051,12 +1139,19 @@
                             </span>
                         </td>
                         <td style="text-align:center;">
-                            <div class="status-grid-group" data-student-id="${s.student_id}">
-                                <button type="button" class="status-square-btn ${status === 'Present' ? 'active-P' : ''}" onclick="setStatus('${s.student_id}', 'Present')" title="Mark Present">P</button>
-                                <button type="button" class="status-square-btn ${status === 'Absent' ? 'active-A' : ''}" onclick="setStatus('${s.student_id}', 'Absent')" title="Mark Absent">A</button>
-                                <button type="button" class="status-square-btn ${status === 'Late' ? 'active-L' : ''}" onclick="setStatus('${s.student_id}', 'Late')" title="Mark Late">L</button>
-                                <button type="button" class="status-square-btn ${status === 'Excused' ? 'active-E' : ''}" onclick="setStatus('${s.student_id}', 'Excused')" title="Mark Excused">E</button>
-                            </div>
+                            ${AppState.isEditMode ? `
+                                <div class="status-grid-group" data-student-id="${s.student_id}">
+                                    <button type="button" class="status-square-btn ${status === 'Present' ? 'active-P' : ''}" onclick="setStatus('${s.student_id}', 'Present')" title="Mark Present">P</button>
+                                    <button type="button" class="status-square-btn ${status === 'Absent' ? 'active-A' : ''}" onclick="setStatus('${s.student_id}', 'Absent')" title="Mark Absent">A</button>
+                                    <button type="button" class="status-square-btn ${status === 'Late' ? 'active-L' : ''}" onclick="setStatus('${s.student_id}', 'Late')" title="Mark Late">L</button>
+                                    <button type="button" class="status-square-btn ${status === 'Excused' ? 'active-E' : ''}" onclick="setStatus('${s.student_id}', 'Excused')" title="Mark Excused">E</button>
+                                </div>
+                            ` : `
+                                <span style="font-size:11px; font-weight:700; color:${status === 'Absent' ? '#b91c1c' : status === 'Late' ? '#b45309' : status === 'Excused' ? '#1d4ed8' : '#15803d'}; background:${status === 'Absent' ? '#fee2e2' : status === 'Late' ? '#fef3c7' : status === 'Excused' ? '#dbeafe' : '#dcfce7'}; padding:2.5px 10px; border-radius:12px; border:1px solid ${status === 'Absent' ? '#fca5a5' : status === 'Late' ? '#fde68a' : status === 'Excused' ? '#93c5fd' : '#86efac'}; display:inline-flex; align-items:center; gap:5px; cursor:pointer;" onclick="enterEditMode()" title="Click to modify attendance">
+                                    <span style="width:6px; height:6px; border-radius:50%; background:${status === 'Absent' ? '#ef4444' : status === 'Late' ? '#f59e0b' : status === 'Excused' ? '#3b82f6' : '#10b981'};"></span>
+                                    ${status}
+                                </span>
+                            `}
                         </td>
                         <td style="text-align:center;">
                             <button class="btn btn-sm" onclick="openStudentTimeline('${s.student_id}')" title="View 60-Day History" style="height:24px; width:28px; padding:0; display:inline-flex; align-items:center; justify-content:center; background:#ffffff; border:1px solid #86efac; border-radius:4px; color:#15803d; cursor:pointer;">
@@ -1187,6 +1282,7 @@
             }
 
             const btnSave = document.getElementById('btnSaveAttendance');
+            if (btnSave.disabled) return;
             const origHtml = btnSave.innerHTML;
             btnSave.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"/><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"/></svg> Saving...`;
             btnSave.disabled = true;
@@ -1213,6 +1309,9 @@
                 if (!data.success) throw new Error(data.message || 'Failed to save attendance');
 
                 AppState.hasUnsavedChanges = false;
+                AppState.isEditMode = false;
+                updateActionBarMode();
+                renderRosterTable();
                 setSyncStatus('Official Records Saved', true);
                 showToast(data.message, 'success');
 
@@ -1226,6 +1325,133 @@
                 btnSave.disabled = false;
             }
         }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // 4B. VIEW & EDIT MODE LIFECYCLE CONTROLS
+        // ─────────────────────────────────────────────────────────────────────
+        window.enterEditMode = function() {
+            AppState.isEditMode = true;
+            AppState.rosterBackup = JSON.parse(JSON.stringify(AppState.currentRoster));
+            updateActionBarMode();
+            renderRosterTable();
+        };
+
+        window.cancelEditMode = function() {
+            if (AppState.rosterBackup) {
+                AppState.currentRoster = JSON.parse(JSON.stringify(AppState.rosterBackup));
+            }
+            AppState.isEditMode = false;
+            AppState.hasUnsavedChanges = false;
+            setSyncStatus('Official Records Saved', true);
+            updateActionBarMode();
+            renderRosterTable();
+            updateRealtimeKPIs();
+        };
+
+        function updateActionBarMode() {
+            const batchControls = document.getElementById('batchSetControls');
+            const officialBadge = document.getElementById('officialRegisterBadge');
+            const btnEnterEdit = document.getElementById('btnEnterEditMode');
+            const editActionBtns = document.getElementById('editActionButtons');
+            const thStatus = document.getElementById('thStatusCol');
+
+            if (AppState.isEditMode) {
+                if (batchControls) batchControls.style.display = 'flex';
+                if (officialBadge) officialBadge.style.display = 'none';
+                if (btnEnterEdit) btnEnterEdit.style.display = 'none';
+                if (editActionBtns) editActionBtns.style.display = 'flex';
+                if (thStatus) {
+                    thStatus.innerText = 'Status (P / A / L / E)';
+                    thStatus.style.width = '160px';
+                }
+            } else {
+                if (batchControls) batchControls.style.display = 'none';
+                if (officialBadge) officialBadge.style.display = 'inline-flex';
+                if (btnEnterEdit) btnEnterEdit.style.display = 'inline-flex';
+                if (editActionBtns) editActionBtns.style.display = 'none';
+                if (thStatus) {
+                    thStatus.innerText = 'Status';
+                    thStatus.style.width = '140px';
+                }
+            }
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
+        // 4C. ON-DEMAND WINDOW: ATTENDANCE REGISTER & REPORT MODAL
+        // ─────────────────────────────────────────────────────────────────────
+        window.openAttendanceReportWindow = function() {
+            const roster = AppState.currentRoster || [];
+            const tbody = document.getElementById('tbodyAttendanceReport');
+            
+            // Populate meta details
+            const dateStr = new Date(AppState.selectedDate).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+            const selRoom = document.getElementById('filterClassroom');
+            const roomName = selRoom && selRoom.selectedIndex > 0 ? selRoom.options[selRoom.selectedIndex].text : 'All Enrolled Classrooms';
+            
+            document.getElementById('repSchoolAndClass').innerText = `${roomName} - Daily Register & Report`;
+            document.getElementById('repDateAndYear').innerText = `Date: ${dateStr} | Academic Year: ${AppState.selectedYear} | Total: ${roster.length} Students`;
+            
+            // Calculate status counts
+            let present = 0, absent = 0, late = 0, excused = 0;
+            roster.forEach(s => {
+                const st = s.status || 'Present';
+                if (st === 'Present') present++;
+                else if (st === 'Absent') absent++;
+                else if (st === 'Late') late++;
+                else if (st === 'Excused') excused++;
+            });
+            const rate = roster.length > 0 ? Math.round(((present + late) / roster.length) * 1000) / 10 : 100.0;
+            
+            document.getElementById('repBadgePresent').innerText = `${present} Present (${rate}%)`;
+            document.getElementById('repBadgeAbsent').innerText = `${absent} Absent`;
+            document.getElementById('repBadgeLate').innerText = `${late + excused} Late / Excused`;
+
+            if (roster.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:#64748b;">No records loaded for this date and classroom.</td></tr>`;
+            } else {
+                tbody.innerHTML = roster.map((s, idx) => {
+                    const st = s.status || 'Present';
+                    let badgeColor = '#15803d', badgeBg = '#dcfce7', badgeBrd = '#86efac', dotColor = '#10b981';
+                    if (st === 'Absent') { badgeColor = '#b91c1c'; badgeBg = '#fee2e2'; badgeBrd = '#fca5a5'; dotColor = '#ef4444'; }
+                    else if (st === 'Late') { badgeColor = '#b45309'; badgeBg = '#fef3c7'; badgeBrd = '#fde68a'; dotColor = '#f59e0b'; }
+                    else if (st === 'Excused') { badgeColor = '#1d4ed8'; badgeBg = '#dbeafe'; badgeBrd = '#93c5fd'; dotColor = '#3b82f6'; }
+
+                    const genderBadge = s.gender === 'Female' 
+                        ? `<span style="font-size:10px; font-weight:700; color:#db2777; background:#fdf2f8; padding:1px 5px; border-radius:4px; border:1px solid #fbcfe8;">F</span>`
+                        : `<span style="font-size:10px; font-weight:700; color:#2563eb; background:#eff6ff; padding:1px 5px; border-radius:4px; border:1px solid #bfdbfe;">M</span>`;
+
+                    return `
+                        <tr>
+                            <td style="text-align:center; color:#15803d; font-weight:700; font-size:11px;">${idx + 1}</td>
+                            <td>
+                                <span style="font-family:monospace; font-size:10.5px; font-weight:700; background:#f0fdf4; padding:2px 7px; border-radius:4px; border:1px solid #86efac; color:#15803d;">
+                                    ${s.user_code || 'SC/STD-' + s.student_id}
+                                </span>
+                            </td>
+                            <td style="font-weight:700; color:#0f172a;">${s.full_name}</td>
+                            <td style="text-align:center;">${genderBadge}</td>
+                            <td>
+                                <span style="font-size:10.5px; font-weight:700; color:#15803d; background:#ecfdf5; padding:2px 7px; border-radius:4px; border:1px solid #a7f3d0;">
+                                    ${s.classroom_name || 'Stream'}
+                                </span>
+                            </td>
+                            <td style="text-align:center;">
+                                <span style="font-size:11px; font-weight:700; color:${badgeColor}; background:${badgeBg}; padding:2px 8px; border-radius:10px; border:1px solid ${badgeBrd}; display:inline-flex; align-items:center; gap:4px;">
+                                    <span style="width:6px; height:6px; border-radius:50%; background:${dotColor};"></span>
+                                    ${st}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            openModal('modalAttendanceReport');
+        };
+
+        window.printModalReport = function() {
+            printAttendanceSheet();
+        };
 
         // ─────────────────────────────────────────────────────────────────────
         // 5. MISSING ATTENDANCE TAB & REMINDER SYSTEM
