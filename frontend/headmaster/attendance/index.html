@@ -485,6 +485,7 @@
                                     <span><span style="color: #6d28d9; font-weight: 800;">Total Students:</span> <span id="hdrTotalVal" style="font-weight: 700; color: #0f172a;">0</span></span>
                                     <span style="color: #cbd5e1;">&bull;</span>
                                     <span><span style="color: #6d28d9; font-weight: 800;">Present Rate:</span> <span id="hdrRateVal" style="font-weight: 700; color: #047857;">100%</span></span>
+                                    <span id="hdrWeekendTag" style="display: none; font-size: 10px; font-weight: 800; color: #92400e; background: #fef3c7; border: 1px solid #fde68a; padding: 1px 6px; border-radius: 4px;">WEEKEND</span>
                                 </div>
                             </div>
                             <span id="syncIndicator" style="display: none;"></span>
@@ -650,6 +651,12 @@
                                         Official Attendance Register
                                     </span>
 
+                                    <!-- Weekend Indicator Badge -->
+                                    <span id="weekendIndicator" style="display: none; font-size: 11px; font-weight: 700; color: #92400e; background: #fef3c7; border: 1px solid #fde68a; padding: 4px 10px; border-radius: 6px; align-items: center; gap: 6px;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                        Weekend Session (Waived By Default)
+                                    </span>
+
                                     <!-- Edit Mode Batch Controls (Hidden by Default) -->
                                     <div id="batchSetControls" style="display: none; align-items: center; gap: 6px;">
                                         <span style="font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase;">Batch Set:</span>
@@ -666,6 +673,12 @@
 
                                 <div style="display: flex; align-items: center; gap: 8px;">
                                     <span id="saveNotice" style="font-size: 11px; color: #64748b; font-weight: 600;"></span>
+
+                                    <!-- Future Date Locked Badge -->
+                                    <span id="futureLockedBadge" style="display: none; font-size: 11px; font-weight: 700; color: #475569; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 4px 12px; border-radius: 6px; align-items: center; gap: 6px;">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                        Future Date &mdash; Roll-Call Locked
+                                    </span>
 
                                     <!-- View Mode: Edit Attendance Button -->
                                     <button type="button" id="btnEnterEditMode" class="btn btn-sm" style="height: 28px; padding: 0 14px; font-size: 11px; font-weight: 800; background: #047857; color: white; border: none; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; box-shadow: 0 1px 3px rgba(4,120,87,0.3);" onclick="enterEditMode()">
@@ -990,6 +1003,8 @@
             rosterBackup: null,
             hasUnsavedChanges: false,
             isEditMode: false,
+            isWeekend: false,
+            confirmedWeekend: false,
             missingClassrooms: []
         };
 
@@ -1014,41 +1029,116 @@
         document.addEventListener('DOMContentLoaded', async () => {
             // Set date input to today
             const dateInput = document.getElementById('filterDate');
-            dateInput.value = AppState.today;
-            dateInput.max = AppState.today;
+            if (dateInput) {
+                dateInput.value = AppState.today;
+                dateInput.max = AppState.today;
+            }
 
             setupEventListeners();
+            updateDateNavigationState();
             await loadFilters();
             await loadSheet();
             await loadMissingAttendance();
         });
 
+        function updateDateNavigationState() {
+            const btnNext = document.getElementById('btnNextDate');
+            const dateInput = document.getElementById('filterDate');
+            if (dateInput) {
+                dateInput.max = AppState.today;
+            }
+            if (btnNext) {
+                if (AppState.selectedDate >= AppState.today) {
+                    btnNext.disabled = true;
+                    btnNext.style.opacity = '0.35';
+                    btnNext.style.cursor = 'not-allowed';
+                    btnNext.title = 'Cannot navigate to future dates. Next day attendance is locked.';
+                } else {
+                    btnNext.disabled = false;
+                    btnNext.style.opacity = '1';
+                    btnNext.style.cursor = 'pointer';
+                    btnNext.title = 'Next Day';
+                }
+            }
+
+            // Weekend detection (Rule B)
+            const parts = AppState.selectedDate.split('-');
+            const dObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            const dayOfWeek = dObj.getDay(); // 0 = Sun, 6 = Sat
+            const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+            AppState.isWeekend = isWeekend;
+            AppState.confirmedWeekend = false;
+
+            const wkTag = document.getElementById('hdrWeekendTag');
+            if (wkTag) wkTag.style.display = isWeekend ? 'inline-block' : 'none';
+
+            const wkIndicator = document.getElementById('weekendIndicator');
+            if (wkIndicator) wkIndicator.style.display = isWeekend ? 'inline-flex' : 'none';
+
+            // Academic year sync (Rule D)
+            const dateYear = AppState.selectedDate.substring(0, 4);
+            if (dateYear !== AppState.selectedYear && AppState.filterData && AppState.filterData.years) {
+                if (AppState.filterData.years.includes(dateYear)) {
+                    AppState.selectedYear = dateYear;
+                    const selYear = document.getElementById('filterYear');
+                    if (selYear) selYear.value = dateYear;
+                }
+            }
+        }
+
         function setupEventListeners() {
             // Date navigation
             document.getElementById('filterDate').addEventListener('change', (e) => {
-                AppState.selectedDate = e.target.value;
+                if (e.target.value > AppState.today) {
+                    showToast('Future dates cannot be recorded. Attendance is locked until class day.', 'warning');
+                    AppState.selectedDate = AppState.today;
+                    e.target.value = AppState.today;
+                } else {
+                    AppState.selectedDate = e.target.value;
+                }
+                updateDateNavigationState();
                 onFilterChanged();
             });
 
             document.getElementById('btnPrevDate').addEventListener('click', () => {
-                const d = new Date(AppState.selectedDate);
+                const parts = AppState.selectedDate.split('-');
+                const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
                 d.setDate(d.getDate() - 1);
-                AppState.selectedDate = d.toISOString().split('T')[0];
+                const prevYear = d.getFullYear();
+                const prevMonth = String(d.getMonth() + 1).padStart(2, '0');
+                const prevDay = String(d.getDate()).padStart(2, '0');
+                AppState.selectedDate = `${prevYear}-${prevMonth}-${prevDay}`;
                 document.getElementById('filterDate').value = AppState.selectedDate;
+                updateDateNavigationState();
                 onFilterChanged();
             });
 
             document.getElementById('btnNextDate').addEventListener('click', () => {
-                const d = new Date(AppState.selectedDate);
+                if (AppState.selectedDate >= AppState.today) {
+                    showToast('Cannot navigate past today. Next day attendance is locked.', 'warning');
+                    return;
+                }
+                const parts = AppState.selectedDate.split('-');
+                const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
                 d.setDate(d.getDate() + 1);
-                AppState.selectedDate = d.toISOString().split('T')[0];
+                const nextYear = d.getFullYear();
+                const nextMonth = String(d.getMonth() + 1).padStart(2, '0');
+                const nextDay = String(d.getDate()).padStart(2, '0');
+                const nextStr = `${nextYear}-${nextMonth}-${nextDay}`;
+                if (nextStr > AppState.today) {
+                    showToast('Cannot navigate past today. Next day attendance is locked.', 'warning');
+                    return;
+                }
+                AppState.selectedDate = nextStr;
                 document.getElementById('filterDate').value = AppState.selectedDate;
+                updateDateNavigationState();
                 onFilterChanged();
             });
 
             document.getElementById('btnToday').addEventListener('click', () => {
                 AppState.selectedDate = AppState.today;
                 document.getElementById('filterDate').value = AppState.today;
+                updateDateNavigationState();
                 onFilterChanged();
             });
 
@@ -1150,6 +1240,7 @@
 
                 AppState.filterData = data;
                 AppState.today = data.today || AppState.today;
+                updateDateNavigationState();
                 if (data.school_name) {
                     AppState.schoolName = data.school_name;
                     const elHdr = document.getElementById('headerSchoolName');
@@ -1464,6 +1555,22 @@
                 return;
             }
 
+            // Rule A: Future Date Lock
+            if (AppState.selectedDate > AppState.today) {
+                showToast('Attendance cannot be recorded or modified for future dates.', 'error');
+                return;
+            }
+
+            // Rule B: Weekend Prompt if not yet confirmed
+            if (AppState.isWeekend && !AppState.confirmedWeekend) {
+                const parts = AppState.selectedDate.split('-');
+                const dObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                const dayName = (dObj.getDay() === 6 ? 'Saturday' : 'Sunday');
+                const ok = confirm(`Notice: The selected date is a Weekend (${dayName}). In standard schools, weekend attendance is waived by default.\n\nAre you sure you want to save attendance for this day?`);
+                if (!ok) return;
+                AppState.confirmedWeekend = true;
+            }
+
             const btnSave = document.getElementById('btnSaveAttendance');
             if (btnSave.disabled) return;
             const origHtml = btnSave.innerHTML;
@@ -1484,19 +1591,29 @@
                         date: AppState.selectedDate,
                         year: AppState.selectedYear,
                         classroom_id: AppState.selectedClassroom,
+                        confirm_weekend: AppState.confirmedWeekend || false,
                         records: records
                     })
                 });
 
                 const data = await res.json();
-                if (!data.success) throw new Error(data.message || 'Failed to save attendance');
+                if (!data.success) {
+                    if (data.requires_weekend_confirmation) {
+                        const ok = confirm(data.message + "\n\nDo you want to confirm and record attendance for this weekend?");
+                        if (ok) {
+                            AppState.confirmedWeekend = true;
+                            return saveAttendance();
+                        }
+                    }
+                    throw new Error(data.message || 'Failed to save attendance');
+                }
 
                 AppState.hasUnsavedChanges = false;
                 AppState.isEditMode = false;
                 updateActionBarMode();
                 renderRosterTable();
                 setSyncStatus('Official Records Saved', true);
-                showToast(data.message, 'success');
+                showToast(data.message || 'Attendance saved successfully.', 'success');
 
                 // Refresh missing attendance ledger in background
                 loadMissingAttendance();
@@ -1513,6 +1630,22 @@
         // 4B. VIEW & EDIT MODE LIFECYCLE CONTROLS
         // ─────────────────────────────────────────────────────────────────────
         window.enterEditMode = function() {
+            // Rule A: Future Date Lock
+            if (AppState.selectedDate > AppState.today) {
+                showToast('Attendance cannot be recorded or modified for future dates.', 'error');
+                return;
+            }
+
+            // Rule B: Weekend Prompt
+            if (AppState.isWeekend && !AppState.confirmedWeekend) {
+                const parts = AppState.selectedDate.split('-');
+                const dObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+                const dayName = (dObj.getDay() === 6 ? 'Saturday' : 'Sunday');
+                const ok = confirm(`Notice: The selected date is a Weekend (${dayName}). In standard schools, weekend attendance is waived by default.\n\nAre you sure you want to take and edit attendance for this day?`);
+                if (!ok) return;
+                AppState.confirmedWeekend = true;
+            }
+
             AppState.isEditMode = true;
             AppState.rosterBackup = JSON.parse(JSON.stringify(AppState.currentRoster));
             updateActionBarMode();
@@ -1537,6 +1670,24 @@
             const btnEnterEdit = document.getElementById('btnEnterEditMode');
             const editActionBtns = document.getElementById('editActionButtons');
             const thStatus = document.getElementById('thStatusCol');
+            const futureLocked = document.getElementById('futureLockedBadge');
+
+            const isFuture = (AppState.selectedDate > AppState.today);
+
+            if (isFuture) {
+                if (batchControls) batchControls.style.display = 'none';
+                if (officialBadge) officialBadge.style.display = 'inline-flex';
+                if (btnEnterEdit) btnEnterEdit.style.display = 'none';
+                if (editActionBtns) editActionBtns.style.display = 'none';
+                if (futureLocked) futureLocked.style.display = 'inline-flex';
+                if (thStatus) {
+                    thStatus.innerText = 'Status';
+                    thStatus.style.width = '140px';
+                }
+                return;
+            }
+
+            if (futureLocked) futureLocked.style.display = 'none';
 
             if (AppState.isEditMode) {
                 if (batchControls) batchControls.style.display = 'flex';

@@ -257,6 +257,50 @@ try {
             exit();
         }
 
+        // Rule A: Strict Future Date Enforcement (Cannot Fill Tomorrow's Attendance)
+        $today = date('Y-m-d');
+        if ($date > $today) {
+            http_response_code(422);
+            echo json_encode(['success' => false, 'message' => 'Attendance cannot be recorded or modified for future dates. Roll call opens on the scheduled date.']);
+            exit();
+        }
+
+        // Rule D: Academic Year Boundary Validation
+        $dateYear = substr($date, 0, 4);
+        if ($dateYear !== $year) {
+            http_response_code(422);
+            echo json_encode(['success' => false, 'message' => "The attendance date ($date) does not match the selected academic year ($year)."]);
+            exit();
+        }
+
+        // Rule C: Role-Based Backdating & Grace Periods (48-hour limit for Teachers)
+        $userRole = strtolower($_SESSION['role'] ?? 'headmaster');
+        if ($userRole === 'teacher') {
+            $diffDays = (strtotime($today) - strtotime($date)) / 86400;
+            if ($diffDays > 2) {
+                http_response_code(403);
+                echo json_encode([
+                    'success' => false, 
+                    'message' => 'Teachers can only record or edit attendance within a 48-hour grace period. Please contact School Administration for historical modifications.'
+                ]);
+                exit();
+            }
+        }
+
+        // Rule B: Weekend Validation & Explicit Confirmation
+        $dayOfWeek = intval(date('N', strtotime($date))); // 6 = Saturday, 7 = Sunday
+        $isWeekend = ($dayOfWeek >= 6);
+        $confirmedWeekend = !empty($input['confirm_weekend']);
+        if ($isWeekend && !$confirmedWeekend) {
+            http_response_code(422);
+            echo json_encode([
+                'success' => false,
+                'requires_weekend_confirmation' => true,
+                'message' => 'The selected date is a weekend (Saturday/Sunday) which is waived by default. Confirmation is required to save weekend attendance.'
+            ]);
+            exit();
+        }
+
         $allowedStatuses = ['Present', 'Absent', 'Late', 'Excused'];
 
         $conn->beginTransaction();
