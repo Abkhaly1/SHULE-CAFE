@@ -11,12 +11,6 @@
     
     <script type="module" src="../layouts/global-layout.js"></script>
     <script type="module" src="../js/auth/auth-guard.js"></script>
-    <style>
-        #ledgerMatrixContainer table.table thead tr th {
-            color: #ffffff !important;
-            font-weight: 800;
-        }
-    </style>
 </head>
 <body>
     <div class="app-layout">
@@ -119,19 +113,19 @@
                         <div style="border: 1px solid var(--c-border-light); border-radius: 8px; overflow-x: auto;">
                             <table class="table" style="width: 100%; font-size: 13px; margin: 0; border-collapse: collapse;">
                                 <thead>
-                                    <tr style="background: #0f172a; color: #ffffff !important;">
-                                        <th style="padding: 10px 14px; width: 40px; text-align: center; color: #ffffff !important;">#</th>
-                                        <th style="padding: 10px 14px; width: 240px; color: #ffffff !important;">Student Name & ID</th>
+                                    <tr style="border-bottom: 2px solid #e2e8f0; background: #ffffff;">
+                                        <th style="padding: 10px 14px; width: 40px; text-align: center; color: #0f172a; font-weight: 800;">#</th>
+                                        <th style="padding: 10px 14px; width: 240px; color: #0f172a; font-weight: 800;">Student Name & ID</th>
                     `;
 
                     subjects.forEach(sub => {
-                        html += `<th style="padding: 10px 12px; text-align: center; color: #ffffff !important;">${sub.subject_code}</th>`;
+                        html += `<th style="padding: 10px 12px; text-align: center; color: #0f172a; font-weight: 800;">${sub.subject_code}</th>`;
                     });
 
                     html += `
-                                        <th style="padding: 10px 14px; text-align: center; background: #047857; color: #ffffff !important;">Total Agg.</th>
-                                        <th style="padding: 10px 14px; text-align: center; background: #991b1b; color: #ffffff !important;">Failing Courses</th>
-                                        <th style="padding: 10px 14px; text-align: center; background: #1e40af; width: 95px; color: #ffffff !important;">Position</th>
+                                        <th style="padding: 10px 14px; text-align: center; background: #047857; color: #ffffff !important; font-weight: 800;">Total Agg.</th>
+                                        <th style="padding: 10px 14px; text-align: center; background: #991b1b; color: #ffffff !important; font-weight: 800;">Failing Courses</th>
+                                        <th style="padding: 10px 14px; text-align: center; background: #1e40af; width: 95px; color: #ffffff !important; font-weight: 800;">Position</th>
                                     </tr>
                                 </thead>
                                 <tbody>
