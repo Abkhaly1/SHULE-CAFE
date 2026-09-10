@@ -33,6 +33,10 @@ if (!$schoolId) {
     exit();
 }
 
+$stmtSchool = $conn->prepare("SELECT name FROM schools WHERE id = ? LIMIT 1");
+$stmtSchool->execute([$schoolId]);
+$schoolName = $stmtSchool->fetchColumn() ?: 'SHULE CAFE SECONDARY SCHOOL';
+
 $action = $_GET['action'] ?? ($_POST['action'] ?? 'sheet');
 $recordedBy = $_SESSION['user_id'];
 
@@ -101,6 +105,7 @@ try {
 
         echo json_encode([
             'success' => true,
+            'school_name' => $schoolName,
             'years' => $years,
             'levels' => $levels,
             'grades' => $grades,
@@ -218,6 +223,7 @@ try {
                 'excused' => $excused,
                 'rate' => $rate
             ],
+            'school_name' => $schoolName,
             'roster' => $roster
         ]);
         exit();
