@@ -1,0 +1,65 @@
+/* SHULE CAFE - Parent Portal Distinct Royal Indigo & Soft Violet Theme */
+
+:root {
+    --c-primary: #4f46e5;
+    --c-primary-hover: #4338ca;
+    --c-primary-light: #e0e7ff;
+    --c-primary-border: #c7d2fe;
+    
+    --c-accent: #6366f1;
+    --c-accent-subtle: #eef2ff;
+    
+    --sidebar-bg: #1e1b4b;
+    --sidebar-text: #ffffff;
+    --sidebar-hover-bg: #312e81;
+    --sidebar-active-bg: #4f46e5;
+    --sidebar-active-border: #818cf8;
+}
+
+/* Sidebar Branding Override */
+.app-sidebar {
+    background: var(--sidebar-bg) !important;
+    border-right: 1px solid #17153a !important;
+}
+
+.sidebar-brand {
+    background: #17153a !important;
+    border-bottom: 1px solid #2e2a72 !important;
+}
+
+.sidebar-brand span {
+    color: #a5b4fc !important;
+    font-weight: 800 !important;
+}
+
+.sidebar-nav a {
+    font-weight: 600 !important;
+    color: #e0e7ff !important;
+    font-size: 14px !important;
+}
+
+.sidebar-nav a:hover {
+    background: var(--sidebar-hover-bg) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+.sidebar-nav a.active {
+    background: var(--sidebar-active-bg) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    border-left: 4px solid var(--sidebar-active-border) !important;
+}
+
+/* Primary Button Styling */
+.btn-primary {
+    background: var(--c-primary) !important;
+    border-color: var(--c-primary) !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+.btn-primary:hover {
+    background: var(--c-primary-hover) !important;
+    border-color: var(--c-primary-hover) !important;
+}

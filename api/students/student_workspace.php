@@ -14,6 +14,14 @@ if (!$schoolId && ($_SESSION['role'] ?? '') === 'super_admin') {
     $row = $conn->query('SELECT id FROM schools LIMIT 1')->fetch(PDO::FETCH_ASSOC);
     $schoolId = $row['id'] ?? null;
 }
+if (empty($schoolId)) {
+    $targetSid = $_GET['id'] ?? $_GET['student_id'] ?? $_SESSION['user_id'] ?? '';
+    if (!empty($targetSid)) {
+        $stmtStuSch = $conn->prepare("SELECT school_id FROM users WHERE id = ?");
+        $stmtStuSch->execute([$targetSid]);
+        $schoolId = $stmtStuSch->fetchColumn();
+    }
+}
 
 $studentId     = $_GET['id'] ?? $_GET['student_id'] ?? $_SESSION['user_id'] ?? '';
 $year          = $_GET['year'] ?? date('Y');
@@ -88,9 +96,9 @@ try {
     $stmtProfile = $conn->prepare("
         SELECT
             u.id, u.full_name, u.gender, u.user_code, u.phone, u.email, u.status, u.created_at, u.grade_id,
-            p.guardian_name, p.relation, p.guardian_phone, p.alternative_phone, p.guardian_email, p.home_address
+            p.guardian_name, p.relationship AS relation, p.guardian_phone, p.alternative_phone, p.guardian_email, p.residential_address AS home_address
         FROM users u
-        LEFT JOIN parent_profiles p ON u.id = p.student_id AND u.school_id = p.school_id
+        LEFT JOIN parent_profiles p ON u.id = p.student_id
         WHERE u.id = ? AND u.school_id = ? AND u.role = 'student'
     ");
     $stmtProfile->execute([$studentId, $schoolId]);
@@ -194,8 +202,22 @@ try {
                 'total_score' => 0
             ];
         }
-        $groupedMarks[$sc]['scores'][$dm['assessment_type_id']] = floatval($dm['score']);
-        $groupedMarks[$sc]['total_score'] += floatval($dm['score']);
+        $scoreVal = floatval($dm['score']);
+        $groupedMarks[$sc]['scores'][$dm['assessment_type_id']] = $scoreVal;
+
+        // Check if assessment type is Terminal Exam
+        $isTerm = false;
+        foreach ($assessmentTypes as $at) {
+            if ($at['id'] == $dm['assessment_type_id'] && !empty($at['is_terminal'])) {
+                $isTerm = true;
+                break;
+            }
+        }
+        if ($isTerm) {
+            $groupedMarks[$sc]['total_score'] = min(100.0, max(0.0, $scoreVal));
+        } elseif ($groupedMarks[$sc]['total_score'] == 0) {
+            $groupedMarks[$sc]['total_score'] = min(100.0, max(0.0, $scoreVal));
+        }
     }
 
     $usedLegacyFallback = false;

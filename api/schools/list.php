@@ -18,6 +18,7 @@ if ($method !== 'GET') {
     exit();
 }
 
+try {
     $whereClause = "";
     $params = [];
 

@@ -164,7 +164,7 @@
             document.getElementById('tableYearLabel').textContent = `Academic Session ${year}`;
             
             try {
-                const res = await fetch(`/api/students/student_workspace.php?year=${encodeURIComponent(year)}`);
+                const res = await fetch(`/shule-cafe/api/students/student_workspace.php?year=${encodeURIComponent(year)}`, { credentials: 'include' });
                 const data = await res.json();
                 
                 if (data.success) {

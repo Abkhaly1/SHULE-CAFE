@@ -103,7 +103,7 @@
         async function loadChildren() {
             const container = document.getElementById('childrenContainer');
             try {
-                const res = await fetch('/api/parents/get_children.php');
+                const res = await fetch('/shule-cafe/api/parents/get_children.php', { credentials: 'include' });
                 const data = await res.json();
 
                 if (data.success && Array.isArray(data.children) && data.children.length > 0) {
