@@ -22,6 +22,9 @@ if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'] ?? '', ['tenant_
 }
 
 $schoolId = $_SESSION['school_id'] ?? null;
+if (($_SESSION['role'] ?? '') === 'super_admin' && !empty($_GET['school_id'])) {
+    $schoolId = $_GET['school_id'];
+}
 if (!$schoolId && ($_SESSION['role'] ?? '') === 'super_admin') {
     $stmt = $conn->query("SELECT id FROM schools LIMIT 1");
     $schoolId = $stmt->fetchColumn();

@@ -6,13 +6,23 @@ header('Content-Type: application/json; charset=UTF-8');
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../../grading/GradingManager.php';
 
-$userId = $_SESSION['user_id'] ?? $_GET['user_id'] ?? null;
-$schoolId = $_SESSION['school_id'] ?? $_GET['school_id'] ?? null;
+$userId = $_SESSION['user_id'] ?? null;
+$role = $_SESSION['role'] ?? '';
+$schoolId = $_SESSION['school_id'] ?? null;
 
-if (empty($schoolId) && !empty($userId)) {
-    $uStmt = $conn->prepare("SELECT school_id FROM users WHERE id = ? LIMIT 1");
+if (!empty($userId)) {
+    $uStmt = $conn->prepare("SELECT school_id, role FROM users WHERE id = ? LIMIT 1");
     $uStmt->execute([$userId]);
-    $schoolId = $uStmt->fetchColumn() ?: null;
+    $uRow = $uStmt->fetch(PDO::FETCH_ASSOC);
+    if ($uRow) {
+        $schoolId = $uRow['school_id'];
+        if (empty($role)) $role = $uRow['role'];
+    }
+}
+
+// Only super_admin or regional_officer can inspect arbitrary school via GET/POST
+if (in_array($role, ['super_admin', 'regional_officer']) && !empty($_GET['school_id'])) {
+    $schoolId = $_GET['school_id'];
 }
 
 if (empty($schoolId)) {
