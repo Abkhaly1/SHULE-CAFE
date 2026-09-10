@@ -555,6 +555,16 @@ try {
         $stmtLocks->execute([$schoolId, $classroomId, $year, $term]);
         $lockedSubjs = $stmtLocks->fetchAll(PDO::FETCH_COLUMN);
         $lockedMap = array_flip($lockedSubjs);
+        $isAllLocked = isset($lockedMap['__ALL__']);
+
+        if ($isAllLocked && !in_array($role, ['headmaster', 'super_admin', 'school_admin'])) {
+            echo json_encode([
+                'success' => false,
+                'is_locked' => true,
+                'message' => "Examination marks for this classroom stream have been submitted and locked. Modifications can only be performed by the Headmaster."
+            ]);
+            exit();
+        }
 
         $stmtSave = $conn->prepare("
             INSERT INTO marks_entry_dynamic (school_id, academic_year, term, student_id, subject_code, assessment_type_id, score, raw_score, entry_mode, updated_at)
@@ -668,7 +678,9 @@ try {
                     ':sid' => $studentId,
                     ':subj' => $curSubCode,
                     ':atid' => $assessmentTypeId,
-                    ':score' => $numScore
+                    ':score' => $numScore,
+                    ':raw' => $rawScore,
+                    ':mode' => $entryMode
                 ]);
                 $savedCount++;
             }

@@ -18,8 +18,21 @@ if ($method !== 'GET') {
     exit();
 }
 
-try {
-    $stmt = $conn->query("
+    $whereClause = "";
+    $params = [];
+
+    // Enforce Regional Jurisdiction Lock
+    if ($role === 'regional_officer' && !empty($userId)) {
+        $rStmt = $conn->prepare("SELECT department FROM users WHERE id = ? LIMIT 1");
+        $rStmt->execute([$userId]);
+        $assignedRegion = trim($rStmt->fetchColumn() ?: '');
+        if (!empty($assignedRegion)) {
+            $whereClause = "WHERE UPPER(s.region) = UPPER(?)";
+            $params[] = $assignedRegion;
+        }
+    }
+
+    $stmt = $conn->prepare("
         SELECT 
             s.id, 
             s.name, 
@@ -29,11 +42,12 @@ try {
             u.full_name as headmaster_name,
             u.phone as headmaster_phone
         FROM schools s
-        LEFT JOIN users u ON u.school_id = s.id AND u.role = 'tenant_admin'
+        LEFT JOIN users u ON u.school_id = s.id AND u.role IN ('headmaster', 'tenant_admin')
+        $whereClause
         ORDER BY s.created_at DESC
     ");
-    
-    $schools = $stmt->fetchAll();
+    $stmt->execute($params);
+    $schools = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     echo json_encode(["success" => true, "data" => $schools]);
 
